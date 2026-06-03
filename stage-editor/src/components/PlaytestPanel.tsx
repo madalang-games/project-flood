@@ -1,0 +1,109 @@
+'use client';
+
+import type { StarResult } from '../lib/game-rules';
+import type { ValidationResult } from '../lib/validator';
+
+interface Props {
+  isPlaytest: boolean;
+  isRecording: boolean;
+  playtestTurns: number;
+  playtestResult: StarResult | null;
+  validationResult: ValidationResult | null;
+  onStartPlaytest: () => void;
+  onStopPlaytest: () => void;
+  onToggleRecord: () => void;
+  onValidate: () => void;
+  onExport: () => void;
+  onSave: () => void;
+}
+
+export default function PlaytestPanel({
+  isPlaytest,
+  isRecording,
+  playtestTurns,
+  playtestResult,
+  validationResult,
+  onStartPlaytest,
+  onStopPlaytest,
+  onToggleRecord,
+  onValidate,
+  onExport,
+  onSave,
+}: Props) {
+  return (
+    <div className="p-3 border-t border-gray-700 bg-gray-800">
+      <div className="flex flex-wrap gap-2 items-center">
+        {!isPlaytest ? (
+          <button
+            onClick={onStartPlaytest}
+            className="text-xs bg-green-700 hover:bg-green-600 px-3 py-1.5 rounded"
+          >
+            ▶ Playtest
+          </button>
+        ) : (
+          <>
+            <button
+              onClick={onStopPlaytest}
+              className="text-xs bg-red-700 hover:bg-red-600 px-3 py-1.5 rounded"
+            >
+              ■ Stop
+            </button>
+            <button
+              onClick={onToggleRecord}
+              className={`text-xs px-3 py-1.5 rounded ${
+                isRecording ? 'bg-red-600 hover:bg-red-500' : 'bg-gray-600 hover:bg-gray-500'
+              }`}
+            >
+              {isRecording ? '⏺ Recording' : '⏺ Record'}
+            </button>
+            {!playtestResult && (
+              <span className="text-xs text-gray-300 ml-1">Turns: {playtestTurns}</span>
+            )}
+          </>
+        )}
+
+        {!isPlaytest && (
+          <>
+            <button
+              onClick={onValidate}
+              className="text-xs bg-gray-600 hover:bg-gray-500 px-3 py-1.5 rounded"
+            >
+              ✓ Validate
+            </button>
+            <button
+              onClick={onExport}
+              className="text-xs bg-blue-700 hover:bg-blue-600 px-3 py-1.5 rounded"
+            >
+              ⬇ Export
+            </button>
+            <button
+              onClick={onSave}
+              className="text-xs bg-gray-600 hover:bg-gray-500 px-3 py-1.5 rounded"
+            >
+              Save
+            </button>
+          </>
+        )}
+      </div>
+
+      {validationResult && (
+        <div className="mt-2 text-xs space-y-1">
+          <div className={validationResult.hasVerifiedSolution ? 'text-green-400' : 'text-red-400'}>
+            {validationResult.hasVerifiedSolution ? '✓' : '✗'} Verified solution
+          </div>
+          {validationResult.solutionReplaySucceeds !== null && (
+            <div className={validationResult.solutionReplaySucceeds ? 'text-green-400' : 'text-red-400'}>
+              {validationResult.solutionReplaySucceeds ? '✓' : '✗'} Solution replay
+            </div>
+          )}
+          {validationResult.warnings.map((w, i) => (
+            <div key={i} className="text-yellow-400">⚠ {w}</div>
+          ))}
+          <div className={validationResult.canExport ? 'text-green-400' : 'text-gray-400'}>
+            {validationResult.canExport ? '✓ Ready to export' : '✗ Cannot export'}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
