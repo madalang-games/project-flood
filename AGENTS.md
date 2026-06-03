@@ -72,6 +72,10 @@ Check already-loaded AGENTS.md context first. Use `rg` only when absent or stale
 | all implementors | loaded context | `rg "IInterface" --type cs -l` |
 | role / ownership | loaded `## Nav` / `## Rules` | read that dir's `AGENTS.md` |
 
+**Glob rules (token efficiency):**
+- Always limit glob to specific path + extension: `client/project-flood/Assets/**/*.cs` — never `client/**/*` (pulls Unity Library/PackageCache noise)
+- For directory structure exploration: delegate to `Explore` subagent — result is compressed before returning to main context (~60% token reduction)
+
 ## Output
 - No narration before tool calls — execute immediately
 - Silent on success path — only surface errors or blockers

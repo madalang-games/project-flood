@@ -1,0 +1,4 @@
+stage_id,board_width,board_height,turn_limit,difficulty,color_ids,star1_ratio,star2_ratio,cells,verified_solution,ruleset_version
+CS,C,C,C,C,C,C,C,C,C,C
+int32,int8,int8,int8,[Difficulty],string,float,float,string,string,int8
+PK,NN,NN,NN,NN,NN,NN,NN,NN,NN,NN

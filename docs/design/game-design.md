@@ -65,23 +65,13 @@ Normal colored cell. Removed when part of a valid group tap.
 
 Gimmick cells are introduced progressively as the player advances through stages.
 
-#### Bomb Cell
-- On trigger: removes all 8-directional adjacent cells.
-- Removed after trigger.
-
-#### Horizontal Rocket Cell
-- On trigger: removes all cells in its row.
-- Removed after trigger.
-
-#### Vertical Rocket Cell
-- On trigger: removes all cells in its column.
-- Removed after trigger.
-
 #### Protector Cell
-- Absorbs 1 hit (from group removal OR gimmick effect).
-- After protector removed: underlying cell becomes a normal cell.
-- Protector cell IS included in color group search.
-- Can be stacked on any cell type (editor-defined).
+- Only on Basic cells; inherits the same color as the underlying Basic cell.
+- Strength: 1 or 2 layers (editor-defined per cell).
+- Reaction: **direct hit only** — a protector layer is stripped by same-color group tap (this cell is in the matched group) or item applied directly to this cell.
+- Adjacent cell removal does NOT strip protector.
+- After all protector layers removed: underlying Basic cell is exposed.
+- Protector cell participates in same-color BFS (can be part of a valid group).
 
 #### Core Cell
 - A hard win-condition gate; introduced in later stages.
@@ -94,15 +84,13 @@ Gimmick cells are introduced progressively as the player advances through stages
 - **Excluded from `initial_valid_cells`** in clearance ratio.
 - Visually distinct from normal cells.
 
-### 5.3 Gimmick Trigger Rules
+### 5.3 Protector Strip Rules
 
-| Event | Outcome |
-|-------|---------|
-| Gimmick cell is part of a valid same-color group tap | Triggered |
-| Gimmick cell is hit by another gimmick's area effect | Triggered (cross-color chain) |
-| Gimmick cell was already triggered this resolution | NOT triggered again (visited flag) |
-
-**Chain resolution**: BFS queue. Mark triggered gimmicks. Propagate effects. Process until queue empty.
+| Event | Strips Protector Layer? |
+|-------|------------------------|
+| Cell's own same-color group tapped (cell is in the matched group) | Yes |
+| Item applied directly to this cell | Yes |
+| Adjacent cell removed (any cause) | **No** |
 
 ---
 
@@ -164,6 +152,8 @@ Referenced by both client and server.
 - Player manually applies to a specific cell during gameplay.
 - Item effect can trigger board gimmick chain reactions (follows §5.3 rules).
 - Items do NOT auto-chain with other inventory items.
+- MVP item effects: Bomb (removes all 8-directional adjacent cells), Horizontal Rocket (clears row), Vertical Rocket (clears column).
+- Item effects trigger board state changes identically to §4 rules (gravity applies after).
 - **MVP**: Dev-only, controlled via Unity Inspector. No in-game UI.
 - Streak reward system and IAP integration: **Phase 2**.
 
@@ -175,8 +165,9 @@ Referenced by both client and server.
 Editor → shared/datas/stage/*.csv → info_generator → client/generated/data/
 ```
 
-- All stage data includes `rulesetVersion`.
-- Stage data format includes: `stageId`, `boardSize`, `rulesetVersion`, `gimmickSet`, `colorIds[]`, `turnLimit`, `starThresholdConfigId`, `verifiedSolution`.
+- All stage data includes `rulesetVersion` to lock replay fidelity of `verifiedSolution`.
+- Stage data format: `stageId`, `boardWidth`, `boardHeight`, `turnLimit`, `difficulty`, `colorIds`, `star1Ratio`, `star2Ratio`, `cells`, `verifiedSolution`, `rulesetVersion`.
+- Cell encoding: CTM hex (3 hex chars per cell, flat row-major string). `C`=color_id (0–F), `T`=CellType (0=Basic,1=Obstacle), `M`=modifier bitmask (bits[1:0]=protector_strength, bit[2]=is_core). See ADR-003.
 
 ---
 
@@ -254,12 +245,13 @@ Full solver: Phase 2+.
 - Turn limit
 - Ratio-based star system (80 / 90 / 100%)
 - Core cell gimmick (late stages)
-- Bomb, Horizontal Rocket, Vertical Rocket, Protector cells
+- Protector cells (Basic cells only, 1–2 layers, direct-hit strip rule)
+- Bomb, Horizontal Rocket, Vertical Rocket as dev-only items (Inspector)
 - Obstacle cells (data + ratio exclusion)
 - Stage select UI + replay cleared stages
 - Best star / best move count saved per stage
-- `star_threshold_config` table
-- `color_palette` table (16 colors)
+- Per-stage `star1_ratio` / `star2_ratio` inline in stage data (star3 = full clear, no ratio needed)
+- `color_palette` table (16 colors, IDs 0–15)
 - Dev-only item system via Inspector
 - 30 handcrafted stages
 - verifiedSolution replay validation
