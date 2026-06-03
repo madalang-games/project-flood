@@ -20,7 +20,7 @@
 ```
 Row 1: field names
 Row 2: target scope — C | S | CS
-Row 3: normalized type — int8/16/32/64, uint8/16/32/64, float, double, bool, string, string(N), [EnumName]
+Row 3: normalized type — int8/16/32/64, uint8/16/32/64, float, double, bool, string, string(N), EnumName (PascalCase, no brackets)
 Row 4: constraints — PK, FK:[table], NN, UQ, IDX, AUTO (comma-separated)
 Row 5+: data
 ```

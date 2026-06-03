@@ -12,7 +12,7 @@
 | `board_width` | C | int8 | columns |
 | `board_height` | C | int8 | rows |
 | `turn_limit` | C | int8 | max valid taps |
-| `difficulty` | C | [Difficulty] | Easy=0 Normal=1 Hard=2 |
+| `difficulty` | C | Difficulty | Easy=0 Normal=1 Hard=2 |
 | `color_ids` | C | string | comma-separated palette IDs used in this stage e.g. `0,1,3,5` |
 | `star1_ratio` | C | float | clearance ratio threshold for 1★ (default 0.80) |
 | `star2_ratio` | C | float | clearance ratio threshold for 2★ (default 0.90) |
