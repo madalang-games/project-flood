@@ -34,9 +34,27 @@ Differentiators vs SameGame/Collapse:
 - Palette is expandable (add rows) without schema change.
 
 ### color_palette table
-```
-color_id (0–15) | r | g | b | name
-```
+
+Colors 0–7 are primary (used in normal stages, up to 8 active per stage). Colors 8–15 are supplementary (challenge/image stages).
+
+| color_id | r | g | b | hex | name |
+|----------|---|---|---|-----|------|
+| 0 | 220 | 60 | 60 | `#DC3C3C` | Red |
+| 1 | 60 | 120 | 220 | `#3C78DC` | Blue |
+| 2 | 60 | 180 | 60 | `#3CB43C` | Green |
+| 3 | 230 | 200 | 40 | `#E6C828` | Yellow |
+| 4 | 160 | 60 | 220 | `#A03CDC` | Purple |
+| 5 | 230 | 120 | 40 | `#E67828` | Orange |
+| 6 | 40 | 200 | 210 | `#28C8D2` | Cyan |
+| 7 | 230 | 80 | 160 | `#E650A0` | Pink |
+| 8 | 150 | 100 | 60 | `#96643C` | Brown |
+| 9 | 140 | 140 | 140 | `#8C8C8C` | Gray |
+| 10 | 240 | 240 | 240 | `#F0F0F0` | White |
+| 11 | 40 | 40 | 40 | `#282828` | Dark |
+| 12 | 60 | 180 | 160 | `#3CB4A0` | Teal |
+| 13 | 210 | 170 | 80 | `#D2AA50` | Gold |
+| 14 | 100 | 60 | 200 | `#643CC8` | Indigo |
+| 15 | 200 | 40 | 80 | `#C82850` | Crimson |
 
 ---
 
