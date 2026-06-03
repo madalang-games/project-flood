@@ -9,6 +9,7 @@
 | `server/` | ASP.NET Core 8 server + DB schema | → `server/AGENTS.md` |
 | `docs/` | Design, technical, decisions, tests, platform refs | → `docs/AGENTS.md` |
 | `TODO-List/` | Release tracker, per-area task lists | → `TODO-List/AGENTS.md` |
+| `stage-editor/` | Next.js stage editor — CSV CRUD + board UI + playtest | → `stage-editor/AGENTS.md` |
 | `docker-compose.dev.bat` | Starts local dev Docker Compose stack | |
 
 ## Pipeline

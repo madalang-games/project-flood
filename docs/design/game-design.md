@@ -45,8 +45,9 @@ color_id (0–15) | r | g | b | name
 ### 4.1 Cell Selection
 - Tap a cell → BFS finds all 4-directionally adjacent cells of same color.
 - Diagonal adjacency is NOT same group.
-- Group size ≥ 2: valid removal.
-- Group size = 1: invalid tap; turn NOT consumed.
+- All taps are valid; turn consumed regardless of group size.
+- BFS returns the same-color connected group from the tapped cell (minimum size 1).
+- Isolated cells (size=1) are removed normally — no permanent stuck state. (ADR-004)
 - Turn consumed only on valid removal.
 
 ### 4.2 Gravity
