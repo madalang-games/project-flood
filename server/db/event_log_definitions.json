@@ -1,0 +1,4 @@
+{
+  "_comment": "TrId master document. Add one entry per event type. Used by ops tooling to interpret event_logs.params.",
+  "events": []
+}

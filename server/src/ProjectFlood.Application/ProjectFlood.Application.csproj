@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ProjectFlood.Domain\ProjectFlood.Domain.csproj" />
+    <ProjectReference Include="..\ProjectFlood.Infrastructure\ProjectFlood.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\..\shared\contracts\ProjectFlood.Contracts.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="StackExchange.Redis" Version="2.*" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="8.*" />
+  </ItemGroup>
+</Project>

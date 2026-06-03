@@ -1,0 +1,28 @@
+# tools - Automation Pipeline
+
+## Nav
+| file | role |
+|------|------|
+| `config-loader.js` | Loads required `template.ini` + `.env.dev`/`.env.prod` values |
+| `info_generator.js` | `shared/datas/**/*.csv` -> `*/generated/data/**/*.csv` + `StaticData/*.g.cs` + `IStaticDataService.g.cs` |
+| `db-generator/` | `server/db/schema.json` -> DB CREATE/ALTER TABLE + migration SQL + generated EF data access |
+| `pkt_generator.js` | `shared/contracts/**/*.cs` -> `client/.../Generated/Contracts/*.cs` (diff-only, preserves `.meta`) |
+| `gen-all.bat` | Runs all gen steps in order (`info_generator` -> `db_generator` -> `pkt_generator`) |
+| `info_generator.bat` | Runs info_generator only |
+| `db_generator.bat` | Runs db-generator only |
+| `run-gen-step.ps1` | Streams gen batch step output to console + `tools/logs/*.log` |
+
+## Rules
+- **NEVER modify generated files manually** — always update the source and re-run the relevant generator
+- ALL scripts read config from `config-loader.js` — never hardcode paths
+- Tools default to `.env.dev`; use `CONFIG_ENV=prod` or `ENV_FILE=.env.prod` for production values
+- `_` prefix files/dirs are skipped by all gen tools
+- Errors report as: `[tool] ERROR: <file>\n  <location>: <message>`
+- On any error — print all errors, then `process.exit(1)`
+- db-generator dry-run mode is required in `template.ini`; set `false` to execute
+
+## Adding a new gen tool
+1. Create `tools/gen-[name].js` — use `config-loader.js` for all config
+2. Add `"gen:[name]": "node tools/gen-[name].js"` to root `package.json` scripts
+3. Add step to `gen-all.bat`
+4. Update this Nav section

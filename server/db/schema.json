@@ -1,0 +1,48 @@
+{
+  "database": "projectflood_db",
+  "output": {
+    "namespace": "ProjectFlood.Infrastructure.Generated",
+    "context": "AppDbContext"
+  },
+  "tables": [
+    {
+      "name": "players",
+      "comment": "Game-local player record. platform_pid is the 24-char public cross-reference from platform-auth JWT sub.",
+      "conflict": "ignore",
+      "columns": [
+        { "name": "user_id",            "type": "int64",      "pk": true,  "null": false },
+        { "name": "platform_pid",       "type": "string(24)", "null": false, "unique": true },
+        { "name": "display_name",       "type": "string(64)", "null": false },
+        { "name": "avatar_id",          "type": "int32",      "null": false, "default": 1 },
+        { "name": "account_created_at", "type": "datetime",   "null": false },
+        { "name": "last_login_at",      "type": "datetime",   "null": false }
+      ]
+    },
+    {
+      "name": "sessions",
+      "conflict": "ignore",
+      "columns": [
+        { "name": "id",         "type": "int64",      "pk": true,  "auto": true, "null": false },
+        { "name": "user_id",    "type": "int64",      "null": false, "fk": "players.user_id" },
+        { "name": "session_id", "type": "string(24)", "null": false, "unique": true },
+        { "name": "created_at", "type": "datetime",   "null": false },
+        { "name": "expires_at", "type": "datetime",   "null": false }
+      ]
+    },
+    {
+      "name": "event_logs",
+      "comment": "Audit log for all user-modifying API calls.",
+      "columns": [
+        { "name": "id",             "type": "int64",      "pk": true, "auto": true, "null": false },
+        { "name": "user_id",        "type": "int64",      "null": false, "fk": "players.user_id" },
+        { "name": "tr_id",          "type": "int32",      "null": false },
+        { "name": "correlation_id", "type": "string(36)", "null": false },
+        { "name": "params",         "type": "json",       "null": true },
+        { "name": "created_at",     "type": "datetime",   "null": false }
+      ],
+      "indexes": [
+        { "name": "idx_event_logs_user_id", "columns": ["user_id"], "unique": false }
+      ]
+    }
+  ]
+}
