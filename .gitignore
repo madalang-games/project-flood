@@ -2,6 +2,7 @@
 .claude/settings.local.json
 .agents/cache/
 prompt_for_gemini.md
+prompt.md
 
 # Secrets
 .env.dev

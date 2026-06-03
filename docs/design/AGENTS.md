@@ -5,7 +5,7 @@ UI/UX specs, wireframes, game design documents.
 ## Files
 | file | role |
 |------|------|
-| *(empty — add as designed)* | |
+| `game-design.md` | Core game design document — rules, cell types, clear conditions, MVP scope |
 
 ## Rules
 - One file per major design area (e.g., `ui-design.md`, `game-design.md`, `onboarding.md`)
