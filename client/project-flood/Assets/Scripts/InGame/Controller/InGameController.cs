@@ -1,0 +1,76 @@
+using System;
+using Game.InGame.Board;
+using Game.InGame.Rules;
+using Game.InGame.View;
+using ProjectFlood.Data.Generated;
+using UnityEngine;
+using UnityEngine.InputSystem;
+
+namespace Game.InGame.Controller
+{
+    public class InGameController : MonoBehaviour
+    {
+        [SerializeField] private BoardView _boardView;
+
+        public event Action<StarResult, int> OnStageEnd;   // (result, remainingTurns)
+        public event Action<int> OnTurnConsumed;           // remainingTurns
+
+        private BoardState _board;
+        private TurnManager _turnManager;
+        private Stage _stage;
+        private bool _isPlaying;
+
+        public void Init(Stage stage)
+        {
+            _stage = stage;
+            _board = StageLoader.Load(stage);
+            _turnManager = new TurnManager(stage.turn_limit);
+            _boardView.Build(_board, StageLoader.ParseColorIds(stage.color_ids));
+            _isPlaying = true;
+        }
+
+        private void Update()
+        {
+            if (!_isPlaying) return;
+
+            Vector2? tapPos = ReadTapPosition();
+            if (tapPos == null) return;
+
+            var (row, col) = _boardView.ScreenToCell(tapPos.Value);
+            if (row < 0 || col < 0) return;
+            if (_board.Grid[row, col] == null) return;
+
+            HandleTap(row, col);
+        }
+
+        private void HandleTap(int row, int col)
+        {
+            var group = GroupSelector.FindGroup(_board, row, col);
+            RemovalSystem.Remove(_board, group);
+            GravitySystem.Apply(_board);
+
+            bool turnsLeft = _turnManager.Consume();
+            OnTurnConsumed?.Invoke(_turnManager.RemainingTurns);
+
+            var result = ClearEvaluator.Evaluate(_board, _stage.star1_ratio, _stage.star2_ratio);
+            _boardView.Refresh(_board);
+
+            if (result == StarResult.Star3 || !turnsLeft)
+            {
+                _isPlaying = false;
+                OnStageEnd?.Invoke(result, _turnManager.RemainingTurns);
+            }
+        }
+
+        private static Vector2? ReadTapPosition()
+        {
+            if (Mouse.current != null && Mouse.current.leftButton.wasPressedThisFrame)
+                return Mouse.current.position.ReadValue();
+
+            if (Touchscreen.current != null && Touchscreen.current.primaryTouch.press.wasPressedThisFrame)
+                return Touchscreen.current.primaryTouch.position.ReadValue();
+
+            return null;
+        }
+    }
+}
