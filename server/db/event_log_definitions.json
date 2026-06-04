@@ -1,4 +1,90 @@
 {
   "_comment": "TrId master document. Add one entry per event type. Used by ops tooling to interpret event_logs.params.",
-  "events": []
+  "events": [
+    {
+      "tr_id": 2001,
+      "name": "StaminaLifeChanged",
+      "params": {
+        "delta": "life delta",
+        "reason": "spend|refund|regen|ad_life|admin",
+        "current_after": "life after change"
+      }
+    },
+    {
+      "tr_id": 2002,
+      "name": "StaminaUnlimitedChanged",
+      "params": {
+        "source_id": "reward source id",
+        "duration_seconds": "unlimited duration added",
+        "unlimited_until_utc": "new UTC expiry"
+      }
+    },
+    {
+      "tr_id": 2101,
+      "name": "StageAttemptStarted",
+      "params": {
+        "attempt_id": "server generated attempt id",
+        "stage_id": "stage id",
+        "life_spent": "true|false",
+        "expires_at_utc": "attempt expiry"
+      }
+    },
+    {
+      "tr_id": 2102,
+      "name": "StageAttemptCleared",
+      "params": {
+        "attempt_id": "attempt id",
+        "stage_id": "stage id",
+        "life_refunded": "true|false"
+      }
+    },
+    {
+      "tr_id": 2103,
+      "name": "StageAttemptFailed",
+      "params": {
+        "attempt_id": "attempt id",
+        "stage_id": "stage id",
+        "reason": "fail|give_up|timeout"
+      }
+    },
+    {
+      "tr_id": 2104,
+      "name": "StageAttemptReplaced",
+      "params": {
+        "attempt_id": "discarded attempt id",
+        "stage_id": "discarded stage id",
+        "reason": "replaced_by_new_attempt"
+      }
+    },
+    {
+      "tr_id": 2105,
+      "name": "StageAttemptRevivedByAd",
+      "params": {
+        "attempt_id": "attempt id",
+        "stage_id": "stage id",
+        "revive_count": "1-based revive count",
+        "turns_granted": "turns granted by this revive",
+        "ad_tx_id": "ad reward transaction id"
+      }
+    },
+    {
+      "tr_id": 6001,
+      "name": "RewardClaimed",
+      "params": {
+        "source_id": "reward source id",
+        "reward_group_id": "reward group id"
+      }
+    },
+    {
+      "tr_id": 6101,
+      "name": "AdRewardClaimed",
+      "params": {
+        "ad_tx_id": "ad transaction id",
+        "placement_id": "ad placement id",
+        "reward_type": "reward type",
+        "reward_value": "reward value",
+        "duplicate": "true|false"
+      }
+    }
+  ]
 }
