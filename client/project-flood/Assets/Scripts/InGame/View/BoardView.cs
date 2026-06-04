@@ -72,6 +72,7 @@ namespace Game.InGame.View
         {
             _board = board;
             var showSocket = _background != null ? new bool[board.Height, board.Width] : null;
+            var showHole = _background != null ? new bool[board.Height, board.Width] : null;
 
             for (int r = 0; r < board.Height; r++)
             for (int c = 0; c < board.Width; c++)
@@ -84,10 +85,12 @@ namespace Game.InGame.View
 
                 if (showSocket != null)
                     showSocket[r, c] = cell == null;
+                if (showHole != null)
+                    showHole[r, c] = IsVoidCell(cell);
             }
 
-            if (_background != null && showSocket != null)
-                _background.Refresh(board.Width, board.Height, showSocket);
+            if (_background != null && showSocket != null && showHole != null)
+                _background.Refresh(board.Width, board.Height, showSocket, showHole);
         }
 
         public IEnumerator PlayTapFeedback(int row, int col)
@@ -137,32 +140,53 @@ namespace Game.InGame.View
             float maxDelay = 0f;
             for (int c = 0; c < boardAfterGravity.Width; c++)
             {
-                var sourceRows = new List<int>();
-                for (int r = boardAfterGravity.Height - 1; r >= 0; r--)
+                int segmentBottom = boardAfterGravity.Height - 1;
+                for (int r = boardAfterGravity.Height - 1; r >= -1; r--)
                 {
-                    if (beforeGravity[r, c] != null && beforeGravity[r, c].Value.cell_type != CellType.Void)
-                        sourceRows.Add(r);
-                }
+                    bool segmentBreak = r < 0 || IsVoidCell(boardAfterGravity.Grid[r, c]);
+                    if (!segmentBreak) continue;
 
-                int sourceIndex = 0;
-                for (int r = boardAfterGravity.Height - 1; r >= 0; r--)
-                {
-                    if (boardAfterGravity.Grid[r, c] == null) continue;
-                    if (sourceIndex >= sourceRows.Count) break;
-
-                    int sourceRow = sourceRows[sourceIndex++];
-                    if (sourceRow == r) continue;
-
-                    float distance = Mathf.Abs(r - sourceRow);
-                    float delay = c * (_staggerDelay * 0.45f);
-                    float duration = _dropDuration + distance * 0.035f;
-                    maxDelay = Mathf.Max(maxDelay, delay + duration + 0.11f);
-                    StartCoroutine(_cellViews[r, c].PlayDrop(_cellPositions[sourceRow, c], _cellPositions[r, c], delay, duration));
+                    AnimateGravitySegment(beforeGravity, boardAfterGravity, c, r + 1, segmentBottom, ref maxDelay);
+                    segmentBottom = r - 1;
                 }
             }
 
             if (maxDelay > 0f)
                 yield return new WaitForSeconds(maxDelay);
+        }
+
+        private void AnimateGravitySegment(
+            CellData?[,] beforeGravity,
+            BoardState boardAfterGravity,
+            int col,
+            int topRow,
+            int bottomRow,
+            ref float maxDelay)
+        {
+            if (topRow > bottomRow) return;
+
+            var sourceRows = new List<int>();
+            for (int r = bottomRow; r >= topRow; r--)
+            {
+                if (IsMovableCell(beforeGravity[r, col]))
+                    sourceRows.Add(r);
+            }
+
+            int sourceIndex = 0;
+            for (int r = bottomRow; r >= topRow; r--)
+            {
+                if (!IsMovableCell(boardAfterGravity.Grid[r, col])) continue;
+                if (sourceIndex >= sourceRows.Count) break;
+
+                int sourceRow = sourceRows[sourceIndex++];
+                if (sourceRow == r) continue;
+
+                float distance = Mathf.Abs(r - sourceRow);
+                float delay = col * (_staggerDelay * 0.45f);
+                float duration = _dropDuration + distance * 0.035f;
+                maxDelay = Mathf.Max(maxDelay, delay + duration + 0.11f);
+                StartCoroutine(_cellViews[r, col].PlayDrop(_cellPositions[sourceRow, col], _cellPositions[r, col], delay, duration));
+            }
         }
 
         public IEnumerator PlayBoardRotation(int quarterTurns)
@@ -278,6 +302,16 @@ namespace Game.InGame.View
         private static int Manhattan(int row, int col, int originRow, int originCol)
         {
             return Mathf.Abs(row - originRow) + Mathf.Abs(col - originCol);
+        }
+
+        private static bool IsMovableCell(CellData? cell)
+        {
+            return cell != null && cell.Value.cell_type != CellType.Void;
+        }
+
+        private static bool IsVoidCell(CellData? cell)
+        {
+            return cell != null && cell.Value.cell_type == CellType.Void;
         }
 
         private void AlignBackground()

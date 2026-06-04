@@ -24,6 +24,9 @@ namespace Game.InGame.View
         private SpriteRenderer[,] _sockets;
         private Texture2D _panelTexture;
         private Color[] _panelPixels;
+        private bool[,] _holes;
+        private int _boardWidth;
+        private int _boardHeight;
         private int _panelTexWidth;
         private int _panelTexHeight;
         private int _frame;
@@ -32,18 +35,26 @@ namespace Game.InGame.View
         public void Build(int width, int height, float cellSize, Vector3[,] cellPositions)
         {
             ClearRuntimeObjects();
+            _boardWidth = width;
+            _boardHeight = height;
+            _holes = new bool[height, width];
             BuildPanel(width, height, cellSize);
             BuildSockets(width, height, cellSize, cellPositions);
             RenderPanelFrame(0);
         }
 
-        public void Refresh(int width, int height, bool[,] showSocket)
+        public void Refresh(int width, int height, bool[,] showSocket, bool[,] showHole)
         {
             if (_sockets == null) return;
 
             for (int r = 0; r < height; r++)
             for (int c = 0; c < width; c++)
-                _sockets[r, c].enabled = showSocket[r, c];
+            {
+                _sockets[r, c].enabled = showSocket[r, c] && !showHole[r, c];
+                _holes[r, c] = showHole[r, c];
+            }
+
+            RenderPanelFrame(_frame);
         }
 
         private void Update()
@@ -157,7 +168,14 @@ namespace Game.InGame.View
             for (int y = 0; y < _panelTexHeight; y++)
             for (int x = 0; x < _panelTexWidth; x++)
             {
+                if (TryGetHolePixel(x, y, out var holeColor))
+                {
+                    _panelPixels[y * _panelTexWidth + x] = holeColor;
+                    continue;
+                }
+
                 Color color = _boardColor;
+                bool voidEdge = TryGetVoidEdgePixel(x, y, out var voidEdgeColor);
 
                 bool border = x < 3 || y < 3 || x >= _panelTexWidth - 3 || y >= _panelTexHeight - 3;
                 bool innerGrid = x % 12 == 0 || y % 12 == 0;
@@ -175,12 +193,63 @@ namespace Game.InGame.View
                     color = Color.Lerp(color, Color.white, 0.85f);
                 if (border)
                     color = Color.Lerp(borderColor, Color.white, x == 0 || y == 0 ? 0.18f : 0f);
+                if (voidEdge)
+                    color = voidEdgeColor;
 
                 _panelPixels[y * _panelTexWidth + x] = color;
             }
 
             _panelTexture.SetPixels(_panelPixels);
             _panelTexture.Apply(false);
+        }
+
+        private bool TryGetHolePixel(int x, int y, out Color color)
+        {
+            color = Color.clear;
+            if (_holes == null || _boardWidth <= 0 || _boardHeight <= 0) return false;
+
+            const float panelPaddingCells = 0.14f;
+            float boardX = ((x + 0.5f) / _panelTexWidth) * (_boardWidth + panelPaddingCells * 2f) - panelPaddingCells;
+            float boardYFromBottom = ((y + 0.5f) / _panelTexHeight) * (_boardHeight + panelPaddingCells * 2f) - panelPaddingCells;
+            float boardY = _boardHeight - boardYFromBottom;
+
+            int col = Mathf.FloorToInt(boardX);
+            int row = Mathf.FloorToInt(boardY);
+            if (row < 0 || row >= _boardHeight || col < 0 || col >= _boardWidth) return false;
+            if (!_holes[row, col]) return false;
+
+            color = Color.clear;
+            return true;
+        }
+
+        private bool TryGetVoidEdgePixel(int x, int y, out Color color)
+        {
+            color = Color.clear;
+            if (_holes == null || _boardWidth <= 0 || _boardHeight <= 0) return false;
+
+            const float panelPaddingCells = 0.14f;
+            float boardX = ((x + 0.5f) / _panelTexWidth) * (_boardWidth + panelPaddingCells * 2f) - panelPaddingCells;
+            float boardYFromBottom = ((y + 0.5f) / _panelTexHeight) * (_boardHeight + panelPaddingCells * 2f) - panelPaddingCells;
+            float boardY = _boardHeight - boardYFromBottom;
+
+            int col = Mathf.FloorToInt(boardX);
+            int row = Mathf.FloorToInt(boardY);
+            if (row < 0 || row >= _boardHeight || col < 0 || col >= _boardWidth) return false;
+            if (_holes[row, col]) return false;
+
+            float localX = boardX - col;
+            float localY = boardY - row;
+            bool touchesVoidLeft = col > 0 && _holes[row, col - 1] && localX < 0.08f;
+            bool touchesVoidRight = col < _boardWidth - 1 && _holes[row, col + 1] && localX > 0.92f;
+            bool touchesVoidTop = row > 0 && _holes[row - 1, col] && localY < 0.08f;
+            bool touchesVoidBottom = row < _boardHeight - 1 && _holes[row + 1, col] && localY > 0.92f;
+
+            if (!touchesVoidLeft && !touchesVoidRight && !touchesVoidTop && !touchesVoidBottom)
+                return false;
+
+            float pulse = 0.5f + Mathf.Sin((_frame + row * 3 + col * 5) * 0.35f) * 0.5f;
+            color = Color.Lerp(_neonCyan, _neonPink, pulse);
+            return true;
         }
 
         private void PulseSockets()
@@ -221,6 +290,7 @@ namespace Game.InGame.View
             _sockets = null;
             _panelTexture = null;
             _panelPixels = null;
+            _holes = null;
         }
 
         private static int Hash(int x, int y, int frame)

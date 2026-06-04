@@ -178,7 +178,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Game.InGame.Controller.InGameSceneEntry
   _controller: {fileID: 57415802}
-  _debugStageId: 4
+  _debugStageId: 8
 --- !u!1 &293833952
 GameObject:
   m_ObjectHideFlags: 0

@@ -5,7 +5,7 @@
 |------|-------|------|
 | `BoardView.cs` | `BoardView` | instantiates/positions CellView grid; Refresh on board change; tap/removal/gravity/rotation visual sequences; ScreenToCell hit-test; drives BoardBackground |
 | `CellView.cs` | `CellView` | renders single cell: color, type sprite, protector overlay, core indicator; code-driven interaction/removal/drop effects |
-| `BoardBackground.cs` | `BoardBackground` | procedural dynamic neon pixel-art board panel + per-cell socket sprites |
+| `BoardBackground.cs` | `BoardBackground` | procedural dynamic neon pixel-art board panel + per-cell socket sprites + scene-visible Void cutouts |
 | `DevRotateButton.cs` | `DevRotateButton` | UNITY_EDITOR or DEVELOPMENT_BUILD only; wires an existing UI Button or creates a fallback button for InGameController.TriggerRotateBoard |
 
 ## Symbols
@@ -28,7 +28,8 @@
 | `BoardView.PlayTapFeedback(row,col)` | coroutine | selected cell scale punch + color flash |
 | `BoardView.PlayGroupPulse(group,originRow,originCol)` | coroutine | group ripple before resolution |
 | `BoardView.PlayRemovalEffects(boardAfterRemoval,group,originRow,originCol)` | coroutine | removed cells pop/burst/fade; protected cells shake/flash |
-| `BoardView.PlayGravity(beforeGravity,boardAfterGravity)` | coroutine | animates non-Void packed cells from source row to final row with landing squash |
+| `BoardView.PlayGravity(beforeGravity,boardAfterGravity)` | coroutine | animates non-Void packed cells per Void-delimited segment with landing squash |
+| `BoardView.AnimateGravitySegment(beforeGravity,boardAfterGravity,col,topRow,bottomRow,maxDelay)` | method | maps fall animation source rows inside one gravity segment |
 | `BoardView.PlayBoardRotation(quarterTurns)` | coroutine | visual parent Transform rotation with ease/scale pulse |
 | `BoardView.CompleteBoardRotation(board)` | method | resets BoardView transform to upright identity and refreshes rotated board data |
 | `BoardView.ScreenToCell(screenPos)` | method | screen pos -> (row,col); returns (-1,-1) if out of bounds |
@@ -42,8 +43,8 @@
 | `CellView._protectorOverlay` | SerializeField | SpriteRenderer for strength-1 or strength-2 shield |
 | `CellView._coreIndicator` | SerializeField | GameObject shown when is_core=true |
 | `BoardBackground.Build(width,height,cellSize,cellPositions)` | method | generates dynamic panel + socket sprites using BoardView's exact cell positions |
-| `BoardBackground.Refresh(width,height,showSocket)` | method | enables/disables socket SpriteRenderers per empty-cell map |
-| `BoardBackground.Update()` | method | refreshes neon pixel-art panel texture and socket tint at low FPS |
+| `BoardBackground.Refresh(width,height,showSocket,showHole)` | method | enables sockets and stores Void map for transparent panel cutouts |
+| `BoardBackground.Update()` | method | refreshes neon pixel-art panel texture, Void-adjacent rim, and socket tint at low FPS |
 | `DevRotateButton._controller` | SerializeField | InGameController ref; auto-finds via FindObjectOfType if null |
 
 ## Rules
