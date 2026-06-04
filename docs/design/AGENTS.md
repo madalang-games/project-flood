@@ -12,6 +12,13 @@ UI/UX specs, wireframes, game design documents.
 | `progression-system-design.md` | Progression system spec — Star logic, Chapter grouping, Milestone rewards (Chests) |
 | `economy-system-design.md` | Game economy spec — Currency types, reward formulas, sink/source balance |
 | `social-ranking-design.md` | Social & Ranking spec — Redis-based global ranking, stage performance % UX |
+| `ui-ux-config.md` | Global UI/UX conventions — palette, typography, touch targets, animation timing, safe area, z-order, pixel art scaling |
+| `ui-ux-common-components.md` | Shared UI — ConfirmDialog, Toast, LoadingOverlay, RewardPopup, NetworkError, animation components, Settings panel, ScreenShake, PerfectClear, ChapterUnlock, Tutorial system, background/scroll behavior |
+| `ui-ux-canvas-architecture.md` | Canvas hierarchy (DDOL UIManager + scene), Sort Order, Canvas Scaler settings, SafeAreaHandler, UIManager API, responsive RectTransform/TMP policy |
+| `ui-ux-scene-structure.md` | Scene graph, transitions, overlay taxonomy, Lobby tab structure |
+| `ui-ux-lobby.md` | Boot screen, Lobby layout, Home tab chapter/stage scroll, StageInfo popup, Shop tab |
+| `ui-ux-ingame.md` | InGame HUD, Result overlay, Fail overlay (Continue), Pause popup |
+| `ui-ux-auth.md` | Boot auth sequence, Guest mode, OAuth link flow, account switching, clientLogin |
 
 ## Rules
 - One file per major design area (e.g., `ui-design.md`, `game-design.md`, `onboarding.md`)
