@@ -178,7 +178,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Game.InGame.Controller.InGameSceneEntry
   _controller: {fileID: 57415802}
-  _debugStageId: 1
+  _debugStageId: 5
 --- !u!1 &519420028
 GameObject:
   m_ObjectHideFlags: 0
@@ -430,7 +430,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Game.InGame.View.BoardView
   _cellPrefab: {fileID: 7509207290873506286, guid: 560414926d68b204cac9f4f543e09ea4, type: 3}
-  _cellSize: 1
+  _boardScreenRatio: 0.9
+  _tapFeedbackDuration: 0.13
+  _groupPulseDuration: 0.12
+  _removeDuration: 0.24
+  _protectorHitDuration: 0.18
+  _dropDuration: 0.26
+  _staggerDelay: 0.025
+  _burstCount: 7
 --- !u!4 &839554437
 Transform:
   m_ObjectHideFlags: 0
