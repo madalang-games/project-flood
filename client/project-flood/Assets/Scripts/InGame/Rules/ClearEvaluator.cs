@@ -14,7 +14,7 @@ namespace Game.InGame.Rules
             for (int c = 0; c < board.Width; c++)
             {
                 var cell = board.Grid[r, c];
-                if (cell == null || cell.Value.cell_type == CellType.Obstacle) continue;
+                if (cell == null || cell.Value.cell_type == CellType.Obstacle || cell.Value.cell_type == CellType.Void) continue;
                 remaining++;
                 if (board.HasCore && cell.Value.is_core) coreCleared = false;
             }

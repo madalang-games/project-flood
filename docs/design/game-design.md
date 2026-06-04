@@ -17,12 +17,15 @@ Differentiators vs SameGame/Collapse:
 
 | Stage Type | Board Size |
 |------------|------------|
-| Normal (early) | 8×8 – 12×12 |
-| Normal (mid-late) | 12×12 – 14×14 |
-| Challenge / Image / Boss | up to 16×16 |
+| Normal (early) | 8×8 – 10×10 |
+| Normal (mid-late) | 8×10 – 9×11 (portrait-optimized non-square) |
+| Challenge / Image / Boss | up to 12×12; Void cells reduce effective cell count |
 
-- Size is defined per stage in editor.
-- 16×16 is not the default for standard main stages.
+- Size defined per stage in editor. Square and non-square both supported.
+- Portrait orientation preferred: Height > Width (e.g., 8×10, 9×11).
+- Non-rectangular shapes use Void cells as boundary markers.
+- 180° rotation supported; board aspect ratio preserved after rotation.
+- Rotation gimmick (N-turn interval): configurable per stage (`rotation_interval` field).
 
 ---
 
@@ -72,6 +75,14 @@ Colors 0–7 are primary (used in normal stages, up to 8 active per stage). Colo
 - After removal: floating cells fall downward.
 - No horizontal compression (empty columns stay empty).
 - Applied immediately after each removal resolves.
+- Void cells act as gravity barriers — cells fall within each column segment bounded by Void.
+
+### 4.3 Board Rotation (180°)
+- Board rotates 180° around center (visual Transform animation).
+- After animation: logical grid is rotated (`grid[r,c] ↔ grid[H-1-r,W-1-c]`), then gravity applies.
+- 90°/270° rotation not supported — non-square boards would require layout recalculation.
+- Turn not consumed on rotation (rotation is a gimmick mechanic, not a player move).
+- Future: rotation triggered by N-turn interval (N defined per stage in `rotation_interval` field).
 
 ---
 
@@ -102,6 +113,13 @@ Gimmick cells are introduced progressively as the player advances through stages
 - Cannot be selected or removed by any means (group tap, gimmick, item).
 - **Excluded from `initial_valid_cells`** in clearance ratio.
 - Visually distinct from normal cells.
+
+#### Void Cell (Board Shape Boundary)
+- Defines non-rectangular board shapes (L-shape, T-shape, etc.).
+- Invisible — renders as board background; no sprite, no interaction.
+- **Excluded from `initial_valid_cells`** in clearance ratio.
+- Gravity cannot pass through Void cells — each column is partitioned into independent gravity segments by Void boundaries.
+- CTM encoding: T=2 (`CellType.Void = 0x2`).
 
 ### 5.3 Protector Strip Rules
 
@@ -267,6 +285,9 @@ Full solver: Phase 2+.
 - Protector cells (Basic cells only, 1–2 layers, direct-hit strip rule)
 - Bomb, Horizontal Rocket, Vertical Rocket as dev-only items (Inspector)
 - Obstacle cells (data + ratio exclusion)
+- Void cells (board shape boundary; gravity segment partition; ratio exclusion)
+- Board background panel + socket sprite (procedural pixel-art hyper-casual style)
+- 180° board rotation — logic + animation + post-rotation gravity; dev trigger via UI button
 - Stage select UI + replay cleared stages
 - Best star / best move count saved per stage
 - Per-stage `star1_ratio` / `star2_ratio` inline in stage data (star3 = full clear, no ratio needed)
@@ -279,7 +300,7 @@ Full solver: Phase 2+.
 - Full solver
 - Server-based stage delivery
 - User image upload
-- Board rotation gimmick
+- N-turn automatic board rotation gimmick (rotation_interval per stage)
 - Color hide gimmick
 - Album / collection system
 - Daily challenge

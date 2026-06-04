@@ -36,7 +36,7 @@ namespace Game.InGame.Controller
                     is_core           = isCoreCell,
                 };
 
-                if (cellType != CellType.Obstacle)
+                if (cellType != CellType.Obstacle && cellType != CellType.Void)
                 {
                     initialValid++;
                     if (isCoreCell) hasCore = true;

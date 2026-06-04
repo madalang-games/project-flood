@@ -44,7 +44,7 @@ namespace Game.InGame.View
 
         public void SetData(CellData? data, Color cellColor)
         {
-            if (data == null)
+            if (data == null || data.Value.cell_type == CellType.Void)
             {
                 gameObject.SetActive(false);
                 return;

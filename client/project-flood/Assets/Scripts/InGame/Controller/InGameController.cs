@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Game.InGame.Board;
 using Game.InGame.Rules;
 using Game.InGame.View;
+using ProjectFlood.Contracts.GameTypes;
 using ProjectFlood.Data.Generated;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -43,15 +44,35 @@ namespace Game.InGame.Controller
 
             var (row, col) = _boardView.ScreenToCell(tapPos.Value);
             if (row < 0 || col < 0) return;
-            if (_board.Grid[row, col] == null) return;
+            var tapped = _board.Grid[row, col];
+            if (tapped == null || tapped.Value.cell_type == CellType.Void) return;
 
             HandleTap(row, col);
+        }
+
+        public void TriggerRotateBoard()
+        {
+            if (!_isPlaying || _isAnimating) return;
+            StartCoroutine(RotateBoardSequence());
         }
 
         private void HandleTap(int row, int col)
         {
             var group = GroupSelector.FindGroup(_board, row, col);
             StartCoroutine(HandleTapSequence(row, col, group));
+        }
+
+        private IEnumerator RotateBoardSequence()
+        {
+            _isAnimating = true;
+            yield return _boardView.PlayBoardRotation(2);
+            _board.Rotate180();
+            _boardView.CompleteBoardRotation(_board);
+
+            var beforeGravity = CloneGrid(_board);
+            GravitySystem.Apply(_board);
+            yield return _boardView.PlayGravity(beforeGravity, _board);
+            _isAnimating = false;
         }
 
         private IEnumerator HandleTapSequence(int row, int col, List<(int row, int col)> group)

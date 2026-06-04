@@ -16,5 +16,22 @@ namespace Game.InGame.Board
             InitialValidCells = initialValidCells;
             HasCore = hasCore;
         }
+
+        public void Rotate180()
+        {
+            int h = Height, w = Width;
+            for (int r = 0; r < h / 2; r++)
+            for (int c = 0; c < w; c++)
+            {
+                (Grid[r, c], Grid[h - 1 - r, w - 1 - c]) = (Grid[h - 1 - r, w - 1 - c], Grid[r, c]);
+            }
+            // Handle middle row for odd-height boards (swap left/right halves).
+            if (h % 2 == 1)
+            {
+                int mid = h / 2;
+                for (int c = 0; c < w / 2; c++)
+                    (Grid[mid, c], Grid[mid, w - 1 - c]) = (Grid[mid, w - 1 - c], Grid[mid, c]);
+            }
+        }
     }
 }

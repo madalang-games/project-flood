@@ -16,6 +16,8 @@
 | `TurnManager.RemainingTurns` | prop | read-only |
 | `TurnManager.Consume()` | method | decrements; returns true if turns remain after |
 | `InGameController.Init(stage)` | method | entry point; loads board, builds view, sets play/animation state |
+| `InGameController.TriggerRotateBoard()` | method | public; guard-checked entry point for 180-degree board rotation |
+| `InGameController.RotateBoardSequence()` | coroutine | PlayBoardRotation(2) -> BoardState.Rotate180() -> CompleteBoardRotation() -> GravitySystem.Apply() -> PlayGravity() |
 | `InGameController.HandleTap(row,col)` | method | finds group and starts animated tap sequence |
 | `InGameController.HandleTapSequence(row,col,group)` | coroutine | tap feedback -> group pulse -> removal effects -> gravity drop -> turn/result |
 | `InGameController.CloneGrid(board)` | method | snapshots board grid before gravity animation |
