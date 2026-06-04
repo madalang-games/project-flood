@@ -14,9 +14,11 @@ Types: `feat` `fix` `refactor` `docs` `test` `chore` `build`
 - Subject line ≤ 50 chars.
 
 ## Rules
-- Never stage: `.env*`, files in `.gitignore`, `*/generated/*`, `*/Generated/*`
+- Never stage: `.env*`, files in `.gitignore`
+- Always stage generated files: `*/generated/*`, `*/Generated/*` (must be included in commits to ensure consistency)
 - Use `git -C {path}` syntax — never `cd && git`
 - Multiple distinct work units → separate commits (do not squash)
+- If issue number is not provided, look for patterns in the current branch name (e.g., `feature/123-xyz`) or `TODO-List/` files.
 
 ## Steps
 1. `git status` + `git diff --stat` → identify all changed files
