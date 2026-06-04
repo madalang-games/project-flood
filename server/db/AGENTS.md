@@ -60,6 +60,7 @@ Any DB `Insert` inside middleware (before `UserSerializeFilter`) is exposed to c
 |-------|-----------|-------------|
 | `sessions` | `session_id` | `SessionValidationMiddleware` |
 | `players` | `user_id` (PK), `platform_pid` | `UserIdResolutionMiddleware` |
+| `ad_reward_transactions` | `provider`, `provider_tx_id` | Rewarded-ad grant idempotency |
 
 ## Cross-refs
 - Gen output: `server/db/migrations/` SQL files

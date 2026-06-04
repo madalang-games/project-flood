@@ -16,6 +16,9 @@ Consumed by:
 | `Account/` | Auth and account management DTOs |
 | `Bootstrap/` | App version + initial config response |
 | `GameTypes/` | Shared game-type enums (CellType, Difficulty) |
+| `Stamina/` | Stamina status and ad life reward DTOs |
+| `Stage/` | Stage attempt and revive DTOs |
+| `Rewards/` | Generic reward source and ad reward DTOs |
 
 ## Rules
 - `netstandard2.1` only — no C# 10+ features, no nullable reference types at project level (use `#nullable enable` per file)

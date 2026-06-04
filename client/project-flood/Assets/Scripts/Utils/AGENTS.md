@@ -9,7 +9,7 @@
 ## Symbols
 | symbol | kind | note |
 |--------|------|------|
-| `CsvLoader.Load<T>(string)` | method | static; checks `persistentDataPath/data_patch/{path}.csv` first, falls back to `Resources.Load` |
+| `CsvLoader.Load<T>(string)` | method | static; checks `persistentDataPath/data_patch/{path}.csv` first, falls back to `Resources.Load`; supports sbyte/byte/short/ushort/int/uint/long/ulong/float/double/bool/string/Enum |
 | `CsvLoader.WritePatchFile(string,string)` | method | static; writes CSV text to patch dir |
 | `CsvLoader.GetPatchedMetaHash()` | method | static; reads `data_patch/meta_hash.txt` |
 | `CsvLoader.SavePatchedMetaHash(string)` | method | static; writes metaHash to patch file |
