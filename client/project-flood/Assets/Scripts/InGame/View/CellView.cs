@@ -159,9 +159,8 @@ namespace Game.InGame.View
         public IEnumerator PlayDrop(Vector3 from, Vector3 to, float delay, float duration)
         {
             if (!gameObject.activeSelf) yield break;
-            if (delay > 0f) yield return new WaitForSeconds(delay);
-
             transform.localPosition = from;
+            if (delay > 0f) yield return new WaitForSeconds(delay);
             for (float t = 0f; t < duration; t += Time.deltaTime)
             {
                 float p = EaseOutBack(Mathf.Clamp01(t / duration));
