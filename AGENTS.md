@@ -35,18 +35,16 @@ Don't ask: clear best practice, cosmetic difference, same outcome different synt
 Small improvement spotted → implement as requested + append `NOTE: [alternative] — ask to switch`.
 
 ## Documentation Convention
-Every directory containing client/server/design/data/packet content must be documented.
+Every directory containing client/server/design/data/packet content must be documented via a **Documentation Set** (`AGENTS.md`, `CLAUDE.md`, `GEMINI.md`).
 
 **AGENTS.md** — AI-agent instructions, written in English, token-efficient:
 - Leaf dirs: `## Files` table (file→class→role) + `## Symbols` table (symbol→kind→note) + `## Rules`
 - Parent/nav dirs: `## Nav` table (path→role→link) + minimal `## Rules`
 - Symbols use `ClassName.MemberName` notation — directly grep/searchable
-- When new files are added → update that directory's `## Files` and `## Symbols`
-- When a new subdirectory is created → create its AGENTS.md + update parent's `## Nav`
-- When existing logic changes → update the affected symbol entries in AGENTS.md
+- New files/logic: update `## Files`, `## Symbols`, or symbols entries
+- New subdirs: create its **Documentation Set** + update parent's `## Nav`
 
-**CLAUDE.md** — Contents must be exactly: `@AGENTS.md`
-**GEMINI.md** — Contents must be exactly: `@AGENTS.md`
+**CLAUDE.md / GEMINI.md** — Contents must be exactly: `@AGENTS.md` (SoT pointer)
 
 **Cross-refs** — add `## Cross-refs` to leaf and source-of-truth AGENTS.md:
 - `Consumed by:` — classes/files that use this module's output
