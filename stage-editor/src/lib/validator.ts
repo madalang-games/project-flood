@@ -58,7 +58,7 @@ export function validate(stage: StageRow): ValidationResult {
       }
 
       const result = evaluate(b, initial, stage.star1_ratio, stage.star2_ratio);
-      solutionReplaySucceeds = result.stars >= 1;
+      solutionReplaySucceeds = result.stars === 3;
     } catch {
       solutionReplaySucceeds = false;
     }

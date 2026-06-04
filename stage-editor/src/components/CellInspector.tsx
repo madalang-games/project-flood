@@ -1,44 +1,22 @@
 'use client';
 
-import type { CellData, CellType, BrushSettings, PaletteColor } from '../types/stage';
+import type { CellType, BrushSettings, PaletteColor } from '../types/stage';
 
 interface Props {
   selectedCell: { r: number; c: number } | null;
-  grid: CellData[][];
   brush: BrushSettings;
   palette: PaletteColor[];
   onBrushChange: (b: BrushSettings) => void;
-  onCellChange: (r: number, c: number, cell: CellData) => void;
 }
 
-export default function CellInspector({
-  selectedCell,
-  grid,
-  brush,
-  palette,
-  onBrushChange,
-  onCellChange,
-}: Props) {
-  const cell = selectedCell ? grid[selectedCell.r]?.[selectedCell.c] : null;
-  const values: BrushSettings = cell
-    ? { type: cell.type, colorId: cell.colorId, protector: cell.protector, isCore: cell.isCore }
-    : brush;
-
+export default function CellInspector({ selectedCell, brush, palette, onBrushChange }: Props) {
   function update(patch: Partial<BrushSettings>) {
-    const next: BrushSettings = { ...values, ...patch };
+    const next: BrushSettings = { ...brush, ...patch };
     if (next.type === 'Obstacle') {
       next.protector = 0;
       next.isCore = false;
     }
     onBrushChange(next);
-    if (selectedCell) {
-      onCellChange(selectedCell.r, selectedCell.c, {
-        colorId: next.type === 'Obstacle' ? 0 : next.colorId,
-        type: next.type,
-        protector: next.protector,
-        isCore: next.isCore,
-      });
-    }
   }
 
   return (
@@ -49,7 +27,6 @@ export default function CellInspector({
         </span>
       </div>
       <div className="p-3 flex flex-col gap-3 overflow-y-auto">
-        {/* Type */}
         <div>
           <div className="text-xs text-gray-400 mb-1">Type</div>
           <div className="flex gap-1">
@@ -58,7 +35,7 @@ export default function CellInspector({
                 key={t}
                 onClick={() => update({ type: t })}
                 className={`text-xs px-2 py-1 rounded border ${
-                  values.type === t
+                  brush.type === t
                     ? 'bg-blue-600 border-blue-500 text-white'
                     : 'bg-gray-700 border-gray-600 text-gray-300 hover:bg-gray-600'
                 }`}
@@ -69,8 +46,7 @@ export default function CellInspector({
           </div>
         </div>
 
-        {/* Color */}
-        {values.type === 'Basic' && (
+        {brush.type === 'Basic' && (
           <div>
             <div className="text-xs text-gray-400 mb-1">Color</div>
             <div className="grid grid-cols-4 gap-1">
@@ -81,7 +57,7 @@ export default function CellInspector({
                   onClick={() => update({ colorId: p.color_id })}
                   style={{ backgroundColor: `rgb(${p.r},${p.g},${p.b})` }}
                   className={`w-8 h-8 rounded border-2 ${
-                    values.colorId === p.color_id ? 'border-white' : 'border-transparent'
+                    brush.colorId === p.color_id ? 'border-white' : 'border-transparent'
                   }`}
                 />
               ))}
@@ -89,8 +65,7 @@ export default function CellInspector({
           </div>
         )}
 
-        {/* Protector */}
-        {values.type === 'Basic' && (
+        {brush.type === 'Basic' && (
           <div>
             <div className="text-xs text-gray-400 mb-1">Protector</div>
             <div className="flex gap-1">
@@ -99,7 +74,7 @@ export default function CellInspector({
                   key={p}
                   onClick={() => update({ protector: p })}
                   className={`text-xs px-2 py-1 rounded border ${
-                    values.protector === p
+                    brush.protector === p
                       ? 'bg-blue-600 border-blue-500 text-white'
                       : 'bg-gray-700 border-gray-600 text-gray-300 hover:bg-gray-600'
                   }`}
@@ -111,13 +86,12 @@ export default function CellInspector({
           </div>
         )}
 
-        {/* Core */}
-        {values.type === 'Basic' && (
+        {brush.type === 'Basic' && (
           <div>
             <label className="flex items-center gap-2 cursor-pointer">
               <input
                 type="checkbox"
-                checked={values.isCore}
+                checked={brush.isCore}
                 onChange={e => update({ isCore: e.target.checked })}
                 className="w-4 h-4"
               />

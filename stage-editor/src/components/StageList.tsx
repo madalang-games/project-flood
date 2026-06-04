@@ -28,7 +28,7 @@ export default function StageList({ stages, selectedId, onSelect, onNew, onDelet
         {stages.length === 0 && (
           <div className="p-3 text-xs text-gray-500">No stages yet</div>
         )}
-        {stages.map(s => (
+        {[...stages].sort((a, b) => b.stage_id - a.stage_id).map(s => (
           <div
             key={s.stage_id}
             className={`flex items-center justify-between px-3 py-2 cursor-pointer hover:bg-gray-700 border-b border-gray-800 ${

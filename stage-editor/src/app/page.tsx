@@ -13,11 +13,14 @@ import {
 } from '../lib/game-rules';
 import { validate } from '../lib/validator';
 import type { ValidationResult } from '../lib/validator';
+import { autoSolve } from '../lib/solver';
 import StageList from '../components/StageList';
 import BoardEditor from '../components/BoardEditor';
 import CellInspector from '../components/CellInspector';
 import MetadataPanel from '../components/MetadataPanel';
 import PlaytestPanel from '../components/PlaytestPanel';
+import GeneratorPanel from '../components/GeneratorPanel';
+import type { GeneratorSettings } from '../components/GeneratorPanel';
 
 type PlaytestState = {
   board: Board;
@@ -44,6 +47,7 @@ export default function EditorPage() {
   const [selectedCell, setSelectedCell] = useState<{ r: number; c: number } | null>(null);
   const [playtestState, setPlaytestState] = useState<PlaytestState | null>(null);
   const [validationResult, setValidationResult] = useState<ValidationResult | null>(null);
+  const [showGenerator, setShowGenerator] = useState(false);
 
   useEffect(() => {
     fetch('/api/stages').then(r => r.json()).then(setStages).catch(console.error);
@@ -118,7 +122,7 @@ export default function EditorPage() {
         ? [...playtestState.moves, [r, c] as [number, number]]
         : playtestState.moves;
 
-      if (isEnd && result.stars >= 1 && playtestState.isRecording) {
+      if (isEnd && result.stars === 3 && playtestState.isRecording) {
         const solutionStr = newMoves.map(([mr, mc]) => `${mr},${mc}`).join(';');
         setMeta(prev => prev ? { ...prev, verified_solution: solutionStr } : prev);
       }
@@ -154,14 +158,6 @@ export default function EditorPage() {
       return next;
     });
   }, [playtestState]);
-
-  const handleCellChange = useCallback((r: number, c: number, cell: CellData) => {
-    setGrid(prev => {
-      const next = prev.map(row => [...row]);
-      next[r][c] = cell;
-      return next;
-    });
-  }, []);
 
   const handleFieldChange = useCallback((key: keyof StageMeta, value: number) => {
     setMeta(prev => prev ? { ...prev, [key]: value } : prev);
@@ -217,6 +213,59 @@ export default function EditorPage() {
     setStages(prev => prev.map(s => s.stage_id === selectedId ? stage : s));
   }, [buildStageRow, selectedId]);
 
+  const handleGenerate = useCallback((settings: GeneratorSettings) => {
+    if (!meta) return;
+    const w = meta.board_width, h = meta.board_height;
+    const total = w * h;
+
+    const indices = Array.from({ length: total }, (_, i) => i);
+    for (let i = indices.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [indices[i], indices[j]] = [indices[j], indices[i]];
+    }
+
+    const newGrid: CellData[][] = Array.from({ length: h }, () =>
+      Array.from({ length: w }, (): CellData => ({ colorId: 0, type: 'Basic', protector: 0, isCore: false }))
+    );
+
+    const obstacleCount = Math.min(settings.obstacleCount, total - 1);
+    const obstacleSet = indices.slice(0, obstacleCount);
+    const remaining = indices.slice(obstacleCount);
+
+    obstacleSet.forEach(idx => {
+      newGrid[Math.floor(idx / w)][idx % w] = { colorId: 0, type: 'Obstacle', protector: 0, isCore: false };
+    });
+
+    remaining.forEach((idx, i) => {
+      newGrid[Math.floor(idx / w)][idx % w].colorId = i % settings.colorCount;
+    });
+
+    const protCount = Math.min(settings.protectorCount, remaining.length);
+    remaining.slice(0, protCount).forEach(idx => {
+      newGrid[Math.floor(idx / w)][idx % w].protector = settings.protectorLevel;
+    });
+
+    const corCount = Math.min(settings.coreCellCount, remaining.length - protCount);
+    remaining.slice(protCount, protCount + corCount).forEach(idx => {
+      newGrid[Math.floor(idx / w)][idx % w].isCore = true;
+    });
+
+    const solverBoard: Board = newGrid.map(row => row.map(cell => ({ ...cell })));
+    const initialValid = countInitialValidCells(solverBoard);
+    const solution = autoSolve(
+      solverBoard,
+      meta.turn_limit,
+      initialValid,
+      meta.star1_ratio,
+      meta.star2_ratio,
+    );
+    const verifiedSolution = solution ? solution.map(([r, c]) => `${r},${c}`).join(';') : '';
+
+    setGrid(newGrid);
+    setValidationResult(null);
+    setMeta(prev => prev ? { ...prev, verified_solution: verifiedSolution } : prev);
+  }, [meta]);
+
   const displayGrid: Board = playtestState ? playtestState.board : grid;
 
   return (
@@ -242,6 +291,7 @@ export default function EditorPage() {
                 palette={palette}
                 selectedCell={selectedCell}
                 playtestResult={playtestState?.result ?? null}
+                isPlaytest={!!playtestState}
                 onLeftClick={handleLeftClick}
                 onRightClick={handleRightClick}
               />
@@ -252,6 +302,21 @@ export default function EditorPage() {
                 onFieldChange={handleFieldChange}
                 onResize={handleResize}
               />
+              <div className="border-t border-gray-700 px-3 py-1 flex justify-end">
+                <button
+                  onClick={() => setShowGenerator(p => !p)}
+                  className={`text-xs px-2 py-1 rounded ${showGenerator ? 'bg-purple-700 hover:bg-purple-600' : 'bg-gray-700 hover:bg-gray-600'}`}
+                >
+                  ⚙ Generator
+                </button>
+              </div>
+              {showGenerator && (
+                <GeneratorPanel
+                  boardWidth={meta.board_width}
+                  boardHeight={meta.board_height}
+                  onGenerate={handleGenerate}
+                />
+              )}
               <PlaytestPanel
                 isPlaytest={!!playtestState}
                 isRecording={playtestState?.isRecording ?? false}
@@ -265,7 +330,7 @@ export default function EditorPage() {
                     turns: meta.turn_limit,
                     initialValid: countInitialValidCells(board),
                     moves: [],
-                    isRecording: false,
+                    isRecording: true,
                     result: null,
                   });
                 }}
@@ -290,11 +355,9 @@ export default function EditorPage() {
       <div className="w-48 flex-shrink-0 border-l border-gray-700 bg-gray-900 flex flex-col">
         <CellInspector
           selectedCell={playtestState ? null : selectedCell}
-          grid={grid}
           brush={brush}
           palette={palette}
           onBrushChange={setBrush}
-          onCellChange={handleCellChange}
         />
       </div>
     </div>

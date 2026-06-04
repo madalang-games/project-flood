@@ -1,5 +1,6 @@
 'use client';
 
+import { useRef } from 'react';
 import type { CellData, PaletteColor } from '../types/stage';
 import type { Board, StarResult } from '../lib/game-rules';
 
@@ -10,6 +11,7 @@ interface Props {
   palette: PaletteColor[];
   selectedCell: { r: number; c: number } | null;
   playtestResult: StarResult | null;
+  isPlaytest: boolean;
   onLeftClick: (r: number, c: number) => void;
   onRightClick: (r: number, c: number) => void;
 }
@@ -28,16 +30,16 @@ function CellView({
   palette,
   r,
   c,
-  onLeftClick,
-  onRightClick,
+  onMouseDown,
+  onMouseEnter,
 }: {
   cell: CellData | null;
   isSelected: boolean;
   palette: PaletteColor[];
   r: number;
   c: number;
-  onLeftClick: (r: number, c: number) => void;
-  onRightClick: (r: number, c: number) => void;
+  onMouseDown: (r: number, c: number, button: number) => void;
+  onMouseEnter: (r: number, c: number) => void;
 }) {
   return (
     <div
@@ -53,8 +55,9 @@ function CellView({
         flexShrink: 0,
         ...getCellStyle(cell, palette),
       }}
-      onClick={() => onLeftClick(r, c)}
-      onContextMenu={e => { e.preventDefault(); onRightClick(r, c); }}
+      onMouseDown={e => { e.preventDefault(); onMouseDown(r, c, e.button); }}
+      onMouseEnter={() => onMouseEnter(r, c)}
+      onContextMenu={e => e.preventDefault()}
     >
       {cell?.type === 'Obstacle' && (
         <span style={{ fontSize: 18, color: '#555', userSelect: 'none' }}>■</span>
@@ -76,14 +79,40 @@ export default function BoardEditor({
   palette,
   selectedCell,
   playtestResult,
+  isPlaytest,
   onLeftClick,
   onRightClick,
 }: Props) {
   const rows = displayGrid.length;
   const cols = displayGrid[0]?.length ?? 0;
+  const isDragging = useRef(false);
+  const dragButton = useRef<number>(0);
+
+  const handleMouseDown = (r: number, c: number, button: number) => {
+    if (isPlaytest) {
+      if (button === 0) onLeftClick(r, c);
+      return;
+    }
+    isDragging.current = true;
+    dragButton.current = button;
+    if (button === 0) onLeftClick(r, c);
+    else if (button === 2) onRightClick(r, c);
+  };
+
+  const handleMouseEnter = (r: number, c: number) => {
+    if (!isDragging.current || isPlaytest) return;
+    if (dragButton.current === 0) onLeftClick(r, c);
+    else if (dragButton.current === 2) onRightClick(r, c);
+  };
+
+  const stopDrag = () => { isDragging.current = false; };
 
   return (
-    <div style={{ position: 'relative' }}>
+    <div
+      style={{ position: 'relative', userSelect: 'none' }}
+      onMouseUp={stopDrag}
+      onMouseLeave={stopDrag}
+    >
       {playtestResult && (
         <div
           style={{
@@ -126,8 +155,8 @@ export default function BoardEditor({
               palette={palette}
               r={r}
               c={c}
-              onLeftClick={onLeftClick}
-              onRightClick={onRightClick}
+              onMouseDown={handleMouseDown}
+              onMouseEnter={handleMouseEnter}
             />
           ))
         )}

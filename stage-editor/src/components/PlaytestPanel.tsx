@@ -88,13 +88,15 @@ export default function PlaytestPanel({
 
       {validationResult && (
         <div className="mt-2 text-xs space-y-1">
-          <div className={validationResult.hasVerifiedSolution ? 'text-green-400' : 'text-red-400'}>
-            {validationResult.hasVerifiedSolution ? '✓' : '✗'} Verified solution
-          </div>
-          {validationResult.solutionReplaySucceeds !== null && (
-            <div className={validationResult.solutionReplaySucceeds ? 'text-green-400' : 'text-red-400'}>
-              {validationResult.solutionReplaySucceeds ? '✓' : '✗'} Solution replay
-            </div>
+          {!validationResult.hasVerifiedSolution ? (
+            <div className="text-yellow-400">⚠ No solution recorded — playtest with recording on</div>
+          ) : validationResult.solutionReplaySucceeds ? (
+            <div className="text-green-400">✓ Verified solution</div>
+          ) : (
+            <>
+              <div className="text-red-400">✗ Solution replay failed</div>
+              <div className="text-xs text-gray-400">Re-record solution in playtest</div>
+            </>
           )}
           {validationResult.warnings.map((w, i) => (
             <div key={i} className="text-yellow-400">⚠ {w}</div>

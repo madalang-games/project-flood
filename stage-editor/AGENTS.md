@@ -8,6 +8,7 @@ Standalone development tool. Reads/writes `shared/datas/stage/stage.csv` and `sh
 | `src/app/page.tsx` | Main editor UI — all state, handlers, layout |
 | `src/app/layout.tsx` | Root layout + Tailwind CSS |
 | `src/app/api/stages/route.ts` | GET all stages, POST new stage |
+| `src/app/api/generator-defaults/route.ts` | GET generator defaults from `template.ini [stage-editor-generator]` |
 | `src/app/api/stages/[id]/route.ts` | GET, PUT, DELETE by stage_id |
 | `src/app/api/palette/route.ts` | GET all 16 palette colors |
 | `src/components/StageList.tsx` | Left sidebar — stage list + new/delete |
@@ -15,6 +16,7 @@ Standalone development tool. Reads/writes `shared/datas/stage/stage.csv` and `sh
 | `src/components/CellInspector.tsx` | Right panel — brush + selected cell editor |
 | `src/components/MetadataPanel.tsx` | Stage metadata fields (size, turns, difficulty, ratios) |
 | `src/components/PlaytestPanel.tsx` | Playtest controls, recording, validate, export, save |
+| `src/components/GeneratorPanel.tsx` | Generator mode — random board fill from settings (colors, obstacles, protectors, cores) |
 | `src/lib/csv.ts` | CSV read/write (4-row header format) |
 | `src/lib/ctm.ts` | CTM hex encode/decode per cell (ADR-003) |
 | `src/lib/game-rules.ts` | TS port: BFS, removal, gravity, clear evaluator |
@@ -24,6 +26,7 @@ Standalone development tool. Reads/writes `shared/datas/stage/stage.csv` and `sh
 ## Files
 | file | class/export | role |
 |------|-------------|------|
+| `src/components/GeneratorPanel.tsx` | `GeneratorSettings` | colorCount, obstacleCount, protectorCount, protectorLevel, coreCellCount |
 | `src/types/stage.ts` | `CellData` | colorId, type, protector, isCore |
 | `src/types/stage.ts` | `StageRow` | Raw CSV row shape |
 | `src/types/stage.ts` | `StageMeta` | StageRow minus cells/color_ids (edit state) |
@@ -41,6 +44,8 @@ Standalone development tool. Reads/writes `shared/datas/stage/stage.csv` and `sh
 | `src/lib/game-rules.ts` | `applyGravity` | Downward column compaction |
 | `src/lib/game-rules.ts` | `evaluate` | clearance_ratio + star result |
 | `src/lib/validator.ts` | `validate` | Replay solution + core warnings |
+| `src/lib/solver.ts` | `autoSolve` | BFS (min-move) up to 5 000 states → greedy fallback; single-cell fallback when no ≥2 groups |
+| `src/lib/ini.ts` | `parseIni` | Minimal INI parser — returns `Record<section, Record<key, string>>` |
 
 ## Symbols
 | symbol | kind | note |
