@@ -9,6 +9,10 @@
 | `DevRotateButton.cs` | `DevRotateButton` | UNITY_EDITOR or DEVELOPMENT_BUILD only; wires an existing UI Button or creates a fallback button for InGameController.TriggerRotateBoard |
 | `ItemSlotView.cs` | `ItemSlotView` | single item slot — count badge (TMP), Button, selected highlight; Refresh(count,devMode,canUse,selected) |
 | `ItemTrayView.cs` | `ItemTrayView` | HorizontalLayoutGroup container for 3 ItemSlotViews; fires OnSlotTapped event; SetLocked for animation lock |
+| `HUDView.cs` | `HUDView` | Canvas_Scene: Pause button, TurnCounter (TMP), ratio fill bar with star1/star2 markers; Init(totalTurns,star1,star2) |
+| `ResultOverlayView.cs` | `ResultOverlayView` | Canvas_Overlay: stage result — star pop sequence, stats, Retry/Next/Map buttons |
+| `FailOverlayView.cs` | `FailOverlayView` | Canvas_Overlay: continue popup — continue cost, owned gold, Continue/Forfeit; disables button if gold < cost |
+| `PausePopupView.cs` | `PausePopupView` | Canvas_Overlay: pause menu — Resume/Restart/Settings/StageSelect buttons |
 
 ## Symbols
 | symbol | kind | note |
@@ -64,5 +68,5 @@
 - Board rotation is 180 degrees only (quarterTurns=2); 90/270 are not supported
 
 ## Cross-refs
-- Depends on: `Game.InGame.Board.*`
-- Consumed by: `Game.InGame.Controller.InGameController`
+- Depends on: `Game.InGame.Board.*`, `Game.Core.UI.*`
+- Consumed by: `Game.InGame.Controller.InGameController`, `Game.InGame.Controller.InGameSceneEntry`

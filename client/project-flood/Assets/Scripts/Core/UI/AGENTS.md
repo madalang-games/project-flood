@@ -1,0 +1,49 @@
+# Scripts/Core/UI — Animation Components & Common Popups
+
+Namespace: `Game.Core.UI`
+
+## Files
+| file | class | role |
+|------|-------|------|
+| `UIEasing.cs` | `UIEasing` | Static easing functions: EaseOut, EaseIn, EaseInOut, EaseOutBack, Sine |
+| `UIButtonAnimator.cs` | `UIButtonAnimator` | Press/release/CTA-idle scale animation; SetInteractable(bool) |
+| `UIFloatAnimation.cs` | `UIFloatAnimation` | Gentle sine float loop; amplitude, period, random phase offset |
+| `UIScalePulse.cs` | `UIScalePulse` | Breathing scale loop; minScale/maxScale/period |
+| `UIPanelAppear.cs` | `UIPanelAppear` | Standard appear (scale 0.85→1 + alpha) / Disappear coroutines |
+| `UICountUp.cs` | `UICountUp` | Animates TMP_Text number from 0 → target with ease-out |
+| `UIStarPop.cs` | `UIStarPop` | Sequence-pops star GameObjects with EaseOutBack; unfilled stars instant |
+| `UIScreenShake.cs` | `UIScreenShake` | RectTransform sine shake: Medium (6dp/200ms) or Heavy (10dp/350ms) |
+| `ConfirmDialogView.cs` | `ConfirmDialogView` | Generic binary confirm: title, body, cancel/confirm callbacks; danger variant |
+| `ToastView.cs` | `ToastView` | Slide-up snackbar; 2.5s display; Warning/Success/Error icons |
+| `LoadingOverlayView.cs` | `LoadingOverlayView` | Full-screen dim + spinner; 10s timeout → ShowNetworkError |
+| `RewardPopupView.cs` | `RewardPopupView` | Sequential reward item pop (max 4); RewardItem struct (Icon, Quantity) |
+| `NetworkErrorView.cs` | `NetworkErrorView` | Retry button; 3+ failures shows persistent message |
+| `PerfectClearEffectView.cs` | `PerfectClearEffectView` | 3-star only; "Perfect!" text pop + confetti + wobble (2s) |
+| `ChapterUnlockOverlayView.cs` | `ChapterUnlockOverlayView` | Full-screen 2.7s chapter unlock animation; blocks interaction |
+
+## Symbols
+| symbol | kind | note |
+|--------|------|------|
+| `UIButtonAnimator._isCTA` | SerializeField | Enables idle breathing animation on UI_CTA buttons |
+| `UIButtonAnimator.SetInteractable(bool)` | method | Dims opacity 40% + stops idle anim when false |
+| `UIPanelAppear.Disappear(Action)` | method | Triggers disappear coroutine; calls onComplete when done |
+| `UICountUp.Play(int,int,Action)` | method | Animates from→to; optional completion callback |
+| `UIStarPop.PlayStarSequence(GameObject[],int)` | coroutine | Stars[0..filledCount-1] pop with EaseOutBack; rest scale=1 instantly |
+| `UIScreenShake.Shake(ShakeLevel)` | method | Medium or Heavy; resets to origin on complete |
+| `ConfirmDialogView.Init(title,body,confirmLabel,onConfirm,onCancel,cancelLabel,danger)` | method | Required before showing |
+| `ToastView.Show(string,ToastType)` | method | Replaces existing toast |
+| `LoadingOverlayView.Show(string?)` | method | Optional message text |
+| `RewardPopupView.Init(IReadOnlyList<RewardItem>)` | method | Required before showing |
+| `NetworkErrorView.Show(Action)` | method | onRetry callback; increments failure counter |
+| `ChapterUnlockOverlayView.Play(int,Action)` | method | chapterNumber + onComplete callback |
+| `RewardItem` | struct | `Sprite Icon`, `int Quantity`, `string Label` |
+| `ToastType` | enum | Warning / Success / Error |
+
+## Rules
+- Attach `UIButtonAnimator` to every tappable button
+- Attach `UIPanelAppear` to all popups and overlays
+- `LoadingOverlayView` auto-calls `UIManager.ShowNetworkError` after 10s — do not add separate timeout
+- `ChapterUnlockOverlayView.Play` blocks interaction via GraphicRaycaster disable; restores on complete
+
+## Cross-refs
+- Consumed by: `Game.Core.UIManager`, all scene entry points

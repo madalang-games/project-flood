@@ -1,0 +1,44 @@
+# Scripts/Core — App Lifecycle & Singletons
+
+## Nav
+| path | role |
+|------|------|
+| `UI/` | Animation components, common popup views | → `UI/AGENTS.md` |
+
+## Files
+| file | class | role |
+|------|-------|------|
+| `UIManager.cs` | `UIManager` | DDOL singleton; owns 4 canvases; ShowPopup/ShowOverlay/ShowToast/ShowLoading API |
+| `SafeAreaHandler.cs` | `SafeAreaHandler` | Adjusts RectTransform anchors to Screen.safeArea on OnEnable + layout change |
+| `SceneTransition.cs` | `SceneTransition` | DDOL singleton; FadeToScene, SlideUpToScene, SlideDownToScene with overlay animation |
+| `GameConfig.cs` | `GameConfig` | Static constants: ContinueCost, ContinueExtraTurns, LoadingTimeoutSec, StageNodePoolSize |
+
+## Symbols
+| symbol | kind | note |
+|--------|------|------|
+| `UIManager.Instance` | prop | DDOL singleton |
+| `UIManager.ShowPopup<T>(Action<T>)` | method | Instantiates T from Resources/Prefabs/UI/{T.Name}; pushes onto popup stack |
+| `UIManager.ShowOverlay<T>(Action<T>)` | method | Instantiates T; destroys existing overlay first |
+| `UIManager.ShowToast(msg,type)` | method | Activates ToastView |
+| `UIManager.ShowLoading()` | method | Activates LoadingOverlayView |
+| `UIManager.HideLoading()` | method | Deactivates LoadingOverlayView |
+| `UIManager.ShowNetworkError(onRetry)` | method | Hides loading, shows NetworkErrorView |
+| `UIManager.CloseTopPopup()` | method | Destroys top of popup stack |
+| `UIManager.CloseOverlay()` | method | Destroys current overlay |
+| `UIManager.GetCurrentOverlay<T>()` | method | Returns T from current overlay; null if none |
+| `SafeAreaHandler` | component | Attach to Lobby Header, BottomNavBar, InGame HUD, Canvas_Loading panel |
+| `SceneTransition.FadeToScene(scene,cb)` | method | Alpha fade out → LoadScene → fade in |
+| `SceneTransition.SlideUpToScene(scene,cb)` | method | Slide up → LoadScene → slide in |
+| `SceneTransition.SlideDownToScene(scene,cb)` | method | Slide down → LoadScene → slide in |
+| `GameConfig.ContinueCost` | const | 150 gold |
+| `GameConfig.ContinueExtraTurns` | const | 3 turns |
+
+## Rules
+- UIManager canvases: Sort Order 10/20/30/100. Scene canvases always Sort 0.
+- All popup/overlay prefabs must be in Resources/Prefabs/UI/ named exactly {ClassName}.prefab
+- Static instances (Toast, LoadingOverlay, NetworkError): pre-instantiated at Awake; Show/Hide only
+- Dynamic instances (Popup, Overlay): Instantiate/Destroy per call
+- NEW_DIR: create AGENTS.md + update Nav above
+
+## Cross-refs
+- Consumed by: all scene entry points, all view scripts

@@ -26,9 +26,19 @@
 | `InGameController.OnItemUsePhaseChanged(selected)` | method | SetItemTargetMode on BoardView; Refresh ItemTrayView |
 | `InGameController.CloneGrid(board)` | method | snapshots board grid before gravity animation |
 | `InGameController.OnStageEnd` | event | `Action<StarResult, int>` -> (result, remainingTurns) |
-| `InGameController.OnTurnConsumed` | event | `Action<int>` -> remainingTurns after consume |
+| `InGameController.OnBoardUpdated` | event | `Action<int, float>` -> (remainingTurns, clearanceRatio) — fires after every tap/item |
+| `InGameController.OnContinueAvailable` | event | `Action` — fires when turns=0, result=Fail, continue not yet used |
+| `InGameController.Star1Ratio` | prop | from _stage.star1_ratio |
+| `InGameController.Star2Ratio` | prop | from _stage.star2_ratio |
+| `InGameController.TotalTurns` | prop | from _stage.turn_limit |
+| `InGameController.Continue(int)` | method | Adds extra turns; marks _continueUsed; resumes play |
+| `InGameController.Forfeit()` | method | Fires OnStageEnd(Fail, 0) |
+| `InGameController.ComputeRatioPublic()` | method | Public wrapper for ratio calculation |
 | `InGameController._isDevMode` | SerializeField | passed to ItemInventory.IsDevMode on Init |
 | `InGameController._itemTrayView` | SerializeField | optional; null = no item UI |
+| `TurnManager.TotalTurns` | prop | Original turn count at Init |
+| `TurnManager.UsedTurns` | prop | TotalTurns - RemainingTurns |
+| `TurnManager.AddTurns(int)` | method | Adds extra turns (continue mechanic) |
 
 ## Rules
 - `InGameController` is the single MonoBehaviour owning the rule engine
@@ -38,4 +48,5 @@
 
 ## Cross-refs
 - Depends on: `Game.InGame.Board.*`, `Game.InGame.Rules.*`, `Game.InGame.View.BoardView`
-- Depends on: `ProjectFlood.Data.Generated.Stage`
+- Depends on: `ProjectFlood.Data.Generated.Stage`, `Game.Services.StageDataService`, `Game.Services.PlayerProgressService`
+- Consumed by: `Game.InGame.Controller.InGameSceneEntry` (wires events to UIManager)

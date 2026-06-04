@@ -1,6 +1,11 @@
-using System;
-using System.Collections.Generic;
+using Game.Core;
+using Game.Core.UI;
 using Game.InGame.Board;
+using Game.InGame.View;
+using Game.OutGame.Lobby;
+using Game.OutGame.Settings;
+using Game.Services;
+using Game.Utils;
 using ProjectFlood.Data.Generated;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -10,7 +15,14 @@ namespace Game.InGame.Controller
     public class InGameSceneEntry : MonoBehaviour
     {
         [SerializeField] private InGameController _controller;
-        [SerializeField] private int _debugStageId = 1;
+        [SerializeField] private HUDView          _hudView;
+        [SerializeField] private int              _debugStageId = 1;
+
+        private Stage _stage;
+        private int   _goldEarned;
+
+        private const string LobbyScene  = "Lobby";
+        private const string InGameScene = "InGame";
 
 #if UNITY_EDITOR
         private static int? _overrideStageId;
@@ -33,9 +45,9 @@ namespace Game.InGame.Controller
             _reloadQueued = true;
             UnityEditor.EditorApplication.delayCall += () =>
             {
-                _reloadQueued = false;
+                _reloadQueued    = false;
                 if (!Application.isPlaying) return;
-                _isFirstLoad = true;
+                _isFirstLoad     = true;
                 _overrideStageId = _debugStageId;
                 SceneManager.LoadScene(SceneManager.GetActiveScene().name);
             };
@@ -46,97 +58,124 @@ namespace Game.InGame.Controller
         {
 #if UNITY_EDITOR
             _isFirstLoad = false;
-            var stageId = _overrideStageId ?? _debugStageId;
+            int stageId  = _overrideStageId ?? ScrollStateCache.LastPlayedStageId;
+            if (stageId <= 0) stageId = _debugStageId;
             _overrideStageId = null;
 #else
-            var stageId = _debugStageId;
+            int stageId = ScrollStateCache.LastPlayedStageId;
+            if (stageId <= 0) stageId = _debugStageId;
 #endif
-            var stage = LoadStage(stageId);
-            if (stage == null)
+            _stage = StageDataService.Instance?.GetStage(stageId)
+                  ?? System.Array.Find(CsvLoader.Load<Stage>(Stage.ResourcePath), s => s.stage_id == stageId);
+
+            if (_stage == null)
             {
                 Debug.LogError($"[InGameSceneEntry] stage_id={stageId} not found");
                 return;
             }
 
-            _controller.OnStageEnd += (result, turns) =>
-                Debug.Log($"[InGame] End: {result}  turns_left={turns}");
-            _controller.OnTurnConsumed += turns =>
-                Debug.Log($"[InGame] Turns left: {turns}");
+            _goldEarned = 0;
+            _hudView?.Init(_stage.turn_limit, _stage.star1_ratio, _stage.star2_ratio);
+            if (_hudView != null) _hudView.OnPausePressed += OnPausePressed;
 
-            _controller.Init(stage);
+            _controller.OnBoardUpdated      += OnBoardUpdated;
+            _controller.OnContinueAvailable += OnContinueAvailable;
+            _controller.OnStageEnd          += OnStageEnd;
+
+            _controller.Init(_stage);
         }
 
-        private static Stage LoadStage(int stageId)
+        private void OnDestroy()
         {
-            var asset = Resources.Load<TextAsset>(Stage.ResourcePath);
-            if (asset == null)
-            {
-                Debug.LogError($"[InGameSceneEntry] CSV not found: {Stage.ResourcePath}");
-                return null;
-            }
-
-            var lines = asset.text.Split('\n');
-            if (lines.Length < 2) return null;
-
-            var headers = SplitCsvLine(lines[0]);
-
-            for (int i = 1; i < lines.Length; i++)
-            {
-                var line = lines[i].Trim();
-                if (string.IsNullOrEmpty(line)) continue;
-                var cols = SplitCsvLine(line);
-                if (cols.Length == 0) continue;
-                if (!int.TryParse(cols[0], out int id) || id != stageId) continue;
-
-                return ParseRow(headers, cols);
-            }
-            return null;
+            _controller.OnBoardUpdated      -= OnBoardUpdated;
+            _controller.OnContinueAvailable -= OnContinueAvailable;
+            _controller.OnStageEnd          -= OnStageEnd;
+            if (_hudView != null) _hudView.OnPausePressed -= OnPausePressed;
         }
 
-        private static Stage ParseRow(string[] headers, string[] cols)
+        private void OnBoardUpdated(int remainingTurns, float ratio)
         {
-            var map = new Dictionary<string, string>(StringComparer.Ordinal);
-            for (int i = 0; i < headers.Length && i < cols.Length; i++)
-                map[headers[i]] = cols[i];
-
-            return new Stage
-            {
-                stage_id          = int.Parse(map["stage_id"]),
-                board_width       = sbyte.Parse(map["board_width"]),
-                board_height      = sbyte.Parse(map["board_height"]),
-                turn_limit        = sbyte.Parse(map["turn_limit"]),
-                color_ids         = map["color_ids"],
-                star1_ratio       = float.Parse(map["star1_ratio"], System.Globalization.CultureInfo.InvariantCulture),
-                star2_ratio       = float.Parse(map["star2_ratio"], System.Globalization.CultureInfo.InvariantCulture),
-                cells             = map["cells"],
-                ruleset_version   = sbyte.Parse(map["ruleset_version"]),
-            };
+            _hudView?.UpdateTurns(remainingTurns);
+            _hudView?.UpdateRatio(ratio);
         }
 
-        private static string[] SplitCsvLine(string line)
+        private void OnContinueAvailable()
         {
-            var result = new List<string>();
-            int i = 0;
-            while (i < line.Length)
+            int gold = PlayerProgressService.Instance?.Gold ?? 0;
+            UIManager.Instance?.ShowOverlay<FailOverlayView>(v => v.Init(
+                continueCost: GameConfig.ContinueCost,
+                currentGold:  gold,
+                onContinue:   AcceptContinue,
+                onForfeit:    () => _controller.Forfeit()));
+        }
+
+        private void AcceptContinue()
+        {
+            if (PlayerProgressService.Instance != null &&
+                !PlayerProgressService.Instance.SpendGold(GameConfig.ContinueCost))
             {
-                if (line[i] == '"')
-                {
-                    i++;
-                    int start = i;
-                    while (i < line.Length && line[i] != '"') i++;
-                    result.Add(line.Substring(start, i - start));
-                    if (i < line.Length) i++; // closing "
-                    if (i < line.Length && line[i] == ',') i++;
-                }
-                else
-                {
-                    int start = i;
-                    while (i < line.Length && line[i] != ',') i++;
-                    result.Add(line.Substring(start, i - start));
-                    if (i < line.Length) i++; // comma
-                }
+                UIManager.Instance?.ShowToast("골드 부족", ToastType.Warning);
+                return;
             }
-            return result.ToArray();
+            _controller.Continue(GameConfig.ContinueExtraTurns);
+        }
+
+        private void OnStageEnd(StarResult result, int remainingTurns)
+        {
+            bool fail      = result == StarResult.Fail;
+            int  turnsUsed = _stage.turn_limit - remainingTurns;
+            int  nextId    = _stage.stage_id + 1;
+
+            if (!fail)
+            {
+                _goldEarned = CalculateGold((int)result, remainingTurns);
+                PlayerProgressService.Instance?.AddGold(_goldEarned);
+                PlayerProgressService.Instance?.RecordClear(_stage.stage_id, (int)result);
+            }
+
+            float ratio     = _controller.ComputeRatioPublic();
+            bool  nextLocked = StageDataService.Instance?.GetStage(nextId) == null
+                             || !(PlayerProgressService.Instance?.IsStageUnlocked(nextId) ?? false);
+
+            UIManager.Instance?.ShowOverlay<ResultOverlayView>(v => v.Init(
+                result:         result,
+                stageId:        _stage.stage_id,
+                turnsUsed:      turnsUsed,
+                totalTurns:     _stage.turn_limit,
+                clearanceRatio: ratio,
+                goldEarned:     _goldEarned,
+                nextLocked:     nextLocked));
+
+            var overlay = UIManager.Instance?.GetCurrentOverlay<ResultOverlayView>();
+            if (overlay != null)
+            {
+                overlay.OnRetry  += () => SceneManager.LoadScene(InGameScene);
+                overlay.OnNext   += () => { ScrollStateCache.LastPlayedStageId = nextId; SceneManager.LoadScene(InGameScene); };
+                overlay.OnMap    += GoToLobby;
+            }
+        }
+
+        private void OnPausePressed()
+        {
+            UIManager.Instance?.ShowOverlay<PausePopupView>(v =>
+            {
+                v.OnRestart     += () => SceneManager.LoadScene(InGameScene);
+                v.OnSettings    += () => UIManager.Instance?.ShowPopup<SettingsPanelView>();
+                v.OnStageSelect += GoToLobby;
+            });
+        }
+
+        private static void GoToLobby()
+        {
+            var transition = SceneTransition.Instance;
+            if (transition != null) transition.SlideDownToScene(LobbyScene);
+            else SceneManager.LoadScene(LobbyScene);
+        }
+
+        private static int CalculateGold(int stars, int remainingTurns)
+        {
+            int base_ = stars switch { 3 => 150, 2 => 100, 1 => 70, _ => 0 };
+            return base_ + remainingTurns * 5;
         }
     }
 }

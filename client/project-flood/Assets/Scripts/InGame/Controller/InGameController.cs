@@ -18,8 +18,13 @@ namespace Game.InGame.Controller
         [SerializeField] private ItemTrayView _itemTrayView;
         [SerializeField] private bool _isDevMode;
 
-        public event Action<StarResult, int> OnStageEnd;   // (result, remainingTurns)
-        public event Action<int> OnTurnConsumed;           // remainingTurns
+        public event Action<StarResult, int> OnStageEnd;     // (result, remainingTurns)
+        public event Action<int, float>    OnBoardUpdated; // (remainingTurns, clearanceRatio)
+        public event Action                OnContinueAvailable;
+
+        public float Star1Ratio => _stage?.star1_ratio ?? 0.8f;
+        public float Star2Ratio => _stage?.star2_ratio ?? 0.9f;
+        public int   TotalTurns => _stage?.turn_limit  ?? 0;
 
         private BoardState _board;
         private TurnManager _turnManager;
@@ -27,6 +32,7 @@ namespace Game.InGame.Controller
         private ItemManager _itemManager;
         private bool _isPlaying;
         private bool _isAnimating;
+        private bool _continueUsed;
 
         public void Init(Stage stage)
         {
@@ -45,8 +51,9 @@ namespace Game.InGame.Controller
                 _itemTrayView.Refresh(_itemManager);
             }
 
-            _isPlaying = true;
-            _isAnimating = false;
+            _isPlaying    = true;
+            _isAnimating  = false;
+            _continueUsed = false;
         }
 
         private void OnDestroy()
@@ -138,14 +145,17 @@ namespace Game.InGame.Controller
             yield return _boardView.PlayGravity(beforeGravity, _board);
 
             bool turnsLeft = _turnManager.Consume();
-            OnTurnConsumed?.Invoke(_turnManager.RemainingTurns);
-
             var result = ClearEvaluator.Evaluate(_board, _stage.star1_ratio, _stage.star2_ratio);
+            float ratio = ComputeRatio();
+            OnBoardUpdated?.Invoke(_turnManager.RemainingTurns, ratio);
 
             if (result == StarResult.Star3 || !turnsLeft)
             {
                 _isPlaying = false;
-                OnStageEnd?.Invoke(result, _turnManager.RemainingTurns);
+                if (!turnsLeft && result == StarResult.Fail && !_continueUsed)
+                    OnContinueAvailable?.Invoke();
+                else
+                    OnStageEnd?.Invoke(result, _turnManager.RemainingTurns);
             }
 
             if (_itemTrayView != null)
@@ -172,6 +182,8 @@ namespace Game.InGame.Controller
 
             // Items do not consume turns
             var result = ClearEvaluator.Evaluate(_board, _stage.star1_ratio, _stage.star2_ratio);
+            float ratio = ComputeRatio();
+            OnBoardUpdated?.Invoke(_turnManager.RemainingTurns, ratio);
             if (result == StarResult.Star3)
             {
                 _isPlaying = false;
@@ -198,6 +210,39 @@ namespace Game.InGame.Controller
             _boardView.SetItemTargetMode(selected.HasValue);
             if (_itemTrayView != null)
                 _itemTrayView.Refresh(_itemManager);
+        }
+
+        public float ComputeRatioPublic() => ComputeRatio();
+
+        public void Continue(int extraTurns)
+        {
+            _continueUsed = true;
+            _turnManager.AddTurns(extraTurns);
+            _isPlaying = true;
+            OnBoardUpdated?.Invoke(_turnManager.RemainingTurns, ComputeRatio());
+        }
+
+        public void Forfeit()
+        {
+            _isPlaying = false;
+            OnStageEnd?.Invoke(StarResult.Fail, 0);
+        }
+
+        private float ComputeRatio()
+        {
+            if (_board == null || _board.InitialValidCells == 0) return 0f;
+            int remaining = 0;
+            for (int r = 0; r < _board.Height; r++)
+            for (int c = 0; c < _board.Width;  c++)
+            {
+                var cell = _board.Grid[r, c];
+                if (cell == null) continue;
+                var t = cell.Value.cell_type;
+                if (t == ProjectFlood.Contracts.GameTypes.CellType.Obstacle ||
+                    t == ProjectFlood.Contracts.GameTypes.CellType.Void) continue;
+                remaining++;
+            }
+            return (_board.InitialValidCells - remaining) / (float)_board.InitialValidCells;
         }
 
         private static CellData?[,] CloneGrid(BoardState board)
