@@ -19,6 +19,7 @@ UI/UX specs, wireframes, game design documents.
 | `ui-ux-lobby.md` | Boot screen, Lobby layout, Home tab chapter/stage scroll, StageInfo popup, Shop tab |
 | `ui-ux-ingame.md` | InGame HUD, Result overlay, Fail overlay (Continue), Pause popup |
 | `ui-ux-auth.md` | Boot auth sequence, Guest mode, OAuth link flow, account switching, clientLogin |
+| `ftue-tutorial-design.md` | FTUE & Tutorial system — Phase A forced onboarding, Phase B gimmick hints, Phase C fail hints, TutorialManager architecture, tutorial_step data schema |
 
 ## Rules
 - One file per major design area (e.g., `ui-design.md`, `game-design.md`, `onboarding.md`)
