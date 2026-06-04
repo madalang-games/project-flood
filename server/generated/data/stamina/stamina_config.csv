@@ -1,0 +1,2 @@
+config_id,max_life,regen_seconds,attempt_timeout_seconds,max_revive_per_attempt,revive_turn_1,revive_turn_2,revive_turn_3,ad_life_reward_amount,daily_reset_timezone,daily_reset_hour,default_unlimited_stack_policy
+default,5,600,600,3,3,2,1,1,KST,0,EXTEND

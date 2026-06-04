@@ -1,0 +1,2 @@
+reward_group_id,version,sort_order,reward_type,target_id,amount,duration_seconds,stack_policy
+1001,1,1,STAMINA_UNLIMITED,0,1,900,EXTEND
