@@ -110,8 +110,9 @@ Gimmick cells are introduced progressively as the player advances through stages
 - May have Protector stacked on top (editor-defined).
 
 #### Obstacle Cell (Non-interactive)
-- Cannot be selected or removed by any means (group tap, gimmick, item).
-- **Excluded from `initial_valid_cells`** in clearance ratio.
+- Cannot be selected or removed by group tap or board gimmick.
+- **Can be removed by player items** (Bomb blast, Rocket sweep). Rocket stops immediately after destroying an Obstacle — cells beyond it in that row/column are unaffected.
+- **Excluded from `initial_valid_cells`** in clearance ratio. If destroyed by item, does not change `initial_valid_cells` (ratio denominator is fixed at stage load).
 - Visually distinct from normal cells.
 
 #### Void Cell (Board Shape Boundary)
