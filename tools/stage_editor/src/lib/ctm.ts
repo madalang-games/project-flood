@@ -4,9 +4,10 @@ export function decodeCTM(hex3: string): CellData {
   const c = parseInt(hex3[0], 16);
   const t = parseInt(hex3[1], 16);
   const m = parseInt(hex3[2], 16);
+  const type = t === 0 ? 'Basic' : t === 2 ? 'Void' : 'Obstacle';
   return {
     colorId: c,
-    type: t === 0 ? 'Basic' : 'Obstacle',
+    type,
     protector: (m & 0x3) as 0 | 1 | 2,
     isCore: (m & 0x4) !== 0,
   };
@@ -14,7 +15,7 @@ export function decodeCTM(hex3: string): CellData {
 
 export function encodeCTM(cell: CellData): string {
   const c = cell.colorId.toString(16).toUpperCase();
-  const t = cell.type === 'Basic' ? '0' : '1';
+  const t = cell.type === 'Basic' ? '0' : cell.type === 'Void' ? '2' : '1';
   const m = (cell.protector & 0x3) | (cell.isCore ? 0x4 : 0x0);
   return c + t + m.toString(16).toUpperCase();
 }
@@ -40,7 +41,7 @@ export function deriveColorIds(grid: CellData[][]): string {
   const ids = new Set<number>();
   for (const row of grid) {
     for (const cell of row) {
-      if (cell.type !== 'Obstacle') ids.add(cell.colorId);
+      if (cell.type !== 'Obstacle' && cell.type !== 'Void') ids.add(cell.colorId);
     }
   }
   const sorted = Array.from(ids).sort((a, b) => a - b);

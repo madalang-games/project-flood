@@ -16,12 +16,26 @@ interface Props {
   onRightClick: (r: number, c: number) => void;
 }
 
-function getCellStyle(cell: CellData | null, palette: PaletteColor[]): React.CSSProperties {
-  if (!cell) return { backgroundColor: '#111' };
-  if (cell.type === 'Obstacle') return { backgroundColor: '#2a2a2a' };
+// Hyper-casual pixel-art palette
+const BOARD_BG = '#1e1e2e';     // board panel background (deep navy)
+const SOCKET_COLOR = '#2a2a3e'; // empty cell slot (slightly lighter)
+const VOID_COLOR = BOARD_BG;    // void blends into board background
+
+function getCellBg(cell: CellData | null, palette: PaletteColor[]): React.CSSProperties {
+  if (!cell) return { backgroundColor: SOCKET_COLOR, boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.45)' };
+  if (cell.type === 'Obstacle') return { backgroundColor: '#2a2a3e' };
+  if (cell.type === 'Void') return { backgroundColor: VOID_COLOR };
   const p = palette[cell.colorId];
   if (!p) return { backgroundColor: '#555' };
   return { backgroundColor: `rgb(${p.r},${p.g},${p.b})` };
+}
+
+function getCellBorder(cell: CellData | null, isSelected: boolean): string {
+  if (isSelected) return '2px solid white';
+  if (!cell) return '1px solid rgba(0,0,0,0.3)';
+  if (cell.type === 'Void') return '1px dashed #2e2e4e';
+  if (cell.type === 'Obstacle') return '1px solid #3a3a5e';
+  return '1px solid rgba(0,0,0,0.3)';
 }
 
 function CellView({
@@ -46,21 +60,24 @@ function CellView({
       style={{
         width: CELL_SIZE,
         height: CELL_SIZE,
-        border: isSelected ? '2px solid white' : '1px solid rgba(0,0,0,0.35)',
+        border: getCellBorder(cell, isSelected),
         cursor: 'pointer',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
         position: 'relative',
         flexShrink: 0,
-        ...getCellStyle(cell, palette),
+        ...getCellBg(cell, palette),
       }}
       onMouseDown={e => { e.preventDefault(); onMouseDown(r, c, e.button); }}
       onMouseEnter={() => onMouseEnter(r, c)}
       onContextMenu={e => e.preventDefault()}
     >
       {cell?.type === 'Obstacle' && (
-        <span style={{ fontSize: 18, color: '#555', userSelect: 'none' }}>■</span>
+        <span style={{ fontSize: 18, color: '#5a5a8a', userSelect: 'none' }}>■</span>
+      )}
+      {cell?.type === 'Void' && (
+        <span style={{ fontSize: 10, color: '#333', userSelect: 'none' }}>✕</span>
       )}
       {cell?.isCore && (
         <span style={{ position: 'absolute', top: 1, right: 2, fontSize: 9, color: 'gold', userSelect: 'none' }}>★</span>
@@ -109,7 +126,14 @@ export default function BoardEditor({
 
   return (
     <div
-      style={{ position: 'relative', userSelect: 'none' }}
+      style={{
+        position: 'relative',
+        userSelect: 'none',
+        backgroundColor: BOARD_BG,
+        padding: 8,
+        borderRadius: 6,
+        boxShadow: '0 4px 24px rgba(0,0,0,0.6)',
+      }}
       onMouseUp={stopDrag}
       onMouseLeave={stopDrag}
     >

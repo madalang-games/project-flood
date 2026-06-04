@@ -8,6 +8,7 @@ import {
   findGroup,
   applyRemoval,
   applyGravity,
+  rotate180,
   evaluate,
   countInitialValidCells,
 } from '../lib/game-rules';
@@ -135,11 +136,12 @@ export default function EditorPage() {
         result: isEnd ? result : null,
       } : null);
     } else {
+      const isNonBasic = brush.type === 'Obstacle' || brush.type === 'Void';
       const cell: CellData = {
-        colorId: brush.type === 'Obstacle' ? 0 : brush.colorId,
+        colorId: isNonBasic ? 0 : brush.colorId,
         type: brush.type,
-        protector: brush.type === 'Obstacle' ? 0 : brush.protector,
-        isCore: brush.type === 'Obstacle' ? false : brush.isCore,
+        protector: isNonBasic ? 0 : brush.protector,
+        isCore: isNonBasic ? false : brush.isCore,
       };
       setGrid(prev => {
         const next = prev.map(row => [...row]);
@@ -212,6 +214,15 @@ export default function EditorPage() {
     });
     setStages(prev => prev.map(s => s.stage_id === selectedId ? stage : s));
   }, [buildStageRow, selectedId]);
+
+  const handleRotate180 = useCallback(() => {
+    setPlaytestState(prev => {
+      if (!prev) return prev;
+      const rotated = rotate180(prev.board);
+      const withGravity = applyGravity(rotated);
+      return { ...prev, board: withGravity };
+    });
+  }, []);
 
   const handleGenerate = useCallback((settings: GeneratorSettings) => {
     if (!meta) return;
@@ -338,6 +349,7 @@ export default function EditorPage() {
                 onToggleRecord={() =>
                   setPlaytestState(prev => prev ? { ...prev, isRecording: !prev.isRecording } : prev)
                 }
+                onRotate180={handleRotate180}
                 onValidate={handleValidate}
                 onExport={handleExport}
                 onSave={handleSave}

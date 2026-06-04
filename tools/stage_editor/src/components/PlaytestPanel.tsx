@@ -12,6 +12,7 @@ interface Props {
   onStartPlaytest: () => void;
   onStopPlaytest: () => void;
   onToggleRecord: () => void;
+  onRotate180: () => void;
   onValidate: () => void;
   onExport: () => void;
   onSave: () => void;
@@ -26,6 +27,7 @@ export default function PlaytestPanel({
   onStartPlaytest,
   onStopPlaytest,
   onToggleRecord,
+  onRotate180,
   onValidate,
   onExport,
   onSave,
@@ -58,6 +60,15 @@ export default function PlaytestPanel({
             </button>
             {!playtestResult && (
               <span className="text-xs text-gray-300 ml-1">Turns: {playtestTurns}</span>
+            )}
+            {!playtestResult && (
+              <button
+                onClick={onRotate180}
+                className="text-xs bg-indigo-700 hover:bg-indigo-600 px-3 py-1.5 rounded"
+                title="Rotate board 180° and apply gravity"
+              >
+                ↻ 180°
+              </button>
             )}
           </>
         )}

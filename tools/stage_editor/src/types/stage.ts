@@ -1,4 +1,4 @@
-export type CellType = 'Basic' | 'Obstacle';
+export type CellType = 'Basic' | 'Obstacle' | 'Void';
 
 export interface CellData {
   colorId: number;

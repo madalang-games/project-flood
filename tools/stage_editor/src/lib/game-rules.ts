@@ -14,7 +14,7 @@ export function cloneBoard(board: Board): Board {
 
 export function findGroup(board: Board, row: number, col: number): [number, number][] {
   const cell = board[row]?.[col];
-  if (!cell || cell.type === 'Obstacle') return [];
+  if (!cell || cell.type === 'Obstacle' || cell.type === 'Void') return [];
 
   const rows = board.length;
   const cols = board[0]?.length ?? 0;
@@ -29,7 +29,7 @@ export function findGroup(board: Board, row: number, col: number): [number, numb
     if (visited.has(key)) continue;
 
     const cur = board[r]?.[c];
-    if (!cur || cur.type === 'Obstacle' || cur.colorId !== colorId) continue;
+    if (!cur || cur.type === 'Obstacle' || cur.type === 'Void' || cur.colorId !== colorId) continue;
 
     visited.add(key);
     group.push([r, c]);
@@ -63,14 +63,30 @@ export function applyGravity(board: Board): Board {
   const rows = b.length;
   const cols = b[0]?.length ?? 0;
 
+  // Mirrors C# GravitySystem: Void cells are fixed segment boundaries.
   for (let c = 0; c < cols; c++) {
-    const col: (CellData | null)[] = [];
-    for (let r = 0; r < rows; r++) col.push(b[r][c]);
-    const nonNull = col.filter(x => x !== null) as CellData[];
-    const nullCount = rows - nonNull.length;
-    for (let r = 0; r < nullCount; r++) b[r][c] = null;
-    for (let r = 0; r < nonNull.length; r++) b[nullCount + r][c] = nonNull[r];
+    let writeRow = rows - 1;
+    for (let r = rows - 1; r >= 0; r--) {
+      const cell = b[r][c];
+      if (cell?.type === 'Void') {
+        while (writeRow > r) b[writeRow--][c] = null;
+        writeRow = r - 1;
+        continue;
+      }
+      if (cell !== null) b[writeRow--][c] = cell;
+    }
+    while (writeRow >= 0) b[writeRow--][c] = null;
   }
+  return b;
+}
+
+export function rotate180(board: Board): Board {
+  const rows = board.length;
+  const cols = board[0]?.length ?? 0;
+  const b: Board = Array.from({ length: rows }, () => Array(cols).fill(null));
+  for (let r = 0; r < rows; r++)
+    for (let c = 0; c < cols; c++)
+      b[rows - 1 - r][cols - 1 - c] = board[r][c] ? { ...board[r][c]! } : null;
   return b;
 }
 
@@ -78,7 +94,7 @@ export function countInitialValidCells(board: Board): number {
   let count = 0;
   for (const row of board) {
     for (const cell of row) {
-      if (cell && cell.type !== 'Obstacle') count++;
+      if (cell && cell.type !== 'Obstacle' && cell.type !== 'Void') count++;
     }
   }
   return count;
@@ -95,7 +111,7 @@ export function evaluate(
 
   for (const row of board) {
     for (const cell of row) {
-      if (cell && cell.type !== 'Obstacle') {
+      if (cell && cell.type !== 'Obstacle' && cell.type !== 'Void') {
         remaining++;
         if (cell.isCore) coreRemaining = true;
       }

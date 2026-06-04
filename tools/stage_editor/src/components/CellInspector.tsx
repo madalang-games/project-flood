@@ -12,7 +12,8 @@ interface Props {
 export default function CellInspector({ selectedCell, brush, palette, onBrushChange }: Props) {
   function update(patch: Partial<BrushSettings>) {
     const next: BrushSettings = { ...brush, ...patch };
-    if (next.type === 'Obstacle') {
+    if (next.type === 'Obstacle' || next.type === 'Void') {
+      next.colorId = 0;
       next.protector = 0;
       next.isCore = false;
     }
@@ -29,8 +30,8 @@ export default function CellInspector({ selectedCell, brush, palette, onBrushCha
       <div className="p-3 flex flex-col gap-3 overflow-y-auto">
         <div>
           <div className="text-xs text-gray-400 mb-1">Type</div>
-          <div className="flex gap-1">
-            {(['Basic', 'Obstacle'] as CellType[]).map(t => (
+          <div className="flex gap-1 flex-wrap">
+            {(['Basic', 'Obstacle', 'Void'] as CellType[]).map(t => (
               <button
                 key={t}
                 onClick={() => update({ type: t })}
@@ -40,11 +41,30 @@ export default function CellInspector({ selectedCell, brush, palette, onBrushCha
                     : 'bg-gray-700 border-gray-600 text-gray-300 hover:bg-gray-600'
                 }`}
               >
-                {t}
+                {t === 'Void' ? (
+                  <span className="flex items-center gap-1">
+                    <span
+                      className="inline-block w-3 h-3 rounded-sm"
+                      style={{ backgroundColor: '#1e1e2e', border: '1px solid #444' }}
+                    />
+                    Void
+                  </span>
+                ) : t}
               </button>
             ))}
           </div>
         </div>
+
+        {brush.type === 'Void' && (
+          <div>
+            <div
+              className="w-full h-8 rounded border border-gray-600"
+              style={{ backgroundColor: '#1e1e2e' }}
+              title="Void — outside board boundary"
+            />
+            <div className="text-xs text-gray-500 mt-1">Outside board boundary. No color, no protector.</div>
+          </div>
+        )}
 
         {brush.type === 'Basic' && (
           <div>
