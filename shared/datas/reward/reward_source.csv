@@ -1,0 +1,5 @@
+source_id,source_type,reward_group_id,version,claim_policy,max_claims,reset_timezone,reset_hour,ui_surface,is_enabled
+CS,CS,CS,CS,CS,CS,CS,CS,CS,CS
+string(64),string(32),int32,int32,string(32),int32,string(16),int32,string(32),bool
+PK,NN,NN,NN,NN,NN,NN,NN,NN,NN
+DAILY_STAMINA_UNLIMITED,DAILY_FREE,1001,1,DAILY_RESET,1,KST,0,HOME_TAB,true

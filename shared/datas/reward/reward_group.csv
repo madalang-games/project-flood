@@ -1,0 +1,5 @@
+reward_group_id,version,display_key,is_enabled
+CS,CS,CS,CS
+int32,int32,string(128),bool
+PK,NN,NN,NN
+1001,1,reward.daily_stamina_unlimited,true

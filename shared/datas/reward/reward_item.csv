@@ -1,0 +1,5 @@
+reward_group_id,version,sort_order,reward_type,target_id,amount,duration_seconds,stack_policy
+CS,CS,CS,CS,CS,CS,CS,CS
+int32,int32,int32,string(32),int32,int32,int32,string(32)
+PK,PK,PK,NN,NN,NN,NN,NN
+1001,1,1,STAMINA_UNLIMITED,0,1,900,EXTEND
