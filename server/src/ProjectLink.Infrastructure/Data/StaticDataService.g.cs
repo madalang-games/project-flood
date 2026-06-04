@@ -7,28 +7,89 @@ namespace ProjectLink.Infrastructure.Data;
 
 public partial class StaticDataService
 {
+    private IReadOnlyDictionary<string, AdPlacementData> _adPlacements = new Dictionary<string, AdPlacementData>();
     private IReadOnlyDictionary<byte, ColorPaletteData> _colorPalettes = new Dictionary<byte, ColorPaletteData>();
+    private IReadOnlyDictionary<int, RewardGroupData> _rewardGroups = new Dictionary<int, RewardGroupData>();
+    private IReadOnlyDictionary<string, RewardSourceData> _rewardSources = new Dictionary<string, RewardSourceData>();
     private IReadOnlyDictionary<int, StageData> _stages = new Dictionary<int, StageData>();
+    private IReadOnlyDictionary<string, StaminaConfigData> _staminaConfigs = new Dictionary<string, StaminaConfigData>();
 
     private void InitGeneratedData(string dataRoot)
     {
+        var adPath = System.IO.Path.Combine(dataRoot, "ad");
         var commonPath = System.IO.Path.Combine(dataRoot, "common");
+        var rewardPath = System.IO.Path.Combine(dataRoot, "reward");
         var stagePath = System.IO.Path.Combine(dataRoot, "stage");
+        var staminaPath = System.IO.Path.Combine(dataRoot, "stamina");
 
+        _adPlacements = AdPlacementLoader.LoadAll(System.IO.Path.Combine(adPath, "ad_placement.csv"))
+            .ToDictionary(r => r.placement_id, r => new AdPlacementData
+            {
+                PlacementId = r.placement_id,
+                RewardGroupId = r.reward_group_id,
+                ContextType = r.context_type,
+                IsEnabled = r.is_enabled,
+            });
         _colorPalettes = ColorPaletteLoader.LoadAll(System.IO.Path.Combine(commonPath, "color_palette.csv"))
             .ToDictionary(r => r.color_id, r => new ColorPaletteData
             {
                 ColorId = r.color_id,
+            });
+        _rewardGroups = RewardGroupLoader.LoadAll(System.IO.Path.Combine(rewardPath, "reward_group.csv"))
+            .ToDictionary(r => r.reward_group_id, r => new RewardGroupData
+            {
+                RewardGroupId = r.reward_group_id,
+                Version = r.version,
+                DisplayKey = r.display_key,
+                IsEnabled = r.is_enabled,
+            });
+        _rewardSources = RewardSourceLoader.LoadAll(System.IO.Path.Combine(rewardPath, "reward_source.csv"))
+            .ToDictionary(r => r.source_id, r => new RewardSourceData
+            {
+                SourceId = r.source_id,
+                SourceType = r.source_type,
+                RewardGroupId = r.reward_group_id,
+                Version = r.version,
+                ClaimPolicy = r.claim_policy,
+                MaxClaims = r.max_claims,
+                ResetTimezone = r.reset_timezone,
+                ResetHour = r.reset_hour,
+                UiSurface = r.ui_surface,
+                IsEnabled = r.is_enabled,
             });
         _stages = StageLoader.LoadAll(System.IO.Path.Combine(stagePath, "stage.csv"))
             .ToDictionary(r => r.stage_id, r => new StageData
             {
                 StageId = r.stage_id,
             });
+        _staminaConfigs = StaminaConfigLoader.LoadAll(System.IO.Path.Combine(staminaPath, "stamina_config.csv"))
+            .ToDictionary(r => r.config_id, r => new StaminaConfigData
+            {
+                ConfigId = r.config_id,
+                MaxLife = r.max_life,
+                RegenSeconds = r.regen_seconds,
+                AttemptTimeoutSeconds = r.attempt_timeout_seconds,
+                MaxRevivePerAttempt = r.max_revive_per_attempt,
+                ReviveTurn1 = r.revive_turn_1,
+                ReviveTurn2 = r.revive_turn_2,
+                ReviveTurn3 = r.revive_turn_3,
+                AdLifeRewardAmount = r.ad_life_reward_amount,
+                DailyResetTimezone = r.daily_reset_timezone,
+                DailyResetHour = r.daily_reset_hour,
+                DefaultUnlimitedStackPolicy = r.default_unlimited_stack_policy,
+            });
     }
 
+    public AdPlacementData? GetAdPlacement(string placement_id) => _adPlacements.GetValueOrDefault(placement_id);
+    public IReadOnlyList<AdPlacementData> GetAllAdPlacements() => _adPlacements.Values.ToList();
     public ColorPaletteData? GetColorPalette(byte color_id) => _colorPalettes.GetValueOrDefault(color_id);
     public IReadOnlyList<ColorPaletteData> GetAllColorPalettes() => _colorPalettes.Values.ToList();
+    public RewardGroupData? GetRewardGroup(int reward_group_id) => _rewardGroups.GetValueOrDefault(reward_group_id);
+    public IReadOnlyList<RewardGroupData> GetAllRewardGroups() => _rewardGroups.Values.ToList();
+    public RewardSourceData? GetRewardSource(string source_id) => _rewardSources.GetValueOrDefault(source_id);
+    public IReadOnlyList<RewardSourceData> GetAllRewardSources() => _rewardSources.Values.ToList();
     public StageData? GetStage(int stage_id) => _stages.GetValueOrDefault(stage_id);
     public IReadOnlyList<StageData> GetAllStages() => _stages.Values.ToList();
+    public StaminaConfigData? GetStaminaConfig(string config_id) => _staminaConfigs.GetValueOrDefault(config_id);
+    public IReadOnlyList<StaminaConfigData> GetAllStaminaConfigs() => _staminaConfigs.Values.ToList();
 }

@@ -6,8 +6,16 @@ namespace ProjectLink.Domain.Interfaces;
 
 public partial interface IStaticDataService
 {
+    AdPlacementData? GetAdPlacement(string placement_id);
+    IReadOnlyList<AdPlacementData> GetAllAdPlacements();
     ColorPaletteData? GetColorPalette(byte color_id);
     IReadOnlyList<ColorPaletteData> GetAllColorPalettes();
+    RewardGroupData? GetRewardGroup(int reward_group_id);
+    IReadOnlyList<RewardGroupData> GetAllRewardGroups();
+    RewardSourceData? GetRewardSource(string source_id);
+    IReadOnlyList<RewardSourceData> GetAllRewardSources();
     StageData? GetStage(int stage_id);
     IReadOnlyList<StageData> GetAllStages();
+    StaminaConfigData? GetStaminaConfig(string config_id);
+    IReadOnlyList<StaminaConfigData> GetAllStaminaConfigs();
 }

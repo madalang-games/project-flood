@@ -12,16 +12,25 @@ public sealed partial class AppDbContext : DbContext
     internal DbSet<PlayersRow> _Players => Set<PlayersRow>();
     internal DbSet<SessionsRow> _Sessions => Set<SessionsRow>();
     internal DbSet<EventLogsRow> _EventLogs => Set<EventLogsRow>();
+    internal DbSet<UserStaminaStateRow> _UserStaminaState => Set<UserStaminaStateRow>();
+    internal DbSet<UserRewardClaimStateRow> _UserRewardClaimState => Set<UserRewardClaimStateRow>();
+    internal DbSet<AdRewardTransactionsRow> _AdRewardTransactions => Set<AdRewardTransactionsRow>();
 
     public PlayersDb Players { get; }
     public SessionsDb Sessions { get; }
     public EventLogsDb EventLogs { get; }
+    public UserStaminaStateDb UserStaminaState { get; }
+    public UserRewardClaimStateDb UserRewardClaimState { get; }
+    public AdRewardTransactionsDb AdRewardTransactions { get; }
 
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
     {
         Players = new PlayersDb(this);
         Sessions = new SessionsDb(this);
         EventLogs = new EventLogsDb(this);
+        UserStaminaState = new UserStaminaStateDb(this);
+        UserRewardClaimState = new UserRewardClaimStateDb(this);
+        AdRewardTransactions = new AdRewardTransactionsDb(this);
     }
 
     public Task SaveAsync(CancellationToken ct = default) => SaveChangesAsync(ct);
@@ -32,5 +41,8 @@ public sealed partial class AppDbContext : DbContext
         mb.ApplyConfiguration(new PlayersDbConfiguration());
         mb.ApplyConfiguration(new SessionsDbConfiguration());
         mb.ApplyConfiguration(new EventLogsDbConfiguration());
+        mb.ApplyConfiguration(new UserStaminaStateDbConfiguration());
+        mb.ApplyConfiguration(new UserRewardClaimStateDbConfiguration());
+        mb.ApplyConfiguration(new AdRewardTransactionsDbConfiguration());
     }
 }

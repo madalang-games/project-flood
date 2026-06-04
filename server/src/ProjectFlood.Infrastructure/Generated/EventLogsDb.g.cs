@@ -51,6 +51,8 @@ internal sealed class EventLogsDbConfiguration : IEntityTypeConfiguration<EventL
             .IsRequired();
 
         builder.HasIndex(e => e.UserId).HasDatabaseName("idx_event_logs_user_id");
+        builder.HasIndex(e => e.TrId).HasDatabaseName("idx_event_logs_tr_id");
+        builder.HasIndex(e => e.CorrelationId).HasDatabaseName("idx_event_logs_correlation_id");
 
         builder.HasOne(e => e.Player)
             .WithMany()

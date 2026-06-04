@@ -94,4 +94,16 @@ public sealed class PlayersDb
     public IQueryable<(PlayersRow Player, EventLogsRow EventLog)> JoinWithEventLogs()
         => Query().Join(_db._EventLogs, l => l.UserId, r => r.UserId,
             (l, r) => ValueTuple.Create(l, r));
+
+    public IQueryable<(PlayersRow Player, UserStaminaStateRow UserStaminaState)> JoinWithUserStaminaState()
+        => Query().Join(_db._UserStaminaState, l => l.UserId, r => r.UserId,
+            (l, r) => ValueTuple.Create(l, r));
+
+    public IQueryable<(PlayersRow Player, UserRewardClaimStateRow UserRewardClaimState)> JoinWithUserRewardClaimState()
+        => Query().Join(_db._UserRewardClaimState, l => l.UserId, r => r.UserId,
+            (l, r) => ValueTuple.Create(l, r));
+
+    public IQueryable<(PlayersRow Player, AdRewardTransactionsRow AdRewardTransaction)> JoinWithAdRewardTransactions()
+        => Query().Join(_db._AdRewardTransactions, l => l.UserId, r => r.UserId,
+            (l, r) => ValueTuple.Create(l, r));
 }
