@@ -15,15 +15,27 @@ namespace Game.InGame.Controller
 #if UNITY_EDITOR
         private static int? _overrideStageId;
         private static bool _reloadQueued;
+        private static bool _isFirstLoad = true;
+
+        [UnityEditor.InitializeOnLoadMethod]
+        static void Init()
+        {
+            UnityEditor.EditorApplication.playModeStateChanged += state =>
+            {
+                if (state == UnityEditor.PlayModeStateChange.ExitingEditMode)
+                    _isFirstLoad = true;
+            };
+        }
 
         private void OnValidate()
         {
-            if (!Application.isPlaying || _reloadQueued) return;
+            if (!Application.isPlaying || _reloadQueued || _isFirstLoad) return;
             _reloadQueued = true;
             UnityEditor.EditorApplication.delayCall += () =>
             {
                 _reloadQueued = false;
                 if (!Application.isPlaying) return;
+                _isFirstLoad = true;
                 _overrideStageId = _debugStageId;
                 SceneManager.LoadScene(SceneManager.GetActiveScene().name);
             };
@@ -33,6 +45,7 @@ namespace Game.InGame.Controller
         private void Start()
         {
 #if UNITY_EDITOR
+            _isFirstLoad = false;
             var stageId = _overrideStageId ?? _debugStageId;
             _overrideStageId = null;
 #else
