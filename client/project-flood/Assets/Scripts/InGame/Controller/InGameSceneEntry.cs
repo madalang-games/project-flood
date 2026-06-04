@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Game.InGame.Board;
 using ProjectFlood.Data.Generated;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace Game.InGame.Controller
 {
@@ -11,12 +12,36 @@ namespace Game.InGame.Controller
         [SerializeField] private InGameController _controller;
         [SerializeField] private int _debugStageId = 1;
 
+#if UNITY_EDITOR
+        private static int? _overrideStageId;
+        private static bool _reloadQueued;
+
+        private void OnValidate()
+        {
+            if (!Application.isPlaying || _reloadQueued) return;
+            _reloadQueued = true;
+            UnityEditor.EditorApplication.delayCall += () =>
+            {
+                _reloadQueued = false;
+                if (!Application.isPlaying) return;
+                _overrideStageId = _debugStageId;
+                SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+            };
+        }
+#endif
+
         private void Start()
         {
-            var stage = LoadStage(_debugStageId);
+#if UNITY_EDITOR
+            var stageId = _overrideStageId ?? _debugStageId;
+            _overrideStageId = null;
+#else
+            var stageId = _debugStageId;
+#endif
+            var stage = LoadStage(stageId);
             if (stage == null)
             {
-                Debug.LogError($"[InGameSceneEntry] stage_id={_debugStageId} not found");
+                Debug.LogError($"[InGameSceneEntry] stage_id={stageId} not found");
                 return;
             }
 
