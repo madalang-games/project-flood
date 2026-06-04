@@ -1,16 +1,18 @@
 # tools - Automation Pipeline
 
 ## Nav
-| file | role |
-|------|------|
+| file/dir | role |
+|----------|------|
 | `config-loader.js` | Loads required `template.ini` + `.env.dev`/`.env.prod` values |
-| `info_generator.js` | `shared/datas/**/*.csv` -> `*/generated/data/**/*.csv` + `StaticData/*.g.cs` + `IStaticDataService.g.cs` |
-| `db-generator/` | `server/db/schema.json` -> DB CREATE/ALTER TABLE + migration SQL + generated EF data access |
-| `pkt_generator.js` | `shared/contracts/**/*.cs` -> `client/.../Generated/Contracts/*.cs` (diff-only, preserves `.meta`) |
-| `gen-all.bat` | Runs all gen steps in order (`info_generator` -> `db_generator` -> `pkt_generator`) |
+| `info_generator/` | `shared/datas/**/*.csv` -> `*/generated/data/**/*.csv` + `StaticData/*.g.cs` + `IStaticDataService.g.cs` |
+| `db_generator/` | `server/db/schema.json` -> DB CREATE/ALTER TABLE + migration SQL + generated EF data access |
+| `pkt_generator/` | `shared/contracts/**/*.cs` -> `client/.../Generated/Contracts/*.cs` (diff-only, preserves `.meta`) |
+| `stage_editor/` | Next.js stage editor — CSV CRUD + board UI + playtest |
+| `all_generator.bat` | Runs all gen steps in order (`info_generator` -> `db_generator` -> `pkt_generator`) |
 | `info_generator.bat` | Runs info_generator only |
-| `db_generator.bat` | Runs db-generator only |
-| `run-gen-step.ps1` | Streams gen batch step output to console + `tools/logs/*.log` |
+| `db_generator.bat` | Runs db_generator only |
+| `pkt_generator.bat` | Runs pkt_generator only |
+| `stage_editor.bat` | Starts stage_editor dev server (sets PROJECT_ROOT, runs npm run dev) |
 
 ## Rules
 - **NEVER modify generated files manually** — always update the source and re-run the relevant generator
@@ -19,10 +21,12 @@
 - `_` prefix files/dirs are skipped by all gen tools
 - Errors report as: `[tool] ERROR: <file>\n  <location>: <message>`
 - On any error — print all errors, then `process.exit(1)`
-- db-generator dry-run mode is required in `template.ini`; set `false` to execute
+- db_generator dry-run mode is required in `template.ini`; set `false` to execute
+- Each generator script uses `require('../config-loader')` (one level up from its subdir)
+- `stage_editor.bat` sets `PROJECT_ROOT` env var so Next.js API routes resolve CSV paths correctly
 
 ## Adding a new gen tool
-1. Create `tools/gen-[name].js` — use `config-loader.js` for all config
-2. Add `"gen:[name]": "node tools/gen-[name].js"` to root `package.json` scripts
-3. Add step to `gen-all.bat`
+1. Create `tools/[name]/[name].js` — use `require('../config-loader')` for all config
+2. Add `"gen:[name]": "node tools/[name]/[name].js"` to root `package.json` scripts
+3. Add step to `all_generator.bat`
 4. Update this Nav section

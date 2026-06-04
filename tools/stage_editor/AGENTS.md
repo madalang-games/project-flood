@@ -1,4 +1,4 @@
-# stage-editor — Next.js Stage Editor Service
+# stage_editor — Next.js Stage Editor Service
 
 Standalone development tool. Reads/writes `shared/datas/stage/stage.csv` and `shared/datas/common/color_palette.csv` via Next.js API routes. See ADR-005.
 
@@ -53,11 +53,11 @@ Standalone development tool. Reads/writes `shared/datas/stage/stage.csv` and `sh
 | `Board` | type | `(CellData \| null)[][]` — null = empty post-removal |
 | `StarResult` | interface | stars 0–3, clearanceRatio, allCleared |
 | `ValidationResult` | interface | hasVerifiedSolution, solutionReplaySucceeds, warnings[], canExport |
-| `PROJECT_ROOT` | const | env `PROJECT_ROOT` or `process.cwd()/..` — controls CSV path |
+| `PROJECT_ROOT` | const | env `PROJECT_ROOT` (set by `stage_editor.bat`) or `process.cwd()/..` — must resolve to project-flood root |
 
 ## Rules
-- Run `npm install` inside `stage-editor/` then `npm run dev`
-- CSV paths resolve via `PROJECT_ROOT` env var (default: `cwd/..` = project-flood root)
+- Launch via `tools/stage_editor.bat` (sets `PROJECT_ROOT` automatically) or run `npm run dev` inside `tools/stage_editor/` with `PROJECT_ROOT` pointing to project-flood root
+- CSV paths resolve via `PROJECT_ROOT` env var — must point to project-flood root (not `tools/`)
 - `lib/game-rules.ts` must mirror C# rule engine — update both when rules change
 - NEVER write to `shared/datas/` manually from outside this service during editor session
 - `_` prefix files/dirs skipped per project convention

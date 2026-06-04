@@ -8,7 +8,7 @@ A stage editor is required before content production (§11, §14 risk: "Editor i
 - Standalone TypeScript web app: independent, shareable, file-system CSV access via API routes.
 
 ## Decision
-Stage Editor is a standalone **Next.js** app (App Router) located at `stage-editor/` in the project root. API routes handle CSV file I/O directly on the local file system (`shared/datas/stage/stage.csv`, `shared/datas/common/color_palette.csv`). Frontend is a React-based board editor UI served by Next.js.
+Stage Editor is a standalone **Next.js** app (App Router) located at `tools/stage_editor/`. API routes handle CSV file I/O directly on the local file system (`shared/datas/stage/stage.csv`, `shared/datas/common/color_palette.csv`). Frontend is a React-based board editor UI served by Next.js.
 
 Development only — not deployed to production.
 
@@ -17,4 +17,4 @@ Development only — not deployed to production.
 - Single process (Next.js serves both UI and API routes).
 - CSV path resolution is relative to `project-flood/` root; requires running from that directory or config.
 - TypeScript game-rule logic (`lib/game-rules.ts`) mirrors C# core for in-browser playtest — must be kept in sync with client rule changes.
-- `stage-editor/` added to `project-flood/AGENTS.md` Nav.
+- `tools/stage_editor/` listed in `project-flood/AGENTS.md` Nav and `tools/AGENTS.md` Nav.

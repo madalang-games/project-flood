@@ -5,7 +5,7 @@
 
 const fs   = require('fs');
 const path = require('path');
-const cfg  = require('./config-loader');
+const cfg  = require('../config-loader');
 
 const SOURCE_DIR = path.join(cfg.root, 'shared', 'contracts');
 const TARGET_DIR = path.join(cfg.root, 'client', 'project-flood', 'Assets', 'Scripts', 'Generated', 'Contracts');

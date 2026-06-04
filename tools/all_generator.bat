@@ -3,7 +3,6 @@ setlocal EnableExtensions DisableDelayedExpansion
 
 set "SCRIPT_DIR=%~dp0"
 set "BATCH_NAME=%~nx0"
-set "BATCH_PATH=%~f0"
 set "LOG_DIR=%SCRIPT_DIR%logs"
 if not exist "%LOG_DIR%" mkdir "%LOG_DIR%"
 
@@ -13,19 +12,19 @@ set "EXIT_CODE=0"
 
 call :log "[%BATCH_NAME%] log=%LOG_FILE%"
 
-call :run_step "gen-info" "%SCRIPT_DIR%info_generator.js"
+call :run_step "gen-info" "%SCRIPT_DIR%info_generator\info_generator.js"
 if %ERRORLEVEL% neq 0 (
     set "EXIT_CODE=%ERRORLEVEL%"
     goto :finish
 )
 
-call :run_step "gen-db" "%SCRIPT_DIR%db-generator\db_generator.js"
+call :run_step "gen-db" "%SCRIPT_DIR%db_generator\db_generator.js"
 if %ERRORLEVEL% neq 0 (
     set "EXIT_CODE=%ERRORLEVEL%"
     goto :finish
 )
 
-call :run_step "gen-pkt" "%SCRIPT_DIR%pkt_generator.js"
+call :run_step "gen-pkt" "%SCRIPT_DIR%pkt_generator\pkt_generator.js"
 if %ERRORLEVEL% neq 0 (
     set "EXIT_CODE=%ERRORLEVEL%"
     goto :finish
@@ -42,7 +41,8 @@ if not "%GEN_BATCH_NO_PAUSE%"=="1" (
 endlocal & exit /b %EXIT_CODE%
 
 :run_step
-powershell -NoProfile -ExecutionPolicy Bypass -File "%SCRIPT_DIR%run-gen-step.ps1" -LogFile "%LOG_FILE%" -StepName "%~1" -ScriptPath "%~2" -BatchPath "%BATCH_PATH%"
+call :log "[%BATCH_NAME%] step=%~1"
+node "%~2"
 exit /b %ERRORLEVEL%
 
 :log

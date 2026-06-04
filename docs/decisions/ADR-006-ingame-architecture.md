@@ -24,4 +24,4 @@ Input (New Input System)
 - Rule engine is independently testable without Unity.
 - View classes stay thin; no state duplication.
 - `InGameController` is the single point of Unity coupling for game flow.
-- TypeScript port in `stage-editor/src/lib/game-rules.ts` mirrors the rule engine logic — changes to rules require updating both.
+- TypeScript port in `tools/stage_editor/src/lib/game-rules.ts` mirrors the rule engine logic — changes to rules require updating both.

@@ -9,7 +9,7 @@
 | `server/` | ASP.NET Core 8 server + DB schema | → `server/AGENTS.md` |
 | `docs/` | Design, technical, decisions, tests, platform refs | → `docs/AGENTS.md` |
 | `TODO-List/` | Release tracker, per-area task lists | → `TODO-List/AGENTS.md` |
-| `stage-editor/` | Next.js stage editor — CSV CRUD + board UI + playtest | → `stage-editor/AGENTS.md` |
+| `tools/stage_editor/` | Next.js stage editor — CSV CRUD + board UI + playtest | → `tools/stage_editor/AGENTS.md` |
 | `docker-compose.dev.bat` | Starts local dev Docker Compose stack | |
 
 ## Pipeline
@@ -18,7 +18,7 @@ shared/datas/**/*.csv  -> info_generator -> {client,server}/generated/data/**/*.
 server/db/schema.json  -> db_generator   -> DB CREATE/ALTER TABLE (+ migration SQL)
 shared/contracts/*.cs  -> pkt_generator  -> client/Assets/Scripts/Generated/Contracts/
 ```
-CMD: `tools/gen-all.bat` | `tools/info_generator.bat` | `tools/db_generator.bat` | `npm run gen:all`
+CMD: `tools/all_generator.bat` | `tools/info_generator.bat` | `tools/db_generator.bat` | `npm run gen:all`
 
 ## Rules
 - **AGENTS.md is the Source of Truth (SoT) for AI context.** `CLAUDE.md` and `GEMINI.md` must point to it via `@AGENTS.md`.
@@ -61,21 +61,30 @@ When adding a cross-cutting system (touches ≥2 of: data / server / client):
 3. `server/db/schema.json` — add table definition → run `gen:orm`
 4. Server layers (Domain → Infrastructure → API) — implement → update each AGENTS.md
 5. Client — implement → update AGENTS.md
-6. Run `tools/gen-all.bat`
+6. Run `tools/all_generator.bat`
 7. Update `TODO-List/AGENTS.md` progress
 
 ## Search
-Check already-loaded AGENTS.md context first. Use `rg` only when absent or stale.
 
-| goal | first check | fallback |
-|------|-------------|---------|
-| file location / symbol | loaded `## Files` / `## Symbols` | `rg "ClassName" --type cs -l` |
-| all implementors | loaded context | `rg "IInterface" --type cs -l` |
-| role / ownership | loaded `## Nav` / `## Rules` | read that dir's `AGENTS.md` |
+**Decision order — stop at first match:**
+1. Path in loaded AGENTS.md `## Nav` or `## Files` → use that path directly with Glob/Grep
+2. Symbol needed, path known → `rg "Symbol" path/to/dir --type cs`
+3. Path unknown, scope ≤2 dirs → `Get-ChildItem` or targeted Glob
+4. Scope unknown OR cross-cutting (≥3 dirs, unfamiliar area) → spawn `Explore` subagent
 
-**Glob rules (token efficiency):**
-- Always limit glob to specific path + extension: `client/project-flood/Assets/**/*.cs` — never `client/**/*` (pulls Unity Library/PackageCache noise)
-- For directory structure exploration: delegate to `Explore` subagent — result is compressed before returning to main context (~60% token reduction)
+**Never spawn Explore when:** path is already in loaded AGENTS.md context.
+
+| goal | tool |
+|------|------|
+| file location (path in nav) | Glob with exact path+extension |
+| symbol definition | `rg "ClassName" --type cs -l` |
+| all implementors of interface | `rg "IInterface" --type cs -l` |
+| role / ownership | read that dir's `AGENTS.md` |
+| structure of unfamiliar/unknown area | Explore subagent |
+
+**Glob rules:**
+- Always scope to specific path + extension: `client/project-flood/Assets/**/*.cs`
+- Never `client/**/*` — pulls Unity Library/PackageCache noise
 
 ## Output
 - No narration before tool calls — execute immediately

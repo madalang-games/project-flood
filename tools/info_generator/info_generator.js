@@ -14,7 +14,7 @@
 const fs     = require('fs');
 const path   = require('path');
 const crypto = require('crypto');
-const cfg    = require('./config-loader');
+const cfg    = require('../config-loader');
 
 const VALID_PRIMITIVE_TYPES = new Set([
   'int8','int16','int32','int64',

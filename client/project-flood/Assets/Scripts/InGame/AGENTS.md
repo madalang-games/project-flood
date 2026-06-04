@@ -20,4 +20,4 @@ Pure C# rule engine + MonoBehaviour view. See ADR-006 for architecture rationale
 ## Cross-refs
 - Depends on: `shared/contracts/GameTypes/GameEnums.cs` (CellType, Difficulty)
 - Depends on: `Scripts/Data/Generated/` (StageRow — generated CSV model)
-- Mirrors: `stage-editor/src/lib/game-rules.ts` (TS port — keep in sync)
+- Mirrors: `tools/stage_editor/src/lib/game-rules.ts` (TS port — keep in sync)

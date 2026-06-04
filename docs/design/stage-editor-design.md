@@ -2,7 +2,7 @@
 
 ## Overview
 
-Standalone Next.js web app (`stage-editor/`). Reads and writes `shared/datas/stage/stage.csv` and `shared/datas/common/color_palette.csv` via API routes. Development-only tool.
+Standalone Next.js web app (`tools/stage_editor/`). Reads and writes `shared/datas/stage/stage.csv` and `shared/datas/common/color_palette.csv` via API routes. Development-only tool.
 
 See ADR-005 for architecture rationale.
 
@@ -98,7 +98,7 @@ Run before writing to CSV. Results shown in UI.
 ## File Structure
 
 ```
-stage-editor/
+tools/stage_editor/
 ├── src/
 │   ├── app/
 │   │   ├── page.tsx               Main editor page
