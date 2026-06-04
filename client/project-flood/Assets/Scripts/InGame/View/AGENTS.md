@@ -4,9 +4,11 @@
 | file | class | role |
 |------|-------|------|
 | `BoardView.cs` | `BoardView` | instantiates/positions CellView grid; Refresh on board change; tap/removal/gravity/rotation visual sequences; ScreenToCell hit-test; drives BoardBackground |
-| `CellView.cs` | `CellView` | renders single cell: color, type sprite, protector overlay, core indicator; code-driven interaction/removal/drop effects |
+| `CellView.cs` | `CellView` | renders single cell: color, type sprite, protector overlay, core indicator, target highlight; code-driven interaction/removal/drop effects |
 | `BoardBackground.cs` | `BoardBackground` | procedural dynamic neon pixel-art board panel + per-cell socket sprites + scene-visible Void cutouts |
 | `DevRotateButton.cs` | `DevRotateButton` | UNITY_EDITOR or DEVELOPMENT_BUILD only; wires an existing UI Button or creates a fallback button for InGameController.TriggerRotateBoard |
+| `ItemSlotView.cs` | `ItemSlotView` | single item slot — count badge (TMP), Button, selected highlight; Refresh(count,devMode,canUse,selected) |
+| `ItemTrayView.cs` | `ItemTrayView` | HorizontalLayoutGroup container for 3 ItemSlotViews; fires OnSlotTapped event; SetLocked for animation lock |
 
 ## Symbols
 | symbol | kind | note |
@@ -33,6 +35,13 @@
 | `BoardView.PlayBoardRotation(quarterTurns)` | coroutine | visual parent Transform rotation with ease/scale pulse |
 | `BoardView.CompleteBoardRotation(board)` | method | resets BoardView transform to upright identity and refreshes rotated board data |
 | `BoardView.ScreenToCell(screenPos)` | method | screen pos -> (row,col); returns (-1,-1) if out of bounds |
+| `BoardView.SetItemTargetMode(active)` | method | sets/clears target highlight on all valid (non-null, non-Void) cells |
+| `CellView._targetHighlight` | SerializeField | optional GameObject; shown when cell is a valid item target |
+| `CellView.SetTargetHighlight(active)` | method | shows/hides `_targetHighlight`; null-safe |
+| `ItemSlotView.Refresh(count,isDevMode,canUse,selected)` | method | updates badge text, button interactable, selected highlight |
+| `ItemTrayView.OnSlotTapped` | event | `Action<ItemType>` — fired on slot button click |
+| `ItemTrayView.Refresh(manager)` | method | syncs all 3 slots to ItemManager state |
+| `ItemTrayView.SetLocked(locked)` | method | stores lock flag; next Refresh disables buttons when locked |
 | `CellView.Init(cellSize)` | method | sets _baseScale from sprite bounds; sprite defines visual padding |
 | `CellView.SetData(data,color)` | method | null or Void data -> deactivate; else update sprite/color/overlays |
 | `CellView.PlayTapFeedback(duration)` | coroutine | code-only tap punch and bright flash |

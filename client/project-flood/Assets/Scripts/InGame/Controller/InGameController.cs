@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Game.InGame.Board;
+using Game.InGame.Items;
 using Game.InGame.Rules;
 using Game.InGame.View;
 using ProjectFlood.Contracts.GameTypes;
@@ -14,6 +15,8 @@ namespace Game.InGame.Controller
     public class InGameController : MonoBehaviour
     {
         [SerializeField] private BoardView _boardView;
+        [SerializeField] private ItemTrayView _itemTrayView;
+        [SerializeField] private bool _isDevMode;
 
         public event Action<StarResult, int> OnStageEnd;   // (result, remainingTurns)
         public event Action<int> OnTurnConsumed;           // remainingTurns
@@ -21,6 +24,7 @@ namespace Game.InGame.Controller
         private BoardState _board;
         private TurnManager _turnManager;
         private Stage _stage;
+        private ItemManager _itemManager;
         private bool _isPlaying;
         private bool _isAnimating;
 
@@ -30,8 +34,27 @@ namespace Game.InGame.Controller
             _board = StageLoader.Load(stage);
             _turnManager = new TurnManager(stage.turn_limit);
             _boardView.Build(_board, StageLoader.ParseColorIds(stage.color_ids));
+
+            var inventory = new ItemInventory { IsDevMode = _isDevMode };
+            _itemManager = new ItemManager(inventory);
+            _itemManager.OnUsePhaseChanged += OnItemUsePhaseChanged;
+
+            if (_itemTrayView != null)
+            {
+                _itemTrayView.OnSlotTapped += OnItemSlotTapped;
+                _itemTrayView.Refresh(_itemManager);
+            }
+
             _isPlaying = true;
             _isAnimating = false;
+        }
+
+        private void OnDestroy()
+        {
+            if (_itemManager != null)
+                _itemManager.OnUsePhaseChanged -= OnItemUsePhaseChanged;
+            if (_itemTrayView != null)
+                _itemTrayView.OnSlotTapped -= OnItemSlotTapped;
         }
 
         private void Update()
@@ -43,6 +66,21 @@ namespace Game.InGame.Controller
             if (tapPos == null) return;
 
             var (row, col) = _boardView.ScreenToCell(tapPos.Value);
+
+            if (_itemManager.IsInUsePhase)
+            {
+                if (row < 0 || col < 0)
+                {
+                    _itemManager.Cancel();
+                    return;
+                }
+                var cell = _board.Grid[row, col];
+                if (cell != null && cell.Value.cell_type != CellType.Void)
+                    HandleItemTap(row, col);
+                // Void/null tap during UsePhase: no-op (stay in phase)
+                return;
+            }
+
             if (row < 0 || col < 0) return;
             var tapped = _board.Grid[row, col];
             if (tapped == null || tapped.Value.cell_type == CellType.Void) return;
@@ -53,6 +91,7 @@ namespace Game.InGame.Controller
         public void TriggerRotateBoard()
         {
             if (!_isPlaying || _isAnimating) return;
+            _itemManager.Cancel();
             StartCoroutine(RotateBoardSequence());
         }
 
@@ -60,6 +99,13 @@ namespace Game.InGame.Controller
         {
             var group = GroupSelector.FindGroup(_board, row, col);
             StartCoroutine(HandleTapSequence(row, col, group));
+        }
+
+        private void HandleItemTap(int row, int col)
+        {
+            var cells = _itemManager.UseItem(_board, row, col);
+            if (cells == null || cells.Count == 0) return;
+            StartCoroutine(HandleItemSequence(row, col, cells));
         }
 
         private IEnumerator RotateBoardSequence()
@@ -78,6 +124,8 @@ namespace Game.InGame.Controller
         private IEnumerator HandleTapSequence(int row, int col, List<(int row, int col)> group)
         {
             _isAnimating = true;
+
+            if (_itemTrayView != null) _itemTrayView.SetLocked(true);
 
             yield return _boardView.PlayTapFeedback(row, col);
             yield return _boardView.PlayGroupPulse(group, row, col);
@@ -100,7 +148,56 @@ namespace Game.InGame.Controller
                 OnStageEnd?.Invoke(result, _turnManager.RemainingTurns);
             }
 
+            if (_itemTrayView != null)
+            {
+                _itemTrayView.SetLocked(false);
+                _itemTrayView.Refresh(_itemManager);
+            }
+
             _isAnimating = false;
+        }
+
+        private IEnumerator HandleItemSequence(int originRow, int originCol, List<(int row, int col)> cells)
+        {
+            _isAnimating = true;
+
+            if (_itemTrayView != null) _itemTrayView.SetLocked(true);
+
+            RemovalSystem.Remove(_board, cells);
+            yield return _boardView.PlayRemovalEffects(_board, cells, originRow, originCol);
+
+            var beforeGravity = CloneGrid(_board);
+            GravitySystem.Apply(_board);
+            yield return _boardView.PlayGravity(beforeGravity, _board);
+
+            // Items do not consume turns
+            var result = ClearEvaluator.Evaluate(_board, _stage.star1_ratio, _stage.star2_ratio);
+            if (result == StarResult.Star3)
+            {
+                _isPlaying = false;
+                OnStageEnd?.Invoke(result, _turnManager.RemainingTurns);
+            }
+
+            if (_itemTrayView != null)
+            {
+                _itemTrayView.SetLocked(false);
+                _itemTrayView.Refresh(_itemManager);
+            }
+
+            _isAnimating = false;
+        }
+
+        private void OnItemSlotTapped(ItemType type)
+        {
+            if (!_isPlaying || _isAnimating) return;
+            _itemManager.SelectItem(type);
+        }
+
+        private void OnItemUsePhaseChanged(ItemType? selected)
+        {
+            _boardView.SetItemTargetMode(selected.HasValue);
+            if (_itemTrayView != null)
+                _itemTrayView.Refresh(_itemManager);
         }
 
         private static CellData?[,] CloneGrid(BoardState board)

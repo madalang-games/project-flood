@@ -7,8 +7,9 @@ Pure C# rule engine + MonoBehaviour view. See ADR-006 for architecture rationale
 |------|------|
 | `Board/` | Pure C# data models — CellData, BoardState, StarResult | → `Board/AGENTS.md` |
 | `Rules/` | Pure C# algorithms — GroupSelector, RemovalSystem, ProtectorSystem, GravitySystem, ClearEvaluator | → `Rules/AGENTS.md` |
+| `Items/` | Pure C# item system — ItemType, ItemInventory, ItemManager, Bomb/HRocket/VRocket effects | → `Items/AGENTS.md` |
 | `Controller/` | MonoBehaviour orchestrator — InGameController, TurnManager, StageLoader | → `Controller/AGENTS.md` |
-| `View/` | MonoBehaviour renderers — BoardView, CellView | → `View/AGENTS.md` |
+| `View/` | MonoBehaviour renderers — BoardView, CellView, ItemTrayView, ItemSlotView | → `View/AGENTS.md` |
 
 ## Rules
 - `Board/` and `Rules/` must have **zero** `UnityEngine` imports — pure C# only

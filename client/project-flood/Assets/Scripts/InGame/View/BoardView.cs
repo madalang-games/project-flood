@@ -220,6 +220,18 @@ namespace Game.InGame.View
             Refresh(board);
         }
 
+        public void SetItemTargetMode(bool active)
+        {
+            if (_cellViews == null || _board == null) return;
+            for (int r = 0; r < _board.Height; r++)
+            for (int c = 0; c < _board.Width; c++)
+            {
+                var cell = _board.Grid[r, c];
+                bool validTarget = active && cell != null && cell.Value.cell_type != CellType.Void;
+                _cellViews[r, c].SetTargetHighlight(validTarget);
+            }
+        }
+
         public (int row, int col) ScreenToCell(Vector2 screenPos)
         {
             Vector3 worldPos = Camera.main.ScreenToWorldPoint(screenPos);

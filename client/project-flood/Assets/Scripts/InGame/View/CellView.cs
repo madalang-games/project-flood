@@ -10,6 +10,7 @@ namespace Game.InGame.View
         [SerializeField] private SpriteRenderer _baseRenderer;
         [SerializeField] private SpriteRenderer _protectorOverlay;
         [SerializeField] private GameObject _coreIndicator;
+        [SerializeField] private GameObject _targetHighlight;
 
         [SerializeField] private Sprite _basicSprite;
         [SerializeField] private Sprite _obstacleSprite;
@@ -40,6 +41,12 @@ namespace Game.InGame.View
                 _baseScale = Vector3.one * cellSize;
             }
             transform.localScale = _baseScale;
+        }
+
+        public void SetTargetHighlight(bool active)
+        {
+            if (_targetHighlight != null)
+                _targetHighlight.SetActive(active);
         }
 
         public void SetData(CellData? data, Color cellColor)
