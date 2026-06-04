@@ -9,7 +9,10 @@ namespace Game.InGame.View
     public class BoardView : MonoBehaviour
     {
         [SerializeField] private CellView _cellPrefab;
-        [SerializeField] private float _cellSize = 1f;
+        [Range(0f, 1f)]
+        [SerializeField] private float _boardScreenRatio = 0.9f;
+
+        private float _cellSize;
         [SerializeField] private float _tapFeedbackDuration = 0.13f;
         [SerializeField] private float _groupPulseDuration = 0.12f;
         [SerializeField] private float _removeDuration = 0.24f;
@@ -29,6 +32,7 @@ namespace Game.InGame.View
             _board = board;
             _cellViews = new CellView[board.Height, board.Width];
             _cellPositions = new Vector3[board.Height, board.Width];
+            _cellSize = ComputeCellSize(board.Width, board.Height);
 
             float startX = -(board.Width * _cellSize) / 2f + _cellSize / 2f;
             float startY =  (board.Height * _cellSize) / 2f - _cellSize / 2f;
@@ -37,6 +41,7 @@ namespace Game.InGame.View
             for (int c = 0; c < board.Width; c++)
             {
                 var view = Instantiate(_cellPrefab, transform);
+                view.Init(_cellSize);
                 var position = new Vector3(
                     startX + c * _cellSize,
                     startY - r * _cellSize,
@@ -95,7 +100,7 @@ namespace Game.InGame.View
                 IEnumerator effect = removed
                     ? _cellViews[row, col].PlayRemove(_removeDuration, _burstCount)
                     : _cellViews[row, col].PlayProtectorHit(_protectorHitDuration);
-                StartCoroutine(PlayDelayed(effect, delay));
+                _cellViews[row, col].StartCoroutine(PlayDelayed(effect, delay));
             }
 
             yield return new WaitForSeconds(maxDelay + Mathf.Max(_removeDuration, _protectorHitDuration));
@@ -169,6 +174,16 @@ namespace Game.InGame.View
             if (row < 0 || row >= _board.Height || col < 0 || col >= _board.Width)
                 return (-1, -1);
             return (row, col);
+        }
+
+        private float ComputeCellSize(int boardWidth, int boardHeight)
+        {
+            var cam = Camera.main;
+            float viewH = cam.orthographicSize * 2f;
+            float viewW = viewH * ((float)Screen.width / Screen.height);
+            float fitW = viewW * _boardScreenRatio / boardWidth;
+            float fitH = viewH * _boardScreenRatio / boardHeight;
+            return Mathf.Min(fitW, fitH);
         }
 
         private Color GetColor(int colorId)

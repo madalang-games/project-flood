@@ -26,6 +26,22 @@ namespace Game.InGame.View
             _baseScale = transform.localScale;
         }
 
+        public void Init(float cellSize)
+        {
+            var reference = _basicSprite != null ? _basicSprite : (_baseRenderer != null ? _baseRenderer.sprite : null);
+            if (reference != null)
+            {
+                Vector2 spriteSize = reference.bounds.size;
+                float s = cellSize / Mathf.Max(spriteSize.x, spriteSize.y);
+                _baseScale = new Vector3(s, s, 1f);
+            }
+            else
+            {
+                _baseScale = Vector3.one * cellSize;
+            }
+            transform.localScale = _baseScale;
+        }
+
         public void SetData(CellData? data, Color cellColor)
         {
             if (data == null)
