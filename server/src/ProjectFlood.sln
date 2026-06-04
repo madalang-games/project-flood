@@ -11,7 +11,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProjectFlood.Domain", "Proj
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProjectFlood.Infrastructure", "ProjectFlood.Infrastructure\ProjectFlood.Infrastructure.csproj", "{B1C2D3E4-0001-0001-0001-000000000004}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProjectFlood.Contracts", "..\..\..\shared\contracts\ProjectFlood.Contracts.csproj", "{B1C2D3E4-0001-0001-0001-000000000005}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProjectFlood.Contracts", "..\..\shared\contracts\ProjectFlood.Contracts.csproj", "{B1C2D3E4-0001-0001-0001-000000000005}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProjectFlood.API.Tests", "..\tests\ProjectFlood.API.Tests\ProjectFlood.API.Tests.csproj", "{B1C2D3E4-0001-0001-0001-000000000006}"
 EndProject

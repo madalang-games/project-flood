@@ -45,3 +45,6 @@ Thumbs.db
 *.suo
 *.user
 client/project-flood/.claude/settings.local.json
+
+# TEMP
+temp-v1
