@@ -117,6 +117,7 @@ namespace Game.InGame.Controller
                 UIManager.Instance?.ShowToast("골드 부족", ToastType.Warning);
                 return;
             }
+            UIManager.Instance?.CloseOverlay();
             _controller.Continue(GameConfig.ContinueExtraTurns);
         }
 
@@ -149,9 +150,9 @@ namespace Game.InGame.Controller
             var overlay = UIManager.Instance?.GetCurrentOverlay<ResultOverlayView>();
             if (overlay != null)
             {
-                overlay.OnRetry  += () => SceneManager.LoadScene(InGameScene);
-                overlay.OnNext   += () => { ScrollStateCache.LastPlayedStageId = nextId; SceneManager.LoadScene(InGameScene); };
-                overlay.OnMap    += GoToLobby;
+                overlay.OnRetry += () => { UIManager.Instance?.CloseOverlay(); SceneManager.LoadScene(InGameScene); };
+                overlay.OnNext  += () => { UIManager.Instance?.CloseOverlay(); ScrollStateCache.LastPlayedStageId = nextId; SceneManager.LoadScene(InGameScene); };
+                overlay.OnMap   += () => { UIManager.Instance?.CloseOverlay(); GoToLobby(); };
             }
         }
 
@@ -159,9 +160,9 @@ namespace Game.InGame.Controller
         {
             UIManager.Instance?.ShowOverlay<PausePopupView>(v =>
             {
-                v.OnRestart     += () => SceneManager.LoadScene(InGameScene);
+                v.OnRestart     += () => { UIManager.Instance?.CloseOverlay(); SceneManager.LoadScene(InGameScene); };
                 v.OnSettings    += () => UIManager.Instance?.ShowPopup<SettingsPanelView>();
-                v.OnStageSelect += GoToLobby;
+                v.OnStageSelect += () => { UIManager.Instance?.CloseOverlay(); GoToLobby(); };
             });
         }
 

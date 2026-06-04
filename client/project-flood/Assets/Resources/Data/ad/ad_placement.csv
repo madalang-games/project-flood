@@ -1,0 +1,3 @@
+placement_id,reward_group_id,context_type,is_enabled
+STAMINA_LIFE,0,home,true
+STAGE_REVIVE,0,stage_attempt,true

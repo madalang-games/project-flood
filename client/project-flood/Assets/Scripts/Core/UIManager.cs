@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Game.Core.UI;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
 namespace Game.Core
@@ -33,7 +34,9 @@ namespace Game.Core
 
         private void Update()
         {
-            if (Input.GetKeyDown(KeyCode.Escape) && _popupStack.Count > 0)
+            if (Keyboard.current != null &&
+                Keyboard.current.escapeKey.wasPressedThisFrame &&
+                _popupStack.Count > 0)
                 CloseTopPopup();
         }
 

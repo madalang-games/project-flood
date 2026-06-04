@@ -16,6 +16,7 @@ namespace Game.Core
 
         private void ApplySafeArea()
         {
+            if (_rt == null) _rt = GetComponent<RectTransform>();
             var safe = Screen.safeArea;
             if (safe == _lastSafeArea) return;
             _lastSafeArea = safe;

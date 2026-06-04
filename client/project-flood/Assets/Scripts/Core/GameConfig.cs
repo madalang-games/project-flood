@@ -5,7 +5,8 @@ namespace Game.Core
         public const int  ContinueCost       = 150;
         public const int  ContinueExtraTurns = 3;
         public const float LoadingTimeoutSec = 10f;
-        public const int  StageNodePoolSize  = 15;
-        public const int  StageNodeZigzagOffset = 80;
+        public const int  StageNodePoolSize     = 15;
+        public const int  StageNodeRowOffset    = 300;  // row node x half-span
+        public const int  StageNodeZigzagOffset = 450;  // connector x far offset (capped ~540 half-width)
     }
 }
