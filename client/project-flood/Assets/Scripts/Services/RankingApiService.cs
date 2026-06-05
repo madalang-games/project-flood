@@ -1,9 +1,7 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using ProjectFlood.Contracts.Ranking;
 using UnityEngine;
-using UnityEngine.Networking;
 
 #pragma warning disable 0649
 namespace Game.Services
@@ -12,9 +10,6 @@ namespace Game.Services
     {
         public static RankingApiService Instance { get; private set; }
 
-        [SerializeField] private string _baseUrl = "http://localhost:5000";
-        [SerializeField] private string _authToken;
-
         private void Awake()
         {
             if (Instance != null) { Destroy(gameObject); return; }
@@ -22,43 +17,34 @@ namespace Game.Services
             DontDestroyOnLoad(gameObject);
         }
 
-        public void SetAuthToken(string authToken) => _authToken = authToken;
-
         public void FetchGlobalPage(string rankingType, int offset, int limit, Action<RankingPageResponse> onSuccess, Action<string> onError = null)
-            => StartCoroutine(Get($"{_baseUrl}/api/rankings/global/{rankingType}?offset={offset}&limit={limit}", text =>
+        {
+            NetworkService.Instance.Get($"/api/rankings/global/{rankingType}?offset={offset}&limit={limit}", (ok, result) =>
             {
-                var json = JsonUtility.FromJson<RankingPageJson>(text);
+                if (!ok) { onError?.Invoke(result); return; }
+                var json = JsonUtility.FromJson<RankingPageJson>(result);
                 onSuccess?.Invoke(json.ToContract());
-            }, onError));
+            });
+        }
 
         public void FetchMyGlobalRank(string rankingType, Action<MyRankingResponse> onSuccess, Action<string> onError = null)
-            => StartCoroutine(Get($"{_baseUrl}/api/rankings/global/{rankingType}/me", text =>
+        {
+            NetworkService.Instance.Get($"/api/rankings/global/{rankingType}/me", (ok, result) =>
             {
-                var json = JsonUtility.FromJson<MyRankingJson>(text);
+                if (!ok) { onError?.Invoke(result); return; }
+                var json = JsonUtility.FromJson<MyRankingJson>(result);
                 onSuccess?.Invoke(json.ToContract());
-            }, onError));
+            });
+        }
 
         public void FetchMyStageRank(int stageId, Action<StageRankResponse> onSuccess, Action<string> onError = null)
-            => StartCoroutine(Get($"{_baseUrl}/api/rankings/stages/{stageId}/me", text =>
-            {
-                var json = JsonUtility.FromJson<StageRankJson>(text);
-                onSuccess?.Invoke(json.ToContract());
-            }, onError));
-
-        private IEnumerator Get(string url, Action<string> onSuccess, Action<string> onError)
         {
-            using var req = UnityWebRequest.Get(url);
-            if (!string.IsNullOrEmpty(_authToken))
-                req.SetRequestHeader("Authorization", $"Bearer {_authToken}");
-
-            yield return req.SendWebRequest();
-            if (req.result != UnityWebRequest.Result.Success)
+            NetworkService.Instance.Get($"/api/rankings/stages/{stageId}/me", (ok, result) =>
             {
-                onError?.Invoke(req.error);
-                yield break;
-            }
-
-            onSuccess?.Invoke(req.downloadHandler.text);
+                if (!ok) { onError?.Invoke(result); return; }
+                var json = JsonUtility.FromJson<StageRankJson>(result);
+                onSuccess?.Invoke(json.ToContract());
+            });
         }
 
         [Serializable]
@@ -72,11 +58,11 @@ namespace Game.Services
 
             public RankingEntryDto ToContract() => new RankingEntryDto
             {
-                UserId = userId,
+                UserId      = userId,
                 DisplayName = displayName ?? string.Empty,
-                AvatarId = avatarId,
-                Rank = rank,
-                Score = score,
+                AvatarId    = avatarId,
+                Rank        = rank,
+                Score       = score,
             };
         }
 
@@ -93,8 +79,8 @@ namespace Game.Services
                 var response = new RankingPageResponse
                 {
                     RankingType = rankingType ?? string.Empty,
-                    Offset = offset,
-                    Limit = limit,
+                    Offset      = offset,
+                    Limit       = limit,
                 };
 
                 if (entries != null)
@@ -115,7 +101,7 @@ namespace Game.Services
             public MyRankingResponse ToContract() => new MyRankingResponse
             {
                 RankingType = rankingType ?? string.Empty,
-                Entry = entry?.ToContract(),
+                Entry       = entry?.ToContract(),
             };
         }
 
@@ -128,8 +114,8 @@ namespace Game.Services
 
             public StageRankResponse ToContract() => new StageRankResponse
             {
-                StageId = stageId,
-                Rank = rank > 0 ? rank : null,
+                StageId      = stageId,
+                Rank         = rank > 0 ? rank : null,
                 BestTurnsUsed = bestTurnsUsed > 0 ? bestTurnsUsed : null,
             };
         }

@@ -12,6 +12,7 @@
 | `SafeAreaHandler.cs` | `SafeAreaHandler` | Adjusts RectTransform anchors to Screen.safeArea on OnEnable + layout change |
 | `SceneTransition.cs` | `SceneTransition` | DDOL singleton; FadeToScene, SlideUpToScene, SlideDownToScene with overlay animation |
 | `GameConfig.cs` | `GameConfig` | Static constants: ContinueCost, ContinueExtraTurns, LoadingTimeoutSec, StageNodePoolSize |
+| `AppEnvironment.cs` | `AppEnvironment`, `AppConfig` | Env enum (Dev/Prod) + static config: server URLs, GoogleWebClientId |
 | `Language.cs` | `Language` | Shared enum for all 15 supported locales (EN KO ZH_CN ZH_TW JA RU ES PT FR DE TH AR IT TR ID) |
 
 ## Symbols
@@ -33,6 +34,10 @@
 | `SceneTransition.SlideDownToScene(scene,cb)` | method | Slide down → LoadScene → slide in |
 | `GameConfig.ContinueCost` | const | 150 gold |
 | `GameConfig.ContinueExtraTurns` | const | 3 turns |
+| `AppEnvironment` | enum | Dev / Prod |
+| `AppConfig.DevGameServerUrl` | const | Dev server base URL |
+| `AppConfig.ProdGameServerUrl` | const | Prod server base URL |
+| `AppConfig.GoogleWebClientId` | const | Google OAuth2 web client ID |
 
 ## Rules
 - UIManager canvases: Sort Order 10/20/30/100. Scene canvases always Sort 0.

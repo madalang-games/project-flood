@@ -1,9 +1,7 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using Game.Core;
 using UnityEngine;
-using UnityEngine.Networking;
 
 namespace Game.Services
 {
@@ -12,10 +10,6 @@ namespace Game.Services
     public class AuthService : MonoBehaviour
     {
         public static AuthService Instance { get; private set; }
-
-        [SerializeField] private string _baseUrl = "http://localhost:5000";
-        [SerializeField] private string _clientVersion = "1.0.0";
-        [SerializeField] private string _protocolVersion = "1";
 
         public event Action<bool, string> OnAuthStateChanged; // (isAuthenticated, provider)
 
@@ -92,11 +86,11 @@ namespace Game.Services
         {
             var clientId = GetOrCreateClientId();
             var req = new GuestLoginRequestJson { clientId = clientId, displayName = null };
-            StartCoroutine(Post("/api/auth/guest", JsonUtility.ToJson(req), text =>
+            Post("/api/auth/guest", JsonUtility.ToJson(req), text =>
             {
                 var response = JsonUtility.FromJson<AuthResponseJson>(text);
                 CompleteSession(true, "", "guest", response, onComplete);
-            }, error => onComplete?.Invoke(false, error)));
+            }, error => onComplete?.Invoke(false, error));
         }
 
         public void LoginGoogle(string idToken, string nonce, Action<bool, string> onComplete)
@@ -109,11 +103,11 @@ namespace Game.Services
                 nonce = string.IsNullOrEmpty(nonce) ? null : nonce,
                 guestRefreshToken = string.IsNullOrEmpty(_refreshToken) ? null : _refreshToken
             };
-            StartCoroutine(Post("/api/auth/google", JsonUtility.ToJson(req), text =>
+            Post("/api/auth/google", JsonUtility.ToJson(req), text =>
             {
                 var response = JsonUtility.FromJson<AuthResponseJson>(text);
                 CompleteSession(true, "", "google", response, onComplete);
-            }, error => onComplete?.Invoke(false, error)));
+            }, error => onComplete?.Invoke(false, error));
         }
 
         public void Refresh(Action<bool, string> onComplete)
@@ -133,7 +127,7 @@ namespace Game.Services
 
             _refreshInFlight = true;
             var req = new RefreshRequestJson { refreshToken = _refreshToken };
-            StartCoroutine(Post("/api/auth/refresh", JsonUtility.ToJson(req), text =>
+            Post("/api/auth/refresh", JsonUtility.ToJson(req), text =>
             {
                 var response = JsonUtility.FromJson<AuthResponseJson>(text);
                 _refreshInFlight = false;
@@ -156,7 +150,7 @@ namespace Game.Services
                 onComplete?.Invoke(false, error);
                 if (waiters != null)
                     foreach (var w in waiters) w?.Invoke(false, error);
-            }));
+            });
         }
 
         public void Logout(Action<bool, string> onComplete = null)
@@ -169,7 +163,7 @@ namespace Game.Services
             }
 
             var req = new LogoutRequestJson { refreshToken = _refreshToken, reason = "client_logout" };
-            StartCoroutine(Post("/api/auth/logout", JsonUtility.ToJson(req), text =>
+            Post("/api/auth/logout", JsonUtility.ToJson(req), text =>
             {
                 ClearToken();
                 onComplete?.Invoke(true, "");
@@ -177,7 +171,7 @@ namespace Game.Services
             {
                 ClearToken();
                 onComplete?.Invoke(true, ""); // Force logout locally even if request fails
-            }));
+            });
         }
 
         private void CompleteSession(bool ok, string error, string provider, AuthResponseJson auth, Action<bool, string> onComplete)
@@ -244,9 +238,7 @@ namespace Game.Services
 
         private void SyncServiceTokens()
         {
-            StageApiService.Instance?.SetAuthToken(_accessToken);
-            RankingApiService.Instance?.SetAuthToken(_accessToken);
-            StaminaApiService.Instance?.SetAuthToken(_accessToken);
+            NetworkService.Instance.SetAuthToken(_accessToken);
         }
 
         private void LoadSession()
@@ -276,26 +268,13 @@ namespace Game.Services
             return id;
         }
 
-        private IEnumerator Post(string path, string jsonPayload, Action<string> onSuccess, Action<string> onError)
+        private void Post(string path, string jsonPayload, Action<string> onSuccess, Action<string> onError)
         {
-            var url = $"{_baseUrl.TrimEnd('/')}/{path.TrimStart('/')}";
-            using var req = new UnityWebRequest(url, "POST");
-            var bytes = System.Text.Encoding.UTF8.GetBytes(jsonPayload);
-            req.uploadHandler = new UploadHandlerRaw(bytes);
-            req.downloadHandler = new DownloadHandlerBuffer();
-            req.SetRequestHeader("Content-Type", "application/json");
-            req.SetRequestHeader("X-Client-Version", _clientVersion);
-            req.SetRequestHeader("X-Protocol-Version", _protocolVersion);
-
-            yield return req.SendWebRequest();
-
-            if (req.result != UnityWebRequest.Result.Success)
+            NetworkService.Instance.Post(path, jsonPayload, (ok, result) =>
             {
-                onError?.Invoke(req.error);
-                yield break;
-            }
-
-            onSuccess?.Invoke(req.downloadHandler.text);
+                if (ok) onSuccess?.Invoke(result);
+                else    onError?.Invoke(result);
+            });
         }
 
         // --- JSON Helper Classes for Unity JsonUtility ---

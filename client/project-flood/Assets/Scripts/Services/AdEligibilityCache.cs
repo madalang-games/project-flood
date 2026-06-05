@@ -34,7 +34,22 @@ namespace Game.Services
             DontDestroyOnLoad(gameObject);
         }
 
-        // Call once on session start after auth token is available.
+        // 인증 완료 후 세션 시작 시 호출합니다. NetworkService 에서 baseUrl/authToken 을 자동으로 가져옵니다.
+        public void Refresh()
+        {
+            NetworkService.Instance.Get("/api/ad/eligibility", (ok, result) =>
+            {
+                if (!ok) return;
+                var wrapper = JsonUtility.FromJson<EligibilityWrapper>(result);
+                if (wrapper?.placements == null) return;
+                _cache.Clear();
+                foreach (var s in wrapper.placements)
+                    if (s?.placementId != null)
+                        _cache[s.placementId] = s;
+            });
+        }
+
+        // 하위 호환용 오버로드 (baseUrl, authToken 을 직접 지정할 때 사용).
         public void Refresh(string baseUrl, string authToken = null)
         {
             StartCoroutine(FetchEligibility(baseUrl, authToken));

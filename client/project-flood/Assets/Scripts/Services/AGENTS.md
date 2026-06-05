@@ -12,12 +12,19 @@ Namespace: `Game.Services`
 | `IAdService.cs` | `IAdService`, `AdWatchResult` | Ad service interface; WatchRewardedAd(placementId, cb); ShowInterstitialIfEligible(stageId, suppress, cb) |
 | `AdMobService.cs` | `AdMobService` | DDOL singleton; implements IAdService; multi-placement rewarded ads + interstitial; SSV nonce set before Show() |
 | `AdEligibilityCache.cs` | `AdEligibilityCache` | DDOL singleton; GET /api/ad/eligibility on session start; IsEligible(placementId); OnInterstitialShown() |
+| `NetworkService.cs` | `NetworkService` | DDOL singleton; centralised HTTP client; Get/Post; injects Application.version + authToken headers; configurable log level |
 | `StageApiService.cs` | `StageApiService` | Optional server stage attempt start/clear/fail sync |
 | `RankingApiService.cs` | `RankingApiService` | Optional server ranking page/my-rank fetcher |
+| `StaminaApiService.cs` | `StaminaApiService` | Server stamina fetch + ad-life claim; caches last snapshot for client-side estimation |
 
 ## Symbols
 | symbol | kind | note |
 |--------|------|------|
+| `NetworkService.Instance` | prop | DDOL singleton; lazy-instantiated if not in scene |
+| `NetworkService.SetAuthToken(string)` | method | Called by AuthService after login; injects Bearer token into all subsequent requests |
+| `NetworkService.Get(string,Action<bool,string>)` | method | HTTP GET; path relative to AppConfig BaseUrl |
+| `NetworkService.Post(string,string,Action<bool,string>)` | method | HTTP POST with JSON body |
+| `NetworkLogLevel` | enum | None / ErrorOnly / Normal / Verbose — controls log output granularity |
 | `LocalizationService.Instance` | prop | DDOL singleton |
 | `LocalizationService.CurrentLanguage` | prop | Active Language enum value |
 | `LocalizationService.OnLanguageChanged` | event | Fired after SetLanguage(); LocalizedText subscribes |
@@ -46,7 +53,8 @@ Namespace: `Game.Services`
 | `IAdService.ShowInterstitialIfEligible(int,bool,Action<bool>)` | method | bool wasShown; caller posts /api/ad/interstitial/shown if true |
 | `AdMobService.Instance` | prop | DDOL singleton |
 | `AdEligibilityCache.Instance` | prop | DDOL singleton |
-| `AdEligibilityCache.Refresh(string,string)` | method | baseUrl, optional authToken; fetches GET /api/ad/eligibility |
+| `AdEligibilityCache.Refresh()` | method | No-arg overload; uses NetworkService for base URL + auth token |
+| `AdEligibilityCache.Refresh(string,string)` | method | Legacy overload; baseUrl, optional authToken |
 | `AdEligibilityCache.IsEligible(string)` | method | Returns false if placement not in cache |
 | `AdEligibilityCache.GetCooldownSeconds(string)` | method | Returns 0 if not in cache |
 | `AdEligibilityCache.OnInterstitialShown()` | method | Optimistically marks INTERSTITIAL_POST_STAGE ineligible until next Refresh |
@@ -62,11 +70,13 @@ Namespace: `Game.Services`
 - PlayerPrefs keys must not clash: prefix `auth_`, `gold`, `stars_`, `unlocked_`, `lang`.
 - AuthService is a stub; server-side auth is Phase 2.
 - LocalizationService must initialize before any LocalizedText.Awake(); place it first in Boot scene.
-- AdEligibilityCache.Refresh must be called after auth is available.
+- AdEligibilityCache.Refresh() must be called after auth is available (token set via NetworkService).
 - StageApiService and RankingApiService are optional until full server auth wiring lands; local flow must continue if absent.
 - AdMobService ad unit IDs are all test IDs; replace with production IDs before release.
 - AdMobService SDK-missing stub must return `null` for rewarded ads; reward success is verified or mocked only server-side.
 - pkt_generator must be run to sync Ad + Currency contracts to Generated/Contracts/ before ad flows work.
+- **NetworkService owns all HTTP transmission**: do NOT add UnityWebRequest code to individual services.
+- NetworkService._enableLogging is forced false when AppEnvironment == Prod.
 
 ## Cross-refs
 - Depends on: `Game.Utils.CsvLoader`, `ProjectFlood.Data.Generated.Stage`, `Game.Localization.FontLocalizationConfig`
