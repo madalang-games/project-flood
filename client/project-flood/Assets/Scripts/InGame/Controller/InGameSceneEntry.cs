@@ -83,7 +83,10 @@ namespace Game.InGame.Controller
             _controller.OnStageEnd          += OnStageEnd;
 
             _controller.Init(_stage);
-            StageApiService.Instance?.StartAttempt(_stage.stage_id);
+            StageApiService.Instance?.StartAttempt(_stage.stage_id, response =>
+            {
+                StaminaApiService.Instance?.FetchStamina();
+            });
         }
 
         private void OnDestroy()
@@ -137,6 +140,7 @@ namespace Game.InGame.Controller
             else
             {
                 StageApiService.Instance?.FailAttempt(_stage.stage_id);
+                StaminaApiService.Instance?.FetchStamina();
             }
 
             float ratio     = _controller.ComputeRatioPublic();
@@ -165,6 +169,7 @@ namespace Game.InGame.Controller
                     StageApiService.Instance.ClearAttempt(_stage.stage_id, request, response =>
                     {
                         overlay.SetServerRank(response.StageRank, response.IsNewBest);
+                        StaminaApiService.Instance?.FetchStamina();
                     }, error => Debug.LogWarning($"[InGameSceneEntry] stage clear sync failed: {error}"));
                 }
             }

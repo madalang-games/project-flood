@@ -36,8 +36,59 @@ namespace Game.OutGame.Lobby
 
         private void OnPlay()
         {
+            var staminaApi = Game.Services.StaminaApiService.Instance;
+            bool canPlay = false;
+            if (staminaApi != null)
+            {
+                if (staminaApi.LatestStamina != null && staminaApi.LatestStamina.IsUnlimited && staminaApi.GetSecondsOfUnlimitedRemaining() > 0)
+                {
+                    canPlay = true;
+                }
+                else if (staminaApi.GetEstimatedLife() > 0)
+                {
+                    canPlay = true;
+                }
+            }
+            else
+            {
+                canPlay = true;
+            }
+
+            if (!canPlay)
+            {
+                ShowStaminaAdPopup();
+                return;
+            }
+
             _onPlay?.Invoke();
             Close();
+        }
+
+        private void ShowStaminaAdPopup()
+        {
+            Game.Core.UIManager.Instance?.ShowPopup<Game.Core.UI.ConfirmDialogView>(v => v.Init(
+                title: "Out of Lives",
+                body: "Watch an advertisement to gain 1 Life immediately?",
+                confirmLabel: "Watch Ad",
+                onConfirm: () =>
+                {
+                    Game.Core.UIManager.Instance?.ShowLoading();
+                    Game.Services.StaminaApiService.Instance?.ClaimAdLife("rewarded_video", "dummy_ad_token",
+                        onSuccess: resp =>
+                        {
+                            Game.Core.UIManager.Instance?.HideLoading();
+                            Game.Core.UIManager.Instance?.ShowToast("Life gained!", Game.Core.UI.ToastType.Success);
+                        },
+                        onError: err =>
+                        {
+                            Game.Core.UIManager.Instance?.HideLoading();
+                            Game.Core.UIManager.Instance?.ShowToast($"Ad failed: {err}", Game.Core.UI.ToastType.Warning);
+                        }
+                    );
+                },
+                onCancel: null,
+                cancelLabel: "Cancel"
+            ));
         }
 
         private void OnClose() => Close();
