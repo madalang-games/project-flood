@@ -1,0 +1,22 @@
+errorCode,EN,KO,ZH_CN,ZH_TW,JA,RU,ES,PT,FR,DE,TH,AR,IT,TR,ID
+C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C
+string(64),string(256),string(256),string(256),string(256),string(256),string(256),string(256),string(256),string(256),string(256),string(256),string(256),string(256),string(256),string(256)
+PK,NN,NN,,,,,,,,,,,,,,
+NETWORK_UNAVAILABLE,Network unavailable.,네트워크를 사용할 수 없습니다.,,,,,,,,,,,,,,
+HTTP_FAILED,Request failed.,요청에 실패했습니다.,,,,,,,,,,,,,,
+DESERIALIZE_FAILED,Server response could not be read.,서버 응답을 읽을 수 없습니다.,,,,,,,,,,,,,,
+AUTH_FAILED,Authentication failed.,인증에 실패했습니다.,,,,,,,,,,,,,,
+SESSION_EXPIRED,Session has expired.,세션이 만료되었습니다.,,,,,,,,,,,,,,
+TOKEN_EXPIRED,Session has expired.,세션이 만료되었습니다.,,,,,,,,,,,,,,
+TOKEN_REVOKED,Your session has been revoked.,세션이 취소되었습니다.,,,,,,,,,,,,,,
+ACCOUNT_LOCKED,This account is locked.,계정이 잠겼습니다.,,,,,,,,,,,,,,
+ACCOUNT_BANNED,This account is banned.,이 계정은 이용이 정지되었습니다.,,,,,,,,,,,,,,
+INVALID_DISPLAY_NAME_LENGTH,Name must be 4-24 characters.,닉네임은 4~24자여야 합니다.,,,,,,,,,,,,,,
+INVALID_DISPLAY_NAME_CHAR,Name contains invalid characters.,닉네임에 유효하지 않은 문자가 포함되어 있습니다.,,,,,,,,,,,,,,
+INSUFFICIENT_STAMINA,Insufficient stamina.,스태미나가 부족합니다.,,,,,,,,,,,,,,
+INSUFFICIENT_FUNDS,Insufficient currency.,재화가 부족합니다.,,,,,,,,,,,,,,
+STAGE_NOT_FOUND,Stage not found.,스테이지 정보를 찾을 수 없습니다.,,,,,,,,,,,,,,
+STAGE_ALREADY_ACTIVE,A stage is already in progress.,이미 진행 중인 스테이지가 있습니다.,,,,,,,,,,,,,,
+CONCURRENT_MODIFICATION,Please try again.,잠시 후 다시 시도해 주세요.,,,,,,,,,,,,,,
+RATE_LIMITED,Too many requests. Please try again later.,요청이 너무 많습니다. 잠시 후 다시 시도해 주세요.,,,,,,,,,,,,,,
+INTERNAL_ERROR,An error occurred. Please try again.,오류가 발생했습니다. 다시 시도해 주세요.,,,,,,,,,,,,,,
