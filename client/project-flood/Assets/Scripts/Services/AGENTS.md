@@ -9,6 +9,9 @@ Namespace: `Game.Services`
 | `PlayerProgressService.cs` | `PlayerProgressService` | DDOL singleton; gold balance, per-stage stars/unlock stored in PlayerPrefs |
 | `AuthService.cs` | `AuthService` | DDOL singleton; auth result enum; Initialize(callback); stub — Phase 2 adds real HTTP |
 | `LocalizationService.cs` | `LocalizationService` | DDOL singleton; loads string/error CSV tables; Get(key), GetError(code), SetLanguage(Language), GetFont(Language) |
+| `IAdService.cs` | `IAdService`, `AdWatchResult` | Ad service interface; WatchRewardedAd(placementId, cb); ShowInterstitialIfEligible(stageId, suppress, cb) |
+| `AdMobService.cs` | `AdMobService` | DDOL singleton; implements IAdService; multi-placement rewarded ads + interstitial; SSV nonce set before Show() |
+| `AdEligibilityCache.cs` | `AdEligibilityCache` | DDOL singleton; GET /api/ad/eligibility on session start; IsEligible(placementId); OnInterstitialShown() |
 
 ## Symbols
 | symbol | kind | note |
@@ -35,13 +38,27 @@ Namespace: `Game.Services`
 | `AuthService.LinkOAuth(string)` | method | Sets IsGuest=false, persists OAuth ID |
 | `AuthService.Logout()` | method | Clears all auth prefs |
 | `AuthResult` | enum | Authenticated / Guest / ReLoginRequired |
+| `AdWatchResult.Earned` | field | true if user earned the reward |
+| `AdWatchResult.AdToken` | field | SSV nonce — pass to server POST endpoint for reward claim |
+| `IAdService.WatchRewardedAd(string,Action<AdWatchResult?>)` | method | null result = cancel/fail/no-ad loaded |
+| `IAdService.ShowInterstitialIfEligible(int,bool,Action<bool>)` | method | bool wasShown; caller posts /api/ad/interstitial/shown if true |
+| `AdMobService.Instance` | prop | DDOL singleton |
+| `AdEligibilityCache.Instance` | prop | DDOL singleton |
+| `AdEligibilityCache.Refresh(string,string)` | method | baseUrl, optional authToken; fetches GET /api/ad/eligibility |
+| `AdEligibilityCache.IsEligible(string)` | method | Returns false if placement not in cache |
+| `AdEligibilityCache.GetCooldownSeconds(string)` | method | Returns 0 if not in cache |
+| `AdEligibilityCache.OnInterstitialShown()` | method | Optimistically marks INTERSTITIAL_POST_STAGE ineligible until next Refresh |
 
 ## Rules
 - All services are DDOL — place GameObjects in Boot scene only
 - PlayerPrefs keys must not clash: prefix `auth_`, `gold`, `stars_`, `unlocked_`, `lang`
 - AuthService is a stub; server-side auth is Phase 2
 - LocalizationService must initialize before any LocalizedText.Awake() — place it first in Boot scene
+- AdEligibilityCache.Refresh must be called after auth is available (has auth token)
+- AdMobService ad unit IDs: all test IDs — replace with production IDs before release
+- pkt_generator must be run to sync Ad + Currency contracts to Generated/Contracts/ before ad flows work
 
 ## Cross-refs
 - Depends on: `Game.Utils.CsvLoader`, `ProjectFlood.Data.Generated.Stage`, `Game.Localization.FontLocalizationConfig`
+- Depends on: `GoogleMobileAds.Api` (Google Mobile Ads SDK)
 - Consumed by: Boot scene, Lobby scene, InGame scene entry, `Game.Core.UI.LocalizedText`

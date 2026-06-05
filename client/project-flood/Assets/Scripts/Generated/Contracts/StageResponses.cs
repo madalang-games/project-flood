@@ -1,5 +1,8 @@
 #nullable enable
 using System;
+using System.Collections.Generic;
+using ProjectFlood.Contracts.Currency;
+using ProjectFlood.Contracts.Rewards;
 using ProjectFlood.Contracts.Stamina;
 
 namespace ProjectFlood.Contracts.Stage
@@ -27,6 +30,8 @@ namespace ProjectFlood.Contracts.Stage
         public int StageId { get; set; }
         public string Result { get; set; } = string.Empty;
         public bool LifeRefunded { get; set; }
+        public List<GrantedRewardDto> GrantedRewards { get; set; } = new List<GrantedRewardDto>();
+        public CurrencySnapshot? Currency { get; set; }
         public StaminaSnapshot Stamina { get; set; } = new StaminaSnapshot();
         public DateTimeOffset ServerTime { get; set; }
     }

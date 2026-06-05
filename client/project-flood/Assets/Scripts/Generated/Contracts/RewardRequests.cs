@@ -10,7 +10,6 @@ namespace ProjectFlood.Contracts.Rewards
     {
         public string PlacementId { get; set; } = string.Empty;
         public string Provider { get; set; } = string.Empty;
-        public string ProviderTransactionId { get; set; } = string.Empty;
         public string AdToken { get; set; } = string.Empty;
         public string ContextType { get; set; } = string.Empty;
         public string ContextId { get; set; } = string.Empty;
