@@ -10,6 +10,7 @@ public sealed class ProjectFloodConfiguration
     public required RedisOptions Redis { get; init; }
     public required AuthOptions Auth { get; init; }
     public required AppOptions App { get; init; }
+    public required RateLimitOptions RateLimit { get; init; }
 
     public static ProjectFloodConfiguration Load(IConfiguration configuration)
     {
@@ -42,6 +43,10 @@ public sealed class ProjectFloodConfiguration
                 AllowedClientVersion = EnvRequired("APP_ALLOWED_CLIENT_VERSION"),
                 RequiredClientVersion = EnvRequired("APP_REQUIRED_CLIENT_VERSION"),
                 AllowedProtocolVersion = EnvRequired("APP_ALLOWED_PROTOCOL_VERSION")
+            },
+            RateLimit = new RateLimitOptions
+            {
+                StageStartPerHour = ConfigIntOptional(configuration, "RateLimit:StageStartPerHour") ?? 720
             }
         };
 
@@ -54,6 +59,7 @@ public sealed class ProjectFloodConfiguration
         configuration["ConnectionStrings:MySQL"] = Database.ConnectionString;
         configuration["Redis:Connection"] = Redis.ConnectionString;
         configuration["Jwt:Authority"] = Auth.JwtAuthority;
+        configuration["Jwt:Issuer"] = Auth.JwtIssuer;
         configuration["Jwt:Audience"] = Auth.JwtAudience;
         configuration["App:ClientId"] = App.ClientId;
         configuration["App:AllowedClientVersion"] = App.AllowedClientVersion;
@@ -93,6 +99,11 @@ public sealed class ProjectFloodConfiguration
         public required string AllowedClientVersion { get; init; }
         public required string RequiredClientVersion { get; init; }
         public required string AllowedProtocolVersion { get; init; }
+    }
+
+    public sealed class RateLimitOptions
+    {
+        public required int StageStartPerHour { get; init; }
     }
 
     private static string EnvRequired(string key)
@@ -139,5 +150,17 @@ public sealed class ProjectFloodConfiguration
         if (string.IsNullOrWhiteSpace(value)) return null;
         if (Uri.TryCreate(value, UriKind.Absolute, out _)) return value;
         throw new InvalidOperationException($"Configuration error at env:{key}: `{value}` is not a valid absolute URI.");
+    }
+
+    private static int? ConfigIntOptional(IConfiguration configuration, string key)
+    {
+        var value = configuration[key];
+        if (string.IsNullOrWhiteSpace(value))
+            return null;
+
+        if (int.TryParse(value, NumberStyles.Integer, CultureInfo.InvariantCulture, out var parsed))
+            return parsed;
+
+        throw new InvalidOperationException($"Configuration error at configuration:{key}: `{value}` is not a valid integer.");
     }
 }

@@ -145,6 +145,12 @@ function load() {
       serverTargets: csv(requiredIni(ini, iniPath, 'data-gen', 'server_targets')),
       clientNamespace: requiredIni(ini, iniPath, 'data-gen', 'client_namespace'),
       serverNamespace: requiredIni(ini, iniPath, 'data-gen', 'server_namespace'),
+      domainStaticDataDir: requiredPath(ini, iniPath, 'data-gen', 'domain_static_data_dir'),
+      domainStaticDataNamespace: requiredIni(ini, iniPath, 'data-gen', 'domain_static_data_namespace'),
+      domainInterfaceFile: requiredPath(ini, iniPath, 'data-gen', 'domain_interface_file'),
+      domainInterfaceNamespace: requiredIni(ini, iniPath, 'data-gen', 'domain_interface_namespace'),
+      infrastructureStaticDataServiceFile: requiredPath(ini, iniPath, 'data-gen', 'infrastructure_static_data_service_file'),
+      infrastructureDataNamespace: requiredIni(ini, iniPath, 'data-gen', 'infrastructure_data_namespace'),
     },
 
     packetGen: {

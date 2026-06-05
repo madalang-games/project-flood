@@ -1,17 +1,20 @@
 using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using ProjectFlood.API;
 
 namespace ProjectFlood.API.Controllers;
 
+[Authorize]
 public abstract class ControllerBaseEx : ControllerBase
 {
     protected long PlayerId
     {
         get
         {
-            var value = User.FindFirstValue("player_id") ?? User.FindFirstValue("sub");
+            var value = User.FindFirstValue(UserClaims.UserId);
             if (long.TryParse(value, out var playerId)) return playerId;
-            throw new UnauthorizedAccessException("player_id claim is required.");
+            throw new UnauthorizedAccessException("internal user_id claim is required.");
         }
     }
 

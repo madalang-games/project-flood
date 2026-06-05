@@ -1,10 +1,21 @@
+using System.Security.Claims;
+using System.Threading.RateLimiting;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using ProjectFlood.API;
+using ProjectFlood.API.Filters;
 using ProjectFlood.API.Middleware;
 using ProjectFlood.Application.Rewards;
 using ProjectFlood.Application.Stage;
 using ProjectFlood.Application.Stamina;
+using ProjectFlood.Domain.Interfaces;
+using ProjectFlood.Domain.Utilities;
+using ProjectFlood.Infrastructure.Concurrency;
 using ProjectFlood.Infrastructure.Generated;
+using ProjectFlood.Infrastructure.Security;
+using ProjectFlood.Contracts.Common;
 using Serilog;
 using Serilog.Events;
 using StackExchange.Redis;
@@ -25,7 +36,7 @@ builder.Host.UseSerilog((context, services, loggerConfiguration) => loggerConfig
     .Enrich.FromLogContext()
     .Enrich.With<ShortSourceContextEnricher>());
 
-builder.Services.AddControllers();
+builder.Services.AddControllers(options => options.Filters.AddService<UserSerializeFilter>());
 builder.Services.AddEndpointsApiExplorer();
 
 // 1. DbContext
@@ -35,7 +46,18 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 // 2. Redis
 builder.Services.AddSingleton<IConnectionMultiplexer>(_ => ConnectionMultiplexer.Connect(appConfig.Redis.ConnectionString));
 
-// 3. Application services
+// 3. Infrastructure and shared services
+builder.Services.AddSingleton<UserSerializer>();
+builder.Services.AddScoped<UserSerializeFilter>();
+builder.Services.AddSingleton(new NicknameGenerator());
+builder.Services.AddHttpClient<IPlatformAuthClient, PlatformAuthClient>();
+builder.Services.AddHttpClient("jwt-public-key-cache");
+builder.Services.AddSingleton(sp => new JwtPublicKeyCache(
+    sp.GetRequiredService<IConfiguration>(),
+    sp.GetRequiredService<IHttpClientFactory>().CreateClient("jwt-public-key-cache")));
+builder.Services.AddHostedService(sp => sp.GetRequiredService<JwtPublicKeyCache>());
+
+// 4. Application services
 builder.Services.AddSingleton<StaminaConfigProvider>();
 builder.Services.AddScoped<StaminaService>();
 builder.Services.AddScoped<StageAttemptService>();
@@ -43,8 +65,64 @@ builder.Services.AddScoped<RewardService>();
 builder.Services.AddScoped<AdRewardService>();
 builder.Services.AddSingleton<IAdRewardVerifier, DevelopmentAdRewardVerifier>();
 
-// 4. Configuration
+// 5. Configuration and auth
 builder.Services.AddSingleton(appConfig);
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer();
+builder.Services.AddOptions<JwtBearerOptions>(JwtBearerDefaults.AuthenticationScheme)
+    .Configure<JwtPublicKeyCache>((options, keyCache) =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKeyResolver = (_, _, kid, _) => keyCache.GetKeysForKid(kid),
+            ValidateIssuer = true,
+            ValidIssuer = appConfig.Auth.JwtIssuer,
+            ValidateAudience = true,
+            ValidAudience = appConfig.Auth.JwtAudience,
+            ValidateLifetime = true,
+            ClockSkew = TimeSpan.FromMinutes(1),
+        };
+    });
+builder.Services.AddAuthorization();
+
+// 6. Rate limiting
+builder.Services.AddRateLimiter(options =>
+{
+    options.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(context =>
+        RateLimitPartition.GetFixedWindowLimiter(
+            context.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+            _ => new FixedWindowRateLimiterOptions
+            {
+                PermitLimit = 500,
+                Window = TimeSpan.FromMinutes(1),
+                QueueLimit = 0,
+            }));
+
+    options.AddPolicy("stage_start", context =>
+        RateLimitPartition.GetFixedWindowLimiter(
+            context.User.FindFirstValue(UserClaims.UserId)
+            ?? context.User.GetPlatformPid()
+            ?? context.Connection.RemoteIpAddress?.ToString()
+            ?? "anon",
+            _ => new FixedWindowRateLimiterOptions
+            {
+                PermitLimit = appConfig.RateLimit.StageStartPerHour,
+                Window = TimeSpan.FromHours(1),
+                QueueLimit = 0,
+            }));
+
+    options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+    options.OnRejected = async (context, token) =>
+    {
+        context.HttpContext.Response.ContentType = "application/json";
+        await context.HttpContext.Response.WriteAsJsonAsync(new ErrorResponse
+        {
+            Code = "RATE_LIMITED",
+            Message = "Too many requests.",
+        }, token);
+    };
+});
 
 var app = builder.Build();
 
@@ -59,6 +137,11 @@ app.UseSerilogRequestLogging(options =>
     };
 });
 app.UseMiddleware<ApiExceptionMiddleware>();
+app.UseAuthentication();
+app.UseMiddleware<UserIdResolutionMiddleware>();
+app.UseAuthorization();
+app.UseRateLimiter();
+app.UseMiddleware<VersionCheckMiddleware>();
 
 app.MapControllers();
 app.Run();

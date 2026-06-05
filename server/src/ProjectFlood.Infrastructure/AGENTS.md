@@ -4,12 +4,12 @@
 | path | role |
 |------|------|
 | `Generated/` | Auto-generated EF Core entities + AppDbContext (DO NOT EDIT) |
-| `Persistence/` | Repository implementations |
-| `Cache/` | Redis cache implementations |
-| `Auth/` | JWT key cache + JWKS client |
-| `StaticData/` | StaticDataService implementation |
+| `Security/` | JWT key cache + platform-auth UID lookup | -> `Security/AGENTS.md` |
+| `Concurrency/` | Per-user request serialization helpers | -> `Concurrency/AGENTS.md` |
+| `Data/` | Generated static-data service partials (DO NOT EDIT) | -> `Data/AGENTS.md` |
 
 ## Rules
-- NEVER edit `Generated/` — re-run `npm run gen:orm`
-- Column → snake_case mapping done in `AppDbContext.OnModelCreating`
-- NEW_DIR: create `AGENTS.md` for it + update Nav above
+- NEVER edit `Generated/` - re-run `npm run gen:orm`.
+- Column names are mapped to snake_case in `AppDbContext.OnModelCreating`.
+- Do not implement account identity, refresh-token, logout, or session revocation logic here.
+- NEW_DIR: create `AGENTS.md` for it + update Nav above.

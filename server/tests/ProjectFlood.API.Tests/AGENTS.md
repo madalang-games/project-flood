@@ -4,6 +4,8 @@
 | file | class | role |
 |------|-------|------|
 | `ProjectFlood.API.Tests.csproj` | project | xUnit API integration test project |
+| `UserClaimsTests.cs` | `UserClaimsTests` | Verifies internal uid claim is separate from JWT `sub` PID |
+| `VersionCheckMiddlewareTests.cs` | `VersionCheckMiddlewareTests` | Verifies version/protocol gate behavior |
 
 ## Rules
 - Keep tests deterministic and engine-free

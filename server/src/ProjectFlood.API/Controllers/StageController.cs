@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using ProjectFlood.Application.Stage;
 using ProjectFlood.Contracts.Stage;
 
@@ -16,6 +17,7 @@ public sealed class StageController : ControllerBaseEx
     }
 
     [HttpPost("{stageId:int}/attempts/start")]
+    [EnableRateLimiting("stage_start")]
     public Task<StageAttemptStartResponse> Start(int stageId, [FromBody] StageAttemptStartRequest request, CancellationToken ct)
         => _attempts.StartAsync(PlayerId, stageId, CorrelationId, ct);
 
