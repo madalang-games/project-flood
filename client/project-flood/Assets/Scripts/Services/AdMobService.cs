@@ -168,7 +168,7 @@ namespace Game.Services
 
 #else
         // Dev stub — used when Google Mobile Ads SDK is not installed.
-        // WatchRewardedAd immediately grants the reward with a test nonce.
+        // Reward success must not be mocked on the client.
         // ShowInterstitialIfEligible skips the ad and calls onComplete(false).
 
         private void Awake()
@@ -185,8 +185,7 @@ namespace Game.Services
 
         public void WatchRewardedAd(string placementId, Action<AdWatchResult?> onComplete)
         {
-            var nonce = $"dev_{Guid.NewGuid():N}";
-            onComplete?.Invoke(new AdWatchResult { Earned = true, AdToken = nonce });
+            onComplete?.Invoke(null);
         }
 
         public void ShowInterstitialIfEligible(int stageId, bool suppressByDoubleReward, Action<bool> onComplete)

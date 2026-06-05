@@ -1,4 +1,4 @@
-# Scripts/Services — Client Service Boundaries
+# Scripts/Services - Client Service Boundaries
 
 Namespace: `Game.Services`
 
@@ -7,7 +7,7 @@ Namespace: `Game.Services`
 |------|-------|------|
 | `StageDataService.cs` | `StageDataService` | DDOL singleton; loads Stage CSV via CsvLoader; GetStage(id), GetAll(), MaxStageId() |
 | `PlayerProgressService.cs` | `PlayerProgressService` | DDOL singleton; gold balance, per-stage stars/unlock stored in PlayerPrefs |
-| `AuthService.cs` | `AuthService` | DDOL singleton; auth result enum; Initialize(callback); stub — Phase 2 adds real HTTP |
+| `AuthService.cs` | `AuthService` | DDOL singleton; auth result enum; Initialize(callback); stub until real HTTP auth wiring |
 | `LocalizationService.cs` | `LocalizationService` | DDOL singleton; loads string/error CSV tables; Get(key), GetError(code), SetLanguage(Language), GetFont(Language) |
 | `IAdService.cs` | `IAdService`, `AdWatchResult` | Ad service interface; WatchRewardedAd(placementId, cb); ShowInterstitialIfEligible(stageId, suppress, cb) |
 | `AdMobService.cs` | `AdMobService` | DDOL singleton; implements IAdService; multi-placement rewarded ads + interstitial; SSV nonce set before Show() |
@@ -31,7 +31,7 @@ Namespace: `Game.Services`
 | `PlayerProgressService.CanAfford(int)` | method | Gold >= cost check |
 | `PlayerProgressService.SpendGold(int)` | method | Returns false if insufficient gold |
 | `PlayerProgressService.AddGold(int)` | method | Persists to PlayerPrefs |
-| `PlayerProgressService.GetBestStars(int)` | method | 0–3; lazy-loaded from PlayerPrefs |
+| `PlayerProgressService.GetBestStars(int)` | method | 0..3; lazy-loaded from PlayerPrefs |
 | `PlayerProgressService.IsStageUnlocked(int)` | method | Stage 1 always true; lazy-loaded |
 | `PlayerProgressService.RecordClear(int,int)` | method | Updates best stars + unlocks stageId+1 |
 | `AuthService.IsGuest` | prop | true until OAuth link |
@@ -41,7 +41,7 @@ Namespace: `Game.Services`
 | `AuthService.Logout()` | method | Clears all auth prefs |
 | `AuthResult` | enum | Authenticated / Guest / ReLoginRequired |
 | `AdWatchResult.Earned` | field | true if user earned the reward |
-| `AdWatchResult.AdToken` | field | SSV nonce — pass to server POST endpoint for reward claim |
+| `AdWatchResult.AdToken` | field | SSV nonce; pass to server POST endpoint for reward claim |
 | `IAdService.WatchRewardedAd(string,Action<AdWatchResult?>)` | method | null result = cancel/fail/no-ad loaded |
 | `IAdService.ShowInterstitialIfEligible(int,bool,Action<bool>)` | method | bool wasShown; caller posts /api/ad/interstitial/shown if true |
 | `AdMobService.Instance` | prop | DDOL singleton |
@@ -58,14 +58,15 @@ Namespace: `Game.Services`
 | `RankingApiService.FetchMyStageRank` | method | GET current user's stage rank |
 
 ## Rules
-- All services are DDOL — place GameObjects in Boot scene only
-- PlayerPrefs keys must not clash: prefix `auth_`, `gold`, `stars_`, `unlocked_`, `lang`
-- AuthService is a stub; server-side auth is Phase 2
-- LocalizationService must initialize before any LocalizedText.Awake() — place it first in Boot scene
-- AdEligibilityCache.Refresh must be called after auth is available (has auth token)
+- All services are DDOL; place GameObjects in Boot scene only.
+- PlayerPrefs keys must not clash: prefix `auth_`, `gold`, `stars_`, `unlocked_`, `lang`.
+- AuthService is a stub; server-side auth is Phase 2.
+- LocalizationService must initialize before any LocalizedText.Awake(); place it first in Boot scene.
+- AdEligibilityCache.Refresh must be called after auth is available.
 - StageApiService and RankingApiService are optional until full server auth wiring lands; local flow must continue if absent.
-- AdMobService ad unit IDs: all test IDs — replace with production IDs before release
-- pkt_generator must be run to sync Ad + Currency contracts to Generated/Contracts/ before ad flows work
+- AdMobService ad unit IDs are all test IDs; replace with production IDs before release.
+- AdMobService SDK-missing stub must return `null` for rewarded ads; reward success is verified or mocked only server-side.
+- pkt_generator must be run to sync Ad + Currency contracts to Generated/Contracts/ before ad flows work.
 
 ## Cross-refs
 - Depends on: `Game.Utils.CsvLoader`, `ProjectFlood.Data.Generated.Stage`, `Game.Localization.FontLocalizationConfig`
