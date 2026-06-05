@@ -19,6 +19,7 @@ export interface StageRow {
   cells: string;
   verified_solution: string;
   ruleset_version: number;
+  reward_group_id: number;
 }
 
 export interface PaletteColor {

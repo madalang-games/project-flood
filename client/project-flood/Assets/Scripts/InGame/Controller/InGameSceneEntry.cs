@@ -83,6 +83,7 @@ namespace Game.InGame.Controller
             _controller.OnStageEnd          += OnStageEnd;
 
             _controller.Init(_stage);
+            StageApiService.Instance?.StartAttempt(_stage.stage_id);
         }
 
         private void OnDestroy()
@@ -133,6 +134,10 @@ namespace Game.InGame.Controller
                 PlayerProgressService.Instance?.AddGold(_goldEarned);
                 PlayerProgressService.Instance?.RecordClear(_stage.stage_id, (int)result);
             }
+            else
+            {
+                StageApiService.Instance?.FailAttempt(_stage.stage_id);
+            }
 
             float ratio     = _controller.ComputeRatioPublic();
             bool  nextLocked = StageDataService.Instance?.GetStage(nextId) == null
@@ -153,6 +158,15 @@ namespace Game.InGame.Controller
                 overlay.OnRetry += () => { UIManager.Instance?.CloseOverlay(); SceneManager.LoadScene(InGameScene); };
                 overlay.OnNext  += () => { UIManager.Instance?.CloseOverlay(); ScrollStateCache.LastPlayedStageId = nextId; SceneManager.LoadScene(InGameScene); };
                 overlay.OnMap   += () => { UIManager.Instance?.CloseOverlay(); GoToLobby(); };
+
+                if (!fail && StageApiService.Instance != null && StageApiService.Instance.HasAttemptFor(_stage.stage_id))
+                {
+                    var request = _controller.BuildClearRequest(System.Guid.NewGuid().ToString("N"));
+                    StageApiService.Instance.ClearAttempt(_stage.stage_id, request, response =>
+                    {
+                        overlay.SetServerRank(response.StageRank, response.IsNewBest);
+                    }, error => Debug.LogWarning($"[InGameSceneEntry] stage clear sync failed: {error}"));
+                }
             }
         }
 

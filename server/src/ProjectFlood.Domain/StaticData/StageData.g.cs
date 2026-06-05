@@ -6,5 +6,12 @@ namespace ProjectFlood.Domain.StaticData;
 public class StageData
 {
     public int StageId { get; set; }
+    public sbyte BoardWidth { get; set; }
+    public sbyte BoardHeight { get; set; }
+    public sbyte TurnLimit { get; set; }
+    public float Star1Ratio { get; set; }
+    public float Star2Ratio { get; set; }
+    public string Cells { get; set; } = "";
+    public sbyte RulesetVersion { get; set; }
     public int RewardGroupId { get; set; }
 }

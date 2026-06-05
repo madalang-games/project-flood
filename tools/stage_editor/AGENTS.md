@@ -14,7 +14,7 @@ Standalone development tool. Reads/writes `shared/datas/stage/stage.csv` and `sh
 | `src/components/StageList.tsx` | Left sidebar — stage list + new/delete |
 | `src/components/BoardEditor.tsx` | Grid canvas — paint / erase / playtest tap |
 | `src/components/CellInspector.tsx` | Right panel — brush + selected cell editor |
-| `src/components/MetadataPanel.tsx` | Stage metadata fields (size, turns, difficulty, ratios) |
+| `src/components/MetadataPanel.tsx` | Stage metadata fields (size, turns, difficulty, ratios, reward group) |
 | `src/components/PlaytestPanel.tsx` | Playtest controls, recording, validate, export, save |
 | `src/components/GeneratorPanel.tsx` | Generator mode — random board fill from settings (colors, obstacles, protectors, cores) |
 | `src/lib/csv.ts` | CSV read/write (4-row header format) |
@@ -28,7 +28,7 @@ Standalone development tool. Reads/writes `shared/datas/stage/stage.csv` and `sh
 |------|-------------|------|
 | `src/components/GeneratorPanel.tsx` | `GeneratorSettings` | colorCount, obstacleCount, protectorCount, protectorLevel, coreCellCount |
 | `src/types/stage.ts` | `CellData` | colorId, type (Basic|Obstacle|Void), protector, isCore |
-| `src/types/stage.ts` | `StageRow` | Raw CSV row shape |
+| `src/types/stage.ts` | `StageRow` | Raw CSV row shape, including server-only reward_group_id |
 | `src/types/stage.ts` | `StageMeta` | StageRow minus cells/color_ids (edit state) |
 | `src/types/stage.ts` | `BrushSettings` | Current paint brush |
 | `src/lib/ctm.ts` | `decodeCTM` | 3-char hex → CellData |
@@ -67,6 +67,7 @@ Standalone development tool. Reads/writes `shared/datas/stage/stage.csv` and `sh
 - NEVER write to `shared/datas/` manually from outside this service during editor session
 - `_` prefix files/dirs skipped per project convention
 - NEW_DIR: create `AGENTS.md` for it + update Nav above
+- `reward_group_id` must be preserved when writing stage.csv; server clear reward lookup depends on it.
 - Void brush: no color/protector/isCore options; CTM T=2; renders as board background color in BoardEditor
 - Rotate 180° button: PlaytestPanel, visible during active playtest only; calls rotate180 + applyGravity
 

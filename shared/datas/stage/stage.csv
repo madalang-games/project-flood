@@ -1,5 +1,5 @@
 stage_id,board_width,board_height,turn_limit,difficulty,color_ids,star1_ratio,star2_ratio,cells,verified_solution,ruleset_version,reward_group_id
-CS,C,C,C,C,C,C,C,C,C,C,S
+CS,CS,CS,CS,C,C,CS,CS,CS,C,CS,S
 int32,int8,int8,int8,Difficulty,string,float,float,string,string,int8,int32
 PK,NN,NN,NN,NN,NN,NN,NN,NN,NN,NN,NN
 1,4,4,5,0,"0,1,2",0.80,0.90,100100100100200100100100200200100000000000000000,"1,0;1,2;2,1;2,3",1,2001

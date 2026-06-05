@@ -26,8 +26,6 @@ namespace Game.OutGame.Lobby
             _shopButton.onClick.AddListener(    () => SelectTab(LobbyTab.Shop));
             _rankingButton.onClick.AddListener( () => SelectTab(LobbyTab.Ranking));
 
-            // Ranking: MVP disabled
-            _rankingButton.interactable = false;
             SetTabHighlight(LobbyTab.Home);
         }
 

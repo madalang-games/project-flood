@@ -114,4 +114,16 @@ public sealed class PlayersDb
     public IQueryable<(PlayersRow Player, UserCurrencyRow UserCurrency)> JoinWithUserCurrency()
         => Query().Join(_db._UserCurrency, l => l.UserId, r => r.UserId,
             (l, r) => ValueTuple.Create(l, r));
+
+    public IQueryable<(PlayersRow Player, UserStageProgressRow UserStageProgress)> JoinWithUserStageProgress()
+        => Query().Join(_db._UserStageProgress, l => l.UserId, r => r.UserId,
+            (l, r) => ValueTuple.Create(l, r));
+
+    public IQueryable<(PlayersRow Player, StageClearRecordsRow StageClearRecord)> JoinWithStageClearRecords()
+        => Query().Join(_db._StageClearRecords, l => l.UserId, r => r.UserId,
+            (l, r) => ValueTuple.Create(l, r));
+
+    public IQueryable<(PlayersRow Player, UserRankingTotalsRow UserRankingTotal)> JoinWithUserRankingTotals()
+        => Query().Join(_db._UserRankingTotals, l => l.UserId, r => r.UserId,
+            (l, r) => ValueTuple.Create(l, r));
 }

@@ -19,6 +19,7 @@ Consumed by:
 | `Rewards/` | Generic reward source and ad reward DTOs |
 | `Currency/` | Soft currency snapshot DTO |
 | `Ad/` | Ad eligibility, interstitial, double reward DTOs |
+| `Ranking/` | Global and stage ranking DTOs |
 
 ## Rules
 - `netstandard2.1` only; no C# 10+ features, no nullable reference types at project level (use `#nullable enable` per file).

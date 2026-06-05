@@ -1,42 +1,96 @@
 # Social & Ranking System Design
 
-## 1. Overview
-The Social & Ranking System leverages competitive psychology and community data to provide validation and "prestige" to active players.
+## 1. Authority
+- DB is the source of truth for player progress and ranking aggregates.
+- Redis is a rebuildable ranking cache/index. Redis writes happen after DB commit and may be dirty-read by clear responses.
+- Redis loss is recovered from DB during server init, lazy rebuild on cache miss, or admin-triggered rebuild.
+- Stage clear validation uses server-side static data fields marked `CS` in `shared/datas/stage/stage.csv`.
 
----
+## 2. Stage Clear Validation
+Client sends summary inputs in `StageAttemptClearRequest`:
+- `ruleset_version`
+- `turns_used`
+- `remaining_basic_cells`
+- `core_remaining`
 
-## 2. Global Star Ranking (The "Prestige" Leaderboard)
-A cross-player ranking based on the total number of stars collected across all chapters.
+Server validates:
+- active Redis attempt exists and matches user/stage/attempt id
+- attempt is not expired
+- request ruleset matches static stage ruleset
+- `turns_used` is within `0..turn_limit`
+- `remaining_basic_cells` is within `0..total_basic_cells`
+- `core_remaining == false`
 
-### Backend Implementation (Redis)
-- **Data Structure:** `Sorted Set (ZSET)`
-- **Key:** `ranking:global:stars`
-- **Member:** `user_id`
-- **Score:** `total_earned_stars`
+Server computes stars from static stage data:
+- `total_basic_cells` is parsed from stage `cells`, excluding obstacle and void cells
+- cleared ratio = `(total_basic_cells - remaining_basic_cells) / total_basic_cells`
+- 3 stars if all basic cells were cleared
+- 2 stars if ratio is at least `star2_ratio`
+- 1 star if ratio is at least `star1_ratio`
+- otherwise the clear request is invalid
 
-### UI/UX
-- **Lobby Entry:** Shows "Current Rank: #1,234".
-- **Ranking Board:** Top 100 players with their Display Name, Avatar, and Total Stars.
+## 3. DB Model
+`user_stage_progress`
+- One row per user/stage.
+- Stores `best_star`, `best_turns_used`, first clear time, best update times.
+- Used to rebuild stage ranking Redis keys.
 
----
+`stage_clear_records`
+- Append-only clear audit.
+- Stores the validation inputs, computed total basic cells, stars, and `is_new_best`.
 
-## 3. Stage Performance Percentage (Social Comparison)
-Real-time feedback on the result screen comparing the player's efficiency with the community.
+`user_ranking_totals`
+- One row per user.
+- Stores `total_earned_stars`, timestamp when the current total was achieved, `max_cleared_stage_id`, and timestamp when that max was achieved.
+- Used to rebuild global ranking Redis keys.
 
-### Mechanism
-- Each stage tracks the distribution of "Turns Used" by players who achieved 3 Stars.
-- When a player clears a stage, the system calculates their percentile.
+## 4. Stage Ranking
+- Ranking unit: per-stage best `turns_used`.
+- Only each player's best score is indexed; duplicate lower-quality clears do not create extra ranking entries.
+- Ranking style: competition ranking.
+- My stage rank = number of players with strictly lower best turns + 1.
+- Stage ranking API only exposes my rank and my best turns for the requested stage.
 
-### Calculation (Redis)
-- **ZCOUNT** is used to count how many players cleared the stage with *fewer or equal* turns.
-- **Percentage = (Rank / TotalClears) * 100**
+Redis key:
+- `ranking:stage:{stageId}:turns`
+- member: `user_id`
+- score: `best_turns_used`
 
-### UI/UX
-- **Result Screen:** "You cleared this stage faster than **95%** of players!"
-- **Role:** Provides high emotional satisfaction without the need for material rewards.
+## 5. Global Ranking
+Ranking tab exposes two paged tabs.
 
----
+Stars tab:
+- score: `total_earned_stars`
+- higher is better
+- tie-breaker: earlier `total_stars_achieved_at`
 
-## 4. Future Social Features (Backlog)
-- **Friends Ranking:** Filter global ranking to show only platform friends.
-- **Ghost Data:** (Speculative) Replay the "verified solution" or Top 1% player's tap sequence as a guide.
+Max stage tab:
+- score: `max_cleared_stage_id`
+- higher is better
+- tie-breaker: earlier `max_stage_achieved_at`
+
+Redis keys use an ascending numeric composite score:
+- `ranking:global:stars`
+- `ranking:global:max_stage`
+- score = `-primaryScore * 1_000_000_000 + achievedUnixSeconds`
+
+Because the tie-breaker is deterministic, global list ranks are dense by sorted position. A separate `my rank` endpoint returns the current user's card for the ranking tab footer.
+
+## 6. API Contract
+Stage clear response adds:
+- `stars`
+- `turns_used`
+- `stage_rank`
+- `is_new_best`
+
+`is_new_best` is true only when `turns_used` improves the player's per-stage best turns.
+
+Ranking API:
+- `GET /api/rankings/global/stars?offset=&limit=`
+- `GET /api/rankings/global/stars/me`
+- `GET /api/rankings/global/max-stage?offset=&limit=`
+- `GET /api/rankings/global/max-stage/me`
+- `GET /api/rankings/stages/{stageId}/me`
+- `POST /api/rankings/admin/rebuild`
+
+Page size is clamped server-side. Clients should use paging instead of requesting the full leaderboard.

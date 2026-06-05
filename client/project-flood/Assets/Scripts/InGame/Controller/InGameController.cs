@@ -6,6 +6,7 @@ using Game.InGame.Items;
 using Game.InGame.Rules;
 using Game.InGame.View;
 using ProjectFlood.Contracts.GameTypes;
+using ProjectFlood.Contracts.Stage;
 using ProjectFlood.Data.Generated;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -214,6 +215,18 @@ namespace Game.InGame.Controller
 
         public float ComputeRatioPublic() => ComputeRatio();
 
+        public StageAttemptClearRequest BuildClearRequest(string clientRequestId)
+        {
+            return new StageAttemptClearRequest
+            {
+                ClientRequestId = clientRequestId,
+                RulesetVersion = _stage?.ruleset_version ?? 0,
+                TurnsUsed = _stage == null || _turnManager == null ? 0 : _stage.turn_limit - _turnManager.RemainingTurns,
+                RemainingBasicCells = CountRemainingBasicCells(),
+                CoreRemaining = HasCoreRemaining(),
+            };
+        }
+
         public void Continue(int extraTurns)
         {
             _continueUsed = true;
@@ -231,6 +244,13 @@ namespace Game.InGame.Controller
         private float ComputeRatio()
         {
             if (_board == null || _board.InitialValidCells == 0) return 0f;
+            int remaining = CountRemainingBasicCells();
+            return (_board.InitialValidCells - remaining) / (float)_board.InitialValidCells;
+        }
+
+        private int CountRemainingBasicCells()
+        {
+            if (_board == null) return 0;
             int remaining = 0;
             for (int r = 0; r < _board.Height; r++)
             for (int c = 0; c < _board.Width;  c++)
@@ -242,7 +262,20 @@ namespace Game.InGame.Controller
                     t == ProjectFlood.Contracts.GameTypes.CellType.Void) continue;
                 remaining++;
             }
-            return (_board.InitialValidCells - remaining) / (float)_board.InitialValidCells;
+            return remaining;
+        }
+
+        private bool HasCoreRemaining()
+        {
+            if (_board == null || !_board.HasCore) return false;
+            for (int r = 0; r < _board.Height; r++)
+            for (int c = 0; c < _board.Width; c++)
+            {
+                var cell = _board.Grid[r, c];
+                if (cell.HasValue && cell.Value.is_core)
+                    return true;
+            }
+            return false;
         }
 
         private static CellData?[,] CloneGrid(BoardState board)

@@ -117,6 +117,64 @@
         { "name": "soft_amount",  "type": "int64",    "null": false, "default": 0 },
         { "name": "updated_at",   "type": "datetime", "null": false }
       ]
+    },
+    {
+      "name": "user_stage_progress",
+      "comment": "Per-player per-stage best clear state used as the source of truth for stage ranking rebuilds.",
+      "columns": [
+        { "name": "user_id",              "type": "int64",    "pk": true, "null": false, "fk": "players.user_id" },
+        { "name": "stage_id",             "type": "int32",    "pk": true, "null": false },
+        { "name": "best_star",            "type": "int32",    "null": false, "default": 0 },
+        { "name": "best_turns_used",      "type": "int32",    "null": true },
+        { "name": "first_cleared_at",     "type": "datetime", "null": true },
+        { "name": "best_star_updated_at", "type": "datetime", "null": true },
+        { "name": "best_turns_updated_at","type": "datetime", "null": true },
+        { "name": "updated_at",           "type": "datetime", "null": false }
+      ],
+      "indexes": [
+        { "name": "idx_user_stage_progress_stage_turns", "columns": ["stage_id", "best_turns_used"], "unique": false },
+        { "name": "idx_user_stage_progress_user_id", "columns": ["user_id"], "unique": false }
+      ]
+    },
+    {
+      "name": "stage_clear_records",
+      "comment": "Append-only stage clear records for audit and analytics; best state is stored in user_stage_progress.",
+      "columns": [
+        { "name": "id",                    "type": "int64",      "pk": true, "auto": true, "null": false },
+        { "name": "user_id",               "type": "int64",      "null": false, "fk": "players.user_id" },
+        { "name": "stage_id",              "type": "int32",      "null": false },
+        { "name": "attempt_id",            "type": "string(64)", "null": false, "unique": true },
+        { "name": "ruleset_version",       "type": "int32",      "null": false },
+        { "name": "turns_used",            "type": "int32",      "null": false },
+        { "name": "remaining_basic_cells", "type": "int32",      "null": false },
+        { "name": "total_basic_cells",     "type": "int32",      "null": false },
+        { "name": "core_remaining",        "type": "bool",       "null": false },
+        { "name": "stars",                 "type": "int32",      "null": false },
+        { "name": "is_new_best",           "type": "bool",       "null": false },
+        { "name": "correlation_id",        "type": "string(36)", "null": false },
+        { "name": "created_at",            "type": "datetime",   "null": false }
+      ],
+      "indexes": [
+        { "name": "idx_stage_clear_records_user_id", "columns": ["user_id"], "unique": false },
+        { "name": "idx_stage_clear_records_stage_id", "columns": ["stage_id"], "unique": false },
+        { "name": "idx_stage_clear_records_correlation_id", "columns": ["correlation_id"], "unique": false }
+      ]
+    },
+    {
+      "name": "user_ranking_totals",
+      "comment": "Per-player global ranking aggregates rebuilt from user_stage_progress if Redis is lost.",
+      "columns": [
+        { "name": "user_id",                 "type": "int64",    "pk": true, "null": false, "fk": "players.user_id" },
+        { "name": "total_earned_stars",      "type": "int32",    "null": false, "default": 0 },
+        { "name": "total_stars_achieved_at", "type": "datetime", "null": true },
+        { "name": "max_cleared_stage_id",    "type": "int32",    "null": false, "default": 0 },
+        { "name": "max_stage_achieved_at",   "type": "datetime", "null": true },
+        { "name": "updated_at",              "type": "datetime", "null": false }
+      ],
+      "indexes": [
+        { "name": "idx_user_ranking_totals_stars", "columns": ["total_earned_stars", "total_stars_achieved_at"], "unique": false },
+        { "name": "idx_user_ranking_totals_max_stage", "columns": ["max_cleared_stage_id", "max_stage_achieved_at"], "unique": false }
+      ]
     }
   ]
 }

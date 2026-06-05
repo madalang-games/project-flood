@@ -30,6 +30,10 @@ namespace ProjectFlood.Contracts.Stage
         public int StageId { get; set; }
         public string Result { get; set; } = string.Empty;
         public bool LifeRefunded { get; set; }
+        public int Stars { get; set; }
+        public int TurnsUsed { get; set; }
+        public int? StageRank { get; set; }
+        public bool IsNewBest { get; set; }
         public List<GrantedRewardDto> GrantedRewards { get; set; } = new List<GrantedRewardDto>();
         public CurrencySnapshot? Currency { get; set; }
         public StaminaSnapshot Stamina { get; set; } = new StaminaSnapshot();

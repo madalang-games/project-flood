@@ -8,6 +8,7 @@ using ProjectFlood.API;
 using ProjectFlood.API.Filters;
 using ProjectFlood.API.Middleware;
 using ProjectFlood.Application.Currency;
+using ProjectFlood.Application.Ranking;
 using ProjectFlood.Application.Rewards;
 using ProjectFlood.Application.Stage;
 using ProjectFlood.Application.Stamina;
@@ -17,6 +18,7 @@ using ProjectFlood.Infrastructure.Concurrency;
 using ProjectFlood.Infrastructure.Generated;
 using ProjectFlood.Infrastructure.Security;
 using ProjectFlood.Contracts.Common;
+using Scalar.AspNetCore;
 using Serilog;
 using Serilog.Events;
 using StackExchange.Redis;
@@ -39,6 +41,9 @@ builder.Host.UseSerilog((context, services, loggerConfiguration) => loggerConfig
 
 builder.Services.AddControllers(options => options.Filters.AddService<UserSerializeFilter>());
 builder.Services.AddEndpointsApiExplorer();
+
+if (builder.Environment.IsDevelopment())
+    builder.Services.AddSwaggerGen();
 
 // 1. DbContext
 builder.Services.AddDbContext<AppDbContext>(options =>
@@ -68,12 +73,14 @@ builder.Services.AddHostedService(sp => sp.GetRequiredService<AdMobSsvKeyCache>(
 builder.Services.AddSingleton<StaminaConfigProvider>();
 builder.Services.AddScoped<StaminaService>();
 builder.Services.AddScoped<CurrencyService>();
+builder.Services.AddScoped<RankingService>();
 builder.Services.AddScoped<StageAttemptService>();
 builder.Services.AddScoped<RewardService>();
 builder.Services.AddScoped<AdRewardService>();
 builder.Services.AddScoped<AdMobSsvCallbackService>();
 builder.Services.AddScoped<AdInterstitialService>();
 builder.Services.AddScoped<AdDoubleRewardService>();
+builder.Services.AddHostedService<RankingRebuildHostedService>();
 
 if (builder.Environment.IsDevelopment())
     builder.Services.AddSingleton<IAdRewardVerifier, DevelopmentAdRewardVerifier>();
@@ -159,4 +166,11 @@ app.UseRateLimiter();
 app.UseMiddleware<VersionCheckMiddleware>();
 
 app.MapControllers();
+
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.MapScalarApiReference();
+}
+
 app.Run();

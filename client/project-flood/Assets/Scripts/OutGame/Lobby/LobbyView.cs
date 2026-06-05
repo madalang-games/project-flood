@@ -9,6 +9,8 @@ namespace Game.OutGame.Lobby
         [SerializeField] private BottomNavBarView _navBar;
         [SerializeField] private GameObject      _homeTabRoot;
         [SerializeField] private GameObject      _shopTabRoot;
+        [SerializeField] private GameObject      _rankingTabRoot;
+        [SerializeField] private RankingTabView  _rankingTabView;
 
         private void Awake()
         {
@@ -31,6 +33,9 @@ namespace Game.OutGame.Lobby
         {
             _homeTabRoot?.SetActive(tab == LobbyTab.Home);
             _shopTabRoot?.SetActive(tab == LobbyTab.Shop);
+            _rankingTabRoot?.SetActive(tab == LobbyTab.Ranking);
+            if (tab == LobbyTab.Ranking)
+                _rankingTabView?.Refresh();
         }
     }
 }

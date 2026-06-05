@@ -12,6 +12,7 @@ namespace Game.InGame.View
         [SerializeField] private TMP_Text    _titleText;
         [SerializeField] private TMP_Text    _ratioText;
         [SerializeField] private TMP_Text    _turnsText;
+        [SerializeField] private TMP_Text    _rankText;
         [SerializeField] private TMP_Text    _goldText;
         [SerializeField] private GameObject[] _starObjects; // 3 stars
         [SerializeField] private Button      _retryButton;
@@ -45,6 +46,8 @@ namespace Game.InGame.View
 
             if (_turnsText != null)
                 _turnsText.text = $"Turns used: {turnsUsed}/{totalTurns}";
+            if (_rankText != null)
+                _rankText.text = "";
 
             if (_goldRow != null) _goldRow.SetActive(!fail);
             if (_goldText != null && !fail)
@@ -63,6 +66,14 @@ namespace Game.InGame.View
             }
 
             StartCoroutine(PlayStarSequence(stars));
+        }
+
+        public void SetServerRank(int? stageRank, bool isNewBest)
+        {
+            if (_rankText == null) return;
+            _rankText.text = stageRank.HasValue
+                ? $"Stage Rank: #{stageRank.Value}" + (isNewBest ? "  New Best" : "")
+                : "";
         }
 
         private IEnumerator PlayStarSequence(int filledCount)

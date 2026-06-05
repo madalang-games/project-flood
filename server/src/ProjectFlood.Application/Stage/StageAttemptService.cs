@@ -2,10 +2,12 @@ using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
 using ProjectFlood.Application.Common;
 using ProjectFlood.Application.Logging;
+using ProjectFlood.Application.Ranking;
 using ProjectFlood.Application.Rewards;
 using ProjectFlood.Application.Stamina;
 using ProjectFlood.Contracts.Rewards;
 using ProjectFlood.Contracts.Stage;
+using ProjectFlood.Contracts.Stamina;
 using ProjectFlood.Generated.Data;
 using ProjectFlood.Infrastructure.Generated;
 using StackExchange.Redis;
@@ -22,9 +24,10 @@ public sealed class StageAttemptService
     private readonly StaminaConfigProvider _config;
     private readonly IAdRewardVerifier _adVerifier;
     private readonly RewardService _rewards;
+    private readonly RankingService _ranking;
     private readonly Lazy<IReadOnlyDictionary<int, ProjectFlood.Generated.Data.Stage>> _stageData;
 
-    public StageAttemptService(AppDbContext db, IConnectionMultiplexer redis, StaminaService stamina, StaminaConfigProvider config, IAdRewardVerifier adVerifier, RewardService rewards)
+    public StageAttemptService(AppDbContext db, IConnectionMultiplexer redis, StaminaService stamina, StaminaConfigProvider config, IAdRewardVerifier adVerifier, RewardService rewards, RankingService ranking)
     {
         _db = db;
         _redis = redis.GetDatabase();
@@ -32,6 +35,7 @@ public sealed class StageAttemptService
         _config = config;
         _adVerifier = adVerifier;
         _rewards = rewards;
+        _ranking = ranking;
         _stageData = new Lazy<IReadOnlyDictionary<int, ProjectFlood.Generated.Data.Stage>>(() =>
             StageLoader.LoadAsDict(Path.Combine(AppContext.BaseDirectory, "generated", "data", "stage", "stage.csv")));
     }
@@ -68,21 +72,31 @@ public sealed class StageAttemptService
         };
     }
 
-    public async Task<StageAttemptEndResponse> ClearAsync(long userId, int stageId, string attemptId, string correlationId, CancellationToken ct)
+    public async Task<StageAttemptEndResponse> ClearAsync(long userId, int stageId, string attemptId, StageAttemptClearRequest request, string correlationId, CancellationToken ct)
     {
         var attempt = await RequireAttemptAsync(userId, stageId, attemptId);
         var now = DateTimeOffset.UtcNow;
         if (attempt.ExpiresAt <= now)
             throw new GameApiException(ErrorCodes.StageAttemptExpired, "Stage attempt expired.");
 
+        var stageRow = _stageData.Value.TryGetValue(stageId, out var row)
+            ? row
+            : throw new GameApiException(ErrorCodes.StageNotFound, "Stage not found.");
+        var evaluation = EvaluateClear(stageRow, request);
+
         await _redis.KeyDeleteAsync(UserAttemptKey(userId));
-        var stamina = attempt.LifeSpent
-            ? await _stamina.RefundAttemptLifeAsync(userId, correlationId, ct)
-            : (await _stamina.GetAsync(userId, ct)).Stamina;
 
         var granted = new List<GrantedRewardDto>();
         Contracts.Currency.CurrencySnapshot? currency = null;
-        if (_stageData.Value.TryGetValue(stageId, out var stageRow) && stageRow.reward_group_id > 0)
+        StaminaSnapshot stamina;
+        StageClearRankingResult rankingResult;
+
+        await using var tx = await _db.Database.BeginTransactionAsync(ct);
+        stamina = attempt.LifeSpent
+            ? await _stamina.RefundAttemptLifeAsync(userId, correlationId, ct)
+            : (await _stamina.GetAsync(userId, ct)).Stamina;
+
+        if (stageRow.reward_group_id > 0)
         {
             var (items, cur) = await _rewards.GrantRewardGroupAsync(userId, stageRow.reward_group_id, 1, correlationId, ct);
             granted = items;
@@ -91,8 +105,12 @@ public sealed class StageAttemptService
             await _redis.StringSetAsync(DoubleRewardEligibleKey(userId, stageId), attemptId, DoubleRewardEligibleTtl);
         }
 
+        rankingResult = await _ranking.RecordClearAsync(userId, stageId, attempt.AttemptId, request, evaluation, correlationId, now, ct);
+        var stageRank = await _ranking.GetStageRankAsync(stageId, rankingResult.BestTurnsUsed, ct);
         _db.EventLogs.Insert(EventLogFactory.StageAttemptCleared(userId, correlationId, attempt.AttemptId, stageId, attempt.LifeSpent));
         await _db.SaveAsync(ct);
+        await tx.CommitAsync(ct);
+        _ranking.QueueRedisUpdate(userId, stageId, rankingResult);
 
         return new StageAttemptEndResponse
         {
@@ -100,6 +118,10 @@ public sealed class StageAttemptService
             StageId = stageId,
             Result = "CLEAR",
             LifeRefunded = attempt.LifeSpent,
+            Stars = rankingResult.Stars,
+            TurnsUsed = rankingResult.TurnsUsed,
+            StageRank = stageRank,
+            IsNewBest = rankingResult.IsNewBest,
             GrantedRewards = granted,
             Currency = currency,
             Stamina = stamina,
@@ -228,6 +250,53 @@ public sealed class StageAttemptService
             RemainingRevives = Math.Max(0, _config.Current.MaxRevivePerAttempt - attempt.ReviveCount),
             LifeSpent = attempt.LifeSpent,
         };
+
+    private static StageClearEvaluation EvaluateClear(ProjectFlood.Generated.Data.Stage stage, StageAttemptClearRequest request)
+    {
+        if (request.RulesetVersion != stage.ruleset_version)
+            throw new GameApiException(ErrorCodes.StageRulesetMismatch, "Stage ruleset mismatch.");
+        if (request.TurnsUsed < 0 || request.TurnsUsed > stage.turn_limit)
+            throw new GameApiException(ErrorCodes.InvalidStageClear, "Invalid turns used.");
+        if (request.CoreRemaining)
+            throw new GameApiException(ErrorCodes.InvalidStageClear, "Core cell remains.");
+
+        var totalBasicCells = CountBasicCells(stage);
+        if (totalBasicCells <= 0)
+            throw new GameApiException(ErrorCodes.InvalidStageClear, "Stage has no basic cells.");
+        if (request.RemainingBasicCells < 0 || request.RemainingBasicCells > totalBasicCells)
+            throw new GameApiException(ErrorCodes.InvalidStageClear, "Invalid remaining basic cells.");
+
+        var cleared = totalBasicCells - request.RemainingBasicCells;
+        var ratio = (float)cleared / totalBasicCells;
+        var stars = request.RemainingBasicCells == 0
+            ? 3
+            : ratio >= stage.star2_ratio
+                ? 2
+                : ratio >= stage.star1_ratio
+                    ? 1
+                    : 0;
+
+        if (stars <= 0)
+            throw new GameApiException(ErrorCodes.InvalidStageClear, "Clear ratio does not satisfy minimum star threshold.");
+
+        return new StageClearEvaluation(stars, totalBasicCells);
+    }
+
+    private static int CountBasicCells(ProjectFlood.Generated.Data.Stage stage)
+    {
+        var expectedLength = stage.board_width * stage.board_height * 3;
+        if (stage.cells.Length != expectedLength)
+            throw new GameApiException(ErrorCodes.InvalidStageClear, "Stage cells length is invalid.");
+
+        var count = 0;
+        for (var i = 0; i < stage.cells.Length; i += 3)
+        {
+            if (stage.cells[i + 1] == '0')
+                count++;
+        }
+
+        return count;
+    }
 
     private static string UserAttemptKey(long userId) => $"stage_attempt:user:{userId}";
     public static string DoubleRewardEligibleKey(long userId, int stageId) => $"double_reward_eligible:{userId}:{stageId}";

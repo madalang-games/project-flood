@@ -34,6 +34,13 @@ Fix: Add `"conflict": "ignore"` to the table in `schema.json`; gen:orm generates
 | `sessions` | `session_id` | Reserved for platform session observation; no local active-state ownership |
 | `ad_reward_transactions` | `provider`, `provider_tx_id` | Rewarded-ad grant idempotency |
 
+## Ranking Tables
+| table | role |
+|-------|------|
+| `user_stage_progress` | Per-user per-stage best star/turns source of truth |
+| `stage_clear_records` | Append-only clear audit with validation inputs |
+| `user_ranking_totals` | Global stars/max-stage aggregates for Redis rebuild |
+
 ## Cross-refs
 - Gen output: `server/db/migrations/` SQL files
 - Consumed by: `ProjectFlood.Infrastructure.Generated.AppDbContext`

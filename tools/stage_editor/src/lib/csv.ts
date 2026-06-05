@@ -55,6 +55,7 @@ function rowToStage(fields: string[]): StageRow {
     cells:             fields[8] ?? '',
     verified_solution: fields[9] ?? '',
     ruleset_version:   parseInt(fields[10]) || 1,
+    reward_group_id:   parseInt(fields[11]) || 0,
   };
 }
 
@@ -71,6 +72,7 @@ function stageToRow(s: StageRow): string[] {
     s.cells,
     s.verified_solution,
     String(s.ruleset_version),
+    String(s.reward_group_id ?? 0),
   ];
 }
 

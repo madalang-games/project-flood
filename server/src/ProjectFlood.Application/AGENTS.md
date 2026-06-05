@@ -7,6 +7,7 @@
 | `Logging/` | Event log row factory | `Logging/AGENTS.md` |
 | `Stamina/` | Stamina config, life, regen, ad life, unlimited state | `Stamina/AGENTS.md` |
 | `Stage/` | Redis stage attempt lifecycle, revive ads, interstitial, double reward | `Stage/AGENTS.md` |
+| `Ranking/` | Stage/global ranking aggregates, Redis indexes, rebuilds | `Ranking/AGENTS.md` |
 | `Rewards/` | Generic reward source, ad reward claim services, SSV infrastructure | `Rewards/AGENTS.md` |
 | `Currency/` | Soft currency balance service | `Currency/AGENTS.md` |
 

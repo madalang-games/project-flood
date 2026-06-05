@@ -23,7 +23,7 @@ public sealed class StageController : ControllerBaseEx
 
     [HttpPost("{stageId:int}/attempts/{attemptId}/clear")]
     public Task<StageAttemptEndResponse> Clear(int stageId, string attemptId, [FromBody] StageAttemptClearRequest request, CancellationToken ct)
-        => _attempts.ClearAsync(PlayerId, stageId, attemptId, CorrelationId, ct);
+        => _attempts.ClearAsync(PlayerId, stageId, attemptId, request, CorrelationId, ct);
 
     [HttpPost("{stageId:int}/attempts/{attemptId}/fail")]
     public Task<StageAttemptEndResponse> Fail(int stageId, string attemptId, [FromBody] StageAttemptFailRequest request, CancellationToken ct)

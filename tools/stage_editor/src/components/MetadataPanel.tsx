@@ -93,6 +93,13 @@ export default function MetadataPanel({ meta, onFieldChange, onResize }: Props) 
         step={0.01}
         onChange={v => onFieldChange('star2_ratio', v)}
       />
+      <NumField
+        label="Reward"
+        value={meta.reward_group_id}
+        min={0}
+        max={999999}
+        onChange={v => onFieldChange('reward_group_id', Math.round(v))}
+      />
     </div>
   );
 }

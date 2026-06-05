@@ -10,6 +10,7 @@
     <ProjectReference Include="..\..\..\shared\contracts\ProjectFlood.Contracts.csproj" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.*" />
     <PackageReference Include="Scalar.AspNetCore" Version="1.*" />
     <PackageReference Include="Serilog.AspNetCore" Version="8.*" />
     <PackageReference Include="Serilog.Settings.Configuration" Version="8.*" />

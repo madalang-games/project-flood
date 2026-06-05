@@ -17,6 +17,9 @@ public sealed partial class AppDbContext : DbContext
     internal DbSet<AdRewardTransactionsRow> _AdRewardTransactions => Set<AdRewardTransactionsRow>();
     internal DbSet<UserInterstitialStateRow> _UserInterstitialState => Set<UserInterstitialStateRow>();
     internal DbSet<UserCurrencyRow> _UserCurrency => Set<UserCurrencyRow>();
+    internal DbSet<UserStageProgressRow> _UserStageProgress => Set<UserStageProgressRow>();
+    internal DbSet<StageClearRecordsRow> _StageClearRecords => Set<StageClearRecordsRow>();
+    internal DbSet<UserRankingTotalsRow> _UserRankingTotals => Set<UserRankingTotalsRow>();
 
     public PlayersDb Players { get; }
     public SessionsDb Sessions { get; }
@@ -26,6 +29,9 @@ public sealed partial class AppDbContext : DbContext
     public AdRewardTransactionsDb AdRewardTransactions { get; }
     public UserInterstitialStateDb UserInterstitialState { get; }
     public UserCurrencyDb UserCurrency { get; }
+    public UserStageProgressDb UserStageProgress { get; }
+    public StageClearRecordsDb StageClearRecords { get; }
+    public UserRankingTotalsDb UserRankingTotals { get; }
 
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
     {
@@ -37,6 +43,9 @@ public sealed partial class AppDbContext : DbContext
         AdRewardTransactions = new AdRewardTransactionsDb(this);
         UserInterstitialState = new UserInterstitialStateDb(this);
         UserCurrency = new UserCurrencyDb(this);
+        UserStageProgress = new UserStageProgressDb(this);
+        StageClearRecords = new StageClearRecordsDb(this);
+        UserRankingTotals = new UserRankingTotalsDb(this);
     }
 
     public Task SaveAsync(CancellationToken ct = default) => SaveChangesAsync(ct);
@@ -52,5 +61,8 @@ public sealed partial class AppDbContext : DbContext
         mb.ApplyConfiguration(new AdRewardTransactionsDbConfiguration());
         mb.ApplyConfiguration(new UserInterstitialStateDbConfiguration());
         mb.ApplyConfiguration(new UserCurrencyDbConfiguration());
+        mb.ApplyConfiguration(new UserStageProgressDbConfiguration());
+        mb.ApplyConfiguration(new StageClearRecordsDbConfiguration());
+        mb.ApplyConfiguration(new UserRankingTotalsDbConfiguration());
     }
 }

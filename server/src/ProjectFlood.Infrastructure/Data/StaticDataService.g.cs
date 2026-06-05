@@ -64,6 +64,13 @@ public partial class StaticDataService
             .ToDictionary(r => r.stage_id, r => new StageData
             {
                 StageId = r.stage_id,
+                BoardWidth = r.board_width,
+                BoardHeight = r.board_height,
+                TurnLimit = r.turn_limit,
+                Star1Ratio = r.star1_ratio,
+                Star2Ratio = r.star2_ratio,
+                Cells = r.cells,
+                RulesetVersion = r.ruleset_version,
                 RewardGroupId = r.reward_group_id,
             });
         _staminaConfigs = StaminaConfigLoader.LoadAll(System.IO.Path.Combine(staminaPath, "stamina_config.csv"))

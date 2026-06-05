@@ -68,6 +68,7 @@ export default function EditorPage() {
       star2_ratio: stage.star2_ratio,
       verified_solution: stage.verified_solution,
       ruleset_version: stage.ruleset_version,
+      reward_group_id: stage.reward_group_id,
     });
     setPlaytestState(null);
     setValidationResult(null);
@@ -85,7 +86,7 @@ export default function EditorPage() {
     const payload = {
       board_width: w, board_height: h, turn_limit: 20, difficulty: 1,
       color_ids: '0', star1_ratio: 0.80, star2_ratio: 0.90,
-      cells, verified_solution: '', ruleset_version: 1,
+      cells, verified_solution: '', ruleset_version: 1, reward_group_id: 0,
     };
     const res = await fetch('/api/stages', {
       method: 'POST',

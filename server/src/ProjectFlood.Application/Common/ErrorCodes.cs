@@ -6,6 +6,10 @@ public static class ErrorCodes
     public const string StaminaFull = "STAMINA_FULL";
     public const string InvalidStageAttempt = "INVALID_STAGE_ATTEMPT";
     public const string StageAttemptExpired = "STAGE_ATTEMPT_EXPIRED";
+    public const string StageNotFound = "STAGE_NOT_FOUND";
+    public const string StageRulesetMismatch = "STAGE_RULESET_MISMATCH";
+    public const string InvalidStageClear = "INVALID_STAGE_CLEAR";
+    public const string InvalidRankingType = "INVALID_RANKING_TYPE";
     public const string ReviveLimitExceeded = "REVIVE_LIMIT_EXCEEDED";
     public const string RewardAlreadyClaimed = "REWARD_ALREADY_CLAIMED";
     public const string AdRewardDuplicate = "AD_REWARD_DUPLICATE";

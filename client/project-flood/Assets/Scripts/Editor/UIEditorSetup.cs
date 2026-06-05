@@ -174,6 +174,14 @@ namespace Game.Editor
             soHtv.ApplyModifiedProperties();
 
             var shopTab = Child(tabContent, "ShopTab");  Stretch(shopTab); shopTab.SetActive(false);
+            var rankingTab = Child(tabContent, "RankingTab"); Stretch(rankingTab); rankingTab.SetActive(false);
+            var rankingView = Comp<RankingTabView>(rankingTab);
+            var starsTab = Btn(rankingTab, "StarsTabButton", new Vector2(-230, 520), new Vector2(300, 70), UI_PRIMARY, "Stars");
+            var maxStageTab = Btn(rankingTab, "MaxStageTabButton", new Vector2(230, 520), new Vector2(300, 70), UI_BG_MID, "Max Stage");
+            var rankTitle = TMP(rankingTab, "TitleText", Center(0, 420, 760, 70), 30, UI_CTA, "Star Ranking");
+            var myRank = TMP(rankingTab, "MyRankText", Center(0, 330, 760, 80), 24, UI_TEXT, "My Rank: -");
+            var entries = TMP(rankingTab, "EntriesText", Center(0, -130, 820, 820), 20, UI_TEXT, "Ranking unavailable");
+            entries.alignment = TextAlignmentOptions.TopLeft;
 
             // Wire LobbyView refs
             var soLobby = new SerializedObject(canvas.GetComponent<LobbyView>());
@@ -181,7 +189,17 @@ namespace Game.Editor
             soLobby.FindProperty("_navBar").objectReferenceValue      = bnv;
             soLobby.FindProperty("_homeTabRoot").objectReferenceValue = homeTab;
             soLobby.FindProperty("_shopTabRoot").objectReferenceValue = shopTab;
+            soLobby.FindProperty("_rankingTabRoot").objectReferenceValue = rankingTab;
+            soLobby.FindProperty("_rankingTabView").objectReferenceValue = rankingView;
             soLobby.ApplyModifiedProperties();
+
+            var soRanking = new SerializedObject(rankingView);
+            soRanking.FindProperty("_starsTabButton").objectReferenceValue = starsTab.GetComponent<Button>();
+            soRanking.FindProperty("_maxStageTabButton").objectReferenceValue = maxStageTab.GetComponent<Button>();
+            soRanking.FindProperty("_titleText").objectReferenceValue = rankTitle;
+            soRanking.FindProperty("_myRankText").objectReferenceValue = myRank;
+            soRanking.FindProperty("_entriesText").objectReferenceValue = entries;
+            soRanking.ApplyModifiedProperties();
 
             // Wire BottomNavBarView
             var soNav = new SerializedObject(bnv);
@@ -409,8 +427,9 @@ namespace Game.Editor
             var title  = TMP(panel, "TitleText", Center(0,  320, 800, 80), 32, UI_CTA,  "Stage Clear!", PopupResultTitle);
             var ratio  = TMP(panel, "RatioText", Center(0,   80, 700, 60), 22, UI_TEXT, "Cleared: 90%");
             var turns  = TMP(panel, "TurnsText", Center(0,   10, 700, 60), 22, UI_TEXT, "Turns: 12/20");
+            var rank   = TMP(panel, "RankText", Center(0,  -45, 700, 55), 20, UI_CTA, "");
 
-            var goldRow = Child(panel, "GoldRow"); Fixed(goldRow, new Vector2(0, -60), new Vector2(700, 60));
+            var goldRow = Child(panel, "GoldRow"); Fixed(goldRow, new Vector2(0, -105), new Vector2(700, 60));
             var goldTxt = TMP(goldRow, "GoldText", Center(0, 0, 700, 60), 24, UI_CTA, "+120 🪙");
 
             // Stars
@@ -426,6 +445,7 @@ namespace Game.Editor
             so.FindProperty("_titleText").objectReferenceValue  = title;
             so.FindProperty("_ratioText").objectReferenceValue  = ratio;
             so.FindProperty("_turnsText").objectReferenceValue  = turns;
+            so.FindProperty("_rankText").objectReferenceValue   = rank;
             so.FindProperty("_goldText").objectReferenceValue   = goldTxt;
             so.FindProperty("_goldRow").objectReferenceValue    = goldRow;
             so.FindProperty("_retryButton").objectReferenceValue = retry.GetComponent<Button>();

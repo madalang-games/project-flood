@@ -12,6 +12,8 @@ Namespace: `Game.Services`
 | `IAdService.cs` | `IAdService`, `AdWatchResult` | Ad service interface; WatchRewardedAd(placementId, cb); ShowInterstitialIfEligible(stageId, suppress, cb) |
 | `AdMobService.cs` | `AdMobService` | DDOL singleton; implements IAdService; multi-placement rewarded ads + interstitial; SSV nonce set before Show() |
 | `AdEligibilityCache.cs` | `AdEligibilityCache` | DDOL singleton; GET /api/ad/eligibility on session start; IsEligible(placementId); OnInterstitialShown() |
+| `StageApiService.cs` | `StageApiService` | Optional server stage attempt start/clear/fail sync |
+| `RankingApiService.cs` | `RankingApiService` | Optional server ranking page/my-rank fetcher |
 
 ## Symbols
 | symbol | kind | note |
@@ -48,6 +50,12 @@ Namespace: `Game.Services`
 | `AdEligibilityCache.IsEligible(string)` | method | Returns false if placement not in cache |
 | `AdEligibilityCache.GetCooldownSeconds(string)` | method | Returns 0 if not in cache |
 | `AdEligibilityCache.OnInterstitialShown()` | method | Optimistically marks INTERSTITIAL_POST_STAGE ineligible until next Refresh |
+| `StageApiService.StartAttempt` | method | POST `/api/stages/{stageId}/attempts/start`; stores current attempt |
+| `StageApiService.ClearAttempt` | method | POST clear request with summary validation inputs |
+| `StageApiService.FailAttempt` | method | POST fail for current attempt |
+| `RankingApiService.FetchGlobalPage` | method | GET paged global ranking |
+| `RankingApiService.FetchMyGlobalRank` | method | GET current user's ranking card |
+| `RankingApiService.FetchMyStageRank` | method | GET current user's stage rank |
 
 ## Rules
 - All services are DDOL — place GameObjects in Boot scene only
@@ -55,6 +63,7 @@ Namespace: `Game.Services`
 - AuthService is a stub; server-side auth is Phase 2
 - LocalizationService must initialize before any LocalizedText.Awake() — place it first in Boot scene
 - AdEligibilityCache.Refresh must be called after auth is available (has auth token)
+- StageApiService and RankingApiService are optional until full server auth wiring lands; local flow must continue if absent.
 - AdMobService ad unit IDs: all test IDs — replace with production IDs before release
 - pkt_generator must be run to sync Ad + Currency contracts to Generated/Contracts/ before ad flows work
 
