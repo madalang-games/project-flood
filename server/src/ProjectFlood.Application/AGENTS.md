@@ -6,8 +6,9 @@
 | `Common/` | Error codes and API exception type | `Common/AGENTS.md` |
 | `Logging/` | Event log row factory | `Logging/AGENTS.md` |
 | `Stamina/` | Stamina config, life, regen, ad life, unlimited state | `Stamina/AGENTS.md` |
-| `Stage/` | Redis stage attempt lifecycle and revive ads | `Stage/AGENTS.md` |
-| `Rewards/` | Generic reward source and ad reward claim services | `Rewards/AGENTS.md` |
+| `Stage/` | Redis stage attempt lifecycle, revive ads, interstitial, double reward | `Stage/AGENTS.md` |
+| `Rewards/` | Generic reward source, ad reward claim services, SSV infrastructure | `Rewards/AGENTS.md` |
+| `Currency/` | Soft currency balance service | `Currency/AGENTS.md` |
 
 ## Rules
 - Use-case layer: persistence via direct `AppDbContext` injection.

@@ -42,4 +42,16 @@ public static class EventLogFactory
 
     public static EventLogsRow AdRewardClaimed(long userId, string correlationId, string adTxId, string placementId, string rewardType, int rewardValue, bool duplicate)
         => Create(userId, EventLogIds.AdRewardClaimed, correlationId, new { ad_tx_id = adTxId, placement_id = placementId, reward_type = rewardType, reward_value = rewardValue, duplicate });
+
+    public static EventLogsRow StageClearRewardGranted(long userId, string correlationId, int stageId, int rewardGroupId)
+        => Create(userId, EventLogIds.StageClearRewardGranted, correlationId, new { stage_id = stageId, reward_group_id = rewardGroupId });
+
+    public static EventLogsRow CurrencyChanged(long userId, string correlationId, long delta, string reason, long amountAfter)
+        => Create(userId, EventLogIds.CurrencyChanged, correlationId, new { delta, reason, amount_after = amountAfter });
+
+    public static EventLogsRow AdInterstitialShown(long userId, string correlationId, int stageId)
+        => Create(userId, EventLogIds.AdInterstitialShown, correlationId, new { stage_id = stageId });
+
+    public static EventLogsRow AdDoubleRewardGranted(long userId, string correlationId, string adTxId, int stageId, string attemptId)
+        => Create(userId, EventLogIds.AdDoubleRewardGranted, correlationId, new { ad_tx_id = adTxId, stage_id = stageId, attempt_id = attemptId });
 }
