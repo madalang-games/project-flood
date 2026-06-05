@@ -62,6 +62,10 @@ public sealed class VersionCheckMiddlewareTests
                 JwtIssuer = "http://platform-auth",
                 JwtAudience = "platform-games",
             },
+            AdReward = new ProjectFloodConfiguration.AdRewardOptions
+            {
+                VerifyMode = "mock",
+            },
             App = new ProjectFloodConfiguration.AppOptions
             {
                 ClientId = "project-flood",

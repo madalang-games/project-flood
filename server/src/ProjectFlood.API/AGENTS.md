@@ -18,6 +18,7 @@
 | `UserClaims.UserId` | const | Internal server-side uid claim added by `UserIdResolutionMiddleware` |
 | `UserClaims.PlatformPid` | const | JWT `sub`; platform PID, not numeric uid |
 | `ProjectFloodConfiguration.RateLimit.StageStartPerHour` | property | Stage-start limiter setting |
+| `ProjectFloodConfiguration.AdReward.VerifyMode` | property | Required `AD_REWARD_VERIFY_MODE`; allowed values: `mock`, `ssv` |
 | `RankingRebuildHostedService.ExecuteAsync` | method | Rebuilds Redis ranking keys on init; logs warning without blocking startup |
 
 ## Rules
@@ -26,4 +27,5 @@
 - Middleware order in `Program.cs`: CorrelationId -> SerilogRequestLogging -> ApiException -> Auth -> UserIdResolution -> Authorization -> RateLimit -> VersionCheck -> Controllers.
 - No `SessionValidationMiddleware`; Project Flood has no local session active/revocation state.
 - `LOG_LEVEL` env var overrides `appsettings.*.json` Serilog minimum level.
+- `AD_REWARD_VERIFY_MODE` controls ad reward verification independently from `GAME_ENV`.
 - NEW_DIR: create `AGENTS.md` for it + update Nav above.

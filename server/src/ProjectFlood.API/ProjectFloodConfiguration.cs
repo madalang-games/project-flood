@@ -9,6 +9,7 @@ public sealed class ProjectFloodConfiguration
     public required DatabaseOptions Database { get; init; }
     public required RedisOptions Redis { get; init; }
     public required AuthOptions Auth { get; init; }
+    public required AdRewardOptions AdReward { get; init; }
     public required AppOptions App { get; init; }
     public required RateLimitOptions RateLimit { get; init; }
 
@@ -37,6 +38,10 @@ public sealed class ProjectFloodConfiguration
                 JwtIssuer    = EnvAbsoluteUriOptional("JWT_ISSUER") ?? EnvAbsoluteUriRequired("JWT_AUTHORITY"),
                 JwtAudience  = EnvRequired("JWT_AUDIENCE")
             },
+            AdReward = new AdRewardOptions
+            {
+                VerifyMode = EnvOneOfRequired("AD_REWARD_VERIFY_MODE", "ssv", "mock")
+            },
             App = new AppOptions
             {
                 ClientId = EnvRequired("APP_CLIENT_ID"),
@@ -61,6 +66,7 @@ public sealed class ProjectFloodConfiguration
         configuration["Jwt:Authority"] = Auth.JwtAuthority;
         configuration["Jwt:Issuer"] = Auth.JwtIssuer;
         configuration["Jwt:Audience"] = Auth.JwtAudience;
+        configuration["AdReward:VerifyMode"] = AdReward.VerifyMode;
         configuration["App:ClientId"] = App.ClientId;
         configuration["App:AllowedClientVersion"] = App.AllowedClientVersion;
         configuration["App:RequiredClientVersion"] = App.RequiredClientVersion;
@@ -91,6 +97,11 @@ public sealed class ProjectFloodConfiguration
         public required string JwtAuthority { get; init; }
         public required string JwtIssuer { get; init; }
         public required string JwtAudience { get; init; }
+    }
+
+    public sealed class AdRewardOptions
+    {
+        public required string VerifyMode { get; init; }
     }
 
     public sealed class AppOptions
@@ -150,6 +161,17 @@ public sealed class ProjectFloodConfiguration
         if (string.IsNullOrWhiteSpace(value)) return null;
         if (Uri.TryCreate(value, UriKind.Absolute, out _)) return value;
         throw new InvalidOperationException($"Configuration error at env:{key}: `{value}` is not a valid absolute URI.");
+    }
+
+    private static string EnvOneOfRequired(string key, params string[] allowed)
+    {
+        var value = EnvRequired(key).Trim().ToLowerInvariant();
+        if (allowed.Contains(value))
+        {
+            return value;
+        }
+
+        throw new InvalidOperationException($"Configuration error at env:{key}: `{value}` is not one of: {string.Join(", ", allowed)}.");
     }
 
     private static int? ConfigIntOptional(IConfiguration configuration, string key)

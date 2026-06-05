@@ -81,11 +81,7 @@ builder.Services.AddScoped<AdMobSsvCallbackService>();
 builder.Services.AddScoped<AdInterstitialService>();
 builder.Services.AddScoped<AdDoubleRewardService>();
 builder.Services.AddHostedService<RankingRebuildHostedService>();
-
-if (builder.Environment.IsDevelopment())
-    builder.Services.AddSingleton<IAdRewardVerifier, DevelopmentAdRewardVerifier>();
-else
-    builder.Services.AddSingleton<IAdRewardVerifier, AdMobSsvVerifier>();
+builder.Services.AddSingleton<IAdRewardVerifier, AdMobSsvVerifier>();
 
 // 5. Configuration and auth
 builder.Services.AddSingleton(appConfig);
