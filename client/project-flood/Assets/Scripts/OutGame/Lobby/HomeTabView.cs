@@ -71,6 +71,16 @@ namespace Game.OutGame.Lobby
 
             if (_pathStrip != null) { Destroy(_pathStrip.gameObject); _pathStrip = null; }
 
+            // Clean up editor dummy placeholder nodes so they don't overlap at runtime
+            for (int i = _contentRoot.childCount - 1; i >= 0; i--)
+            {
+                var child = _contentRoot.GetChild(i);
+                if (child.gameObject.name.StartsWith("StageNode_"))
+                {
+                    Destroy(child.gameObject);
+                }
+            }
+
             // Deactivate all pool nodes — prevents stale 0-position nodes on re-enable
             foreach (var n in _pool) n.gameObject.SetActive(false);
 
@@ -93,11 +103,6 @@ namespace Game.OutGame.Lobby
             // S-shape layout — groups of 4:
             //   even group: L(-rowOff), C(0), R(+rowOff), Connector(+conOff)
             //   odd  group: R(+rowOff), C(0), L(-rowOff), Connector(-conOff)
-            // S-shape Y layout derived from _connectorTurnGap (gap = 375 by default):
-            //   stagger  = rowY * 0.08  (gentle Y rise per node within row)
-            //   p=2 Y    = 2 * stagger
-            //   connH    = p=2 Y + _connectorTurnGap   (connector sits 375px above last row node)
-            //   groupH   = connH + _connectorTurnGap   (next row starts 375px above connector)
             float stagger  = rowY * 0.08f;
             float connH    = 2f * stagger + _connectorTurnGap;
             float groupH   = connH + _connectorTurnGap;
@@ -106,7 +111,9 @@ namespace Game.OutGame.Lobby
             int   lastG     = lastI / 4;
             int   lastP     = lastI % 4;
             float lastYBot  = lastG * groupH + (lastP == 3 ? connH : lastP * stagger);
-            float totalHeight = lastYBot + _connectorTurnGap;
+            
+            float bottomPadding = 180f; // Add bottom padding so Stage 1 is not cut off
+            float totalHeight = lastYBot + _connectorTurnGap + bottomPadding;
 
             _contentRoot.sizeDelta = new Vector2(_contentRoot.sizeDelta.x, totalHeight);
 
@@ -118,7 +125,7 @@ namespace Game.OutGame.Lobby
                 bool goRight = (g % 2 == 0);
 
                 float rowStagger  = p < 3 ? p * stagger : 0f;
-                float yFromBottom = g * groupH + (p == 3 ? connH : rowStagger);
+                float yFromBottom = g * groupH + (p == 3 ? connH : rowStagger) + bottomPadding;
                 float y           = -(totalHeight - yFromBottom);
 
                 float x;
