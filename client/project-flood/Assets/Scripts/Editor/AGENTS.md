@@ -8,17 +8,21 @@
 | `ClearPlayerPrefs.cs` | `PlayerPrefsResetMenu` | [MenuItem] clears all PlayerPrefs for local reset/debug |
 | `IconAutomator.cs` | `IconAutomator` | [MenuItem] icon DPI generator — resizes source icon and applies to all Android/iOS DPI slots |
 | `GoogleMobileAdsGradleManifestPostprocessor.cs` | `GoogleMobileAdsGradleManifestPostprocessor` | Android Gradle postprocessor for GMA plugin conflicts |
+| `UIEditorSetup.cs` | `UIEditorSetup` | [MenuItem] one-shot prefab/scene builders; attaches LocalizedText with stringId from StringIds.cs |
+| `StageNodeEditorSetup.cs` | `StageNodeEditorSetup` | [MenuItem] StageNodeView prefab builder |
+| `FontLocalizationConfigGenerator.cs` | `FontLocalizationConfigGenerator` | [MenuItem] reads tools/subset_tool/config.json → creates FontLocalizationConfig.asset with per-language fonts; sets TMP fallback |
+| `StringIds.cs` | `StringIds` | **AUTO-GENERATED** by `gen:info` from `client_string.csv`; key constants; used by UIEditorSetup via `using static` |
 
 ## Symbols
 | symbol | kind | note |
 |--------|------|------|
 | `UIImageResourceExtractor.Open()` | method | [MenuItem "Tools/UI/Image Resource Extractor"] opens the extraction window |
-| `UIImageResourceExtractor.ParseAllSources()` | method | parses all added images into alpha-connected resource components |
-| `UIImageResourceExtractor.SaveResources()` | method | saves parsed previews as `baseFileName_N.png` sprites |
 | `BuildScript.BuildAndroidRelease()` | method | Batch entry: ARM64 AAB for Play Store; reads KEYSTORE_PASS/KEY_ALIAS_PASS env vars |
 | `PlayerPrefsResetMenu.ResetPrefs()` | method | [MenuItem "Tools/Reset PlayerPrefs"] deletes all PlayerPrefs |
 | `IconAutomator.ShowWindow()` | method | [MenuItem "Tools/Icon Automator"] opens icon automation window |
-| `IconAutomator.GenerateAndApply()` | method | resizes source icon and applies to PlayerSettings for all DPI sizes |
+| `UIEditorSetup.CreateAllPrefabs()` | method | [MenuItem "Tools/UI Setup/1"] creates all popup/overlay prefabs |
+| `FontLocalizationConfigGenerator.Generate()` | method | [MenuItem "Tools/Localization/Generate Font Config"] creates FontLocalizationConfig.asset from config.json |
+| `StringIds` | class | All client_string.csv key constants; import with `using static Game.Editor.StringIds` |
 
 ## Rules
 - Editor-only folder — auto-excluded from player builds

@@ -10,6 +10,7 @@ using TMPro;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
+using static Game.Editor.StringIds;
 
 namespace Game.Editor
 {
@@ -65,8 +66,8 @@ namespace Game.Editor
             var canvas = FindOrCreateSceneCanvas();
             var content = Child(canvas, "Content");
             Stretch(content);
-            TMP(content, "LogoText",    Center(0, 200, 600, 120), 48, UI_TEXT, "PROJECT FLOOD");
-            TMP(content, "SpinnerText", Center(0, -200, 600, 80),                24, UI_TEXT, "Loading...");
+            TMP(content, "LogoText",    Center(0, 200, 600, 120), 48, UI_TEXT, "PROJECT FLOOD", AppTitle);
+            TMP(content, "SpinnerText", Center(0, -200, 600, 80), 24, UI_TEXT, "Loading...",    BootLoading);
             Debug.Log("[UIEditorSetup] Boot Canvas_Scene ready.");
         }
 
@@ -103,9 +104,9 @@ namespace Game.Editor
             navHlg.childForceExpandHeight = true;
             navHlg.padding = new RectOffset(0, 0, 0, 0);
             navHlg.spacing = 0;
-            var homeBtn    = BtnHlg(navBar, "HomeButton",    UI_BG_MID, "🏠\nHome");
-            var shopBtn    = BtnHlg(navBar, "ShopButton",    UI_BG_MID, "🛒\nShop");
-            var rankBtn    = BtnHlg(navBar, "RankingButton", UI_BG_MID, "🏆\nRank");
+            var homeBtn    = BtnHlg(navBar, "HomeButton",    UI_BG_MID, "Home");
+            var shopBtn    = BtnHlg(navBar, "ShopButton",    UI_BG_MID, "Shop");
+            var rankBtn    = BtnHlg(navBar, "RankingButton", UI_BG_MID, "Rank");
 
             // Tab content area — fills between header and nav
             var tabContent = Child(safeRoot, "TabContent");
@@ -218,8 +219,8 @@ namespace Game.Editor
             body.enableWordWrapping = true;
             var bodyCsf = Comp<ContentSizeFitter>(Child(panel, "BodyText"));
             bodyCsf.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
-            var cancel = Btn(panel, "CancelButton",  new Vector2(-200, -160), new Vector2(360, 80), UI_BG_DEEP, "Cancel");
-            var confirm= Btn(panel, "ConfirmButton", new Vector2( 200, -160), new Vector2(360, 80), UI_PRIMARY,  "OK");
+            var cancel = Btn(panel, "CancelButton",  new Vector2(-200, -160), new Vector2(360, 80), UI_BG_DEEP, "Cancel",  BtnCancel);
+            var confirm= Btn(panel, "ConfirmButton", new Vector2( 200, -160), new Vector2(360, 80), UI_PRIMARY,  "Confirm", BtnConfirm);
 
             var so = new SerializedObject(root.GetComponent<ConfirmDialogView>());
             so.FindProperty("_titleText").objectReferenceValue         = title;
@@ -274,8 +275,8 @@ namespace Game.Editor
             Img(root, DIM); Comp<NetworkErrorView>(root);
 
             var panel = Panel(root, "Panel", new Vector2(800, 400), UI_BG_MID);
-            var msg   = TMP(panel, "MessageText", Center(0, 60, 680, 180), 20, UI_TEXT, "Check your network connection.");
-            var retry = Btn(panel, "RetryButton", new Vector2(0, -130), new Vector2(300, 80), UI_PRIMARY, "Retry");
+            var msg   = TMP(panel, "MessageText", Center(0, 60, 680, 180), 20, UI_TEXT, "Check your network connection.", ErrorNetworkCheck);
+            var retry = Btn(panel, "RetryButton", new Vector2(0, -130), new Vector2(300, 80), UI_PRIMARY, "Retry", BtnRetry);
 
             var so = new SerializedObject(root.GetComponent<NetworkErrorView>());
             so.FindProperty("_messageText").objectReferenceValue = msg;
@@ -291,14 +292,14 @@ namespace Game.Editor
             Img(root, DIM); Comp<RewardPopupView>(root); Comp<UIPanelAppear>(root); Comp<CanvasGroup>(root);
 
             var panel = Panel(root, "Panel", new Vector2(700, 600), UI_BG_MID);
-            TMP(panel, "TitleText", Center(0, 230, 600, 70), 28, UI_CTA, "Reward!");
+            TMP(panel, "TitleText", Center(0, 230, 600, 70), 28, UI_CTA, "Reward!", PopupRewardTitle);
 
             var items = Child(panel, "ItemContainer"); Fixed(items, new Vector2(0, 10), new Vector2(600, 280));
             var vlg = items.AddComponent<VerticalLayoutGroup>();
             vlg.spacing = 12; vlg.childAlignment = TextAnchor.MiddleCenter;
             vlg.childControlHeight = false; vlg.childControlWidth = false;
 
-            var ok = Btn(panel, "OkButton", new Vector2(0, -220), new Vector2(300, 80), UI_PRIMARY, "OK");
+            var ok = Btn(panel, "OkButton", new Vector2(0, -220), new Vector2(300, 80), UI_PRIMARY, "OK", BtnOk);
 
             var so = new SerializedObject(root.GetComponent<RewardPopupView>());
             so.FindProperty("_itemContainer").objectReferenceValue = items.transform;
@@ -314,9 +315,9 @@ namespace Game.Editor
             Img(root, UI_BG_DEEP); Comp<ReLoginView>(root);
 
             var panel   = Panel(root, "Panel", new Vector2(900, 500), UI_BG_MID);
-            TMP(panel, "TitleText",  Center(0, 160, 800, 70), 28, UI_TEXT, "Session expired");
-            var relogin = Btn(panel, "ReLoginButton",         new Vector2(0,  30), new Vector2(500, 90), UI_PRIMARY, "Re-login");
-            var guest   = Btn(panel, "ContinueAsGuestButton", new Vector2(0, -80), new Vector2(500, 80), UI_BG_DEEP, "Continue as Guest");
+            TMP(panel, "TitleText",  Center(0, 160, 800, 70), 28, UI_TEXT, "Session Expired",    PopupReloginTitle);
+            var relogin = Btn(panel, "ReLoginButton",         new Vector2(0,  30), new Vector2(500, 90), UI_PRIMARY, "Re-login",          PopupReloginBtnRelogin);
+            var guest   = Btn(panel, "ContinueAsGuestButton", new Vector2(0, -80), new Vector2(500, 80), UI_BG_DEEP, "Continue as Guest", PopupReloginBtnGuest);
 
             var so = new SerializedObject(root.GetComponent<ReLoginView>());
             so.FindProperty("_reLoginButton").objectReferenceValue         = relogin.GetComponent<Button>();
@@ -346,7 +347,7 @@ namespace Game.Editor
             var hlg = starsRoot.AddComponent<HorizontalLayoutGroup>(); hlg.spacing = 10; hlg.childAlignment = TextAnchor.MiddleCenter;
             var s0 = StarGO(starsRoot, "Star0"); var s1 = StarGO(starsRoot, "Star1"); var s2 = StarGO(starsRoot, "Star2");
 
-            var play = Btn(panel, "PlayButton", new Vector2(0, -140), new Vector2(400, 90), UI_CTA, "PLAY");
+            var play = Btn(panel, "PlayButton", new Vector2(0, -140), new Vector2(400, 90), UI_CTA, "Play", BtnPlay);
 
             var so = new SerializedObject(root.GetComponent<StageInfoPopupView>());
             so.FindProperty("_stageTitle").objectReferenceValue     = title;
@@ -369,7 +370,7 @@ namespace Game.Editor
             Img(root, DIM); Comp<ResultOverlayView>(root); Comp<UIPanelAppear>(root); Comp<CanvasGroup>(root);
 
             var panel = Panel(root, "Panel", new Vector2(900, 800), UI_BG_MID);
-            var title  = TMP(panel, "TitleText", Center(0,  320, 800, 80), 32, UI_CTA,  "Stage Clear!");
+            var title  = TMP(panel, "TitleText", Center(0,  320, 800, 80), 32, UI_CTA,  "Stage Clear!", PopupResultTitle);
             var ratio  = TMP(panel, "RatioText", Center(0,   80, 700, 60), 22, UI_TEXT, "Cleared: 90%");
             var turns  = TMP(panel, "TurnsText", Center(0,   10, 700, 60), 22, UI_TEXT, "Turns: 12/20");
 
@@ -381,9 +382,9 @@ namespace Game.Editor
             var hlg = starsRoot.AddComponent<HorizontalLayoutGroup>(); hlg.spacing = 20; hlg.childAlignment = TextAnchor.MiddleCenter;
             var s0 = StarGO(starsRoot, "Star0"); var s1 = StarGO(starsRoot, "Star1"); var s2 = StarGO(starsRoot, "Star2");
 
-            var retry = Btn(panel, "RetryButton", new Vector2(-270, -320), new Vector2(220, 80), UI_BG_DEEP, "Retry");
-            var next  = Btn(panel, "NextButton",  new Vector2(   0, -320), new Vector2(220, 80), UI_PRIMARY,  "Next");
-            var map   = Btn(panel, "MapButton",   new Vector2( 270, -320), new Vector2(220, 80), UI_BG_DEEP,  "Map");
+            var retry = Btn(panel, "RetryButton", new Vector2(-270, -320), new Vector2(220, 80), UI_BG_DEEP, "Retry", BtnRetry);
+            var next  = Btn(panel, "NextButton",  new Vector2(   0, -320), new Vector2(220, 80), UI_PRIMARY,  "Next",  BtnNext);
+            var map   = Btn(panel, "MapButton",   new Vector2( 270, -320), new Vector2(220, 80), UI_BG_DEEP,  "Map",   BtnMap);
 
             var so = new SerializedObject(root.GetComponent<ResultOverlayView>());
             so.FindProperty("_titleText").objectReferenceValue  = title;
@@ -410,13 +411,13 @@ namespace Game.Editor
             Img(root, DIM); Comp<FailOverlayView>(root); Comp<UIPanelAppear>(root); Comp<CanvasGroup>(root);
 
             var panel = Panel(root, "Panel", new Vector2(700, 500), UI_BG_MID);
-            TMP(panel, "TitleText", Center(0, 180, 600, 80), 32, UI_CTA, "조금만 더!");
+            TMP(panel, "TitleText", Center(0, 180, 600, 80), 32, UI_CTA, "Just a bit more!", PopupFailTitle);
             var contLabel = TMP(panel, "ContinueLabel", Center(0,  80, 600, 60), 24, UI_TEXT, "+3 Turns");
             var costTxt   = TMP(panel, "CostText",       Center(0,  10, 600, 55), 22, UI_CTA,  "🪙 150");
             var ownedTxt  = TMP(panel, "OwnedGoldText",  Center(0, -50, 600, 55), 20, UI_TEXT, "🪙 320");
 
-            var contBtn = Btn(panel, "ContinueButton", new Vector2(-150, -160), new Vector2(280, 90), UI_CTA,    "계속하기");
-            var forfBtn = Btn(panel, "ForfeitButton",  new Vector2( 150, -160), new Vector2(280, 90), UI_BG_DEEP, "포기");
+            var contBtn = Btn(panel, "ContinueButton", new Vector2(-150, -160), new Vector2(280, 90), UI_CTA,    "Continue", PopupFailBtnContinue);
+            var forfBtn = Btn(panel, "ForfeitButton",  new Vector2( 150, -160), new Vector2(280, 90), UI_BG_DEEP, "Give Up",  PopupFailBtnForfeit);
 
             var so = new SerializedObject(root.GetComponent<FailOverlayView>());
             so.FindProperty("_continueLabel").objectReferenceValue  = contLabel;
@@ -435,12 +436,12 @@ namespace Game.Editor
             Img(root, DIM); Comp<PausePopupView>(root); Comp<UIPanelAppear>(root); Comp<CanvasGroup>(root);
 
             var panel = Panel(root, "Panel", new Vector2(600, 560), UI_BG_MID);
-            TMP(panel, "TitleText", Center(0, 220, 500, 70), 30, UI_TEXT, "일시정지");
+            TMP(panel, "TitleText", Center(0, 220, 500, 70), 30, UI_TEXT, "Paused", PopupPauseTitle);
 
-            var resume  = Btn(panel, "ResumeButton",      new Vector2(0,  100), new Vector2(480, 90), UI_PRIMARY, "재개");
-            var restart = Btn(panel, "RestartButton",     new Vector2(0,  -10), new Vector2(480, 90), UI_BG_DEEP, "처음부터");
-            var settings= Btn(panel, "SettingsButton",    new Vector2(0, -120), new Vector2(480, 90), UI_BG_DEEP, "Settings");
-            var select  = Btn(panel, "StageSelectButton", new Vector2(0, -230), new Vector2(480, 90), UI_BG_DEEP, "스테이지 선택");
+            var resume  = Btn(panel, "ResumeButton",      new Vector2(0,  100), new Vector2(480, 90), UI_PRIMARY, "Resume",       PopupPauseBtnResume);
+            var restart = Btn(panel, "RestartButton",     new Vector2(0,  -10), new Vector2(480, 90), UI_BG_DEEP, "Restart",      PopupPauseBtnRestart);
+            var settings= Btn(panel, "SettingsButton",    new Vector2(0, -120), new Vector2(480, 90), UI_BG_DEEP, "Settings",     CommonSettings);
+            var select  = Btn(panel, "StageSelectButton", new Vector2(0, -230), new Vector2(480, 90), UI_BG_DEEP, "Stage Select", PopupPauseBtnStageSelect);
 
             var so = new SerializedObject(root.GetComponent<PausePopupView>());
             so.FindProperty("_resumeButton").objectReferenceValue      = resume.GetComponent<Button>();
@@ -465,13 +466,13 @@ namespace Game.Editor
             BottomStrip(panel, 700);
             Img(panel, UI_BG_MID);
 
-            TMP(panel, "TitleText", Center(0, 300, 600, 70), 28, UI_TEXT, "Settings");
+            TMP(panel, "TitleText", Center(0, 300, 600, 70), 28, UI_TEXT, "Settings", CommonSettings);
 
-            var bgmRow   = ToggleRow(panel, "BGMRow",         new Vector2(0, 170),  "BGM");
-            var sfxRow   = ToggleRow(panel, "SFXRow",         new Vector2(0,  80),  "SFX");
-            var shakeRow = ToggleRow(panel, "ScreenShakeRow", new Vector2(0,  -10), "Screen Shake");
+            var bgmRow   = ToggleRow(panel, "BGMRow",         new Vector2(0, 170),  "BGM",          PopupSettingsBgm);
+            var sfxRow   = ToggleRow(panel, "SFXRow",         new Vector2(0,  80),  "SFX",          PopupSettingsSfx);
+            var shakeRow = ToggleRow(panel, "ScreenShakeRow", new Vector2(0,  -10), "Screen Shake", PopupSettingsScreenShake);
 
-            var accBtn = Btn(panel, "AccountButton",  new Vector2(0, -120), new Vector2(800, 80), UI_BG_DEEP, "Account  →");
+            var accBtn = Btn(panel, "AccountButton",  new Vector2(0, -120), new Vector2(800, 80), UI_BG_DEEP, "Account →", PopupSettingsAccount);
             var verTxt = TMP(panel, "VersionText",    Center(0, -230, 600, 50), 16, UI_TEXT, "v1.0.0");
 
             var so = new SerializedObject(root.GetComponent<SettingsPanelView>());
@@ -493,10 +494,10 @@ namespace Game.Editor
 
             var panel   = Panel(root, "Panel", new Vector2(700, 550), UI_BG_MID);
             var uidTxt  = TMP(panel, "UserIdText",    Center(0, 170, 600, 70), 24, UI_TEXT, "Guest");
-            var linkBtn = Btn(panel, "LinkAccountButton",   new Vector2(0,  60), new Vector2(500, 80), UI_PRIMARY, "Link Account");
-            var swBtn   = Btn(panel, "SwitchAccountButton", new Vector2(0,  60), new Vector2(500, 80), UI_PRIMARY, "Switch Account");
-            var logBtn  = Btn(panel, "LogoutButton",        new Vector2(0, -50), new Vector2(500, 80), UI_DANGER,  "Logout");
-            var clsBtn  = Btn(panel, "CloseButton",         new Vector2(0,-160), new Vector2(200, 70), UI_BG_DEEP, "Close");
+            var linkBtn = Btn(panel, "LinkAccountButton",   new Vector2(0,  60), new Vector2(500, 80), UI_PRIMARY, "Link Account",   PopupAccountBtnLink);
+            var swBtn   = Btn(panel, "SwitchAccountButton", new Vector2(0,  60), new Vector2(500, 80), UI_PRIMARY, "Switch Account", PopupAccountBtnSwitch);
+            var logBtn  = Btn(panel, "LogoutButton",        new Vector2(0, -50), new Vector2(500, 80), UI_DANGER,  "Logout",         PopupAccountBtnLogout);
+            var clsBtn  = Btn(panel, "CloseButton",         new Vector2(0,-160), new Vector2(200, 70), UI_BG_DEEP, "Close",          BtnClose);
 
             var so = new SerializedObject(root.GetComponent<AccountPopupView>());
             so.FindProperty("_userIdText").objectReferenceValue          = uidTxt;
@@ -575,7 +576,7 @@ namespace Game.Editor
         }
 
         // Button with label child
-        static GameObject Btn(GameObject parent, string name, Vector2 pos, Vector2 size, Color color, string label)
+        static GameObject Btn(GameObject parent, string name, Vector2 pos, Vector2 size, Color color, string label, string labelStringId = null)
         {
             var go = Child(parent, name); Fixed(go, pos, size);
             var img = Img(go, color);
@@ -583,12 +584,12 @@ namespace Game.Editor
             btn.targetGraphic = img;
             Comp<UIButtonAnimator>(go);
             if (!string.IsNullOrEmpty(label))
-                TMP(go, "Label", Center(0, 0, size.x, size.y), 20, UI_TEXT, label);
+                TMP(go, "Label", Center(0, 0, size.x, size.y), 20, UI_TEXT, label, labelStringId);
             return go;
         }
 
         // Button for use inside LayoutGroup — no Fixed() anchor, uses LayoutElement for sizing
-        static GameObject BtnHlg(GameObject parent, string name, Color color, string label)
+        static GameObject BtnHlg(GameObject parent, string name, Color color, string label, string labelStringId = null)
         {
             var go = Child(parent, name);
             // Reset RT to default stretch so HLG can drive it
@@ -602,11 +603,11 @@ namespace Game.Editor
             if (!go.TryGetComponent<Button>(out var btn)) btn = go.AddComponent<Button>();
             btn.targetGraphic = img;
             Comp<UIButtonAnimator>(go);
-            TMP(go, "Label", Center(0, 0, 180, 80), 18, UI_TEXT, label);
+            TMP(go, "Label", Center(0, 0, 180, 80), 18, UI_TEXT, label, labelStringId);
             return go;
         }
 
-        static TMP_Text TMP(GameObject parent, string name, Rect rect, int size, Color color, string text)
+        static TMP_Text TMP(GameObject parent, string name, Rect rect, int size, Color color, string text, string stringId = null)
         {
             var go = Child(parent, name);
             Fixed(go, new Vector2(rect.x, rect.y), new Vector2(rect.width, rect.height));
@@ -617,6 +618,13 @@ namespace Game.Editor
             tmp.text      = text;
             tmp.alignment = TextAlignmentOptions.Center;
             tmp.enableWordWrapping = true;
+            var lt = Comp<LocalizedText>(go);
+            if (!string.IsNullOrEmpty(stringId))
+            {
+                var soLt = new SerializedObject(lt);
+                soLt.FindProperty("_stringId").stringValue = stringId;
+                soLt.ApplyModifiedProperties();
+            }
             return tmp;
         }
 
@@ -655,10 +663,10 @@ namespace Game.Editor
             return go;
         }
 
-        static GameObject ToggleRow(GameObject parent, string rowName, Vector2 pos, string label)
+        static GameObject ToggleRow(GameObject parent, string rowName, Vector2 pos, string label, string labelStringId = null)
         {
             var row = Child(parent, rowName); Fixed(row, pos, new Vector2(800, 70));
-            TMP(row, "Label",  Center(-250, 0, 400, 60), 22, UI_TEXT, label);
+            TMP(row, "Label",  Center(-250, 0, 400, 60), 22, UI_TEXT, label, labelStringId);
 
             var tgo = Child(row, "Toggle"); Fixed(tgo, new Vector2(280, 0), new Vector2(80, 50));
             if (!tgo.TryGetComponent<Toggle>(out var toggle)) toggle = tgo.AddComponent<Toggle>();

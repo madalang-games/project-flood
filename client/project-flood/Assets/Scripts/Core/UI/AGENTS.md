@@ -20,6 +20,7 @@ Namespace: `Game.Core.UI`
 | `NetworkErrorView.cs` | `NetworkErrorView` | Retry button; 3+ failures shows persistent message |
 | `PerfectClearEffectView.cs` | `PerfectClearEffectView` | 3-star only; "Perfect!" text pop + confetti + wobble (2s) |
 | `ChapterUnlockOverlayView.cs` | `ChapterUnlockOverlayView` | Full-screen 2.7s chapter unlock animation; blocks interaction |
+| `LocalizedText.cs` | `LocalizedText` | Attach to TMP_Text; with stringId → text+font switch on language change; without stringId → font-only (dynamic text) |
 
 ## Symbols
 | symbol | kind | note |
@@ -38,6 +39,7 @@ Namespace: `Game.Core.UI`
 | `ChapterUnlockOverlayView.Play(int,Action)` | method | chapterNumber + onComplete callback |
 | `RewardItem` | struct | `Sprite Icon`, `int Quantity`, `string Label` |
 | `ToastType` | enum | Warning / Success / Error |
+| `LocalizedText._stringId` | SerializeField | Key from client_string.csv; empty = font-only mode |
 
 ## Rules
 - Attach `UIButtonAnimator` to every tappable button

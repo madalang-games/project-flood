@@ -8,10 +8,18 @@ Namespace: `Game.Services`
 | `StageDataService.cs` | `StageDataService` | DDOL singleton; loads Stage CSV via CsvLoader; GetStage(id), GetAll(), MaxStageId() |
 | `PlayerProgressService.cs` | `PlayerProgressService` | DDOL singleton; gold balance, per-stage stars/unlock stored in PlayerPrefs |
 | `AuthService.cs` | `AuthService` | DDOL singleton; auth result enum; Initialize(callback); stub — Phase 2 adds real HTTP |
+| `LocalizationService.cs` | `LocalizationService` | DDOL singleton; loads string/error CSV tables; Get(key), GetError(code), SetLanguage(Language), GetFont(Language) |
 
 ## Symbols
 | symbol | kind | note |
 |--------|------|------|
+| `LocalizationService.Instance` | prop | DDOL singleton |
+| `LocalizationService.CurrentLanguage` | prop | Active Language enum value |
+| `LocalizationService.OnLanguageChanged` | event | Fired after SetLanguage(); LocalizedText subscribes |
+| `LocalizationService.Get(string)` | method | Returns localized string for key; falls back to EN then key itself |
+| `LocalizationService.GetError(string)` | method | Returns localized error message for server errorCode |
+| `LocalizationService.SetLanguage(Language)` | method | Reloads tables + fires OnLanguageChanged; saves to PlayerPrefs |
+| `LocalizationService.GetFont(Language)` | method | Returns TMP_FontAsset from FontLocalizationConfig; null if config missing |
 | `StageDataService.GetStage(int)` | method | Returns Stage or null |
 | `StageDataService.GetAll()` | method | Returns Stage[] |
 | `PlayerProgressService.Gold` | prop | Current gold balance |
@@ -29,10 +37,11 @@ Namespace: `Game.Services`
 | `AuthResult` | enum | Authenticated / Guest / ReLoginRequired |
 
 ## Rules
-- All three services are DDOL — place GameObjects in Boot scene only
-- PlayerPrefs keys must not clash: prefix `auth_`, `gold`, `stars_`, `unlocked_`
+- All services are DDOL — place GameObjects in Boot scene only
+- PlayerPrefs keys must not clash: prefix `auth_`, `gold`, `stars_`, `unlocked_`, `lang`
 - AuthService is a stub; server-side auth is Phase 2
+- LocalizationService must initialize before any LocalizedText.Awake() — place it first in Boot scene
 
 ## Cross-refs
-- Depends on: `Game.Utils.CsvLoader`, `ProjectFlood.Data.Generated.Stage`
-- Consumed by: Boot scene, Lobby scene, InGame scene entry
+- Depends on: `Game.Utils.CsvLoader`, `ProjectFlood.Data.Generated.Stage`, `Game.Localization.FontLocalizationConfig`
+- Consumed by: Boot scene, Lobby scene, InGame scene entry, `Game.Core.UI.LocalizedText`

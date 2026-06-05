@@ -10,7 +10,8 @@ Unity 6 | URP 2D | C# | New Input System
 | `project-flood/Assets/Scripts/Core/UI/` | Animation components, common popup views | → `Core/UI/AGENTS.md` |
 | `project-flood/Assets/Scripts/InGame/` | Game-specific gameplay domain (flood mechanics) |
 | `project-flood/Assets/Scripts/OutGame/` | Non-gameplay scenes (Boot, Lobby, Settings) | → `OutGame/AGENTS.md` |
-| `project-flood/Assets/Scripts/Services/` | DDOL services: StageData, Auth, PlayerProgress | → `Services/AGENTS.md` |
+| `project-flood/Assets/Scripts/Services/` | DDOL services: StageData, Auth, PlayerProgress, Localization | → `Services/AGENTS.md` |
+| `project-flood/Assets/Scripts/Localization/` | FontLocalizationConfig ScriptableObject | → `Localization/AGENTS.md` |
 | `project-flood/Assets/Scripts/Data/Generated/` | Auto-generated C# models — DO NOT EDIT |
 | `project-flood/Assets/Scripts/Generated/Contracts/` | Auto-synced from `shared/contracts/` via pkt_generator |
 | `project-flood/Assets/Scripts/Utils/` | Stateless helpers |

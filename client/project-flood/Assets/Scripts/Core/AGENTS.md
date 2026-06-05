@@ -12,6 +12,7 @@
 | `SafeAreaHandler.cs` | `SafeAreaHandler` | Adjusts RectTransform anchors to Screen.safeArea on OnEnable + layout change |
 | `SceneTransition.cs` | `SceneTransition` | DDOL singleton; FadeToScene, SlideUpToScene, SlideDownToScene with overlay animation |
 | `GameConfig.cs` | `GameConfig` | Static constants: ContinueCost, ContinueExtraTurns, LoadingTimeoutSec, StageNodePoolSize |
+| `Language.cs` | `Language` | Shared enum for all 15 supported locales (EN KO ZH_CN ZH_TW JA RU ES PT FR DE TH AR IT TR ID) |
 
 ## Symbols
 | symbol | kind | note |
