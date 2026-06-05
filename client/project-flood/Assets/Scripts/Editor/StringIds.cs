@@ -23,6 +23,7 @@ namespace Game.Editor
         public const string CommonBtnMap = "common.btn_map";
         public const string CommonSettings = "common.settings";
         public const string CommonGuest = "common.guest";
+        public const string CommonBtnClaim = "common.btn_claim";
 
         // error
         public const string ErrorNetworkCheck = "error.network_check";
@@ -47,6 +48,44 @@ namespace Game.Editor
         public const string PopupAccountBtnLink = "popup.account.btn_link";
         public const string PopupAccountBtnSwitch = "popup.account.btn_switch";
         public const string PopupAccountBtnLogout = "popup.account.btn_logout";
+        public const string PopupStageInfoTitle = "popup.stage_info.title";
+        public const string PopupStageInfoBestStars = "popup.stage_info.best_stars";
+        public const string PopupStageInfoBestMoves = "popup.stage_info.best_moves";
+        public const string PopupStageInfoNoRecord = "popup.stage_info.no_record";
+        public const string PopupResultFailed = "popup.result.failed";
+        public const string PopupResultClearTitle = "popup.result.clear_title";
+        public const string PopupResultRatio = "popup.result.ratio";
+        public const string PopupResultTurns = "popup.result.turns";
+        public const string PopupResultRank = "popup.result.rank";
+        public const string PopupResultNewBest = "popup.result.new_best";
+        public const string PopupFailContinueTurns = "popup.fail.continue_turns";
+        public const string PopupStaminaTitle = "popup.stamina.title";
+        public const string PopupStaminaWatchAd = "popup.stamina.watch_ad";
+        public const string PopupStaminaUnlimited = "popup.stamina.unlimited";
+
+        // lobby
+        public const string LobbyRankingStarsTitle = "lobby.ranking.stars_title";
+        public const string LobbyRankingStageTitle = "lobby.ranking.stage_title";
+        public const string LobbyRankingMyRankEmpty = "lobby.ranking.my_rank_empty";
+        public const string LobbyRankingMyRankFormat = "lobby.ranking.my_rank_format";
+        public const string LobbyRankingLoading = "lobby.ranking.loading";
+        public const string LobbyRankingNoData = "lobby.ranking.no_data";
+        public const string LobbyRankingDefaultTitle = "lobby.ranking.default_title";
+        public const string LobbyRankingUnavailable = "lobby.ranking.unavailable";
+        public const string LobbyRankingTabStars = "lobby.ranking.tab_stars";
+        public const string LobbyRankingTabMaxStage = "lobby.ranking.tab_max_stage";
+
+        // ingame
+        public const string IngameTurnsLabel = "ingame.turns_label";
+
+        // nav
+        public const string NavHome = "nav.home";
+        public const string NavShop = "nav.shop";
+        public const string NavRanking = "nav.ranking";
+
+        // stamina
+        public const string StaminaMax = "stamina.max";
+        public const string StaminaNextCharge = "stamina.next_charge";
     }
 }
 #endif

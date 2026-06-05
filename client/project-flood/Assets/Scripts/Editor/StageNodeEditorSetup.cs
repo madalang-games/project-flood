@@ -11,7 +11,6 @@ namespace Game.Editor
     {
         private const string PrefabRoot = "Assets/Resources/Prefabs/UI";
 
-        [MenuItem("Tools/UI Setup/5 - Create Stage Node Prefab", false, 203)]
         static void CreateStageNodePrefab()
         {
             var root = new GameObject("StageNodeView");
@@ -34,6 +33,9 @@ namespace Game.Editor
             var labelTxt = label.AddComponent<TextMeshProUGUI>();
             labelTxt.text = "1"; labelTxt.fontSize = 22; labelTxt.color = UIEditorColors.UI_TEXT;
             labelTxt.alignment = TextAlignmentOptions.Center;
+            
+            var style = label.AddComponent<Game.Core.UI.UITextStyle>();
+            style.ApplyStyle();
 
             // 3 star fills (small dots at bottom)
             var starsRow = Child(root, "Stars");

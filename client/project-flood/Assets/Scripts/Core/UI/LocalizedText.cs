@@ -47,6 +47,11 @@ namespace Game.Core.UI
             var font = LocalizationService.Instance.GetFont(LocalizationService.Instance.CurrentLanguage);
             if (font != null)
                 _tmp.font = font;
+
+            if (TryGetComponent<UITextStyle>(out var style))
+            {
+                style.ApplyStyle();
+            }
         }
 
 #if UNITY_EDITOR

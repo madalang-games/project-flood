@@ -29,15 +29,15 @@ namespace Game.Editor
         private const string PrefabFinal     = "Assets/UI/Prefabs/Final";     // Destination for Scene Canvases (Final Variants)
 
         // Premium Candy / Casual Style Color Palette
-        static Color UI_BG_DEEP  => Hex("4D1259"); // Rich warm purple
-        static Color UI_BG_MID   => Hex("7C238C"); // Vibrant grape purple
-        static Color UI_PRIMARY  => Hex("FF5E7E"); // Juicy sweet pink
-        static Color UI_CTA      => Hex("FFD124"); // Shiny candy gold
-        static Color UI_SUCCESS  => Hex("24D878"); // Vibrant lime green
-        static Color UI_DANGER   => Hex("FF3B30"); // Soft alert red
+        static Color UI_BG_DEEP  => Hex("2A1635"); // Deep grape purple (cozy & high-end frame outline)
+        static Color UI_BG_MID   => Hex("4D235D"); // Warm plum purple (main body panel fill)
+        static Color UI_PRIMARY  => Hex("FF4D79"); // Vibrant strawberry pink (tabs and secondary buttons)
+        static Color UI_CTA      => Hex("FFC700"); // Sunny amber yellow (primary buttons that pop)
+        static Color UI_SUCCESS  => Hex("2ED573"); // Lime mint green (success states and play CTA)
+        static Color UI_DANGER   => Hex("FF4757"); // Coral alert red (danger and close elements)
         static Color UI_TEXT     => Hex("FFFFFF"); // Crisp white text
-        static Color UI_BORDER   => Hex("FFAA00"); // Orange-yellow stroke accent
-        static Color DIM         => new Color(0.15f, 0.05f, 0.2f, 0.75f); // Deep tinted backdrop shadow
+        static Color UI_BORDER   => Hex("FF9F00"); // Orange-yellow accent highlights
+        static Color DIM         => new Color(0.08f, 0.07f, 0.15f, 0.50f); // Immersive, soft 50% opacity dark navy backdrop
 
         public enum TextCategory
         {
@@ -67,8 +67,15 @@ namespace Game.Editor
             CreateSettingsPanel();
             CreateAccountPopup();
             CreateStageNodeView();
+            CreateStaminaPopup();
+            
+            // Generate Scenes as well
+            SetupBoot();
+            SetupLobby();
+            SetupInGame();
+            
             AssetDatabase.Refresh();
-            Debug.Log("[UIEditorSetup] All base popups created under: " + BaseCommonPath);
+            Debug.Log("[UIEditorSetup] All base popups & scenes created successfully.");
         }
 
         [MenuItem("Tools/UI Setup/Prefabs/ConfirmDialog",  false, 110)]
@@ -110,7 +117,18 @@ namespace Game.Editor
         [MenuItem("Tools/UI Setup/Prefabs/StageNodeView",    false, 122)]
         static void CreateStageNodeViewSingle()  { EnsureDirs(); CreateStageNodeView();  AssetDatabase.Refresh(); }
 
-        [MenuItem("Tools/UI Setup/2 - Setup Boot Canvas Scene", false, 200)]
+        [MenuItem("Tools/UI Setup/Prefabs/StaminaPopup",     false, 126)]
+        static void CreateStaminaPopupSingle()   { EnsureDirs(); CreateStaminaPopup();   AssetDatabase.Refresh(); }
+
+        [MenuItem("Tools/UI Setup/Prefabs/BootCanvas",       false, 123)]
+        static void CreateBootCanvasSingle()     { EnsureDirs(); SetupBoot();            AssetDatabase.Refresh(); }
+
+        [MenuItem("Tools/UI Setup/Prefabs/LobbyCanvas",      false, 124)]
+        static void CreateLobbyCanvasSingle()    { EnsureDirs(); SetupLobby();           AssetDatabase.Refresh(); }
+
+        [MenuItem("Tools/UI Setup/Prefabs/InGameCanvas",     false, 125)]
+        static void CreateInGameCanvasSingle()   { EnsureDirs(); SetupInGame();          AssetDatabase.Refresh(); }
+
         static void SetupBoot()
         {
             var canvas = CreateTempCanvas("Canvas_Scene");
@@ -130,7 +148,6 @@ namespace Game.Editor
             SaveScenePrefab(canvas, "Boot");
         }
 
-        [MenuItem("Tools/UI Setup/3 - Setup Lobby Canvas Scene", false, 201)]
         static void SetupLobby()
         {
             var canvas = CreateTempCanvas("Canvas_Scene");
@@ -167,11 +184,29 @@ namespace Game.Editor
             Fixed(goldIcon, new Vector2(-95, 0), new Vector2(50, 50));
             Img(goldIcon, UI_CTA);
             var goldIconAnim = Comp<UIIconIdleAnimator>(goldIcon);
-            goldIconAnim.Configure(UIIconIdleAnimator.AnimationType.Pulse, 2.2f, 12f);
+            goldIconAnim.Configure(UIIconIdleAnimator.AnimationType.GlowSweep, 2.2f, 12f);
 
             var goldText = TMP(goldContainer, "GoldText", Center(30, 0, 160, 60), 22, UI_CTA, "0", null, TextCategory.Normal);
             var goldCsf = Comp<ContentSizeFitter>(goldText.gameObject);
             goldCsf.horizontalFit = ContentSizeFitter.FitMode.PreferredSize;
+
+            // Stamina Panel — tappable, heart icon with count number on top + timer below
+            var staminaPanel = Child(header, "StaminaPanel");
+            Fixed(staminaPanel, new Vector2(-100, -40), new Vector2(180, 90));
+            var staminaBtn = Comp<Button>(staminaPanel);
+            staminaBtn.targetGraphic = Img(staminaPanel, new Color(0, 0, 0, 0)); // transparent hit area
+            Comp<UIButtonAnimator>(staminaPanel);
+
+            var heartIcon = Child(staminaPanel, "HeartIcon");
+            Fixed(heartIcon, new Vector2(0, 12), new Vector2(62, 62));
+            Img(heartIcon, UI_PRIMARY);
+            Comp<UIIconIdleAnimator>(heartIcon).Configure(UIIconIdleAnimator.AnimationType.GlowSweep, 2.4f, 12f);
+
+            // Count number overlaid on heart icon
+            var staminaText = TMP(heartIcon, "CountText", Center(0, 0, 62, 62), 28, UI_TEXT, "5", null, TextCategory.Header);
+
+            // Timer or MAX label below the heart
+            var staminaTimerText = TMP(staminaPanel, "TimerText", Center(0, -32, 180, 36), 14, UI_CTA, "MAX", null, TextCategory.Normal);
 
             // BottomNavBar — bottom 140px, HorizontalLayoutGroup for tab distribution
             var navBar = Child(safeRoot, "BottomNavBar");
@@ -185,9 +220,9 @@ namespace Game.Editor
             navHlg.padding = new RectOffset(20, 20, 20, 20);
             navHlg.spacing = 30;
 
-            var homeBtn    = BtnHlg(navBar, "HomeButton",    UI_BG_MID, "Home");
-            var shopBtn    = BtnHlg(navBar, "ShopButton",    UI_BG_MID, "Shop");
-            var rankBtn    = BtnHlg(navBar, "RankingButton", UI_BG_MID, "Rank");
+            var homeBtn    = BtnHlg(navBar, "HomeButton",    UI_BG_MID, "Home", NavHome);
+            var shopBtn    = BtnHlg(navBar, "ShopButton",    UI_BG_MID, "Shop", NavShop);
+            var rankBtn    = BtnHlg(navBar, "RankingButton", UI_BG_MID, "Rank", NavRanking);
 
             // Tab content area — fills between header and nav
             var tabContent = Child(safeRoot, "TabContent");
@@ -244,8 +279,8 @@ namespace Game.Editor
             var shopTab = Child(tabContent, "ShopTab");  Stretch(shopTab); shopTab.SetActive(false);
             var rankingTab = Child(tabContent, "RankingTab"); Stretch(rankingTab); rankingTab.SetActive(false);
             var rankingView = Comp<RankingTabView>(rankingTab);
-            var starsTab = Btn(rankingTab, "StarsTabButton", new Vector2(-230, 480), new Vector2(300, 80), UI_PRIMARY, "Stars");
-            var maxStageTab = Btn(rankingTab, "MaxStageTabButton", new Vector2(230, 480), new Vector2(300, 80), UI_BG_MID, "Max Stage");
+            var starsTab = Btn(rankingTab, "StarsTabButton", new Vector2(-230, 480), new Vector2(300, 80), UI_PRIMARY, "Stars", LobbyRankingTabStars);
+            var maxStageTab = Btn(rankingTab, "MaxStageTabButton", new Vector2(230, 480), new Vector2(300, 80), UI_BG_MID, "Max Stage", LobbyRankingTabMaxStage);
             
             var rankTitle = TMP(rankingTab, "TitleText", Center(0, 360, 760, 70), 30, UI_CTA, "Star Ranking", null, TextCategory.Header);
             var myRank = TMP(rankingTab, "MyRankText", Center(0, 270, 760, 80), 24, UI_TEXT, "My Rank: -", null, TextCategory.Normal);
@@ -272,21 +307,26 @@ namespace Game.Editor
 
             // Wire BottomNavBarView
             var soNav = new SerializedObject(bnv);
-            soNav.FindProperty("_homeButton").objectReferenceValue    = homeBtn.GetComponent<Button>();
-            soNav.FindProperty("_shopButton").objectReferenceValue    = shopBtn.GetComponent<Button>();
-            soNav.FindProperty("_rankingButton").objectReferenceValue = rankBtn.GetComponent<Button>();
+            soNav.FindProperty("_homeButton").objectReferenceValue       = homeBtn.GetComponent<Button>();
+            soNav.FindProperty("_shopButton").objectReferenceValue       = shopBtn.GetComponent<Button>();
+            soNav.FindProperty("_rankingButton").objectReferenceValue    = rankBtn.GetComponent<Button>();
+            soNav.FindProperty("_homeHighlight").objectReferenceValue    = homeBtn.transform.Find("Visual").GetComponent<Image>();
+            soNav.FindProperty("_shopHighlight").objectReferenceValue    = shopBtn.transform.Find("Visual").GetComponent<Image>();
+            soNav.FindProperty("_rankingHighlight").objectReferenceValue = rankBtn.transform.Find("Visual").GetComponent<Image>();
             soNav.ApplyModifiedProperties();
 
             // Wire HeaderView
             var soHeader = new SerializedObject(hv);
-            soHeader.FindProperty("_avatarButton").objectReferenceValue = avatarBtn.GetComponent<Button>();
-            soHeader.FindProperty("_goldText").objectReferenceValue     = goldText;
+            soHeader.FindProperty("_avatarButton").objectReferenceValue     = avatarBtn.GetComponent<Button>();
+            soHeader.FindProperty("_goldText").objectReferenceValue          = goldText;
+            soHeader.FindProperty("_staminaText").objectReferenceValue       = staminaText;
+            soHeader.FindProperty("_staminaTimerText").objectReferenceValue  = staminaTimerText;
+            soHeader.FindProperty("_staminaButton").objectReferenceValue     = staminaBtn;
             soHeader.ApplyModifiedProperties();
 
             SaveScenePrefab(canvas, "Lobby");
         }
 
-        [MenuItem("Tools/UI Setup/4 - Setup InGame Canvas Scene", false, 202)]
         static void SetupInGame()
         {
             var canvas = CreateTempCanvas("Canvas_Scene");
@@ -316,11 +356,11 @@ namespace Game.Editor
             turnsRt.offsetMax = new Vector2(8, 8);
             
             var turnsTxt = TMP(turnsBubble, "TurnsText", Center(0, 10, 160, 80), 36, UI_TEXT, "20", null, TextCategory.Header);
-            TMP(turnsBubble, "TurnsLabel", Center(0, -50, 160, 40), 16, UI_CTA, "TURNS", null, TextCategory.Normal);
+            TMP(turnsBubble, "TurnsLabel", Center(0, -50, 160, 40), 16, UI_TEXT, "TURNS", IngameTurnsLabel, TextCategory.Normal);
 
             // Progress bar container (Score/Ratio)
             var progressContainer = Child(hud, "ProgressContainer");
-            Fixed(progressContainer, new Vector2(240, -90), new Vector2(360, 60));
+            Fixed(progressContainer, new Vector2(290, -90), new Vector2(300, 60));
             
             // Border background for progress bar
             Img(progressContainer, UI_BG_DEEP);
@@ -339,19 +379,19 @@ namespace Game.Editor
             
             // Add stars icons positioned on the progress bar representing star thresholds
             var star1 = Child(progressContainer, "Star1");
-            Fixed(star1, new Vector2(-108f, 0f), new Vector2(45f, 45f));
+            Fixed(star1, new Vector2(-90f, 0f), new Vector2(45f, 45f));
             Img(star1, UI_CTA);
-            Comp<UIIconIdleAnimator>(star1).Configure(UIIconIdleAnimator.AnimationType.Pulse, 2.5f, 15f);
+            Comp<UIIconIdleAnimator>(star1).Configure(UIIconIdleAnimator.AnimationType.GlowSweep, 2.5f, 15f);
 
             var star2 = Child(progressContainer, "Star2");
             Fixed(star2, new Vector2(0f, 0f), new Vector2(45f, 45f));
             Img(star2, UI_CTA);
-            Comp<UIIconIdleAnimator>(star2).Configure(UIIconIdleAnimator.AnimationType.Pulse, 2.5f, 15f);
+            Comp<UIIconIdleAnimator>(star2).Configure(UIIconIdleAnimator.AnimationType.GlowSweep, 2.5f, 15f);
 
             var star3 = Child(progressContainer, "Star3");
-            Fixed(star3, new Vector2(108f, 0f), new Vector2(45f, 45f));
+            Fixed(star3, new Vector2(90f, 0f), new Vector2(45f, 45f));
             Img(star3, UI_CTA);
-            Comp<UIIconIdleAnimator>(star3).Configure(UIIconIdleAnimator.AnimationType.Pulse, 2.5f, 15f);
+            Comp<UIIconIdleAnimator>(star3).Configure(UIIconIdleAnimator.AnimationType.GlowSweep, 2.5f, 15f);
 
             // Wire HUDView
             var soHud = new SerializedObject(hudView);
@@ -776,6 +816,58 @@ namespace Game.Editor
             Save(root, "StageNodeView");
         }
 
+        static void CreateStaminaPopup()
+        {
+            var root = FullScreen("StaminaPopupView");
+            Img(root, DIM);
+            Comp<StaminaPopupView>(root);
+            Comp<UIPanelAppear>(root);
+            Comp<CanvasGroup>(root);
+
+            // Transparent backdrop for tap-to-close
+            var backdrop = Child(root, "Backdrop"); Stretch(backdrop);
+            var backdropBtn = Comp<Button>(backdrop);
+            backdropBtn.targetGraphic = Img(backdrop, new Color(0, 0, 0, 0));
+
+            var panel = Panel(root, "Panel", new Vector2(600, 560), UI_BG_MID);
+            RibbonTitle(panel, "TitleText", "Lives", PopupStaminaTitle);
+
+            // Large heart icon: pulsing with count number overlaid
+            var heartDisplay = Child(panel, "HeartDisplay");
+            Fixed(heartDisplay, new Vector2(0, 80), new Vector2(140, 140));
+            Img(heartDisplay, UI_PRIMARY);
+            Comp<UIIconIdleAnimator>(heartDisplay).Configure(UIIconIdleAnimator.AnimationType.GlowSweep, 2.4f, 15f);
+
+            var countText = TMP(heartDisplay, "CountText", Center(0, 0, 140, 140), 56, UI_TEXT, "5", null, TextCategory.Header);
+
+            // Timer / MAX label
+            var timerText = TMP(panel, "TimerText", Center(0, -30, 500, 64), 26, UI_CTA, "MAX", null, TextCategory.Normal);
+
+            // Watch Ad button (+1 life) — CanvasGroup so we can dim at MAX
+            var watchAdGo = Child(panel, "WatchAdButton");
+            Fixed(watchAdGo, new Vector2(0, -130), new Vector2(440, 90));
+            Img(watchAdGo, UI_SUCCESS);
+            var watchAdBtn = Comp<Button>(watchAdGo);
+            Comp<UIButtonAnimator>(watchAdGo);
+            var watchAdCg = Comp<CanvasGroup>(watchAdGo);
+            TMP(watchAdGo, "Label", Center(0, 0, 440, 90), 24, UI_TEXT, "Watch Ad (+1)", PopupStaminaWatchAd, TextCategory.Button);
+
+            // Close button
+            var closeGo = Btn(panel, "CloseButton", new Vector2(0, -238), new Vector2(260, 75), UI_BG_DEEP, "Close", CommonBtnClose);
+
+            // Wire all fields
+            var so = new SerializedObject(root.GetComponent<StaminaPopupView>());
+            so.FindProperty("_countText").objectReferenceValue          = countText;
+            so.FindProperty("_timerText").objectReferenceValue          = timerText;
+            so.FindProperty("_watchAdButton").objectReferenceValue      = watchAdBtn;
+            so.FindProperty("_watchAdButtonGroup").objectReferenceValue = watchAdCg;
+            so.FindProperty("_closeButton").objectReferenceValue        = closeGo.GetComponent<Button>();
+            so.FindProperty("_backdropButton").objectReferenceValue     = backdropBtn;
+            so.ApplyModifiedProperties();
+
+            Save(root, "StaminaPopupView");
+        }
+
         // ════════════════════════════════════════════════════════════════
         //  LAYOUT HELPERS
         // ════════════════════════════════════════════════════════════════
@@ -853,10 +945,27 @@ namespace Game.Editor
         {
             var panelRt = RT(panel);
             float panelW = panelRt.sizeDelta.x;
-            
-            // Ribbon gold base banner
+            float panelH = panelRt.sizeDelta.y;
+
+            // If anchors are stretched, sizeDelta contains margins rather than absolute size.
+            // In this case, read the parent border's size which is fixed in pixels.
+            if (panelRt.anchorMin == Vector2.zero && panelRt.anchorMax == Vector2.one)
+            {
+                var parentRt = panel.transform.parent.GetComponent<RectTransform>();
+                if (parentRt != null)
+                {
+                    panelW = parentRt.sizeDelta.x - 24f; // subtract border margins
+                    panelH = parentRt.sizeDelta.y - 24f;
+                }
+            }
+
+            // Safe fallback bounds
+            if (panelW <= 0f) panelW = 800f;
+            if (panelH <= 0f) panelH = 500f;
+
+            // Ribbon base banner (uses UI_CTA)
             var ribbon = Child(panel, name + "_Ribbon");
-            Fixed(ribbon, new Vector2(0f, panelRt.sizeDelta.y * 0.5f), new Vector2(panelW * 0.85f, 100f));
+            Fixed(ribbon, new Vector2(0f, panelH * 0.5f), new Vector2(panelW * 0.85f, 100f));
             Img(ribbon, UI_CTA);
             
             // Shadow under the ribbon banner
@@ -865,7 +974,7 @@ namespace Game.Editor
             Img(ribbonShadow, Hex("2B003B"));
             ribbonShadow.transform.SetAsFirstSibling();
             
-            var tmp = TMP(ribbon, "Text", new Rect(0, 0, panelW * 0.8f, 80f), 28, UI_BG_DEEP, text, stringId, TextCategory.Header);
+            var tmp = TMP(ribbon, "Text", new Rect(0, 0, panelW * 0.8f, 80f), 28, UI_TEXT, text, stringId, TextCategory.Header);
             return tmp;
         }
 
@@ -988,6 +1097,10 @@ namespace Game.Editor
                 soLt.FindProperty("_stringId").stringValue = stringId;
                 soLt.ApplyModifiedProperties();
             }
+            
+            var style = Comp<UITextStyle>(go);
+            style.ApplyStyle();
+            
             return tmp;
         }
 

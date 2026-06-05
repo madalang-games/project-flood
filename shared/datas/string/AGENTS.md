@@ -40,6 +40,7 @@ Defined by `tools/subset_tool/config.json`. Current: `EN KO ZH_CN ZH_TW JA RU ES
 - No embedded newlines in CSV cell values (CsvLoader splits on `\n`)
 - MVP blank columns: do NOT add NN constraint to non-EN/KO columns
 - `error_messages.csv` errorCode must match server-returned error codes exactly
+- **Font Subsetting**: After adding/modifying keys in `client_string.csv` or `error_messages.csv`, you must run `tools/info_generator.bat` followed by `tools/subset_fonts.bat` to rebuild font subsets containing the new characters.
 
 ## Cross-refs
 - Gen output: `client/project-flood/Assets/Resources/Data/string/`
