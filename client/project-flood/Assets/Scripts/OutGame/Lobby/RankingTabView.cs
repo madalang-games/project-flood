@@ -36,18 +36,18 @@ namespace Game.OutGame.Lobby
             }
 
             if (_titleText != null)
-                _titleText.text = _rankingType == "stars" ? "Star Ranking" : "Max Stage Ranking";
+                _titleText.text = _rankingType == "stars" ? LocalizationService.Instance.Get("lobby.ranking.stars_title") : LocalizationService.Instance.Get("lobby.ranking.stage_title");
             if (_myRankText != null)
-                _myRankText.text = "My Rank: -";
+                _myRankText.text = LocalizationService.Instance.Get("lobby.ranking.my_rank_empty");
             if (_entriesText != null)
-                _entriesText.text = "Loading...";
+                _entriesText.text = LocalizationService.Instance.Get("lobby.ranking.loading");
 
             api.FetchGlobalPage(_rankingType, 0, PageLimit, page =>
             {
                 if (_entriesText == null) return;
                 if (page.Entries.Count == 0)
                 {
-                    _entriesText.text = "No ranking data";
+                    _entriesText.text = LocalizationService.Instance.Get("lobby.ranking.no_data");
                     return;
                 }
 
@@ -63,8 +63,8 @@ namespace Game.OutGame.Lobby
             {
                 if (_myRankText == null) return;
                 _myRankText.text = mine.Entry == null
-                    ? "My Rank: -"
-                    : $"My Rank: #{mine.Entry.Rank}  {mine.Entry.Score}";
+                    ? LocalizationService.Instance.Get("lobby.ranking.my_rank_empty")
+                    : string.Format(LocalizationService.Instance.Get("lobby.ranking.my_rank_format"), mine.Entry.Rank, mine.Entry.Score);
             });
         }
 
@@ -79,9 +79,9 @@ namespace Game.OutGame.Lobby
 
         private void SetUnavailable()
         {
-            if (_titleText != null) _titleText.text = "Ranking";
-            if (_myRankText != null) _myRankText.text = "My Rank: -";
-            if (_entriesText != null) _entriesText.text = "Ranking unavailable";
+            if (_titleText != null) _titleText.text = LocalizationService.Instance.Get("lobby.ranking.default_title");
+            if (_myRankText != null) _myRankText.text = LocalizationService.Instance.Get("lobby.ranking.my_rank_empty");
+            if (_entriesText != null) _entriesText.text = LocalizationService.Instance.Get("lobby.ranking.unavailable");
         }
     }
 }

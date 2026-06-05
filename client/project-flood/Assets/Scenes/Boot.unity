@@ -315,6 +315,18 @@ PrefabInstance:
       propertyPath: m_AdditionalShaderChannelsFlag
       value: 25
       objectReference: {fileID: 0}
+    - target: {fileID: 3930773052514878021, guid: dbc15351549947145b06d1d5724f7d4a, type: 3}
+      propertyPath: m_fontSize
+      value: 61.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 3930773052514878021, guid: dbc15351549947145b06d1d5724f7d4a, type: 3}
+      propertyPath: m_sharedMaterial
+      value: 
+      objectReference: {fileID: -1095255645481567346, guid: 9503c53be05765c4fa7150bb2f978eb6, type: 2}
+    - target: {fileID: 3930773052514878021, guid: dbc15351549947145b06d1d5724f7d4a, type: 3}
+      propertyPath: m_TextStyleHashCode
+      value: -1183493901
+      objectReference: {fileID: 0}
     - target: {fileID: 6493407600168888053, guid: dbc15351549947145b06d1d5724f7d4a, type: 3}
       propertyPath: m_Pivot.x
       value: 0
@@ -394,6 +406,14 @@ PrefabInstance:
     - target: {fileID: 6493407600168888053, guid: dbc15351549947145b06d1d5724f7d4a, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8915224982390245843, guid: dbc15351549947145b06d1d5724f7d4a, type: 3}
+      propertyPath: m_sharedMaterial
+      value: 
+      objectReference: {fileID: -1095255645481567346, guid: 9503c53be05765c4fa7150bb2f978eb6, type: 2}
+    - target: {fileID: 8915224982390245843, guid: dbc15351549947145b06d1d5724f7d4a, type: 3}
+      propertyPath: m_TextStyleHashCode
+      value: -1183493901
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

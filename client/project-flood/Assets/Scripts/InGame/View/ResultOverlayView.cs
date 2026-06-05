@@ -39,13 +39,14 @@ namespace Game.InGame.View
             bool fail = result == StarResult.Fail;
             int  stars = (int)result;
 
-            if (_titleText != null) _titleText.text = fail ? "Stage Failed" : $"Stage {stageId} Clear!";
+            if (_titleText != null) 
+                _titleText.text = fail ? Game.Services.LocalizationService.Instance.Get("popup.result.failed") : string.Format(Game.Services.LocalizationService.Instance.Get("popup.result.clear_title"), stageId);
 
             if (_ratioText != null)
-                _ratioText.text = $"Cleared: {clearanceRatio * 100f:F0}%";
+                _ratioText.text = string.Format(Game.Services.LocalizationService.Instance.Get("popup.result.ratio"), (clearanceRatio * 100f).ToString("F0"));
 
             if (_turnsText != null)
-                _turnsText.text = $"Turns used: {turnsUsed}/{totalTurns}";
+                _turnsText.text = string.Format(Game.Services.LocalizationService.Instance.Get("popup.result.turns"), turnsUsed, totalTurns);
             if (_rankText != null)
                 _rankText.text = "";
 
@@ -72,7 +73,7 @@ namespace Game.InGame.View
         {
             if (_rankText == null) return;
             _rankText.text = stageRank.HasValue
-                ? $"Stage Rank: #{stageRank.Value}" + (isNewBest ? "  New Best" : "")
+                ? string.Format(Game.Services.LocalizationService.Instance.Get("popup.result.rank"), stageRank.Value) + (isNewBest ? Game.Services.LocalizationService.Instance.Get("popup.result.new_best") : "")
                 : "";
         }
 

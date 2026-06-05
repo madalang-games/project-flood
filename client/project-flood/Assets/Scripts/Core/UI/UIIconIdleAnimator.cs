@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Game.Core.UI
 {
@@ -14,36 +15,45 @@ namespace Game.Core.UI
         {
             Pulse,
             Float,
-            Rotate
+            Rotate,
+            /// <summary>Slow brightness glow + periodic flash sweep. Ideal for HUD/header icons.</summary>
+            GlowSweep,
+            /// <summary>Two quick scale beats then long rest. Ideal for life/stamina icons.</summary>
+            HeartbeatPulse
         }
 
         [SerializeField] private AnimationType _animationType = AnimationType.Float;
         [SerializeField] private float _speed = 2f;
-        [SerializeField] private float _amount = 10f; // Scale percent (e.g. 5 for 5%) for Pulse, pixels for Float, degrees for Rotate
+        [SerializeField] private float _amount = 10f; // Scale percent for Pulse/HeartbeatPulse, pixels for Float, degrees for Rotate, glow intensity for GlowSweep
 
         private RectTransform _rt;
+        private Graphic _graphic;
         private Vector3 _initialScale;
         private Vector2 _initialPosition;
+        private Color _initialColor;
         private float _timeOffset;
 
         private void Awake()
         {
             _rt = GetComponent<RectTransform>();
+            _graphic = GetComponent<Graphic>();
             _initialScale = _rt.localScale;
             _initialPosition = _rt.anchoredPosition;
-            
+            _initialColor = _graphic != null ? _graphic.color : Color.white;
+
             // Randomize phase offset to ensure multiple instances on screen breathe asynchronously
             _timeOffset = Random.Range(0f, 100f);
         }
 
         private void OnEnable()
         {
-            // Reset to clean initial states on enable
             if (_rt != null)
             {
                 _rt.localScale = _initialScale;
                 _rt.anchoredPosition = _initialPosition;
             }
+            if (_graphic != null)
+                _graphic.color = _initialColor;
         }
 
         private void Update()
@@ -68,7 +78,63 @@ namespace Game.Core.UI
                     float r = Mathf.Sin(t) * _amount;
                     _rt.localRotation = Quaternion.Euler(0f, 0f, r);
                     break;
+
+                case AnimationType.GlowSweep:
+                    UpdateGlowSweep(t);
+                    break;
+
+                case AnimationType.HeartbeatPulse:
+                    UpdateHeartbeatPulse();
+                    break;
             }
+        }
+
+        private void UpdateGlowSweep(float t)
+        {
+            if (_graphic == null) return;
+
+            // Slow continuous brightness oscillation
+            float glow = 1f + Mathf.Sin(t) * (_amount * 0.005f);
+
+            // Periodic flash sweep: quick brightness spike every 5 seconds over 0.4s
+            const float sweepInterval = 5f;
+            const float sweepDuration = 0.4f;
+            float sweepPhase = (Time.time + _timeOffset) % sweepInterval;
+            float sweep = sweepPhase < sweepDuration
+                ? Mathf.Sin(sweepPhase / sweepDuration * Mathf.PI) * 0.35f
+                : 0f;
+
+            float b = Mathf.Clamp(glow + sweep, 0f, 2f);
+            _graphic.color = new Color(
+                _initialColor.r * b,
+                _initialColor.g * b,
+                _initialColor.b * b,
+                _initialColor.a);
+        }
+
+        private void UpdateHeartbeatPulse()
+        {
+            // Pattern: beat1_up → beat1_down → beat2_up(weaker) → beat2_down → rest
+            const float beatDuration = 0.12f;
+            const float beat2Scale = 0.7f;
+            float restDuration = Mathf.Max(0.1f, (1f / _speed) - beatDuration * 4f);
+            float cycleDuration = beatDuration * 4f + restDuration;
+            float cycleT = (Time.time + _timeOffset) % cycleDuration;
+            float scaleAdd = _amount * 0.01f;
+
+            float s;
+            if (cycleT < beatDuration)
+                s = 1f + (cycleT / beatDuration) * scaleAdd;
+            else if (cycleT < beatDuration * 2f)
+                s = 1f + (1f - (cycleT - beatDuration) / beatDuration) * scaleAdd;
+            else if (cycleT < beatDuration * 3f)
+                s = 1f + ((cycleT - beatDuration * 2f) / beatDuration) * scaleAdd * beat2Scale;
+            else if (cycleT < beatDuration * 4f)
+                s = 1f + (1f - (cycleT - beatDuration * 3f) / beatDuration) * scaleAdd * beat2Scale;
+            else
+                s = 1f;
+
+            _rt.localScale = _initialScale * s;
         }
 
         // Helper setters for configuring animation programmatically if needed

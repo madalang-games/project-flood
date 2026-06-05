@@ -27,8 +27,15 @@ namespace Game.OutGame.Lobby
             _stageId   = stageId;
             _onPlay    = onPlay;
 
-            if (_stageTitle  != null) _stageTitle.text  = $"Stage {stageId}";
-            if (_bestRecord  != null) _bestRecord.text  = bestMoves > 0 ? $"Moves: {bestMoves}" : "-";
+            if (_stageTitle != null) 
+                _stageTitle.text = string.Format(Game.Services.LocalizationService.Instance.Get("popup.stage_info.title"), stageId);
+            if (_bestRecord != null)
+            {
+                if (bestStars > 0)
+                    _bestRecord.text = string.Format(Game.Services.LocalizationService.Instance.Get("popup.stage_info.best_stars"), bestStars);
+                else
+                    _bestRecord.text = Game.Services.LocalizationService.Instance.Get("popup.stage_info.no_record");
+            }
 
             for (int i = 0; i < _bestStarFills.Length; i++)
                 if (_bestStarFills[i] != null) _bestStarFills[i].SetActive(i < bestStars);

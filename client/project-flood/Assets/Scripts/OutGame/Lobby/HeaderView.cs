@@ -12,10 +12,12 @@ namespace Game.OutGame.Lobby
         [SerializeField] private TMP_Text _goldText;
         [SerializeField] private TMP_Text _staminaText;
         [SerializeField] private TMP_Text _staminaTimerText;
+        [SerializeField] private Button   _staminaButton;
 
         private void Awake()
         {
             _avatarButton.onClick.AddListener(OnAvatarTapped);
+            _staminaButton?.onClick.AddListener(OnStaminaTapped);
 
             // Defensive check: auto-bind if null by searching children
             if (_staminaText == null)
@@ -95,6 +97,11 @@ namespace Game.OutGame.Lobby
         private void OnAvatarTapped()
         {
             Game.Core.UIManager.Instance?.ShowPopup<Game.OutGame.Settings.AccountPopupView>();
+        }
+
+        private void OnStaminaTapped()
+        {
+            Game.Core.UIManager.Instance?.ShowPopup<StaminaPopupView>();
         }
     }
 }

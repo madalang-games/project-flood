@@ -27,9 +27,10 @@ namespace Game.InGame.View
             _onContinue = onContinue;
             _onForfeit  = onForfeit;
 
-            if (_continueLabel  != null) _continueLabel.text = $"+{Game.Core.GameConfig.ContinueExtraTurns} Turns";
-            if (_costText       != null) _costText.text      = $"🪙 {continueCost}";
-            if (_ownedGoldText  != null) _ownedGoldText.text = $"🪙 {currentGold}";
+            if (_continueLabel  != null) 
+                _continueLabel.text = string.Format(Game.Services.LocalizationService.Instance.Get("popup.fail.continue_turns"), Game.Core.GameConfig.ContinueExtraTurns);
+            if (_costText       != null) _costText.text      = $"{continueCost}";
+            if (_ownedGoldText  != null) _ownedGoldText.text = $"{currentGold}";
 
             bool canAfford = currentGold >= continueCost;
             var animator   = _continueButton.GetComponent<Core.UI.UIButtonAnimator>();

@@ -6,12 +6,13 @@ Namespace: `Game.OutGame.Lobby`
 | file | class | role |
 |------|-------|------|
 | `LobbyView.cs` | `LobbyView` | Root lobby controller; shows/hides tabs; refreshes gold |
-| `HeaderView.cs` | `HeaderView` | Avatar button account entry + gold display |
+| `HeaderView.cs` | `HeaderView` | Avatar tap → AccountPopup; stamina display (count/MAX/timer); stamina tap → StaminaPopupView |
 | `BottomNavBarView.cs` | `BottomNavBarView` | 3-tab nav; fires OnTabChanged |
 | `RankingTabView.cs` | `RankingTabView` | Ranking tab UI; stars/max-stage tabs, my rank, top page text |
 | `HomeTabView.cs` | `HomeTabView` | Chapter/stage scroll with object pool; stage node tap -> StageInfoPopup -> InGame |
 | `StageNodeView.cs` | `StageNodeView` | Pooled node: stage label, 3 star fills, lock overlay, pulse ring; Bind(id,stars,unlocked,current) |
 | `StageInfoPopupView.cs` | `StageInfoPopupView` | Stage info popup: title, best stars, best moves, PLAY button |
+| `StaminaPopupView.cs` | `StaminaPopupView` | Stamina popup: large heart + count, timer/MAX, Watch Ad (+1) button (dimmed at MAX), backdrop close |
 | `ScrollStateCache.cs` | `ScrollStateCache` | Static session memory: HomeScrollPosition, LastPlayedStageId |
 
 ## Symbols
@@ -29,6 +30,11 @@ Namespace: `Game.OutGame.Lobby`
 | `StageInfoPopupView.Init(stageId,bestStars,bestMoves,onPlay)` | method | Required before showing |
 | `ScrollStateCache.HomeScrollPosition` | prop | Float 0..1; save on leave, restore on enter |
 | `ScrollStateCache.LastPlayedStageId` | prop | Set before entering InGame scene |
+| `HeaderView._staminaButton` | SerializeField | Button on StaminaPanel; tapped → StaminaPopupView |
+| `HeaderView._staminaText` | SerializeField | TMP text showing current count on heart icon |
+| `HeaderView._staminaTimerText` | SerializeField | TMP text showing MAX or HH:MM countdown |
+| `StaminaPopupView._watchAdButtonGroup` | SerializeField | CanvasGroup; alpha=0.35 + non-interactable when at MAX |
+| `StaminaPopupView.Refresh()` | method | Subscribes to `StaminaApiService.OnStaminaUpdated`; dimming logic |
 | `LobbyTab` | enum | Home / Shop / Ranking |
 
 ## Rules
@@ -37,5 +43,5 @@ Namespace: `Game.OutGame.Lobby`
 - Ranking tab is active; if `RankingApiService` is absent, show unavailable state without breaking lobby flow.
 
 ## Cross-refs
-- Depends on: `Game.Core.UIManager`, `Game.Services.StageDataService`, `Game.Services.PlayerProgressService`, `Game.Services.RankingApiService`
+- Depends on: `Game.Core.UIManager`, `Game.Services.StageDataService`, `Game.Services.PlayerProgressService`, `Game.Services.RankingApiService`, `Game.Services.StaminaApiService`
 - Consumed by: InGame scene (reads ScrollStateCache.LastPlayedStageId)
