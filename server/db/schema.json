@@ -99,6 +99,24 @@
         { "name": "idx_ad_reward_context", "columns": ["context_type", "context_id"], "unique": false },
         { "name": "idx_ad_reward_correlation_id", "columns": ["correlation_id"], "unique": false }
       ]
+    },
+    {
+      "name": "user_interstitial_state",
+      "comment": "Tracks last interstitial shown time per player for cooldown enforcement.",
+      "columns": [
+        { "name": "user_id",       "type": "int64",    "pk": true, "null": false, "fk": "players.user_id" },
+        { "name": "last_shown_at", "type": "datetime", "null": false },
+        { "name": "updated_at",    "type": "datetime", "null": false }
+      ]
+    },
+    {
+      "name": "user_currency",
+      "comment": "Soft currency balance per player.",
+      "columns": [
+        { "name": "user_id",      "type": "int64",    "pk": true, "null": false, "fk": "players.user_id" },
+        { "name": "soft_amount",  "type": "int64",    "null": false, "default": 0 },
+        { "name": "updated_at",   "type": "datetime", "null": false }
+      ]
     }
   ]
 }

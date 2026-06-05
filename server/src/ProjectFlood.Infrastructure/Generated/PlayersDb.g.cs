@@ -106,4 +106,12 @@ public sealed class PlayersDb
     public IQueryable<(PlayersRow Player, AdRewardTransactionsRow AdRewardTransaction)> JoinWithAdRewardTransactions()
         => Query().Join(_db._AdRewardTransactions, l => l.UserId, r => r.UserId,
             (l, r) => ValueTuple.Create(l, r));
+
+    public IQueryable<(PlayersRow Player, UserInterstitialStateRow UserInterstitialState)> JoinWithUserInterstitialState()
+        => Query().Join(_db._UserInterstitialState, l => l.UserId, r => r.UserId,
+            (l, r) => ValueTuple.Create(l, r));
+
+    public IQueryable<(PlayersRow Player, UserCurrencyRow UserCurrency)> JoinWithUserCurrency()
+        => Query().Join(_db._UserCurrency, l => l.UserId, r => r.UserId,
+            (l, r) => ValueTuple.Create(l, r));
 }

@@ -1,2 +1,5 @@
 reward_group_id,version,display_key,is_enabled
 1001,1,reward.daily_stamina_unlimited,true
+2001,1,reward.stage_clear_easy,true
+2002,1,reward.stage_clear_normal,true
+2003,1,reward.stage_clear_hard,true

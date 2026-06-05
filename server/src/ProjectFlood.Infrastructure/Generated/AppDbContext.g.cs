@@ -15,6 +15,8 @@ public sealed partial class AppDbContext : DbContext
     internal DbSet<UserStaminaStateRow> _UserStaminaState => Set<UserStaminaStateRow>();
     internal DbSet<UserRewardClaimStateRow> _UserRewardClaimState => Set<UserRewardClaimStateRow>();
     internal DbSet<AdRewardTransactionsRow> _AdRewardTransactions => Set<AdRewardTransactionsRow>();
+    internal DbSet<UserInterstitialStateRow> _UserInterstitialState => Set<UserInterstitialStateRow>();
+    internal DbSet<UserCurrencyRow> _UserCurrency => Set<UserCurrencyRow>();
 
     public PlayersDb Players { get; }
     public SessionsDb Sessions { get; }
@@ -22,6 +24,8 @@ public sealed partial class AppDbContext : DbContext
     public UserStaminaStateDb UserStaminaState { get; }
     public UserRewardClaimStateDb UserRewardClaimState { get; }
     public AdRewardTransactionsDb AdRewardTransactions { get; }
+    public UserInterstitialStateDb UserInterstitialState { get; }
+    public UserCurrencyDb UserCurrency { get; }
 
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
     {
@@ -31,6 +35,8 @@ public sealed partial class AppDbContext : DbContext
         UserStaminaState = new UserStaminaStateDb(this);
         UserRewardClaimState = new UserRewardClaimStateDb(this);
         AdRewardTransactions = new AdRewardTransactionsDb(this);
+        UserInterstitialState = new UserInterstitialStateDb(this);
+        UserCurrency = new UserCurrencyDb(this);
     }
 
     public Task SaveAsync(CancellationToken ct = default) => SaveChangesAsync(ct);
@@ -44,5 +50,7 @@ public sealed partial class AppDbContext : DbContext
         mb.ApplyConfiguration(new UserStaminaStateDbConfiguration());
         mb.ApplyConfiguration(new UserRewardClaimStateDbConfiguration());
         mb.ApplyConfiguration(new AdRewardTransactionsDbConfiguration());
+        mb.ApplyConfiguration(new UserInterstitialStateDbConfiguration());
+        mb.ApplyConfiguration(new UserCurrencyDbConfiguration());
     }
 }

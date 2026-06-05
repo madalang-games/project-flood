@@ -9,4 +9,7 @@ public class AdPlacementData
     public int RewardGroupId { get; set; }
     public string ContextType { get; set; } = "";
     public bool IsEnabled { get; set; }
+    public string AdType { get; set; } = "";
+    public int CooldownSeconds { get; set; }
+    public int MinStage { get; set; }
 }

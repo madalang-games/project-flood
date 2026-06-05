@@ -1,3 +1,5 @@
-placement_id,reward_group_id,context_type,is_enabled
-STAMINA_LIFE,0,home,true
-STAGE_REVIVE,0,stage_attempt,true
+placement_id,reward_group_id,context_type,is_enabled,ad_type
+STAMINA_LIFE,0,home,true,REWARDED
+STAGE_REVIVE,0,stage_attempt,true,REWARDED
+INTERSTITIAL_POST_STAGE,0,post_stage,true,INTERSTITIAL
+DOUBLE_REWARD_STAGE_CLEAR,0,stage_clear,true,REWARDED

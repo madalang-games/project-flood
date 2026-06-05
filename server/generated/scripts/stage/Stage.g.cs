@@ -10,6 +10,7 @@ namespace ProjectFlood.Generated.Data
     public sealed class Stage
     {
         public int stage_id { get; set; }
+        public int reward_group_id { get; set; }
     }
 
     public static class StageLoader
@@ -32,6 +33,7 @@ namespace ProjectFlood.Generated.Data
                 result.Add(new Stage
                 {
                     stage_id = idx.TryGetValue("stage_id", out var i0) && i0 < cols.Length && !string.IsNullOrEmpty(cols[i0]) ? int.Parse(cols[i0]) : default,
+                    reward_group_id = idx.TryGetValue("reward_group_id", out var i1) && i1 < cols.Length && !string.IsNullOrEmpty(cols[i1]) ? int.Parse(cols[i1]) : default,
                 });
             }
             return result;

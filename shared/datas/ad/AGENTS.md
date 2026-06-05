@@ -9,12 +9,23 @@
 | symbol | kind | note |
 |--------|------|------|
 | `AdPlacement.placement_id` | column | Stable ad placement id |
-| `AdPlacement.context_type` | column | Expected reward context, e.g. `stage_attempt` |
+| `AdPlacement.ad_type` | column | `REWARDED` or `INTERSTITIAL` — CS scope |
+| `AdPlacement.context_type` | column | Expected reward context |
+| `AdPlacement.cooldown_seconds` | column | Server cooldown for INTERSTITIAL placements — S scope |
+| `AdPlacement.min_stage` | column | Min stage to show INTERSTITIAL — S scope |
+
+## Placements
+| placement_id | ad_type | notes |
+|---|---|---|
+| `STAMINA_LIFE` | REWARDED | Home context, no cooldown |
+| `STAGE_REVIVE` | REWARDED | Stage attempt context |
+| `INTERSTITIAL_POST_STAGE` | INTERSTITIAL | 180s cooldown, stage 20+ |
+| `DOUBLE_REWARD_STAGE_CLEAR` | REWARDED | Stage clear context, requires eligibility key |
 
 ## Rules
 - Ad reward transaction storage is DB-owned; this table only describes placement policy.
-- Stamina life and stage revive placements remain generic ad placements, not separate ad systems.
+- `cooldown_seconds` and `min_stage` are sparse (0 for REWARDED placements).
 
 ## Cross-refs
-- Consumed by: `Server.AdRewardService`
+- Consumed by: `Server.AdInterstitialService`
 - Consumed by: `Client.AdService`

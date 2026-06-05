@@ -13,6 +13,9 @@ namespace ProjectFlood.Generated.Data
         public int reward_group_id { get; set; }
         public string context_type { get; set; } = "";
         public bool is_enabled { get; set; }
+        public string ad_type { get; set; } = "";
+        public int cooldown_seconds { get; set; }
+        public int min_stage { get; set; }
     }
 
     public static class AdPlacementLoader
@@ -38,6 +41,9 @@ namespace ProjectFlood.Generated.Data
                     reward_group_id = idx.TryGetValue("reward_group_id", out var i1) && i1 < cols.Length && !string.IsNullOrEmpty(cols[i1]) ? int.Parse(cols[i1]) : default,
                     context_type = idx.TryGetValue("context_type", out var i2) && i2 < cols.Length ? (cols[i2] ?? "") : "",
                     is_enabled = idx.TryGetValue("is_enabled", out var i3) && i3 < cols.Length && cols[i3] == "true",
+                    ad_type = idx.TryGetValue("ad_type", out var i4) && i4 < cols.Length ? (cols[i4] ?? "") : "",
+                    cooldown_seconds = idx.TryGetValue("cooldown_seconds", out var i5) && i5 < cols.Length && !string.IsNullOrEmpty(cols[i5]) ? int.Parse(cols[i5]) : default,
+                    min_stage = idx.TryGetValue("min_stage", out var i6) && i6 < cols.Length && !string.IsNullOrEmpty(cols[i6]) ? int.Parse(cols[i6]) : default,
                 });
             }
             return result;

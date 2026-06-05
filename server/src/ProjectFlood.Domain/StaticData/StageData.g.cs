@@ -6,4 +6,5 @@ namespace ProjectFlood.Domain.StaticData;
 public class StageData
 {
     public int StageId { get; set; }
+    public int RewardGroupId { get; set; }
 }

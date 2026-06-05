@@ -29,6 +29,9 @@ public partial class StaticDataService
                 RewardGroupId = r.reward_group_id,
                 ContextType = r.context_type,
                 IsEnabled = r.is_enabled,
+                AdType = r.ad_type,
+                CooldownSeconds = r.cooldown_seconds,
+                MinStage = r.min_stage,
             });
         _colorPalettes = ColorPaletteLoader.LoadAll(System.IO.Path.Combine(commonPath, "color_palette.csv"))
             .ToDictionary(r => r.color_id, r => new ColorPaletteData
@@ -61,6 +64,7 @@ public partial class StaticDataService
             .ToDictionary(r => r.stage_id, r => new StageData
             {
                 StageId = r.stage_id,
+                RewardGroupId = r.reward_group_id,
             });
         _staminaConfigs = StaminaConfigLoader.LoadAll(System.IO.Path.Combine(staminaPath, "stamina_config.csv"))
             .ToDictionary(r => r.config_id, r => new StaminaConfigData

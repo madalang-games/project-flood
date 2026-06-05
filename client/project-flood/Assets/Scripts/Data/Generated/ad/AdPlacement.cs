@@ -13,5 +13,6 @@ namespace ProjectFlood.Data.Generated
         public int reward_group_id;
         public string context_type;
         public bool is_enabled;
+        public string ad_type;
     }
 }
