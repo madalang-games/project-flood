@@ -60,6 +60,42 @@ namespace Game.Editor
             Debug.Log("[UIEditorSetup] All prefabs created → " + PrefabRoot);
         }
 
+        [MenuItem("Tools/UI Setup/Prefabs/ConfirmDialog",  false, 110)]
+        static void CreateConfirmDialogSingle()  { EnsureDirs(); CreateConfirmDialog();  AssetDatabase.Refresh(); }
+
+        [MenuItem("Tools/UI Setup/Prefabs/Toast",           false, 111)]
+        static void CreateToastSingle()          { EnsureDirs(); CreateToast();          AssetDatabase.Refresh(); }
+
+        [MenuItem("Tools/UI Setup/Prefabs/LoadingOverlay",  false, 112)]
+        static void CreateLoadingOverlaySingle() { EnsureDirs(); CreateLoadingOverlay(); AssetDatabase.Refresh(); }
+
+        [MenuItem("Tools/UI Setup/Prefabs/NetworkError",    false, 113)]
+        static void CreateNetworkErrorSingle()   { EnsureDirs(); CreateNetworkError();   AssetDatabase.Refresh(); }
+
+        [MenuItem("Tools/UI Setup/Prefabs/RewardPopup",     false, 114)]
+        static void CreateRewardPopupSingle()    { EnsureDirs(); CreateRewardPopup();    AssetDatabase.Refresh(); }
+
+        [MenuItem("Tools/UI Setup/Prefabs/ReLoginView",     false, 115)]
+        static void CreateReLoginViewSingle()    { EnsureDirs(); CreateReLoginView();    AssetDatabase.Refresh(); }
+
+        [MenuItem("Tools/UI Setup/Prefabs/StageInfoPopup",  false, 116)]
+        static void CreateStageInfoPopupSingle() { EnsureDirs(); CreateStageInfoPopup(); AssetDatabase.Refresh(); }
+
+        [MenuItem("Tools/UI Setup/Prefabs/ResultOverlay",   false, 117)]
+        static void CreateResultOverlaySingle()  { EnsureDirs(); CreateResultOverlay();  AssetDatabase.Refresh(); }
+
+        [MenuItem("Tools/UI Setup/Prefabs/FailOverlay",     false, 118)]
+        static void CreateFailOverlaySingle()    { EnsureDirs(); CreateFailOverlay();    AssetDatabase.Refresh(); }
+
+        [MenuItem("Tools/UI Setup/Prefabs/PausePopup",      false, 119)]
+        static void CreatePausePopupSingle()     { EnsureDirs(); CreatePausePopup();     AssetDatabase.Refresh(); }
+
+        [MenuItem("Tools/UI Setup/Prefabs/SettingsPanel",   false, 120)]
+        static void CreateSettingsPanelSingle()  { EnsureDirs(); CreateSettingsPanel();  AssetDatabase.Refresh(); }
+
+        [MenuItem("Tools/UI Setup/Prefabs/AccountPopup",    false, 121)]
+        static void CreateAccountPopupSingle()   { EnsureDirs(); CreateAccountPopup();   AssetDatabase.Refresh(); }
+
         [MenuItem("Tools/UI Setup/2 - Setup Boot Canvas Scene", false, 200)]
         static void SetupBoot()
         {
