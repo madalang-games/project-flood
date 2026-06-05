@@ -40,6 +40,7 @@ Namespace: `Game.Core.UI`
 | `RewardItem` | struct | `Sprite Icon`, `int Quantity`, `string Label` |
 | `ToastType` | enum | Warning / Success / Error |
 | `LocalizedText._stringId` | SerializeField | Key from client_string.csv; empty = font-only mode |
+| `LocalizedText.RefreshAllInEditor()` | static method | Editor-only; reads CSV, updates all LocalizedText TMP text to EN preview |
 
 ## Rules
 - Attach `UIButtonAnimator` to every tappable button
