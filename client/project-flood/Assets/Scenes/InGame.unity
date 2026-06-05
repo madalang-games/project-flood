@@ -636,6 +636,7 @@ GameObject:
   - component: {fileID: 796436665}
   - component: {fileID: 796436667}
   - component: {fileID: 796436666}
+  - component: {fileID: 796436668}
   m_Layer: 0
   m_Name: TurnsText
   m_TagString: Untagged
@@ -762,6 +763,19 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 796436664}
   m_CullTransparentMesh: 1
+--- !u!114 &796436668
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 796436664}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ed7c992486bb06740990123c74fc8ac1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Game.Core.UI.LocalizedText
+  _stringId: 
 --- !u!1 &817599701
 GameObject:
   m_ObjectHideFlags: 0
@@ -998,6 +1012,7 @@ GameObject:
   - component: {fileID: 1232467582}
   - component: {fileID: 1232467584}
   - component: {fileID: 1232467583}
+  - component: {fileID: 1232467585}
   m_Layer: 0
   m_Name: Label
   m_TagString: Untagged
@@ -1124,6 +1139,19 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1232467581}
   m_CullTransparentMesh: 1
+--- !u!114 &1232467585
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1232467581}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ed7c992486bb06740990123c74fc8ac1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Game.Core.UI.LocalizedText
+  _stringId: 
 --- !u!1 &1839499479
 GameObject:
   m_ObjectHideFlags: 0

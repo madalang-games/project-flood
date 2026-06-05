@@ -562,6 +562,7 @@ GameObject:
   - component: {fileID: 603897608}
   - component: {fileID: 603897610}
   - component: {fileID: 603897609}
+  - component: {fileID: 603897611}
   m_Layer: 0
   m_Name: SpinnerText
   m_TagString: Untagged
@@ -688,6 +689,19 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 603897607}
   m_CullTransparentMesh: 1
+--- !u!114 &603897611
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 603897607}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ed7c992486bb06740990123c74fc8ac1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Game.Core.UI.LocalizedText
+  _stringId: boot.loading
 --- !u!1 &619394800
 GameObject:
   m_ObjectHideFlags: 0
@@ -864,6 +878,7 @@ GameObject:
   - component: {fileID: 1223881002}
   - component: {fileID: 1223881004}
   - component: {fileID: 1223881003}
+  - component: {fileID: 1223881005}
   m_Layer: 0
   m_Name: LogoText
   m_TagString: Untagged
@@ -990,6 +1005,19 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1223881001}
   m_CullTransparentMesh: 1
+--- !u!114 &1223881005
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1223881001}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ed7c992486bb06740990123c74fc8ac1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Game.Core.UI.LocalizedText
+  _stringId: app.title
 --- !u!1 &1350500318
 GameObject:
   m_ObjectHideFlags: 0

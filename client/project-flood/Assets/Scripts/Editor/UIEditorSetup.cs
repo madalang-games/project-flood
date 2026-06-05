@@ -219,8 +219,8 @@ namespace Game.Editor
             body.enableWordWrapping = true;
             var bodyCsf = Comp<ContentSizeFitter>(Child(panel, "BodyText"));
             bodyCsf.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
-            var cancel = Btn(panel, "CancelButton",  new Vector2(-200, -160), new Vector2(360, 80), UI_BG_DEEP, "Cancel",  BtnCancel);
-            var confirm= Btn(panel, "ConfirmButton", new Vector2( 200, -160), new Vector2(360, 80), UI_PRIMARY,  "Confirm", BtnConfirm);
+            var cancel = Btn(panel, "CancelButton",  new Vector2(-200, -160), new Vector2(360, 80), UI_BG_DEEP, "Cancel",  CommonBtnCancel);
+            var confirm= Btn(panel, "ConfirmButton", new Vector2( 200, -160), new Vector2(360, 80), UI_PRIMARY,  "Confirm", CommonBtnConfirm);
 
             var so = new SerializedObject(root.GetComponent<ConfirmDialogView>());
             so.FindProperty("_titleText").objectReferenceValue         = title;
@@ -276,7 +276,7 @@ namespace Game.Editor
 
             var panel = Panel(root, "Panel", new Vector2(800, 400), UI_BG_MID);
             var msg   = TMP(panel, "MessageText", Center(0, 60, 680, 180), 20, UI_TEXT, "Check your network connection.", ErrorNetworkCheck);
-            var retry = Btn(panel, "RetryButton", new Vector2(0, -130), new Vector2(300, 80), UI_PRIMARY, "Retry", BtnRetry);
+            var retry = Btn(panel, "RetryButton", new Vector2(0, -130), new Vector2(300, 80), UI_PRIMARY, "Retry", CommonBtnRetry);
 
             var so = new SerializedObject(root.GetComponent<NetworkErrorView>());
             so.FindProperty("_messageText").objectReferenceValue = msg;
@@ -299,7 +299,7 @@ namespace Game.Editor
             vlg.spacing = 12; vlg.childAlignment = TextAnchor.MiddleCenter;
             vlg.childControlHeight = false; vlg.childControlWidth = false;
 
-            var ok = Btn(panel, "OkButton", new Vector2(0, -220), new Vector2(300, 80), UI_PRIMARY, "OK", BtnOk);
+            var ok = Btn(panel, "OkButton", new Vector2(0, -220), new Vector2(300, 80), UI_PRIMARY, "OK", CommonBtnOk);
 
             var so = new SerializedObject(root.GetComponent<RewardPopupView>());
             so.FindProperty("_itemContainer").objectReferenceValue = items.transform;
@@ -347,7 +347,7 @@ namespace Game.Editor
             var hlg = starsRoot.AddComponent<HorizontalLayoutGroup>(); hlg.spacing = 10; hlg.childAlignment = TextAnchor.MiddleCenter;
             var s0 = StarGO(starsRoot, "Star0"); var s1 = StarGO(starsRoot, "Star1"); var s2 = StarGO(starsRoot, "Star2");
 
-            var play = Btn(panel, "PlayButton", new Vector2(0, -140), new Vector2(400, 90), UI_CTA, "Play", BtnPlay);
+            var play = Btn(panel, "PlayButton", new Vector2(0, -140), new Vector2(400, 90), UI_CTA, "Play", CommonBtnPlay);
 
             var so = new SerializedObject(root.GetComponent<StageInfoPopupView>());
             so.FindProperty("_stageTitle").objectReferenceValue     = title;
@@ -382,9 +382,9 @@ namespace Game.Editor
             var hlg = starsRoot.AddComponent<HorizontalLayoutGroup>(); hlg.spacing = 20; hlg.childAlignment = TextAnchor.MiddleCenter;
             var s0 = StarGO(starsRoot, "Star0"); var s1 = StarGO(starsRoot, "Star1"); var s2 = StarGO(starsRoot, "Star2");
 
-            var retry = Btn(panel, "RetryButton", new Vector2(-270, -320), new Vector2(220, 80), UI_BG_DEEP, "Retry", BtnRetry);
-            var next  = Btn(panel, "NextButton",  new Vector2(   0, -320), new Vector2(220, 80), UI_PRIMARY,  "Next",  BtnNext);
-            var map   = Btn(panel, "MapButton",   new Vector2( 270, -320), new Vector2(220, 80), UI_BG_DEEP,  "Map",   BtnMap);
+            var retry = Btn(panel, "RetryButton", new Vector2(-270, -320), new Vector2(220, 80), UI_BG_DEEP, "Retry", CommonBtnRetry);
+            var next  = Btn(panel, "NextButton",  new Vector2(   0, -320), new Vector2(220, 80), UI_PRIMARY,  "Next",  CommonBtnNext);
+            var map   = Btn(panel, "MapButton",   new Vector2( 270, -320), new Vector2(220, 80), UI_BG_DEEP,  "Map",   CommonBtnMap);
 
             var so = new SerializedObject(root.GetComponent<ResultOverlayView>());
             so.FindProperty("_titleText").objectReferenceValue  = title;
@@ -497,7 +497,7 @@ namespace Game.Editor
             var linkBtn = Btn(panel, "LinkAccountButton",   new Vector2(0,  60), new Vector2(500, 80), UI_PRIMARY, "Link Account",   PopupAccountBtnLink);
             var swBtn   = Btn(panel, "SwitchAccountButton", new Vector2(0,  60), new Vector2(500, 80), UI_PRIMARY, "Switch Account", PopupAccountBtnSwitch);
             var logBtn  = Btn(panel, "LogoutButton",        new Vector2(0, -50), new Vector2(500, 80), UI_DANGER,  "Logout",         PopupAccountBtnLogout);
-            var clsBtn  = Btn(panel, "CloseButton",         new Vector2(0,-160), new Vector2(200, 70), UI_BG_DEEP, "Close",          BtnClose);
+            var clsBtn  = Btn(panel, "CloseButton",         new Vector2(0,-160), new Vector2(200, 70), UI_BG_DEEP, "Close",          CommonBtnClose);
 
             var so = new SerializedObject(root.GetComponent<AccountPopupView>());
             so.FindProperty("_userIdText").objectReferenceValue          = uidTxt;
