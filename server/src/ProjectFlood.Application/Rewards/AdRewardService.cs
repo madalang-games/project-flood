@@ -17,7 +17,7 @@ public sealed class AdRewardService
     {
         if (request.PlacementId == "STAMINA_LIFE")
         {
-            var result = await _stamina.GrantAdLifeAsync(userId, request.Provider, request.ProviderTransactionId, request.AdToken, correlationId, ct);
+            var result = await _stamina.GrantAdLifeAsync(userId, request.Provider, request.AdToken, correlationId, ct);
             return new AdRewardClaimResponse
             {
                 Granted = result.Granted,

@@ -4,7 +4,9 @@ using ProjectFlood.Application.Common;
 using ProjectFlood.Application.Logging;
 using ProjectFlood.Application.Rewards;
 using ProjectFlood.Application.Stamina;
+using ProjectFlood.Contracts.Rewards;
 using ProjectFlood.Contracts.Stage;
+using ProjectFlood.Generated.Data;
 using ProjectFlood.Infrastructure.Generated;
 using StackExchange.Redis;
 
@@ -12,19 +14,26 @@ namespace ProjectFlood.Application.Stage;
 
 public sealed class StageAttemptService
 {
+    private static readonly TimeSpan DoubleRewardEligibleTtl = TimeSpan.FromMinutes(5);
+
     private readonly AppDbContext _db;
     private readonly IDatabase _redis;
     private readonly StaminaService _stamina;
     private readonly StaminaConfigProvider _config;
     private readonly IAdRewardVerifier _adVerifier;
+    private readonly RewardService _rewards;
+    private readonly Lazy<IReadOnlyDictionary<int, ProjectFlood.Generated.Data.Stage>> _stageData;
 
-    public StageAttemptService(AppDbContext db, IConnectionMultiplexer redis, StaminaService stamina, StaminaConfigProvider config, IAdRewardVerifier adVerifier)
+    public StageAttemptService(AppDbContext db, IConnectionMultiplexer redis, StaminaService stamina, StaminaConfigProvider config, IAdRewardVerifier adVerifier, RewardService rewards)
     {
         _db = db;
         _redis = redis.GetDatabase();
         _stamina = stamina;
         _config = config;
         _adVerifier = adVerifier;
+        _rewards = rewards;
+        _stageData = new Lazy<IReadOnlyDictionary<int, ProjectFlood.Generated.Data.Stage>>(() =>
+            StageLoader.LoadAsDict(Path.Combine(AppContext.BaseDirectory, "generated", "data", "stage", "stage.csv")));
     }
 
     public async Task<StageAttemptStartResponse> StartAsync(long userId, int stageId, string correlationId, CancellationToken ct)
@@ -71,6 +80,17 @@ public sealed class StageAttemptService
             ? await _stamina.RefundAttemptLifeAsync(userId, correlationId, ct)
             : (await _stamina.GetAsync(userId, ct)).Stamina;
 
+        var granted = new List<GrantedRewardDto>();
+        Contracts.Currency.CurrencySnapshot? currency = null;
+        if (_stageData.Value.TryGetValue(stageId, out var stageRow) && stageRow.reward_group_id > 0)
+        {
+            var (items, cur) = await _rewards.GrantRewardGroupAsync(userId, stageRow.reward_group_id, 1, correlationId, ct);
+            granted = items;
+            currency = cur;
+            _db.EventLogs.Insert(EventLogFactory.StageClearRewardGranted(userId, correlationId, stageId, stageRow.reward_group_id));
+            await _redis.StringSetAsync(DoubleRewardEligibleKey(userId, stageId), attemptId, DoubleRewardEligibleTtl);
+        }
+
         _db.EventLogs.Insert(EventLogFactory.StageAttemptCleared(userId, correlationId, attempt.AttemptId, stageId, attempt.LifeSpent));
         await _db.SaveAsync(ct);
 
@@ -80,6 +100,8 @@ public sealed class StageAttemptService
             StageId = stageId,
             Result = "CLEAR",
             LifeRefunded = attempt.LifeSpent,
+            GrantedRewards = granted,
+            Currency = currency,
             Stamina = stamina,
             ServerTime = now,
         };
@@ -110,7 +132,6 @@ public sealed class StageAttemptService
         int stageId,
         string attemptId,
         string provider,
-        string providerTransactionId,
         string adToken,
         string correlationId,
         CancellationToken ct)
@@ -120,8 +141,16 @@ public sealed class StageAttemptService
         if (attempt.ExpiresAt <= now)
             throw new GameApiException(ErrorCodes.StageAttemptExpired, "Stage attempt expired.");
 
+        var config = _config.Current;
+        if (attempt.ReviveCount >= config.MaxRevivePerAttempt)
+            throw new GameApiException(ErrorCodes.ReviveLimitExceeded, "Revive limit exceeded.");
+
+        var result = await _adVerifier.VerifyAsync(provider, adToken, ct);
+        if (!result.Verified)
+            throw new GameApiException(ErrorCodes.AdSsvPending, "Ad SSV callback not yet received.");
+
         var existing = await _db.AdRewardTransactions.Query()
-            .FirstOrDefaultAsync(x => x.Provider == provider && x.ProviderTxId == providerTransactionId, ct);
+            .FirstOrDefaultAsync(x => x.Provider == provider && x.ProviderTxId == result.ProviderTxId, ct);
         if (existing is not null)
         {
             if (existing.UserId != userId || existing.ContextType != "stage_attempt" || existing.ContextId != attemptId)
@@ -138,12 +167,6 @@ public sealed class StageAttemptService
             };
         }
 
-        var config = _config.Current;
-        if (attempt.ReviveCount >= config.MaxRevivePerAttempt)
-            throw new GameApiException(ErrorCodes.ReviveLimitExceeded, "Revive limit exceeded.");
-        if (!await _adVerifier.VerifyAsync(provider, providerTransactionId, adToken, ct))
-            throw new GameApiException(ErrorCodes.AdRewardVerifyFailed, "Ad reward verification failed.");
-
         attempt.ReviveCount++;
         var turnsGranted = config.ReviveTurns[attempt.ReviveCount - 1];
         await _redis.StringSetAsync(UserAttemptKey(userId), JsonSerializer.Serialize(attempt), attempt.ExpiresAt - now);
@@ -158,7 +181,7 @@ public sealed class StageAttemptService
             ContextType = "stage_attempt",
             ContextId = attemptId,
             Provider = provider,
-            ProviderTxId = providerTransactionId,
+            ProviderTxId = result.ProviderTxId,
             Status = "granted",
             CorrelationId = correlationId,
             CreatedAt = now,
@@ -207,6 +230,7 @@ public sealed class StageAttemptService
         };
 
     private static string UserAttemptKey(long userId) => $"stage_attempt:user:{userId}";
+    public static string DoubleRewardEligibleKey(long userId, int stageId) => $"double_reward_eligible:{userId}:{stageId}";
 
     private sealed class StageAttemptState
     {

@@ -1,6 +1,8 @@
 using ProjectFlood.Application.Common;
+using ProjectFlood.Application.Currency;
 using ProjectFlood.Application.Logging;
 using ProjectFlood.Application.Stamina;
+using ProjectFlood.Contracts.Currency;
 using ProjectFlood.Contracts.Rewards;
 using ProjectFlood.Contracts.Stamina;
 using ProjectFlood.Generated.Data;
@@ -12,12 +14,14 @@ public sealed class RewardService
 {
     private readonly AppDbContext _db;
     private readonly StaminaService _stamina;
+    private readonly CurrencyService _currency;
     private readonly Lazy<RewardDataSet> _data;
 
-    public RewardService(AppDbContext db, StaminaService stamina)
+    public RewardService(AppDbContext db, StaminaService stamina, CurrencyService currency)
     {
         _db = db;
         _stamina = stamina;
+        _currency = currency;
         _data = new Lazy<RewardDataSet>(LoadData);
     }
 
@@ -105,6 +109,45 @@ public sealed class RewardService
             Stamina = stamina,
             ServerTime = now,
         };
+    }
+
+    public async Task<(List<GrantedRewardDto> Granted, CurrencySnapshot? Currency)> GrantRewardGroupAsync(
+        long userId,
+        int rewardGroupId,
+        int version,
+        string correlationId,
+        CancellationToken ct)
+    {
+        var items = _data.Value.Items
+            .Where(x => x.reward_group_id == rewardGroupId && x.version == version)
+            .OrderBy(x => x.sort_order)
+            .ToList();
+
+        var granted = new List<GrantedRewardDto>();
+        CurrencySnapshot? currency = null;
+
+        foreach (var item in items)
+        {
+            granted.Add(new GrantedRewardDto
+            {
+                RewardType = item.reward_type,
+                TargetId = item.target_id,
+                Amount = item.amount,
+                DurationSeconds = item.duration_seconds,
+            });
+
+            switch (item.reward_type)
+            {
+                case "STAMINA_UNLIMITED":
+                    await _stamina.GrantUnlimitedAsync(userId, $"reward_group:{rewardGroupId}", item.duration_seconds, correlationId, ct);
+                    break;
+                case "SOFT_CURRENCY":
+                    currency = await _currency.GrantSoftAsync(userId, item.amount, $"reward_group:{rewardGroupId}", correlationId, ct);
+                    break;
+            }
+        }
+
+        return (granted, currency);
     }
 
     private static RewardDataSet LoadData()

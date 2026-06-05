@@ -7,6 +7,7 @@ using Microsoft.IdentityModel.Tokens;
 using ProjectFlood.API;
 using ProjectFlood.API.Filters;
 using ProjectFlood.API.Middleware;
+using ProjectFlood.Application.Currency;
 using ProjectFlood.Application.Rewards;
 using ProjectFlood.Application.Stage;
 using ProjectFlood.Application.Stamina;
@@ -57,13 +58,27 @@ builder.Services.AddSingleton(sp => new JwtPublicKeyCache(
     sp.GetRequiredService<IHttpClientFactory>().CreateClient("jwt-public-key-cache")));
 builder.Services.AddHostedService(sp => sp.GetRequiredService<JwtPublicKeyCache>());
 
+builder.Services.AddHttpClient("admob-ssv");
+builder.Services.AddSingleton(sp => new AdMobSsvKeyCache(
+    sp.GetRequiredService<IHttpClientFactory>().CreateClient("admob-ssv"),
+    sp.GetRequiredService<ILogger<AdMobSsvKeyCache>>()));
+builder.Services.AddHostedService(sp => sp.GetRequiredService<AdMobSsvKeyCache>());
+
 // 4. Application services
 builder.Services.AddSingleton<StaminaConfigProvider>();
 builder.Services.AddScoped<StaminaService>();
+builder.Services.AddScoped<CurrencyService>();
 builder.Services.AddScoped<StageAttemptService>();
 builder.Services.AddScoped<RewardService>();
 builder.Services.AddScoped<AdRewardService>();
-builder.Services.AddSingleton<IAdRewardVerifier, DevelopmentAdRewardVerifier>();
+builder.Services.AddScoped<AdMobSsvCallbackService>();
+builder.Services.AddScoped<AdInterstitialService>();
+builder.Services.AddScoped<AdDoubleRewardService>();
+
+if (builder.Environment.IsDevelopment())
+    builder.Services.AddSingleton<IAdRewardVerifier, DevelopmentAdRewardVerifier>();
+else
+    builder.Services.AddSingleton<IAdRewardVerifier, AdMobSsvVerifier>();
 
 // 5. Configuration and auth
 builder.Services.AddSingleton(appConfig);

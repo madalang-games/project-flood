@@ -31,5 +31,5 @@ public sealed class StageController : ControllerBaseEx
 
     [HttpPost("{stageId:int}/attempts/{attemptId}/revive-ad")]
     public Task<StageReviveAdResponse> ReviveAd(int stageId, string attemptId, [FromBody] StageReviveAdRequest request, CancellationToken ct)
-        => _attempts.ReviveAdAsync(PlayerId, stageId, attemptId, request.Provider, request.ProviderTransactionId, request.AdToken, CorrelationId, ct);
+        => _attempts.ReviveAdAsync(PlayerId, stageId, attemptId, request.Provider, request.AdToken, CorrelationId, ct);
 }

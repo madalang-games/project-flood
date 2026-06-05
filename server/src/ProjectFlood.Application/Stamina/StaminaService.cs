@@ -37,16 +37,23 @@ public sealed class StaminaService
     public async Task<StaminaAdLifeRewardResponse> GrantAdLifeAsync(
         long userId,
         string provider,
-        string providerTransactionId,
         string adToken,
         string correlationId,
         CancellationToken ct)
     {
         var now = DateTimeOffset.UtcNow;
-        var existing = await FindAdTransactionAsync(provider, providerTransactionId, ct);
         var state = await EnsureStateAsync(userId, now, ct);
         ApplyRegen(state, now);
 
+        var config = _config.Current;
+        if (state.CurrentLife >= config.MaxLife)
+            throw new GameApiException(ErrorCodes.StaminaFull, "Stamina is already full.");
+
+        var result = await _adVerifier.VerifyAsync(provider, adToken, ct);
+        if (!result.Verified)
+            throw new GameApiException(ErrorCodes.AdSsvPending, "Ad SSV callback not yet received.");
+
+        var existing = await FindAdTransactionAsync(provider, result.ProviderTxId, ct);
         if (existing is not null)
         {
             if (existing.UserId != userId || existing.PlacementId != "STAMINA_LIFE")
@@ -63,12 +70,6 @@ public sealed class StaminaService
             };
         }
 
-        var config = _config.Current;
-        if (state.CurrentLife >= config.MaxLife)
-            throw new GameApiException(ErrorCodes.StaminaFull, "Stamina is already full.");
-        if (!await _adVerifier.VerifyAsync(provider, providerTransactionId, adToken, ct))
-            throw new GameApiException(ErrorCodes.AdRewardVerifyFailed, "Ad reward verification failed.");
-
         var before = state.CurrentLife;
         state.CurrentLife = Math.Min(config.MaxLife, state.CurrentLife + config.AdLifeRewardAmount);
         state.UpdatedAt = now;
@@ -84,7 +85,7 @@ public sealed class StaminaService
             ContextType = "home",
             ContextId = null,
             Provider = provider,
-            ProviderTxId = providerTransactionId,
+            ProviderTxId = result.ProviderTxId,
             Status = "granted",
             CorrelationId = correlationId,
             CreatedAt = now,

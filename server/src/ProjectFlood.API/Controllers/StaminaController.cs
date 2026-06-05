@@ -21,5 +21,5 @@ public sealed class StaminaController : ControllerBaseEx
 
     [HttpPost("ad-life-reward")]
     public Task<StaminaAdLifeRewardResponse> AdLifeReward([FromBody] StaminaAdLifeRewardRequest request, CancellationToken ct)
-        => _stamina.GrantAdLifeAsync(PlayerId, request.Provider, request.ProviderTransactionId, request.AdToken, CorrelationId, ct);
+        => _stamina.GrantAdLifeAsync(PlayerId, request.Provider, request.AdToken, CorrelationId, ct);
 }

@@ -1,6 +1,8 @@
 namespace ProjectFlood.Application.Rewards;
 
+public readonly record struct AdVerifyResult(bool Verified, string ProviderTxId);
+
 public interface IAdRewardVerifier
 {
-    Task<bool> VerifyAsync(string provider, string providerTransactionId, string adToken, CancellationToken ct);
+    Task<AdVerifyResult> VerifyAsync(string provider, string adToken, CancellationToken ct);
 }
