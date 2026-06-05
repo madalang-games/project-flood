@@ -11,6 +11,8 @@
 | `generateDomainPocoContent` | function | Uses `[data-gen].domain_static_data_namespace` |
 | `generateInterfaceFile` | function | Uses `[data-gen].domain_interface_namespace` |
 | `generateServiceFile` | function | Uses `[data-gen].infrastructure_data_namespace` and `server_namespace` |
+| `generateStringIds` | function | Reads PK values from `string/client_string.csv` → `Assets/Scripts/Editor/StringIds.cs` |
+| `keyToConstantName` | function | `"common.btn_retry"` → `"CommonBtnRetry"` (splits on `.` `_` `-`, PascalCase each segment) |
 
 ## Rules
 - Read all output paths and namespaces from `tools/config-loader.js` / `template.ini`.
