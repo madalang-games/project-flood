@@ -11,6 +11,8 @@
 | `AdRewardsController.cs` | `AdRewardsController` | Generic rewarded-ad claim endpoint |
 | `AdSsvCallbackController.cs` | `AdSsvCallbackController` | `[AllowAnonymous]` GET `/api/ad/ssv-callback` — AdMob SSV callback |
 | `AdController.cs` | `AdController` | `/api/ad` eligibility, interstitial shown, double reward claim |
+| `AuthController.cs` | `AuthController` | `/api/auth` proxy endpoints for guest, google, refresh, logout |
+| `BootstrapController.cs` | `BootstrapController` | `/api/bootstrap` configurations and schema/meta hash checks |
 
 ## Symbols
 | symbol | kind | note |
