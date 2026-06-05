@@ -12,8 +12,8 @@
     "gen:pkt":          "node tools/pkt_generator/pkt_generator.js",
     "gen:orm":          "node tools/db_generator/db_generator.js",
     "test:orm-schema":  "node --test tools/db_generator/schema-validation.test.js",
-    "font:subset":      "node tools/subset-tool/subset-fonts.js",
-    "font:subset:check": "node tools/subset-tool/subset-fonts.js --check",
+    "font:subset":      "node tools/subset_tool/subset_fonts.js",
+    "font:subset:check": "node tools/subset_tool/subset_fonts.js --check",
     "gen:all":          "npm run gen:info && npm run gen:db && npm run gen:pkt"
   },
   "optionalDependencies": {

@@ -13,6 +13,8 @@
 | `db_generator.bat` | Runs db_generator only |
 | `pkt_generator.bat` | Runs pkt_generator only |
 | `stage_editor.bat` | Starts stage_editor dev server (sets PROJECT_ROOT, runs npm run dev) |
+| `subset_tool/` | CSV-driven TMP source font subsetting before Unity release builds | -> `subset_tool/AGENTS.md` |
+| `subset_fonts.bat` | Runs `subset_tool/subset_fonts.js` manually with logs; not part of `all_generator` |
 
 ## Rules
 - **NEVER modify generated files manually** — always update the source and re-run the relevant generator
