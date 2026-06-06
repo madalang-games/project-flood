@@ -190,7 +190,7 @@ Referenced by both client and server.
 - Player manually applies to a specific cell during gameplay.
 - Item effect can trigger board gimmick chain reactions (follows §5.3 rules).
 - Items do NOT auto-chain with other inventory items.
-- MVP item effects: Bomb (removes all 8-directional adjacent cells), Horizontal Rocket (clears row), Vertical Rocket (clears column).
+- MVP item effects: Bomb (3×3 area), H-Rocket (clears row), ColorSweep (removes all same-color cells), RowShift (horizontal compaction, swipe gesture), CellSwap (swaps two cells).
 - Item effects trigger board state changes identically to §4 rules (gravity applies after).
 - **MVP**: Dev-only, controlled via Unity Inspector. No in-game UI.
 - Streak reward system and IAP integration: **Phase 2**.
@@ -236,7 +236,6 @@ Core development risk. Editor is required before content production begins.
 | Board size config | |
 | Cell color placement | palette color picker |
 | Core cell designation | |
-| Bomb / H-Rocket / V-Rocket placement | |
 | Protector application | stackable on any cell |
 | Obstacle cell placement | |
 | Turn limit setting | |
@@ -284,7 +283,7 @@ Full solver: Phase 2+.
 - Ratio-based star system (80 / 90 / 100%)
 - Core cell gimmick (late stages)
 - Protector cells (Basic cells only, 1–2 layers, direct-hit strip rule)
-- Bomb, Horizontal Rocket, Vertical Rocket as dev-only items (Inspector)
+- Bomb, H-Rocket, ColorSweep, RowShift, CellSwap as dev-only items (Inspector)
 - Obstacle cells (data + ratio exclusion)
 - Void cells (board shape boundary; gravity segment partition; ratio exclusion)
 - Board background panel + socket sprite (procedural pixel-art hyper-casual style)

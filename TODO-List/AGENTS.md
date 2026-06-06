@@ -5,7 +5,7 @@
 |------|------|
 | `00_current_status.md` | Current phase summary and sprint focus |
 | `01_gameplay_ingame.md` | Core puzzle gameplay and ingame rule engine checklist |
-| `02_items_boosters.md` | Item/Booster system (Bomb, Rockets) checklist |
+| `02_items_boosters.md` | Item/Booster system (Bomb, H-Rocket, ColorSweep, RowShift, CellSwap) checklist |
 | `03_stamina_economy.md` | Stamina recovery and soft currency gold checklist |
 | `04_lobby_progression.md` | Outgame progression, roadmap lobby, and rankings checklist |
 | `05_stage_editor.md` | Next.js stage editor and validation solver checklist |

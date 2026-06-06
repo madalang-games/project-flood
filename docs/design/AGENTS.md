@@ -8,7 +8,7 @@ UI/UX specs, wireframes, game design documents.
 | `game-design.md` | Core game design document: rules, cell types, clear conditions, MVP scope |
 | `stage-editor-design.md` | Stage editor feature spec: UI layout, API routes, playtest, export validation |
 | `ingame-core-design.md` | InGame core architecture: modules, tap flow, clear conditions, stage loading |
-| `item-system-design.md` | Item system spec: Bomb/H-Rocket/V-Rocket, Use Phase UX, Void/Obstacle policy, architecture integration |
+| `item-system-design.md` | Item system spec: Bomb/H-Rocket/ColorSweep/RowShift/CellSwap, Use Phase UX, Void/Obstacle policy, architecture integration |
 | `progression-system-design.md` | Progression system spec: Star logic, Chapter grouping, Milestone rewards |
 | `economy-system-design.md` | Game economy spec: currency types, reward formulas, sink/source balance |
 | `stamina-system-design.md` | Stamina, rewarded ad, unlimited time, reward source, Redis attempt, and event log spec |
