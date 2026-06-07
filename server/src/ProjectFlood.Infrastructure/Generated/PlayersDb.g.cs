@@ -130,4 +130,8 @@ public sealed class PlayersDb
     public IQueryable<(PlayersRow Player, UserInventoryRow UserInventory)> JoinWithUserInventory()
         => Query().Join(_db._UserInventory, l => l.UserId, r => r.UserId,
             (l, r) => ValueTuple.Create(l, r));
+
+    public IQueryable<(PlayersRow Player, UserTutorialProgressRow UserTutorialProgress)> JoinWithUserTutorialProgress()
+        => Query().Join(_db._UserTutorialProgress, l => l.UserId, r => r.UserId,
+            (l, r) => ValueTuple.Create(l, r));
 }
