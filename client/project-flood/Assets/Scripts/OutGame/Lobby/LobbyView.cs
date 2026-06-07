@@ -21,12 +21,19 @@ namespace Game.OutGame.Lobby
         {
             RefreshGold();
             ShowTab(LobbyTab.Home);
+            FetchServerState();
         }
 
         private void RefreshGold()
         {
             int gold = PlayerProgressService.Instance?.Gold ?? 0;
             _header?.SetGold(gold);
+        }
+
+        private void FetchServerState()
+        {
+            StaminaApiService.Instance?.FetchStamina();
+            CurrencyApiService.Instance?.FetchGold(snap => _header?.SetGold((int)snap.SoftAmount));
         }
 
         private void ShowTab(LobbyTab tab)

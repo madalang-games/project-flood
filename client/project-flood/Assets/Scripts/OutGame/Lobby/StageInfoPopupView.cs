@@ -12,6 +12,7 @@ namespace Game.OutGame.Lobby
         [SerializeField] private Button     _playButton;
         [SerializeField] private Button     _backdropButton;
         [SerializeField] private GameObject[] _bestStarFills; // 3 stars
+        [SerializeField] private Toggle     _extraTurnsToggle;
 
         private int    _stageId;
         private Action _onPlay;
@@ -43,6 +44,8 @@ namespace Game.OutGame.Lobby
 
         private void OnPlay()
         {
+            ScrollStateCache.UseExtraTurnsItem = _extraTurnsToggle != null && _extraTurnsToggle.isOn;
+
             var staminaApi = Game.Services.StaminaApiService.Instance;
             bool canPlay = false;
             if (staminaApi != null)
