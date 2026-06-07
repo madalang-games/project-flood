@@ -22,6 +22,7 @@ Namespace: `Game.Core.UI`
 | `ChapterUnlockOverlayView.cs` | `ChapterUnlockOverlayView` | Full-screen 2.7s chapter unlock animation; blocks interaction |
 | `LocalizedText.cs` | `LocalizedText` | Attach to TMP_Text; with stringId → text+font switch on language change; without stringId → font-only (dynamic text) |
 | `TutorialOverlay.cs` | `TutorialOverlay` | Canvas-based full-screen tutorial spotlight/tooltip overlay |
+| `TutorialTarget.cs` | `TutorialTarget` | Attach to any scene/UI GameObject; registers itself by `_targetId` so TutorialOverlay resolves targets without name coupling |
 | `UIPulseGlowEffect.cs` | `UIPulseGlowEffect` | Visual micro-animation component handling scale pulsing and rotational glow |
 
 ## Symbols
@@ -44,6 +45,8 @@ Namespace: `Game.Core.UI`
 | `LocalizedText._stringId` | SerializeField | Key from client_string.csv; empty = font-only mode |
 | `LocalizedText.RefreshAllInEditor()` | static method | Editor-only; reads CSV, updates all LocalizedText TMP text to EN preview |
 | `TutorialOverlay.Init(TutorialStepSequencer)` | method | Hooks up sequencer events and displays the first/current tutorial step |
+| `TutorialTarget._targetIds` | SerializeField | String array; each entry must match a `target_ui_id` in tutorial_step.csv — one component, multiple ids |
+| `TutorialTarget.Find(string)` | static method | Returns registered TutorialTarget for given id; null if not registered |
 
 ## Rules
 - Attach `UIButtonAnimator` to every tappable button
@@ -51,6 +54,7 @@ Namespace: `Game.Core.UI`
 - `LoadingOverlayView` auto-calls `UIManager.ShowNetworkError` after 10s — do not add separate timeout
 - `ChapterUnlockOverlayView.Play` blocks interaction via GraphicRaycaster disable; restores on complete
 - Instantiate `TutorialOverlay` prefab and call `Init(sequencer)` to start/display a tutorial sequence overlay
+- `TutorialTarget`: attach to Board, TurnsBubble, ProgressContainer etc. with `_targetId` matching CSV `target_ui_id`; lookup order in TutorialOverlay: TutorialTarget registry → board_cell_ parse → board protector/core/obstacle scan
 - Attach `UIPulseGlowEffect` to active reward buttons (e.g. claimable chest glow) to animate pulses and highlight claimability
 
 ## Cross-refs

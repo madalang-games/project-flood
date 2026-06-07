@@ -100,7 +100,7 @@ namespace Game.InGame.Controller
                         {
                             if (ParseCellTarget(step.target_ui_id, out int tr, out int tc))
                             {
-                                if (tutRow == tr && tutCol == tc)
+                                if (!_isAnimating && tutRow == tr && tutCol == tc)
                                 {
                                     HandleTap(tutRow, tutCol);
                                     Services.Tutorial.TutorialManager.Instance.NextStep();
@@ -552,6 +552,9 @@ namespace Game.InGame.Controller
                     string cStr = targetId.Substring(cStart + 1, cEnd - cStart - 1);
                     if (int.TryParse(rStr, out row) && int.TryParse(cStr, out col))
                     {
+                        // CSV uses 1-based indexing; convert to 0-based for board array
+                        row -= 1;
+                        col -= 1;
                         return true;
                     }
                 }

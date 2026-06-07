@@ -130,6 +130,28 @@ Re-evaluate on every frame during board animation (board scales/repositions on l
 | Board animation frame | Recalculate (World mode only, during load sequence) |
 | `Screen.safeArea` change | `TutorialManager` re-triggers `OnBoardReady` positioning |
 
+### 4.4 Client-side Service & View Logic
+*   Added [TutorialApiService.cs](file:///c:/Users/SangHyeok/Desktop/git/madalang-games/project-flood/client/project-flood/Assets/Scripts/Services/TutorialApiService.cs): Handles networking for fetching/posting tutorial progress with local cache and PlayerPrefs fallbacks.
+*   Added [TutorialStepSequencer.cs](file:///c:/Users/SangHyeok/Desktop/git/madalang-games/project-flood/client/project-flood/Assets/Scripts/Services/Tutorial/TutorialStepSequencer.cs): Handles step progression and completion event firing.
+*   Added [TutorialManager.cs](file:///c:/Users/SangHyeok/Desktop/git/madalang-games/project-flood/client/project-flood/Assets/Scripts/Services/Tutorial/TutorialManager.cs): Core singleton evaluating triggers for Stage 1 & 2 forced onboarding, gimmick appearance, and item failure hints.
+*   Added [TutorialOverlay.cs](file:///c:/Users/SangHyeok/Desktop/git/madalang-games/project-flood/client/project-flood/Assets/Scripts/Core/UI/TutorialOverlay.cs): Instantiates the overlay prefab, handles responsive coordinate calculation in UI and World coordinates, and draws the guide character (Floodie).
+*   Modified [CellView.cs](file:///c:/Users/SangHyeok/Desktop/git/madalang-games/project-flood/client/project-flood/Assets/Scripts/InGame/View/CellView.cs) & [BoardView.cs](file:///c:/Users/SangHyeok/Desktop/git/madalang-games/project-flood/client/project-flood/Assets/Scripts/InGame/View/BoardView.cs): Added `GetWorldCenter()`, `GetScreenBounds()`, and `GetCellView()` for world cell positioning.
+*   Modified [InGameController.cs](file:///c:/Users/SangHyeok/Desktop/git/madalang-games/project-flood/client/project-flood/Assets/Scripts/InGame/Controller/InGameController.cs): Blocked wrong clicks during blocking steps, routing input only to the spotlighted cell group. Fixed `CS0136` local variable naming conflict by renaming nested variables `row` and `col` to `tutRow` and `tutCol`.
+*   Modified [InGameSceneEntry.cs](file:///c:/Users/SangHyeok/Desktop/git/madalang-games/project-flood/client/project-flood/Assets/Scripts/InGame/Controller/InGameSceneEntry.cs): Tracked stage fail count in PlayerPrefs and triggered fail hints.
+*   Modified [LobbyView.cs](file:///c:/Users/SangHyeok/Desktop/git/madalang-games/project-flood/client/project-flood/Assets/Scripts/OutGame/Lobby/LobbyView.cs): Evaluated lobby triggers on start.
+*   Modified [HomeTabView.cs](file:///c:/Users/SangHyeok/Desktop/git/madalang-games/project-flood/client/project-flood/Assets/Scripts/OutGame/Lobby/HomeTabView.cs): Refactored to instantiate and state-bind a separate, high-fidelity chest prefab instead of hacking stage node views.
+*   Added [ChapterChestView.cs](file:///c:/Users/SangHyeok/Desktop/git/madalang-games/project-flood/client/project-flood/Assets/Scripts/OutGame/Lobby/ChapterChestView.cs): Manages LOCKED (inactive), CLAIM! (active), and CLEARED (claimed) visual states and interactions.
+*   Added [UIPulseGlowEffect.cs](file:///c:/Users/SangHyeok/Desktop/git/madalang-games/project-flood/client/project-flood/Assets/Scripts/Core/UI/UIPulseGlowEffect.cs): Adds pulsing and rotating micro-animations to active chests.
+*   Added [UIPulseGlow.shader](file:///c:/Users/SangHyeok/Desktop/git/madalang-games/project-flood/client/project-flood/Assets/Shaders/UIPulseGlow.shader): High-fidelity procedural glow outline shader supporting UI Mask stencil buffer checks.
+*   Added [PrefabSetupUtility.cs](file:///c:/Users/SangHyeok/Desktop/git/madalang-games/project-flood/client/project-flood/Assets/Scripts/Editor/PrefabSetupUtility.cs): Unity Editor tool adding a menu option under `Tools/Project Flood/Generate UI Prefabs` to procedurally build `TutorialOverlay.prefab` and `ChapterChest.prefab` hierarchies and serializing them in Resources folder.
+
+### 4.5 Documentation & Metadata Sets
+*   Updated [client/project-flood/Assets/Scripts/Core/UI/AGENTS.md](file:///c:/Users/SangHyeok/Desktop/git/madalang-games/project-flood/client/project-flood/Assets/Scripts/Core/UI/AGENTS.md) to document `TutorialOverlay.cs` and `UIPulseGlowEffect.cs`.
+*   Updated [client/project-flood/Assets/Scripts/OutGame/Lobby/AGENTS.md](file:///c:/Users/SangHyeok/Desktop/git/madalang-games/project-flood/client/project-flood/Assets/Scripts/OutGame/Lobby/AGENTS.md) to document `ChapterChestView.cs`.
+*   Created documentation set for `shared/contracts/Tutorial/` ([AGENTS.md](file:///c:/Users/SangHyeok/Desktop/git/madalang-games/project-flood/shared/contracts/Tutorial/AGENTS.md), `CLAUDE.md`, `GEMINI.md`).
+*   Created documentation set for `shared/datas/tutorial/` ([AGENTS.md](file:///c:/Users/SangHyeok/Desktop/git/madalang-games/project-flood/shared/datas/tutorial/AGENTS.md), `CLAUDE.md`, `GEMINI.md`).
+*   Updated navigation table in [shared/contracts/AGENTS.md](file:///c:/Users/SangHyeok/Desktop/git/madalang-games/project-flood/shared/contracts/AGENTS.md).
+
 ---
 
 ## 5. Phase A — Core Loop Onboarding (Stages 1–3)

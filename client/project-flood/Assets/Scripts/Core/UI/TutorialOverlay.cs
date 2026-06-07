@@ -14,6 +14,7 @@ namespace Game.Core.UI
 {
     public class TutorialOverlay : MonoBehaviour
     {
+        [SerializeField] private Image _dimLayer;
         [SerializeField] private RectTransform _spotlightCutout;
         [SerializeField] private Image _spotlightGlow; // optional glow border
         [SerializeField] private RectTransform _tooltipBubble;
@@ -25,9 +26,11 @@ namespace Game.Core.UI
         private TutorialStepSequencer _sequencer;
         private Coroutine _autoAdvanceCoroutine;
         private Coroutine _pulseCoroutine;
+        private Coroutine _fingerTapCoroutine;
         private Transform _currentTargetTransform;
         private RectTransform _currentTargetRT;
         private TargetSpaceType _currentTargetSpace;
+        private CellView _currentTargetCellView;
         private Vector2 _designedResolution = new Vector2(1080, 1920);
 
         public void Init(TutorialStepSequencer sequencer)
@@ -57,8 +60,15 @@ namespace Game.Core.UI
                 _sequencer.OnComplete -= Close;
             }
 
+            if (_currentTargetCellView != null)
+            {
+                _currentTargetCellView.SetTargetHighlight(false);
+                _currentTargetCellView = null;
+            }
+
             if (_pulseCoroutine != null) StopCoroutine(_pulseCoroutine);
             if (_autoAdvanceCoroutine != null) StopCoroutine(_autoAdvanceCoroutine);
+            if (_fingerTapCoroutine != null) StopCoroutine(_fingerTapCoroutine);
         }
 
         private void LateUpdate()
@@ -77,22 +87,42 @@ namespace Game.Core.UI
                 _autoAdvanceCoroutine = null;
             }
 
+            if (_fingerTapCoroutine != null)
+            {
+                StopCoroutine(_fingerTapCoroutine);
+                _fingerTapCoroutine = null;
+            }
+
+            // Clear previous cell highlight before resolving new target
+            if (_currentTargetCellView != null)
+            {
+                _currentTargetCellView.SetTargetHighlight(false);
+                _currentTargetCellView = null;
+            }
+
             // Update localized text
             if (_tooltipText != null)
             {
-                _tooltipText.text = Services.LocalizationService.Instance != null 
-                    ? Services.LocalizationService.Instance.Get(step.text_key) 
+                _tooltipText.text = Services.LocalizationService.Instance != null
+                    ? Services.LocalizationService.Instance.Get(step.text_key)
                     : step.text_key;
             }
 
             // Locate target
             ResolveTarget(step);
 
-            // Enable/disable fullscreen advance trigger based on is_blocking
+            // Fullscreen dismiss button handles tap-to-advance for non-blocking steps only.
+            // DimLayer (_dimLayer) stays active for all steps.
             if (_fullscreenDismissButton != null)
             {
-                // Fullscreen advance is enabled ONLY if it's not a blocking step
                 _fullscreenDismissButton.gameObject.SetActive(!step.is_blocking);
+            }
+
+            // Start finger tap animation for FingerOverlay steps
+            if (_fingerOverlay != null && _fingerOverlay.gameObject.activeSelf)
+            {
+                _fingerOverlay.localScale = Vector3.one;
+                _fingerTapCoroutine = StartCoroutine(AnimateFingerTap());
             }
 
             // Trigger bubble anim (Scale up)
@@ -128,57 +158,48 @@ namespace Game.Core.UI
             _spotlightCutout.gameObject.SetActive(true);
             _fingerOverlay.gameObject.SetActive(step.content_type == TutorialContentType.FingerOverlay);
 
+            // Priority 1: TutorialTarget component registry — id-based, no name coupling
+            var tutTarget = TutorialTarget.Find(step.target_ui_id);
+            if (tutTarget != null)
+            {
+                var rt = tutTarget.GetComponent<RectTransform>();
+                if (rt != null && step.target_space == TargetSpaceType.UI)
+                    _currentTargetRT = rt;
+                else
+                    _currentTargetTransform = tutTarget.transform;
+                return;
+            }
+
+            // Priority 2: board_cell_[r][c] — requires live BoardView
+            if (step.target_space == TargetSpaceType.World && step.target_ui_id.StartsWith("board_cell_"))
+            {
+                var boardView = FindObjectOfType<BoardView>();
+                if (boardView != null && ParseCellTarget(step.target_ui_id, out int r, out int c))
+                {
+                    var cellView = boardView.GetCellView(r, c);
+                    if (cellView != null)
+                    {
+                        _currentTargetTransform = cellView.transform;
+                        _currentTargetCellView = cellView;
+                        cellView.SetTargetHighlight(true);
+                    }
+                }
+                return;
+            }
+
+            // Priority 3: dynamic board cell searches (protector/core/obstacle)
             if (step.target_space == TargetSpaceType.World)
             {
                 var boardView = FindObjectOfType<BoardView>();
                 if (boardView != null)
                 {
-                    if (step.target_ui_id.StartsWith("board_cell_"))
+                    _currentTargetTransform = step.target_ui_id switch
                     {
-                        if (ParseCellTarget(step.target_ui_id, out int r, out int c))
-                        {
-                            var cellView = boardView.GetCellView(r, c);
-                            if (cellView != null) _currentTargetTransform = cellView.transform;
-                        }
-                    }
-                    else if (step.target_ui_id == "board_protector_cell")
-                    {
-                        _currentTargetTransform = FindCellWithProtector(boardView);
-                    }
-                    else if (step.target_ui_id == "board_core_cell")
-                    {
-                        _currentTargetTransform = FindCellWithCore(boardView);
-                    }
-                    else if (step.target_ui_id == "board_obstacle_cell")
-                    {
-                        _currentTargetTransform = FindCellWithObstacle(boardView);
-                    }
-                    else if (step.target_ui_id == "board_area")
-                    {
-                        _currentTargetTransform = boardView.transform;
-                    }
-                }
-            }
-            else
-            {
-                // UI Space Target
-                var go = GameObject.Find(step.target_ui_id);
-                if (go != null)
-                {
-                    _currentTargetRT = go.GetComponent<RectTransform>();
-                }
-                else
-                {
-                    // Find in Resources / active hierarchy if not instantly resolved
-                    var allRts = Resources.FindObjectsOfTypeAll<RectTransform>();
-                    foreach (var rt in allRts)
-                    {
-                        if (rt.gameObject.activeInHierarchy && rt.gameObject.name == step.target_ui_id)
-                        {
-                            _currentTargetRT = rt;
-                            break;
-                        }
-                    }
+                        "board_protector_cell" => FindCellWithProtector(boardView),
+                        "board_core_cell"      => FindCellWithCore(boardView),
+                        "board_obstacle_cell"  => FindCellWithObstacle(boardView),
+                        _                      => null
+                    };
                 }
             }
         }
@@ -244,8 +265,7 @@ namespace Game.Core.UI
             if (_sequencer == null || _sequencer.CurrentStep == null) return;
 
             var step = _sequencer.CurrentStep;
-            Canvas overlayCanvas = UIManager.Instance?.GetComponentInChildren<Canvas>();
-            if (overlayCanvas == null) overlayCanvas = GetComponentInParent<Canvas>();
+            Canvas overlayCanvas = GetComponentInParent<Canvas>();
             if (overlayCanvas == null) return;
 
             RectTransform overlayRt = overlayCanvas.GetComponent<RectTransform>();
@@ -258,25 +278,30 @@ namespace Game.Core.UI
                 Vector3 worldCenter = _currentTargetTransform.position;
                 if (cellView != null) worldCenter = cellView.GetWorldCenter();
 
-                screenPos = Camera.main.WorldToScreenPoint(worldCenter);
-
                 if (cellView != null)
                 {
-                    float width = cellView.GetScreenBounds().size.x;
-                    // Project world size to screen space bounds
-                    Vector3 screenEdge = Camera.main.WorldToScreenPoint(worldCenter + new Vector3(width * 0.5f, 0, 0));
-                    float r = Mathf.Abs(screenEdge.x - screenPos.x) * 2f;
-                    targetSize = new Vector2(r, r) * 1.15f; // Add safe margin
+                    // Use viewport fractions → canvas rect units (matches project-link approach).
+                    // WorldToScreenPoint gives screen pixels; sizeDelta needs canvas local units.
+                    // Viewport space is resolution-independent and avoids scaleFactor mismatch.
+                    Bounds wb = cellView.GetScreenBounds();
+                    Vector3 vpCenter = Camera.main.WorldToViewportPoint(worldCenter);
+                    Vector3 vpRight  = Camera.main.WorldToViewportPoint(worldCenter + new Vector3(wb.extents.x, 0, 0));
+                    Vector3 vpTop    = Camera.main.WorldToViewportPoint(worldCenter + new Vector3(0, wb.extents.y, 0));
+
+                    float canvasW = overlayRt.rect.width;
+                    float canvasH = overlayRt.rect.height;
+                    float w = Mathf.Abs(vpRight.x - vpCenter.x) * 2f * canvasW;
+                    float h = Mathf.Abs(vpTop.y  - vpCenter.y) * 2f * canvasH;
+                    targetSize = new Vector2(w, h);
+
+                    screenPos = new Vector2(vpCenter.x * Screen.width, vpCenter.y * Screen.height);
                 }
                 else
                 {
-                    // Generic Board Area Spotlight
-                    var boardView = _currentTargetTransform.GetComponent<BoardView>();
-                    if (boardView != null)
-                    {
-                        // Spotlight entire board
-                        targetSize = new Vector2(Screen.width * 0.95f, Screen.width * 0.95f);
-                    }
+                    // board_area or other whole-board targets: hide spotlight, show tooltip only
+                    _spotlightCutout.gameObject.SetActive(false);
+                    _fingerOverlay.gameObject.SetActive(false);
+                    return;
                 }
             }
             else if (_currentTargetSpace == TargetSpaceType.UI && _currentTargetRT != null)
@@ -300,7 +325,7 @@ namespace Game.Core.UI
             );
 
             _spotlightCutout.anchoredPosition = localPoint;
-            _spotlightCutout.sizeDelta = targetSize + new Vector2(20f, 20f); // margins
+            _spotlightCutout.sizeDelta = targetSize + new Vector2(4f, 4f);
 
             // Position finger indicator relative to target center
             if (_fingerOverlay.gameObject.activeSelf)
@@ -356,8 +381,8 @@ namespace Game.Core.UI
         {
             while (true)
             {
-                float t = Time.time * 4f;
-                float alpha = 0.5f + 0.5f * Mathf.Sin(t);
+                float t = Time.time * 1.2f;
+                float alpha = 0.08f + 0.08f * Mathf.Sin(t); // 0.0–0.16: barely visible border
                 if (_spotlightGlow != null)
                 {
                     Color color = _spotlightGlow.color;
@@ -365,6 +390,36 @@ namespace Game.Core.UI
                     _spotlightGlow.color = color;
                 }
                 yield return null;
+            }
+        }
+
+        private IEnumerator AnimateFingerTap()
+        {
+            while (true)
+            {
+                // Idle
+                yield return new WaitForSeconds(1.1f);
+
+                // Press down
+                const float pressDur = 0.1f;
+                for (float t = 0f; t < pressDur; t += Time.deltaTime)
+                {
+                    float s = Mathf.Lerp(1f, 0.72f, t / pressDur);
+                    _fingerOverlay.localScale = new Vector3(s, s, 1f);
+                    yield return null;
+                }
+
+                yield return new WaitForSeconds(0.06f);
+
+                // Release with EaseOutBack overshoot
+                const float releaseDur = 0.22f;
+                for (float t = 0f; t < releaseDur; t += Time.deltaTime)
+                {
+                    float s = Mathf.Lerp(0.72f, 1f, EaseOutBack(t / releaseDur));
+                    _fingerOverlay.localScale = new Vector3(s, s, 1f);
+                    yield return null;
+                }
+                _fingerOverlay.localScale = Vector3.one;
             }
         }
 
@@ -392,6 +447,9 @@ namespace Game.Core.UI
                     string cStr = targetId.Substring(cStart + 1, cEnd - cStart - 1);
                     if (int.TryParse(rStr, out row) && int.TryParse(cStr, out col))
                     {
+                        // CSV uses 1-based indexing; convert to 0-based for board array
+                        row -= 1;
+                        col -= 1;
                         return true;
                     }
                 }
