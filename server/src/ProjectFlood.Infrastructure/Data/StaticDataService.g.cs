@@ -84,6 +84,7 @@ public partial class StaticDataService
                 Cells = r.cells,
                 RulesetVersion = r.ruleset_version,
                 RewardGroupId = r.reward_group_id,
+                RotationInterval = r.rotation_interval,
             });
         _staminaConfigs = StaminaConfigLoader.LoadAll(System.IO.Path.Combine(staminaPath, "stamina_config.csv"))
             .ToDictionary(r => r.config_id, r => new StaminaConfigData

@@ -14,4 +14,5 @@ public class StageData
     public string Cells { get; set; } = "";
     public sbyte RulesetVersion { get; set; }
     public int RewardGroupId { get; set; }
+    public sbyte RotationInterval { get; set; }
 }

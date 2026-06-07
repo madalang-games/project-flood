@@ -18,6 +18,7 @@ namespace ProjectFlood.Generated.Data
         public string cells { get; set; } = "";
         public sbyte ruleset_version { get; set; }
         public int reward_group_id { get; set; }
+        public sbyte rotation_interval { get; set; }
     }
 
     public static class StageLoader
@@ -48,6 +49,7 @@ namespace ProjectFlood.Generated.Data
                     cells = idx.TryGetValue("cells", out var i6) && i6 < cols.Length ? (cols[i6] ?? "") : "",
                     ruleset_version = idx.TryGetValue("ruleset_version", out var i7) && i7 < cols.Length && !string.IsNullOrEmpty(cols[i7]) ? sbyte.Parse(cols[i7]) : default,
                     reward_group_id = idx.TryGetValue("reward_group_id", out var i8) && i8 < cols.Length && !string.IsNullOrEmpty(cols[i8]) ? int.Parse(cols[i8]) : default,
+                    rotation_interval = idx.TryGetValue("rotation_interval", out var i9) && i9 < cols.Length && !string.IsNullOrEmpty(cols[i9]) ? sbyte.Parse(cols[i9]) : default,
                 });
             }
             return result;

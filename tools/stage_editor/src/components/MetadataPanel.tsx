@@ -100,6 +100,13 @@ export default function MetadataPanel({ meta, onFieldChange, onResize }: Props) 
         max={999999}
         onChange={v => onFieldChange('reward_group_id', Math.round(v))}
       />
+      <NumField
+        label="Rotate"
+        value={meta.rotation_interval}
+        min={0}
+        max={100}
+        onChange={v => onFieldChange('rotation_interval', Math.round(v))}
+      />
     </div>
   );
 }

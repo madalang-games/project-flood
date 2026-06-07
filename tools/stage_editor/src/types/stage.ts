@@ -20,6 +20,7 @@ export interface StageRow {
   verified_solution: string;
   ruleset_version: number;
   reward_group_id: number;
+  rotation_interval: number;
 }
 
 export interface PaletteColor {

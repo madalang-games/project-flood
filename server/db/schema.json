@@ -175,6 +175,20 @@
         { "name": "idx_user_ranking_totals_stars", "columns": ["total_earned_stars", "total_stars_achieved_at"], "unique": false },
         { "name": "idx_user_ranking_totals_max_stage", "columns": ["max_cleared_stage_id", "max_stage_achieved_at"], "unique": false }
       ]
+    },
+    {
+      "name": "user_inventory",
+      "comment": "Inventory counts for each booster item type per player.",
+      "columns": [
+        { "name": "user_id", "type": "int64", "pk": true, "null": false, "fk": "players.user_id" },
+        { "name": "item_id", "type": "int32", "pk": true, "null": false },
+        { "name": "count",   "type": "int32", "null": false, "default": 0 },
+        { "name": "updated_at", "type": "datetime", "null": false }
+      ],
+      "indexes": [
+        { "name": "idx_user_inventory_user_id", "columns": ["user_id"], "unique": false }
+      ]
     }
   ]
 }
+

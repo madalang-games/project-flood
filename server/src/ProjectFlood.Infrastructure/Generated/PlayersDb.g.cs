@@ -126,4 +126,8 @@ public sealed class PlayersDb
     public IQueryable<(PlayersRow Player, UserRankingTotalsRow UserRankingTotal)> JoinWithUserRankingTotals()
         => Query().Join(_db._UserRankingTotals, l => l.UserId, r => r.UserId,
             (l, r) => ValueTuple.Create(l, r));
+
+    public IQueryable<(PlayersRow Player, UserInventoryRow UserInventory)> JoinWithUserInventory()
+        => Query().Join(_db._UserInventory, l => l.UserId, r => r.UserId,
+            (l, r) => ValueTuple.Create(l, r));
 }

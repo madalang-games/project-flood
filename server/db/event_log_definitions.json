@@ -85,6 +85,16 @@
         "reward_value": "reward value",
         "duplicate": "true|false"
       }
+    },
+    {
+      "tr_id": 2201,
+      "name": "InventoryChanged",
+      "params": {
+        "item_id": "item type id",
+        "delta": "count change",
+        "reason": "spend|grant|admin",
+        "current_after": "count after change"
+      }
     }
   ]
 }

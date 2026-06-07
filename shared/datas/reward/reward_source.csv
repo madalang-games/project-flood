@@ -3,3 +3,7 @@ CS,CS,CS,CS,CS,CS,CS,CS,CS,CS
 string(64),string(32),int32,int32,string(32),int32,string(16),int32,string(32),bool
 PK,NN,NN,NN,NN,NN,NN,NN,NN,NN
 DAILY_STAMINA_UNLIMITED,DAILY_FREE,1001,1,DAILY_RESET,1,KST,0,HOME_TAB,true
+chapter1_chest,CHAPTER_CHEST,3001,1,ONCE,1,always,0,HOME_TAB,true
+chapter2_chest,CHAPTER_CHEST,3002,1,ONCE,1,always,0,HOME_TAB,true
+chapter3_chest,CHAPTER_CHEST,3003,1,ONCE,1,always,0,HOME_TAB,true
+
