@@ -117,7 +117,12 @@ namespace Game.InGame.Controller
                 continueCost: GameConfig.ContinueCost,
                 currentGold:  gold,
                 onContinue:   AcceptContinue,
-                onForfeit:    () => _controller.Forfeit()));
+                onForfeit:    () => _controller.Forfeit(),
+                onReviveSuccess: extraTurns =>
+                {
+                    UIManager.Instance?.CloseOverlay();
+                    _controller.Continue(extraTurns);
+                }));
         }
 
         private void AcceptContinue()

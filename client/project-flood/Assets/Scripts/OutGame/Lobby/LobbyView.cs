@@ -34,6 +34,7 @@ namespace Game.OutGame.Lobby
         {
             StaminaApiService.Instance?.FetchStamina();
             CurrencyApiService.Instance?.FetchGold(snap => _header?.SetGold((int)snap.SoftAmount));
+            InventoryApiService.Instance?.FetchInventory();
         }
 
         private void ShowTab(LobbyTab tab)

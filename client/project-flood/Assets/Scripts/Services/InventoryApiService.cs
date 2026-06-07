@@ -1,0 +1,81 @@
+using System;
+using System.Collections.Generic;
+using ProjectFlood.Contracts.Inventory;
+using UnityEngine;
+
+#pragma warning disable 0649
+namespace Game.Services
+{
+    public class InventoryApiService : MonoBehaviour
+    {
+        public static InventoryApiService Instance { get; private set; }
+
+        private void Awake()
+        {
+            if (Instance != null) { Destroy(gameObject); return; }
+            Instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+
+        public void FetchInventory(Action<InventorySnapshot> onSuccess = null, Action<string> onError = null)
+        {
+            NetworkService.Instance.Get("/api/inventory", (ok, result) =>
+            {
+                if (!ok) { onError?.Invoke(result); return; }
+                var json = JsonUtility.FromJson<InventorySnapshotJson>(result);
+                var snapshot = json.ToContract();
+                PlayerProgressService.Instance?.SetInventory(snapshot);
+                onSuccess?.Invoke(snapshot);
+            });
+        }
+
+        public void SpendItem(int itemId, int amount, string reason, Action<InventorySnapshot> onSuccess = null, Action<string> onError = null)
+        {
+            var body = $"{{\"itemId\":{itemId},\"amount\":{amount},\"reason\":\"{Escape(reason)}\"}}";
+            NetworkService.Instance.Post("/api/inventory/spend", body, (ok, result) =>
+            {
+                if (!ok) { onError?.Invoke(result); return; }
+                var json = JsonUtility.FromJson<InventorySnapshotJson>(result);
+                var snapshot = json.ToContract();
+                PlayerProgressService.Instance?.SetInventory(snapshot);
+                onSuccess?.Invoke(snapshot);
+            });
+        }
+
+        private static string Escape(string value) => (value ?? string.Empty).Replace("\\", "\\\\").Replace("\"", "\\\"");
+
+        [Serializable]
+        private class InventoryItemJson
+        {
+            public int itemId;
+            public int count;
+
+            public InventoryItemDto ToContract() => new InventoryItemDto
+            {
+                ItemId = itemId,
+                Count = count
+            };
+        }
+
+        [Serializable]
+        private class InventorySnapshotJson
+        {
+            public List<InventoryItemJson> items;
+
+            public InventorySnapshot ToContract()
+            {
+                var snapshot = new InventorySnapshot();
+                if (items != null)
+                {
+                    foreach (var item in items)
+                    {
+                        if (item != null)
+                            snapshot.Items.Add(item.ToContract());
+                    }
+                }
+                return snapshot;
+            }
+        }
+    }
+}
+#pragma warning restore 0649

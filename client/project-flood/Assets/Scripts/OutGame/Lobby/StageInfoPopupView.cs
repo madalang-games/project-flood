@@ -40,11 +40,31 @@ namespace Game.OutGame.Lobby
 
             for (int i = 0; i < _bestStarFills.Length; i++)
                 if (_bestStarFills[i] != null) _bestStarFills[i].SetActive(i < bestStars);
+
+            int addTurnsCount = Game.Services.PlayerProgressService.Instance != null ? Game.Services.PlayerProgressService.Instance.GetItemCount(1) : 0;
+            if (_extraTurnsToggle != null)
+            {
+                _extraTurnsToggle.interactable = addTurnsCount > 0;
+                _extraTurnsToggle.isOn = false;
+                var toggleText = _extraTurnsToggle.GetComponentInChildren<TMPro.TMP_Text>();
+                if (toggleText != null)
+                {
+                    toggleText.text = $"+3 Turns ({addTurnsCount})";
+                }
+            }
         }
 
         private void OnPlay()
         {
-            ScrollStateCache.UseExtraTurnsItem = _extraTurnsToggle != null && _extraTurnsToggle.isOn;
+            bool useBooster = _extraTurnsToggle != null && _extraTurnsToggle.isOn;
+            ScrollStateCache.UseExtraTurnsItem = useBooster;
+
+            if (useBooster && Game.Services.InventoryApiService.Instance != null)
+            {
+                Game.Services.InventoryApiService.Instance.SpendItem(1, 1, "use_pre_game",
+                    onSuccess: snap => Debug.Log("[StageInfoPopup] spent AddTurns booster on server"),
+                    onError: err => Debug.LogWarning($"[StageInfoPopup] failed to spend booster: {err}"));
+            }
 
             var staminaApi = Game.Services.StaminaApiService.Instance;
             bool canPlay = false;

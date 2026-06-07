@@ -755,15 +755,17 @@ namespace Game.Editor
             var root = FullScreen("FailOverlayView");
             Img(root, DIM); Comp<FailOverlayView>(root); Comp<UIPanelAppear>(root); Comp<CanvasGroup>(root);
 
-            var panel = Panel(root, "Panel", new Vector2(700, 520), UI_BG_MID);
+            var panel = Panel(root, "Panel", new Vector2(700, 620), UI_BG_MID);
             var title = RibbonTitle(panel, "TitleText", "Just a bit more!", PopupFailTitle);
             
-            var contLabel = TMP(panel, "ContinueLabel", Center(0,  50, 600, 60), 24, UI_TEXT, "+3 Turns", null, TextCategory.Normal);
-            var costTxt   = TMP(panel, "CostText",       Center(0,  -10, 600, 55), 22, UI_CTA,  "Cost: 150", null, TextCategory.Normal);
-            var ownedTxt  = TMP(panel, "OwnedGoldText",  Center(0, -70, 600, 55), 20, UI_TEXT, "Gold: 320", null, TextCategory.Normal);
+            var contLabel = TMP(panel, "ContinueLabel", Center(0,  80, 600, 60), 24, UI_TEXT, "+3 Turns", null, TextCategory.Normal);
+            var costTxt   = TMP(panel, "CostText",       Center(0,  20, 600, 55), 22, UI_CTA,  "Cost: 150", null, TextCategory.Normal);
+            var ownedTxt  = TMP(panel, "OwnedGoldText",  Center(0, -40, 600, 55), 20, UI_TEXT, "Gold: 320", null, TextCategory.Normal);
 
-            var contBtn = Btn(panel, "ContinueButton", new Vector2(-155, -175), new Vector2(280, 95), UI_CTA,    "Continue", PopupFailBtnContinue);
-            var forfBtn = Btn(panel, "ForfeitButton",  new Vector2( 155, -175), new Vector2(280, 95), UI_BG_DEEP, "Give Up",  PopupFailBtnForfeit);
+            var limitTxt = TMP(panel, "ReviveLimitText", Center(165, -95, 280, 40), 14, UI_TEXT, "Remaining Revives: 3", null, TextCategory.Normal);
+            var adBtn   = Btn(panel, "WatchAdButton", new Vector2( 165, -160), new Vector2(280, 95), UI_PRIMARY, "Watch Ad", "");
+            var contBtn = Btn(panel, "ContinueButton", new Vector2(-165, -160), new Vector2(280, 95), UI_CTA,    "Continue", PopupFailBtnContinue);
+            var forfBtn = Btn(panel, "ForfeitButton",  new Vector2( 0, -250), new Vector2(280, 95), UI_BG_DEEP, "Give Up",  PopupFailBtnForfeit);
 
             var so = new SerializedObject(root.GetComponent<FailOverlayView>());
             so.FindProperty("_continueLabel").objectReferenceValue  = contLabel;
@@ -771,6 +773,8 @@ namespace Game.Editor
             so.FindProperty("_ownedGoldText").objectReferenceValue  = ownedTxt;
             so.FindProperty("_continueButton").objectReferenceValue = contBtn.GetComponent<Button>();
             so.FindProperty("_forfeitButton").objectReferenceValue  = forfBtn.GetComponent<Button>();
+            so.FindProperty("_watchAdButton").objectReferenceValue  = adBtn.GetComponent<Button>();
+            so.FindProperty("_reviveLimitText").objectReferenceValue = limitTxt;
             so.ApplyModifiedProperties();
 
             Save(root, "FailOverlayView");

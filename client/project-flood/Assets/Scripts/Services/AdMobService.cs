@@ -185,7 +185,7 @@ namespace Game.Services
 
         public void WatchRewardedAd(string placementId, Action<AdWatchResult?> onComplete)
         {
-            onComplete?.Invoke(null);
+            onComplete?.Invoke(new AdWatchResult { Earned = true, AdToken = "mock_token_" + Guid.NewGuid().ToString("N") });
         }
 
         public void ShowInterstitialIfEligible(int stageId, bool suppressByDoubleReward, Action<bool> onComplete)

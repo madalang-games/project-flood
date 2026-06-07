@@ -11,6 +11,7 @@ namespace Game.Services
         public static StageApiService Instance { get; private set; }
 
         private StageAttemptSnapshot _currentAttempt;
+        public StageAttemptSnapshot CurrentAttempt => _currentAttempt;
 
         private void Awake()
         {
@@ -66,6 +67,61 @@ namespace Game.Services
             {
                 if (ok) _currentAttempt = null;
             });
+        }
+
+        public void ReviveAd(int stageId, string attemptId, string provider, string adToken, Action<StageReviveAdResponse> onSuccess = null, Action<string> onError = null)
+        {
+            StartCoroutine(PollReviveAd(stageId, attemptId, provider, adToken, 0, onSuccess, onError));
+        }
+
+        private System.Collections.IEnumerator PollReviveAd(int stageId, string attemptId, string provider, string adToken, int attempt, Action<StageReviveAdResponse> onSuccess, Action<string> onError)
+        {
+            var body = $"{{\"provider\":\"{Escape(provider)}\",\"adToken\":\"{Escape(adToken)}\"}}";
+            bool complete = false;
+            string errorText = null;
+            StageReviveAdResponse response = null;
+
+            NetworkService.Instance.Post($"/api/stages/{stageId}/attempts/{attemptId}/revive-ad", body, (ok, result) =>
+            {
+                if (ok)
+                {
+                    var json = JsonUtility.FromJson<StageReviveAdJson>(result);
+                    response = json.ToContract();
+                }
+                else
+                {
+                    errorText = result;
+                }
+                complete = true;
+            });
+
+            yield return new WaitUntil(() => complete);
+
+            if (response != null)
+            {
+                _currentAttempt = response.Attempt;
+                onSuccess?.Invoke(response);
+            }
+            else
+            {
+                string code = null;
+                try
+                {
+                    var err = JsonUtility.FromJson<ErrorResponseJson>(errorText);
+                    code = err?.code;
+                }
+                catch {}
+
+                if (code == "AD_SSV_PENDING" && attempt < 10)
+                {
+                    yield return new WaitForSeconds(1.0f);
+                    StartCoroutine(PollReviveAd(stageId, attemptId, provider, adToken, attempt + 1, onSuccess, onError));
+                }
+                else
+                {
+                    onError?.Invoke(errorText);
+                }
+            }
         }
 
         private static string Escape(string value) => (value ?? string.Empty).Replace("\\", "\\\\").Replace("\"", "\\\"");
@@ -139,6 +195,27 @@ namespace Game.Services
                 IsNewBest    = isNewBest,
                 ServerTime   = ParseTime(serverTime),
                 Currency     = currency?.ToContract(),
+            };
+        }
+
+        [Serializable]
+        private class StageReviveAdJson
+        {
+            public bool granted;
+            public bool duplicate;
+            public int reviveCount;
+            public int turnsGranted;
+            public StageAttemptSnapshotJson attempt;
+            public string serverTime;
+
+            public StageReviveAdResponse ToContract() => new StageReviveAdResponse
+            {
+                Granted = granted,
+                Duplicate = duplicate,
+                ReviveCount = reviveCount,
+                TurnsGranted = turnsGranted,
+                Attempt = attempt?.ToContract() ?? new StageAttemptSnapshot(),
+                ServerTime = ParseTime(serverTime)
             };
         }
 

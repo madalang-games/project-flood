@@ -23,6 +23,14 @@ namespace Game.OutGame.Lobby
         private Stage[] _stages;
         private int     _currentStageId;
 
+        private readonly List<StageNodeView> _chestNodes = new List<StageNodeView>();
+        private readonly Dictionary<string, bool> _chestClaimed = new Dictionary<string, bool>
+        {
+            { "chapter1_chest", false },
+            { "chapter2_chest", false },
+            { "chapter3_chest", false },
+        };
+
         private const string InGameScene = "InGame";
 
         private void Awake()
@@ -45,6 +53,25 @@ namespace Game.OutGame.Lobby
             BuildPool();
             RefreshVisible();
             RestoreScrollPosition();
+
+            if (RewardsApiService.Instance != null)
+            {
+                RewardsApiService.Instance.FetchRewardSources(response =>
+                {
+                    _chestClaimed["chapter1_chest"] = true;
+                    _chestClaimed["chapter2_chest"] = true;
+                    _chestClaimed["chapter3_chest"] = true;
+
+                    foreach (var src in response.Sources)
+                    {
+                        if (_chestClaimed.ContainsKey(src.SourceId))
+                        {
+                            _chestClaimed[src.SourceId] = !src.Claimable;
+                        }
+                    }
+                    RefreshVisible();
+                }, err => Debug.LogWarning($"[HomeTabView] failed to fetch reward sources: {err}"));
+            }
         }
 
         private void OnDisable()
@@ -149,7 +176,148 @@ namespace Game.OutGame.Lobby
                 nodeRt.anchoredPosition = positions[i];
             }
 
+            foreach (var node in _chestNodes)
+            {
+                if (node != null) Destroy(node.gameObject);
+            }
+            _chestNodes.Clear();
+
+            CreateChestNode(1, 2, positions[2], totalHeight);
+            CreateChestNode(2, 5, positions[5], totalHeight);
+            CreateChestNode(3, 8, positions[8], totalHeight);
+
             BuildPath(positions, count, totalHeight);
+        }
+
+        private void CreateChestNode(int chapterNum, int stageIndex, Vector2 stagePos, float totalHeight)
+        {
+            if (stageIndex >= _pool.Count) return;
+
+            var go = Instantiate(_stageNodePrefab, _contentRoot);
+            go.name = $"ChestNode_{chapterNum}";
+            go.AddComponent<ScrollRectForwarder>();
+            
+            var node = go.GetComponent<StageNodeView>();
+            var nodeRt = node.GetComponent<RectTransform>();
+            nodeRt.anchorMin = nodeRt.anchorMax = new Vector2(0.5f, 1f);
+            nodeRt.pivot = new Vector2(0.5f, 0.5f);
+
+            float xOffset = stagePos.x >= 0 ? -130f : 130f;
+            nodeRt.anchoredPosition = new Vector2(stagePos.x + xOffset, stagePos.y);
+
+            var button = node.GetComponentInChildren<Button>();
+            if (button != null)
+            {
+                button.onClick.RemoveAllListeners();
+                button.onClick.AddListener(() => OnChestTapped(chapterNum));
+            }
+
+            _chestNodes.Add(node);
+        }
+
+        private void RefreshChestNodes()
+        {
+            var progress = PlayerProgressService.Instance;
+            if (progress == null) return;
+
+            for (int i = 0; i < _chestNodes.Count; i++)
+            {
+                int chapterNum = i + 1;
+                var node = _chestNodes[i];
+                string sourceId = $"chapter{chapterNum}_chest";
+                
+                bool claimed = false;
+                _chestClaimed.TryGetValue(sourceId, out claimed);
+
+                int startStage = (chapterNum - 1) * 3 + 1;
+                bool isCompleted = progress.GetBestStars(startStage) == 3 &&
+                                   progress.GetBestStars(startStage + 1) == 3 &&
+                                   progress.GetBestStars(startStage + 2) == 3;
+
+                bool claimable = isCompleted && !claimed;
+
+                node.Bind(0, 0, claimable || claimed, claimable);
+
+                var label = node.GetComponentInChildren<TMPro.TMP_Text>();
+                if (label != null)
+                {
+                    label.text = claimed ? "✓" : "🎁";
+                }
+
+                var button = node.GetComponentInChildren<Button>();
+                if (button != null)
+                {
+                    button.interactable = claimable;
+                }
+
+                var starsRoot = node.transform.Find("Stars");
+                if (starsRoot != null) starsRoot.gameObject.SetActive(false);
+
+                node.gameObject.SetActive(true);
+            }
+        }
+
+        private void OnChestTapped(int chapterNum)
+        {
+            string sourceId = $"chapter{chapterNum}_chest";
+            
+            bool claimed = false;
+            _chestClaimed.TryGetValue(sourceId, out claimed);
+            if (claimed) return;
+
+            var progress = PlayerProgressService.Instance;
+            if (progress == null) return;
+
+            int startStage = (chapterNum - 1) * 3 + 1;
+            bool isCompleted = progress.GetBestStars(startStage) == 3 &&
+                               progress.GetBestStars(startStage + 1) == 3 &&
+                               progress.GetBestStars(startStage + 2) == 3;
+
+            if (!isCompleted)
+            {
+                Game.Core.UIManager.Instance?.ShowToast("3-star clear all chapter stages to unlock!", Game.Core.UI.ToastType.Warning);
+                return;
+            }
+
+            Game.Core.UIManager.Instance?.ShowLoading();
+            RewardsApiService.Instance?.ClaimReward(sourceId,
+                onSuccess: response =>
+                {
+                    Game.Core.UIManager.Instance?.HideLoading();
+                    _chestClaimed[sourceId] = true;
+                    RefreshChestNodes();
+
+                    System.Text.StringBuilder sb = new System.Text.StringBuilder("Chest Claimed!\n");
+                    foreach (var r in response.GrantedRewards)
+                    {
+                        if (r.RewardType == "SOFT_CURRENCY")
+                        {
+                            sb.AppendLine($"+{r.Amount} Gold");
+                            PlayerProgressService.Instance?.AddGold(r.Amount);
+                        }
+                        else if (r.RewardType == "ITEM")
+                        {
+                            string itemName = r.TargetId switch
+                            {
+                                1 => "Add Turns",
+                                2 => "Bomb",
+                                3 => "H Rocket",
+                                4 => "Color Sweep",
+                                5 => "Row Shift",
+                                6 => "Cell Swap",
+                                _ => $"Item {r.TargetId}"
+                            };
+                            sb.AppendLine($"+{r.Amount} {itemName}");
+                        }
+                    }
+                    Game.Core.UIManager.Instance?.ShowToast(sb.ToString(), Game.Core.UI.ToastType.Success);
+                },
+                onError: error =>
+                {
+                    Game.Core.UIManager.Instance?.HideLoading();
+                    Game.Core.UIManager.Instance?.ShowToast($"Failed to claim chest: {error}", Game.Core.UI.ToastType.Warning);
+                }
+            );
         }
 
         private void BuildPath(Vector2[] nodePositions, int count, float totalHeight)
@@ -217,6 +385,8 @@ namespace Game.OutGame.Lobby
                 _pool[i].Bind(s.stage_id, stars, unlock, cur);
                 _pool[i].gameObject.SetActive(true);
             }
+
+            RefreshChestNodes();
         }
 
         private void RestoreScrollPosition()

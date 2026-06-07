@@ -14,6 +14,7 @@ namespace Game.Services
         private int _gold;
         private readonly Dictionary<int, int> _bestStars     = new Dictionary<int, int>();
         private readonly Dictionary<int, bool> _unlocked     = new Dictionary<int, bool>();
+        private readonly Dictionary<int, int> _inventory    = new Dictionary<int, int>();
 
         private void Awake()
         {
@@ -80,6 +81,27 @@ namespace Game.Services
             if (_unlocked.TryGetValue(stageId, out bool v) && v) return;
             _unlocked[stageId] = true;
             PlayerPrefs.SetInt(KeyUnlockPrefix + stageId, 1);
+        }
+
+        // --- Inventory ---
+        public int GetItemCount(int itemId)
+        {
+            _inventory.TryGetValue(itemId, out int count);
+            return count;
+        }
+
+        public void SetItemCount(int itemId, int count)
+        {
+            _inventory[itemId] = count;
+        }
+
+        public void SetInventory(ProjectFlood.Contracts.Inventory.InventorySnapshot snapshot)
+        {
+            if (snapshot == null || snapshot.Items == null) return;
+            foreach (var item in snapshot.Items)
+            {
+                _inventory[item.ItemId] = item.Count;
+            }
         }
 
         private void Load()

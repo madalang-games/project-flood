@@ -47,15 +47,57 @@ namespace Game.Services
 
         public void ClaimAdLife(string provider, string adToken, Action<StaminaAdLifeRewardResponse> onSuccess = null, Action<string> onError = null)
         {
+            StartCoroutine(PollClaimAdLife(provider, adToken, 0, onSuccess, onError));
+        }
+
+        private System.Collections.IEnumerator PollClaimAdLife(string provider, string adToken, int attempt, Action<StaminaAdLifeRewardResponse> onSuccess, Action<string> onError)
+        {
             var body = $"{{\"provider\":\"{Escape(provider)}\",\"adToken\":\"{Escape(adToken)}\"}}";
+            bool complete = false;
+            string errorText = null;
+            StaminaAdLifeRewardResponse response = null;
+
             NetworkService.Instance.Post("/api/stamina/ad-life-reward", body, (ok, result) =>
             {
-                if (!ok) { onError?.Invoke(result); return; }
-                var json     = JsonUtility.FromJson<StaminaAdLifeRewardJson>(result);
-                var response = json.ToContract();
+                if (ok)
+                {
+                    var json = JsonUtility.FromJson<StaminaAdLifeRewardJson>(result);
+                    response = json.ToContract();
+                }
+                else
+                {
+                    errorText = result;
+                }
+                complete = true;
+            });
+
+            yield return new WaitUntil(() => complete);
+
+            if (response != null)
+            {
                 UpdateStamina(response.Stamina, response.ServerTime);
                 onSuccess?.Invoke(response);
-            });
+            }
+            else
+            {
+                string code = null;
+                try
+                {
+                    var err = JsonUtility.FromJson<ErrorResponseJson>(errorText);
+                    code = err?.code;
+                }
+                catch {}
+
+                if (code == "AD_SSV_PENDING" && attempt < 10)
+                {
+                    yield return new WaitForSeconds(1.0f);
+                    StartCoroutine(PollClaimAdLife(provider, adToken, attempt + 1, onSuccess, onError));
+                }
+                else
+                {
+                    onError?.Invoke(errorText);
+                }
+            }
         }
 
         public int GetEstimatedLife()

@@ -236,6 +236,15 @@ namespace Game.InGame.Controller
                     OnStageEnd?.Invoke(result, _turnManager.RemainingTurns);
             }
 
+            if (_isPlaying && _stage.rotation_interval > 0)
+            {
+                int movesMade = _turnManager.UsedTurns;
+                if (movesMade > 0 && movesMade % _stage.rotation_interval == 0)
+                {
+                    yield return RotateBoardSequence();
+                }
+            }
+
             if (_itemTrayView != null)
             {
                 _itemTrayView.SetLocked(false);
@@ -250,6 +259,24 @@ namespace Game.InGame.Controller
             _isAnimating = true;
 
             if (_itemTrayView != null) _itemTrayView.SetLocked(true);
+
+            if (!_isDevMode && Game.Services.InventoryApiService.Instance != null)
+            {
+                int itemId = itemType switch
+                {
+                    ItemType.Bomb => 2,
+                    ItemType.HRocket => 3,
+                    ItemType.ColorSweep => 4,
+                    ItemType.CellSwap => 6,
+                    _ => 0
+                };
+                if (itemId > 0)
+                {
+                    Game.Services.InventoryApiService.Instance.SpendItem(itemId, 1, "use_in_game",
+                        onSuccess: snap => Debug.Log($"[InGameController] spent item {itemId} on server"),
+                        onError: err => Debug.LogWarning($"[InGameController] failed to spend item {itemId}: {err}"));
+                }
+            }
 
             if (itemType == ItemType.CellSwap)
             {
@@ -292,6 +319,13 @@ namespace Game.InGame.Controller
             _isAnimating = true;
 
             if (_itemTrayView != null) _itemTrayView.SetLocked(true);
+
+            if (!_isDevMode && Game.Services.InventoryApiService.Instance != null)
+            {
+                Game.Services.InventoryApiService.Instance.SpendItem(5, 1, "use_in_game",
+                    onSuccess: snap => Debug.Log("[InGameController] spent row_shift on server"),
+                    onError: err => Debug.LogWarning($"[InGameController] failed to spend row_shift: {err}"));
+            }
 
             var beforeRowShift = CloneGrid(_board);
             _itemManager.UseRowShift(_board, direction);

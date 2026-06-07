@@ -21,5 +21,6 @@ namespace ProjectFlood.Data.Generated
         public string cells;
         public string verified_solution;
         public sbyte ruleset_version;
+        public sbyte rotation_interval;
     }
 }
