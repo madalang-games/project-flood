@@ -1002,29 +1002,40 @@ namespace Game.Editor
         {
             var root = FullScreen("TutorialOverlay");
             var overlayScript = Comp<TutorialOverlay>(root);
-            
-            // Fullscreen Dismiss Button
-            var dismiss = Btn(root, "FullscreenDismissButton", Vector2.zero, new Vector2(1080, 1920), new Color(0, 0, 0, 0.4f), "");
-            Stretch(dismiss);
-            
+
+            // DimLayer — always-visible full-screen dim; stays active for all steps (including blocking).
+            // raycastTarget=true blocks EventSystem interaction (HUD buttons etc.) during blocking steps.
+            var dimGo = Child(root, "DimLayer");
+            Stretch(dimGo);
+            var dimImg = Img(dimGo, new Color(0.05f, 0.05f, 0.12f, 0.88f));
+
+            // Fullscreen Dismiss Button — transparent hit area for tap-to-advance on non-blocking steps.
+            // Has no background; DimLayer above provides the visual dim.
+            var dismissGo = Child(root, "FullscreenDismissButton");
+            Stretch(dismissGo);
+            if (!dismissGo.TryGetComponent<Button>(out var dismissBtn)) dismissBtn = dismissGo.AddComponent<Button>();
+            var dismissImg = Img(dismissGo, new Color(0, 0, 0, 0));
+            dismissBtn.targetGraphic = dismissImg;
+            Comp<UIButtonAnimator>(dismissGo);
+
             // Spotlight Cutout
             var spotlight = Child(root, "SpotlightCutout");
             Fixed(spotlight, Vector2.zero, new Vector2(150, 150));
-            Img(spotlight, new Color(1, 1, 1, 0.1f));
-            
+            Img(spotlight, new Color(1, 1, 1, 0.0f)); // transparent: dim cutout perception only
+
             // Spotlight Glow
             var glow = Child(spotlight, "SpotlightGlow");
             Stretch(glow);
             var glowRt = RT(glow);
             glowRt.offsetMin = new Vector2(-10, -10);
             glowRt.offsetMax = new Vector2(10, 10);
-            var glowImg = Img(glow, new Color(1, 0.9f, 0.4f, 0.8f));
-            
+            var glowImg = Img(glow, new Color(1, 0.9f, 0.4f, 0.08f)); // subtle border; runtime AnimateGlowPulse drives alpha
+
             // Tooltip Bubble
             var bubble = Child(root, "TooltipBubble");
             Fixed(bubble, Vector2.zero, new Vector2(800, 300));
             Img(bubble, new Color(0.1f, 0.15f, 0.25f, 0.95f));
-            
+
             // Tooltip Text
             var textGo = Child(bubble, "TooltipText");
             Stretch(textGo);
@@ -1040,7 +1051,7 @@ namespace Game.Editor
             textTmp.text = "Tutorial Message";
             textTmp.alignment = TextAlignmentOptions.Center;
             textTmp.enableWordWrapping = true;
-            
+
             // Character Avatar (Floodie)
             var avatar = Child(bubble, "CharacterAvatar");
             var avatarRt = RT(avatar);
@@ -1050,23 +1061,24 @@ namespace Game.Editor
             avatarRt.anchoredPosition = new Vector2(-60, 0);
             avatarRt.sizeDelta = new Vector2(150, 150);
             var avatarImg = Img(avatar, Color.cyan);
-            
+
             // Finger Overlay
             var finger = Child(root, "FingerOverlay");
             Fixed(finger, Vector2.zero, new Vector2(100, 100));
             Img(finger, new Color(1, 0.3f, 0.3f, 0.9f));
-            
-            // Setup Serialized Fields on TutorialOverlay script
+
+            // Wire serialized fields
             var so = new SerializedObject(overlayScript);
+            so.FindProperty("_dimLayer").objectReferenceValue = dimImg;
             so.FindProperty("_spotlightCutout").objectReferenceValue = spotlight.GetComponent<RectTransform>();
             so.FindProperty("_spotlightGlow").objectReferenceValue = glowImg;
             so.FindProperty("_tooltipBubble").objectReferenceValue = bubble.GetComponent<RectTransform>();
             so.FindProperty("_tooltipText").objectReferenceValue = textTmp;
             so.FindProperty("_fingerOverlay").objectReferenceValue = finger.GetComponent<RectTransform>();
             so.FindProperty("_characterAvatar").objectReferenceValue = avatarImg;
-            so.FindProperty("_fullscreenDismissButton").objectReferenceValue = dismiss.GetComponent<Button>();
+            so.FindProperty("_fullscreenDismissButton").objectReferenceValue = dismissBtn;
             so.ApplyModifiedProperties();
-            
+
             Save(root, "TutorialOverlay");
         }
 
