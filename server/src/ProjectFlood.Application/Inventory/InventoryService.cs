@@ -1,0 +1,101 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using ProjectFlood.Application.Common;
+using ProjectFlood.Application.Logging;
+using ProjectFlood.Contracts.Inventory;
+using ProjectFlood.Infrastructure.Generated;
+
+namespace ProjectFlood.Application.Inventory;
+
+public sealed class InventoryService
+{
+    private readonly AppDbContext _db;
+
+    public InventoryService(AppDbContext db)
+    {
+        _db = db;
+    }
+
+    public async Task<InventorySnapshot> GetInventoryAsync(long userId, CancellationToken ct)
+    {
+        var items = await _db.UserInventory.Query()
+            .Where(x => x.UserId == userId)
+            .ToListAsync(ct);
+
+        var snapshot = new InventorySnapshot();
+        foreach (var item in items)
+        {
+            snapshot.Items.Add(new InventoryItemDto
+            {
+                ItemId = item.ItemId,
+                Count = item.Count
+            });
+        }
+        return snapshot;
+    }
+
+    public async Task<InventorySnapshot> SpendItemAsync(
+        long userId,
+        int itemId,
+        int amount,
+        string reason,
+        string correlationId,
+        CancellationToken ct)
+    {
+        if (amount <= 0)
+            throw new GameApiException("INVALID_AMOUNT", "Amount to spend must be positive.");
+
+        var now = DateTimeOffset.UtcNow;
+        var row = await _db.UserInventory.FindAsync(userId, itemId, ct);
+
+        if (row is null || row.Count < amount)
+            throw new GameApiException("INSUFFICIENT_ITEMS", $"Insufficient inventory for item {itemId}.");
+
+        row.Count -= amount;
+        row.UpdatedAt = now;
+
+        _db.EventLogs.Insert(EventLogFactory.InventoryChanged(userId, correlationId, itemId, -amount, reason, row.Count));
+        await _db.SaveAsync(ct);
+
+        return await GetInventoryAsync(userId, ct);
+    }
+
+    public async Task<InventorySnapshot> GrantItemAsync(
+        long userId,
+        int itemId,
+        int amount,
+        string reason,
+        string correlationId,
+        CancellationToken ct)
+    {
+        if (amount <= 0)
+            throw new GameApiException("INVALID_AMOUNT", "Amount to grant must be positive.");
+
+        var now = DateTimeOffset.UtcNow;
+        var row = await _db.UserInventory.FindAsync(userId, itemId, ct);
+
+        if (row is null)
+        {
+            row = new UserInventoryRow
+            {
+                UserId = userId,
+                ItemId = itemId,
+                Count = 0,
+                UpdatedAt = now
+            };
+            _db.UserInventory.Insert(row);
+        }
+
+        row.Count += amount;
+        row.UpdatedAt = now;
+
+        _db.EventLogs.Insert(EventLogFactory.InventoryChanged(userId, correlationId, itemId, amount, reason, row.Count));
+        await _db.SaveAsync(ct);
+
+        return await GetInventoryAsync(userId, ct);
+    }
+}

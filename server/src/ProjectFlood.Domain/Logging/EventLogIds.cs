@@ -13,6 +13,7 @@ public static class EventLogIds
     public const int StageClearRewardGranted = 2106;
 
     public const int CurrencyChanged = 3001;
+    public const int InventoryChanged = 2201;
 
     public const int RewardClaimed = 6001;
     public const int AdRewardClaimed = 6101;

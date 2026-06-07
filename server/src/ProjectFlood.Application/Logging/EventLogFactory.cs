@@ -54,4 +54,7 @@ public static class EventLogFactory
 
     public static EventLogsRow AdDoubleRewardGranted(long userId, string correlationId, string adTxId, int stageId, string attemptId)
         => Create(userId, EventLogIds.AdDoubleRewardGranted, correlationId, new { ad_tx_id = adTxId, stage_id = stageId, attempt_id = attemptId });
+
+    public static EventLogsRow InventoryChanged(long userId, string correlationId, int itemId, int delta, string reason, int currentAfter)
+        => Create(userId, EventLogIds.InventoryChanged, correlationId, new { item_id = itemId, delta, reason, current_after = currentAfter });
 }

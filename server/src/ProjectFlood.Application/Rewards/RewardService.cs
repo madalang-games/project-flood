@@ -8,6 +8,8 @@ using ProjectFlood.Contracts.Stamina;
 using ProjectFlood.Generated.Data;
 using ProjectFlood.Infrastructure.Generated;
 
+using ProjectFlood.Application.Inventory;
+
 namespace ProjectFlood.Application.Rewards;
 
 public sealed class RewardService
@@ -15,13 +17,15 @@ public sealed class RewardService
     private readonly AppDbContext _db;
     private readonly StaminaService _stamina;
     private readonly CurrencyService _currency;
+    private readonly InventoryService _inventory;
     private readonly Lazy<RewardDataSet> _data;
 
-    public RewardService(AppDbContext db, StaminaService stamina, CurrencyService currency)
+    public RewardService(AppDbContext db, StaminaService stamina, CurrencyService currency, InventoryService inventory)
     {
         _db = db;
         _stamina = stamina;
         _currency = currency;
+        _inventory = inventory;
         _data = new Lazy<RewardDataSet>(LoadData);
     }
 
@@ -52,6 +56,21 @@ public sealed class RewardService
         var now = DateTimeOffset.UtcNow;
         var source = _data.Value.Sources.FirstOrDefault(x => x.source_id == sourceId && x.is_enabled)
             ?? throw new GameApiException("REWARD_SOURCE_NOT_FOUND", "Reward source not found.");
+
+        if (sourceId.StartsWith("chapter") && sourceId.EndsWith("_chest"))
+        {
+            int startStage = 1;
+            int endStage = 3;
+            if (sourceId == "chapter2_chest") { startStage = 4; endStage = 6; }
+            else if (sourceId == "chapter3_chest") { startStage = 7; endStage = 9; }
+
+            for (int stageId = startStage; stageId <= endStage; stageId++)
+            {
+                var progress = await _db.UserStageProgress.FindAsync(userId, stageId, ct);
+                if (progress is null || progress.BestStar < 3)
+                    throw new GameApiException("CHAPTER_NOT_COMPLETED", $"Stage {stageId} is not cleared with 3 stars.");
+            }
+        }
 
         var periodKey = GetPeriodKey(source, now);
         var state = await _db.UserRewardClaimState.FindAsync(userId, source.source_id, periodKey, ct);
@@ -95,6 +114,8 @@ public sealed class RewardService
 
             if (item.reward_type == "STAMINA_UNLIMITED")
                 stamina = await _stamina.GrantUnlimitedAsync(userId, source.source_id, item.duration_seconds, correlationId, ct);
+            else if (item.reward_type == "ITEM")
+                await _inventory.GrantItemAsync(userId, item.target_id, item.amount, $"claim:{source.source_id}", correlationId, ct);
         }
 
         stamina ??= (await _stamina.GetAsync(userId, ct)).Stamina;
@@ -143,6 +164,9 @@ public sealed class RewardService
                     break;
                 case "SOFT_CURRENCY":
                     currency = await _currency.GrantSoftAsync(userId, item.amount, $"reward_group:{rewardGroupId}", correlationId, ct);
+                    break;
+                case "ITEM":
+                    await _inventory.GrantItemAsync(userId, item.target_id, item.amount, $"reward_group:{rewardGroupId}", correlationId, ct);
                     break;
             }
         }
