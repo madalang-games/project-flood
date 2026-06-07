@@ -22,6 +22,7 @@ Namespace: `Game.Core.UI`
 | `ChapterUnlockOverlayView.cs` | `ChapterUnlockOverlayView` | Full-screen 2.7s chapter unlock animation; blocks interaction |
 | `LocalizedText.cs` | `LocalizedText` | Attach to TMP_Text; with stringId → text+font switch on language change; without stringId → font-only (dynamic text) |
 | `TutorialOverlay.cs` | `TutorialOverlay` | Canvas-based full-screen tutorial spotlight/tooltip overlay |
+| `UIPulseGlowEffect.cs` | `UIPulseGlowEffect` | Visual micro-animation component handling scale pulsing and rotational glow |
 
 ## Symbols
 | symbol | kind | note |
@@ -50,6 +51,7 @@ Namespace: `Game.Core.UI`
 - `LoadingOverlayView` auto-calls `UIManager.ShowNetworkError` after 10s — do not add separate timeout
 - `ChapterUnlockOverlayView.Play` blocks interaction via GraphicRaycaster disable; restores on complete
 - Instantiate `TutorialOverlay` prefab and call `Init(sequencer)` to start/display a tutorial sequence overlay
+- Attach `UIPulseGlowEffect` to active reward buttons (e.g. claimable chest glow) to animate pulses and highlight claimability
 
 ## Cross-refs
 - Consumed by: `Game.Core.UIManager`, all scene entry points

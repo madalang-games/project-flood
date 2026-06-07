@@ -10,6 +10,7 @@ Namespace: `Game.OutGame.Lobby`
 | `BottomNavBarView.cs` | `BottomNavBarView` | 3-tab nav; fires OnTabChanged |
 | `RankingTabView.cs` | `RankingTabView` | Ranking tab UI; stars/max-stage tabs, my rank, top page text |
 | `HomeTabView.cs` | `HomeTabView` | Chapter/stage scroll with object pool; milestone chest rendering + claim API |
+| `ChapterChestView.cs` | `ChapterChestView` | Milestone chest node displaying Locked (INACTIVE), Claim! (ACTIVE), or Cleared (CLAIMED) states |
 | `StageNodeView.cs` | `StageNodeView` | Pooled node: stage label, 3 star fills, lock overlay, pulse ring; Bind(id,stars,unlocked,current) |
 | `StageInfoPopupView.cs` | `StageInfoPopupView` | Stage info popup: title, best stars, best moves, +3 turns toggle (checked against AddTurns inventory), PLAY button |
 | `StaminaPopupView.cs` | `StaminaPopupView` | Stamina popup: large heart + count, timer/MAX, Watch Ad (+1) button (dimmed at MAX), backdrop close |
@@ -39,8 +40,9 @@ Namespace: `Game.OutGame.Lobby`
 | `LobbyTab` | enum | Home / Shop / Ranking |
 | `ShopTabView` | component | Shop screen preview containing Starter Pack, Item Bundle, and No-Ads package preview buttons |
 | `ScrollStateCache.UseExtraTurnsItem` | prop | boolean; true if +3 turns booster is active for next attempt |
-| `HomeTabView.CreateChestNode` | method | Instantiates a cloned stage node as a 🎁 chest button near chapter-end stage node |
+| `HomeTabView.CreateChestNode` | method | Instantiates a ChapterChestView prefab near the chapter-end stage node |
 | `HomeTabView.OnChestTapped` | method | Invokes generic reward claim API, grants Gold/booster items, shows toast, and refreshes UI |
+| `ChapterChestView.SetState(ChestState)` | method | Configures sprites, text labels, button interactability, and glow overlays |
 
 ## Rules
 - Scroll position must be saved in HomeTabView.OnDisable and restored in HomeTabView.OnEnable.

@@ -13,6 +13,7 @@ namespace Game.OutGame.Lobby
         [SerializeField] private ScrollRect    _scrollRect;
         [SerializeField] private RectTransform _contentRoot;
         [SerializeField] private GameObject    _stageNodePrefab;
+        [SerializeField] private GameObject    _chestPrefab;
         [SerializeField] private float         _nodeSpacingY      = 200f;
         [SerializeField] private float         _connectorTurnGap = 375f; // Y gap: row-end→connector and connector→next-row
         [SerializeField] private Color         _pathColor    = new Color(0.5f, 0.7f, 1f, 0.5f);
@@ -23,7 +24,7 @@ namespace Game.OutGame.Lobby
         private Stage[] _stages;
         private int     _currentStageId;
 
-        private readonly List<StageNodeView> _chestNodes = new List<StageNodeView>();
+        private readonly List<ChapterChestView> _chestNodes = new List<ChapterChestView>();
         private readonly Dictionary<string, bool> _chestClaimed = new Dictionary<string, bool>
         {
             { "chapter1_chest", false },
@@ -191,28 +192,28 @@ namespace Game.OutGame.Lobby
 
         private void CreateChestNode(int chapterNum, int stageIndex, Vector2 stagePos, float totalHeight)
         {
-            if (stageIndex >= _pool.Count) return;
+            if (_chestPrefab == null) return;
 
-            var go = Instantiate(_stageNodePrefab, _contentRoot);
+            var go = Instantiate(_chestPrefab, _contentRoot);
             go.name = $"ChestNode_{chapterNum}";
             go.AddComponent<ScrollRectForwarder>();
             
-            var node = go.GetComponent<StageNodeView>();
-            var nodeRt = node.GetComponent<RectTransform>();
+            var chestView = go.GetComponent<ChapterChestView>();
+            var nodeRt = chestView.GetComponent<RectTransform>();
             nodeRt.anchorMin = nodeRt.anchorMax = new Vector2(0.5f, 1f);
             nodeRt.pivot = new Vector2(0.5f, 0.5f);
 
             float xOffset = stagePos.x >= 0 ? -130f : 130f;
             nodeRt.anchoredPosition = new Vector2(stagePos.x + xOffset, stagePos.y);
 
-            var button = node.GetComponentInChildren<Button>();
+            var button = chestView.GetComponentInChildren<Button>();
             if (button != null)
             {
                 button.onClick.RemoveAllListeners();
                 button.onClick.AddListener(() => OnChestTapped(chapterNum));
             }
 
-            _chestNodes.Add(node);
+            _chestNodes.Add(chestView);
         }
 
         private void RefreshChestNodes()
@@ -223,7 +224,7 @@ namespace Game.OutGame.Lobby
             for (int i = 0; i < _chestNodes.Count; i++)
             {
                 int chapterNum = i + 1;
-                var node = _chestNodes[i];
+                var chestView = _chestNodes[i];
                 string sourceId = $"chapter{chapterNum}_chest";
                 
                 bool claimed = false;
@@ -234,26 +235,18 @@ namespace Game.OutGame.Lobby
                                    progress.GetBestStars(startStage + 1) == 3 &&
                                    progress.GetBestStars(startStage + 2) == 3;
 
-                bool claimable = isCompleted && !claimed;
-
-                node.Bind(0, 0, claimable || claimed, claimable);
-
-                var label = node.GetComponentInChildren<TMPro.TMP_Text>();
-                if (label != null)
+                ChapterChestView.ChestState state = ChapterChestView.ChestState.Inactive;
+                if (claimed)
                 {
-                    label.text = claimed ? "✓" : "🎁";
+                    state = ChapterChestView.ChestState.Claimed;
+                }
+                else if (isCompleted)
+                {
+                    state = ChapterChestView.ChestState.Active;
                 }
 
-                var button = node.GetComponentInChildren<Button>();
-                if (button != null)
-                {
-                    button.interactable = claimable;
-                }
-
-                var starsRoot = node.transform.Find("Stars");
-                if (starsRoot != null) starsRoot.gameObject.SetActive(false);
-
-                node.gameObject.SetActive(true);
+                chestView.SetState(state);
+                chestView.gameObject.SetActive(true);
             }
         }
 
