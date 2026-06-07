@@ -71,7 +71,21 @@ namespace Game.Core
 
         public void ShowToast(string message, ToastType type = ToastType.Warning)
         {
-            if (_toast != null) _toast.Show(message, type);
+            if (_toast == null)
+            {
+                Debug.Log("[UIManager] ToastView is missing, attempting to recreate...");
+                _toast = LoadStatic<ToastView>(_toastCanvas, "Prefabs/UI/ToastView");
+            }
+
+            if (_toast != null) 
+            {
+                _toast.gameObject.SetActive(true);
+                _toast.Show(message, type);
+            }
+            else
+            {
+                Debug.LogError($"[UIManager] Failed to show toast. Prefab might be missing: Prefabs/UI/ToastView");
+            }
         }
 
         public void ShowLoading()

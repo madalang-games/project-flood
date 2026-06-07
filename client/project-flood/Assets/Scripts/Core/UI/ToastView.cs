@@ -29,12 +29,28 @@ namespace Game.Core.UI
             _rt = GetComponent<RectTransform>();
             _cg = GetComponent<CanvasGroup>();
             if (_cg == null) _cg = gameObject.AddComponent<CanvasGroup>();
+
+            // Fallback: Try to find TMP_Text if reference is missing in inspector
+            if (_messageText == null)
+            {
+                _messageText = GetComponentInChildren<TMPro.TMP_Text>();
+                if (_messageText != null)
+                {
+                    Debug.Log("[ToastView] _messageText was null, but found TMP_Text in children via code.");
+                }
+            }
         }
 
         public void Show(string message, ToastType type)
         {
+            if (_messageText == null)
+            {
+                Debug.LogError("[ToastView] _messageText is null! Check prefab references.");
+                return;
+            }
+
             if (_dismissCoroutine != null) StopCoroutine(_dismissCoroutine);
-            gameObject.SetActive(true);
+            
             _messageText.text = message;
             if (_iconImage != null)
             {
@@ -45,6 +61,8 @@ namespace Game.Core.UI
                     _                 => _warningIcon,
                 };
             }
+            
+            gameObject.SetActive(true);
             _dismissCoroutine = StartCoroutine(ShowSequence());
         }
 
