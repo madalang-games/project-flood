@@ -8,15 +8,27 @@ namespace Game.Services
 {
     public class StageApiService : MonoBehaviour
     {
-        public static StageApiService Instance { get; private set; }
+        private static StageApiService _instance;
+
+        public static StageApiService Instance
+        {
+            get
+            {
+                if (_instance == null)
+                {
+                    Debug.LogError("[StageApiService] Instance is missing! Ensure it is placed in the Boot scene.");
+                }
+                return _instance;
+            }
+        }
 
         private StageAttemptSnapshot _currentAttempt;
         public StageAttemptSnapshot CurrentAttempt => _currentAttempt;
 
         private void Awake()
         {
-            if (Instance != null) { Destroy(gameObject); return; }
-            Instance = this;
+            if (_instance != null && _instance != this) { Destroy(gameObject); return; }
+            _instance = this;
             DontDestroyOnLoad(gameObject);
         }
 
@@ -25,9 +37,18 @@ namespace Game.Services
 
         public void StartAttempt(int stageId, Action<StageAttemptStartResponse> onSuccess = null, Action<string> onError = null)
         {
-            NetworkService.Instance.Post($"/api/stages/{stageId}/attempts/start", "{\"clientRequestId\":\"\"}", (ok, result) =>
+            var requestId = Guid.NewGuid().ToString("N");
+            Debug.Log($"[StageApiService] StartAttempt: stageId={stageId}, requestId={requestId}");
+            var body = $"{{\"clientRequestId\":\"{requestId}\"}}";
+            NetworkService.Instance.Post($"/api/stages/{stageId}/attempts/start", body, (ok, result) =>
             {
-                if (!ok) { onError?.Invoke(result); return; }
+                if (!ok) 
+                { 
+                    string errorCode = null;
+                    try { errorCode = JsonUtility.FromJson<ErrorResponseJson>(result)?.code; } catch { }
+                    onError?.Invoke(errorCode ?? result); 
+                    return; 
+                }
                 var json     = JsonUtility.FromJson<StageAttemptStartJson>(result);
                 var response = json.ToContract();
                 _currentAttempt = response.Attempt;

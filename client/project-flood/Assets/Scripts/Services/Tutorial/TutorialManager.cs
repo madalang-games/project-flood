@@ -19,8 +19,7 @@ namespace Game.Services.Tutorial
             {
                 if (_instance == null)
                 {
-                    var go = new GameObject("TutorialManager");
-                    _instance = go.AddComponent<TutorialManager>();
+                    Debug.LogError("[TutorialManager] Instance is missing! Ensure it is placed in the Boot scene as a GameObject.");
                 }
                 return _instance;
             }

@@ -8,7 +8,19 @@ namespace Game.Services
 {
     public class StaminaApiService : MonoBehaviour
     {
-        public static StaminaApiService Instance { get; private set; }
+        private static StaminaApiService _instance;
+
+        public static StaminaApiService Instance
+        {
+            get
+            {
+                if (_instance == null)
+                {
+                    Debug.LogError("[StaminaApiService] Instance is missing! Ensure it is placed in the Boot scene.");
+                }
+                return _instance;
+            }
+        }
 
         public event Action OnStaminaUpdated;
 
@@ -20,8 +32,8 @@ namespace Game.Services
 
         private void Awake()
         {
-            if (Instance != null) { Destroy(gameObject); return; }
-            Instance = this;
+            if (_instance != null && _instance != this) { Destroy(gameObject); return; }
+            _instance = this;
             DontDestroyOnLoad(gameObject);
         }
 

@@ -7,12 +7,24 @@ namespace Game.Services
 {
     public class CurrencyApiService : MonoBehaviour
     {
-        public static CurrencyApiService Instance { get; private set; }
+        private static CurrencyApiService _instance;
+
+        public static CurrencyApiService Instance
+        {
+            get
+            {
+                if (_instance == null)
+                {
+                    Debug.LogError("[CurrencyApiService] Instance is missing! Ensure it is placed in the Boot scene.");
+                }
+                return _instance;
+            }
+        }
 
         private void Awake()
         {
-            if (Instance != null) { Destroy(gameObject); return; }
-            Instance = this;
+            if (_instance != null && _instance != this) { Destroy(gameObject); return; }
+            _instance = this;
             DontDestroyOnLoad(gameObject);
         }
 

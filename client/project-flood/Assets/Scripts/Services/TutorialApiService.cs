@@ -14,8 +14,7 @@ namespace Game.Services
             {
                 if (_instance == null)
                 {
-                    var go = new GameObject("TutorialApiService");
-                    _instance = go.AddComponent<TutorialApiService>();
+                    Debug.LogError("[TutorialApiService] Instance is missing! Ensure it is placed in the Boot scene as a GameObject.");
                 }
                 return _instance;
             }

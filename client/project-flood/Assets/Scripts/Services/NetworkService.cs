@@ -31,10 +31,10 @@ namespace Game.Services
         {
             get
             {
-                if (_instance != null) return _instance;
-                var go = new GameObject("[NetworkService]");
-                DontDestroyOnLoad(go);
-                _instance = go.AddComponent<NetworkService>();
+                if (_instance == null)
+                {
+                    Debug.LogError("[NetworkService] Instance is missing! Ensure it is placed in the Boot scene as a GameObject.");
+                }
                 return _instance;
             }
         }
@@ -68,7 +68,8 @@ namespace Game.Services
             if (_environment == AppEnvironment.Prod)
                 _enableLogging = false;
 
-            Debug.Log($"[NetworkService] env={_environment} url={BaseUrl} logging={_enableLogging}({_logLevel})");
+            // Silence console stack trace for cleaner network logs
+            Application.SetStackTraceLogType(LogType.Log, StackTraceLogType.None);
         }
 
         void OnDestroy()
@@ -93,7 +94,8 @@ namespace Game.Services
 
         IEnumerator SendGet(string path, Action<bool, string> onComplete)
         {
-            using var req = UnityWebRequest.Get(BuildUrl(path));
+            var url = BuildUrl(path);
+            using var req = UnityWebRequest.Get(url);
             ApplyHeaders(req);
             LogRequest("GET", path, null);
             yield return req.SendWebRequest();
@@ -102,8 +104,9 @@ namespace Game.Services
 
         IEnumerator SendWithBody(string path, string method, string jsonPayload, Action<bool, string> onComplete)
         {
+            var url = BuildUrl(path);
             var body = string.IsNullOrEmpty(jsonPayload) ? "{}" : jsonPayload;
-            using var req = new UnityWebRequest(BuildUrl(path), method);
+            using var req = new UnityWebRequest(url, method);
             var bytes = Encoding.UTF8.GetBytes(body);
             req.uploadHandler   = new UploadHandlerRaw(bytes);
             req.downloadHandler = new DownloadHandlerBuffer();
@@ -150,12 +153,7 @@ namespace Game.Services
 
         void LogRequest(string method, string path, string body)
         {
-            if (!_enableLogging || _logLevel == NetworkLogLevel.None) return;
-            if (_logLevel < NetworkLogLevel.Verbose) return;
-
-            var sb = new StringBuilder($"[HTTP ▶] {method} {path}");
-            if (body != null) sb.Append($"\n  body: {body}");
-            Debug.Log(sb);
+            // Removed [HTTP ▶] logs per user request.
         }
 
         void LogResponse(string method, string url, long code, string requestBody, string responseBody, bool isError)
@@ -180,13 +178,13 @@ namespace Game.Services
             if (isError)
             {
                 if (code >= 500 || code == 0)
-                    Debug.LogError(sb);
+                    Debug.LogError(sb.ToString());
                 else
-                    Debug.LogWarning(sb);
+                    Debug.LogWarning(sb.ToString());
             }
             else
             {
-                Debug.Log(sb);
+                Debug.Log(sb.ToString());
             }
         }
     }
