@@ -358,52 +358,154 @@ namespace Game.Editor
             var turnsTxt = TMP(turnsBubble, "TurnsText", Center(0, 10, 160, 80), 36, UI_TEXT, "20", null, TextCategory.Header);
             TMP(turnsBubble, "TurnsLabel", Center(0, -50, 160, 40), 16, UI_TEXT, "TURNS", IngameTurnsLabel, TextCategory.Normal);
 
-            // Progress bar container (Score/Ratio)
+            // Progress bar container (Remaining Cells)
             var progressContainer = Child(hud, "ProgressContainer");
-            Fixed(progressContainer, new Vector2(290, -90), new Vector2(300, 60));
+            Fixed(progressContainer, new Vector2(290, -90), new Vector2(200, 200));
             
-            // Border background for progress bar
             Img(progressContainer, UI_BG_DEEP);
             var progBorder = Child(progressContainer, "Border");
             Stretch(progBorder);
             var progBorderImg = Img(progBorder, UI_BORDER);
             progBorder.transform.SetAsFirstSibling();
-            progBorderImg.rectTransform.offsetMin = new Vector2(-4, -4);
-            progBorderImg.rectTransform.offsetMax = new Vector2(4, 4);
+            var progRt = progBorderImg.rectTransform;
+            progRt.offsetMin = new Vector2(-8, -8);
+            progRt.offsetMax = new Vector2(8, 8);
 
-            var ratioBar = Child(progressContainer, "RatioBar");
-            Stretch(ratioBar);
-            var fillImg = Img(ratioBar, UI_SUCCESS);
-            fillImg.type = Image.Type.Filled;
-            fillImg.fillMethod = Image.FillMethod.Horizontal;
-            
-            // Add stars icons positioned on the progress bar representing star thresholds
-            var star1 = Child(progressContainer, "Star1");
-            Fixed(star1, new Vector2(-90f, 0f), new Vector2(45f, 45f));
-            Img(star1, UI_CTA);
-            Comp<UIIconIdleAnimator>(star1).Configure(UIIconIdleAnimator.AnimationType.GlowSweep, 2.5f, 15f);
+            var cellIcon = Child(progressContainer, "CellIcon");
+            Fixed(cellIcon, new Vector2(0, 40), new Vector2(65, 65));
+            Img(cellIcon, UI_PRIMARY);
+            var iconShadow = Child(cellIcon, "Shadow");
+            Fixed(iconShadow, new Vector2(0, -6), new Vector2(65, 65));
+            Img(iconShadow, Hex("2B003B"));
+            iconShadow.transform.SetAsFirstSibling();
+            Comp<UIIconIdleAnimator>(cellIcon).Configure(UIIconIdleAnimator.AnimationType.Float, 2f, 6f);
 
-            var star2 = Child(progressContainer, "Star2");
-            Fixed(star2, new Vector2(0f, 0f), new Vector2(45f, 45f));
-            Img(star2, UI_CTA);
-            Comp<UIIconIdleAnimator>(star2).Configure(UIIconIdleAnimator.AnimationType.GlowSweep, 2.5f, 15f);
-
-            var star3 = Child(progressContainer, "Star3");
-            Fixed(star3, new Vector2(90f, 0f), new Vector2(45f, 45f));
-            Img(star3, UI_CTA);
-            Comp<UIIconIdleAnimator>(star3).Configure(UIIconIdleAnimator.AnimationType.GlowSweep, 2.5f, 15f);
+            var remainingTxt = TMP(progressContainer, "RemainingText", Center(0, -40, 160, 80), 36, UI_TEXT, "0", null, TextCategory.Header);
+            TMP(progressContainer, "RemainingLabel", Center(0, -85, 160, 40), 16, UI_TEXT, "CELLS", null, TextCategory.Normal);
 
             // Wire HUDView
             var soHud = new SerializedObject(hudView);
             soHud.FindProperty("_pauseButton").objectReferenceValue = pauseBtn.GetComponent<Button>();
             soHud.FindProperty("_turnsText").objectReferenceValue   = turnsTxt;
-            soHud.FindProperty("_ratioFill").objectReferenceValue   = fillImg;
+            soHud.FindProperty("_remainingText").objectReferenceValue = remainingTxt;
             soHud.ApplyModifiedProperties();
 
             // BoardContainer (anchor for world-space board)
             var board = Child(canvas, "BoardContainer"); Stretch(board);
 
+            // RowShiftOverlay Generation (placed before SafeAreaRoot so ItemTray is drawn on top)
+            var overlayGo = Child(canvas, "RowShiftOverlay");
+            Stretch(overlayGo);
+            var overlayImg = Img(overlayGo, new Color(0f, 0f, 0f, 0.45f)); // Semi-transparent black overlay
+            overlayImg.raycastTarget = true;
+            overlayGo.SetActive(false);
+
+            var pointerGo = Child(overlayGo, "Pointer");
+            Fixed(pointerGo, Vector2.zero, new Vector2(100f, 100f));
+            var pointerImg = Img(pointerGo, Color.white);
+            pointerGo.SetActive(false);
+
+            var lineGo = Child(overlayGo, "DragLine");
+            var lineRt = RT(lineGo);
+            lineRt.anchorMin = new Vector2(0.5f, 0.5f);
+            lineRt.anchorMax = new Vector2(0.5f, 0.5f);
+            lineRt.pivot = new Vector2(0.5f, 0.5f);
+            lineRt.sizeDelta = new Vector2(0f, 16f); // 16px thickness
+            var lineImg = Img(lineGo, Color.white);
+            lineImg.sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Sprite/cell/btn_46.png");
+            lineImg.type = Image.Type.Sliced;
+            lineImg.color = UI_PRIMARY; // Strawberry pink drag path line!
+            lineGo.SetActive(false);
+
+            var overlayView = Comp<RowShiftOverlayView>(overlayGo);
+
+            var soOverlay = new SerializedObject(overlayView);
+            soOverlay.FindProperty("_pointerImage").objectReferenceValue = pointerImg;
+            soOverlay.FindProperty("_dragLineRect").objectReferenceValue = lineRt;
+            var pointerSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Sprite/cell/btn_46.png");
+            if (pointerSprite != null)
+            {
+                soOverlay.FindProperty("_pointerSprite").objectReferenceValue = pointerSprite;
+            }
+            soOverlay.ApplyModifiedProperties();
+
+            // ItemTray UI Generation
+            var safeRoot = Child(canvas, "SafeAreaRoot");
+            Stretch(safeRoot);
+            Comp<SafeAreaHandler>(safeRoot);
+
+            var trayGo = Child(safeRoot, "ItemTray");
+            BottomStrip(trayGo, 180f);
+            Img(trayGo, UI_BG_DEEP);
+            var trayView = Comp<ItemTrayView>(trayGo);
+
+            var hlg = Comp<HorizontalLayoutGroup>(trayGo);
+            hlg.childAlignment = TextAnchor.MiddleCenter;
+            hlg.childForceExpandWidth = false;
+            hlg.childForceExpandHeight = false;
+            hlg.spacing = 30f;
+            hlg.padding = new RectOffset(10, 10, 10, 10);
+
+            var bombSlot       = CreateSlotHelper(trayGo, "BombSlot");
+            var hRocketSlot    = CreateSlotHelper(trayGo, "HRocketSlot");
+            var colorSweepSlot = CreateSlotHelper(trayGo, "ColorSweepSlot");
+            var rowShiftSlot   = CreateSlotHelper(trayGo, "RowShiftSlot");
+            var cellSwapSlot   = CreateSlotHelper(trayGo, "CellSwapSlot");
+
+            var soTray = new SerializedObject(trayView);
+            soTray.FindProperty("_bombSlot").objectReferenceValue       = bombSlot;
+            soTray.FindProperty("_hRocketSlot").objectReferenceValue    = hRocketSlot;
+            soTray.FindProperty("_colorSweepSlot").objectReferenceValue = colorSweepSlot;
+            soTray.FindProperty("_rowShiftSlot").objectReferenceValue   = rowShiftSlot;
+            soTray.FindProperty("_cellSwapSlot").objectReferenceValue   = cellSwapSlot;
+            soTray.ApplyModifiedProperties();
+
             SaveScenePrefab(canvas, "InGame");
+        }
+
+        static ItemSlotView CreateSlotHelper(GameObject parent, string slotName)
+        {
+            var go = Child(parent, slotName);
+            var rt = RT(go);
+            rt.sizeDelta = new Vector2(140f, 140f);
+
+            var le = Comp<LayoutElement>(go);
+            le.minWidth = le.preferredWidth = 140f;
+            le.minHeight = le.preferredHeight = 140f;
+
+            var visual = Child(go, "Visual");
+            Stretch(visual);
+            var bgImg = Img(visual, UI_BG_MID);
+
+            var btn = Comp<Button>(go);
+            btn.targetGraphic = bgImg;
+            Comp<UIButtonAnimator>(go);
+
+            var highlight = Child(visual, "SelectedHighlight");
+            Stretch(highlight);
+            var hlImg = Img(highlight, UI_BORDER);
+            hlImg.rectTransform.offsetMin = new Vector2(-4, -4);
+            hlImg.rectTransform.offsetMax = new Vector2(4, 4);
+            highlight.SetActive(false);
+
+            var icon = Child(visual, "Icon");
+            Fixed(icon, Vector2.zero, new Vector2(90f, 90f));
+            Img(icon, Color.white);
+
+            var countText = TMP(visual, "CountText", Center(30, -35, 70, 45), 16, UI_CTA, "0", null, TextCategory.Normal);
+            countText.alignment = TextAlignmentOptions.BottomRight;
+
+            var cg = Comp<CanvasGroup>(go);
+
+            var slotView = Comp<ItemSlotView>(go);
+            var so = new SerializedObject(slotView);
+            so.FindProperty("_button").objectReferenceValue = btn;
+            so.FindProperty("_countText").objectReferenceValue = countText;
+            so.FindProperty("_selectedHighlight").objectReferenceValue = highlight;
+            so.FindProperty("_canvasGroup").objectReferenceValue = cg;
+            so.ApplyModifiedProperties();
+
+            return slotView;
         }
 
         // ════════════════════════════════════════════════════════════════
@@ -566,13 +668,29 @@ namespace Game.Editor
             var hlg = starsRoot.AddComponent<HorizontalLayoutGroup>(); hlg.spacing = 20; hlg.childAlignment = TextAnchor.MiddleCenter;
             var s0 = StarGO(starsRoot, "Star0"); var s1 = StarGO(starsRoot, "Star1"); var s2 = StarGO(starsRoot, "Star2");
 
-            var play = Btn(panel, "PlayButton", new Vector2(0, -150), new Vector2(400, 95), UI_CTA, "Play", CommonBtnPlay);
+            // Extra Turns Toggle Row (sitting between Stars and Play button)
+            var toggleRow = ToggleRow(panel, "ExtraTurnsToggleRow", new Vector2(0, -100), "Add Turns", ItemNameAddTurn);
+            Fixed(toggleRow, new Vector2(0, -105), new Vector2(500, 50));
+            var labelTmp = toggleRow.transform.Find("Label").gameObject;
+            Fixed(labelTmp, new Vector2(-100, 0), new Vector2(300, 50));
+            var toggleGo = toggleRow.transform.Find("Toggle").gameObject;
+            Fixed(toggleGo, new Vector2(180, 0), new Vector2(70, 40));
+            var toggleBg = toggleGo.transform.Find("Background").gameObject;
+            Fixed(toggleBg, Vector2.zero, new Vector2(70, 40));
+            var toggleChk = toggleGo.transform.Find("Checkmark").gameObject;
+            Fixed(toggleChk, Vector2.zero, new Vector2(30, 30));
+            
+            var toggleComp = toggleGo.GetComponent<Toggle>();
+            toggleComp.isOn = false; // default off
+
+            var play = Btn(panel, "PlayButton", new Vector2(0, -165), new Vector2(400, 80), UI_CTA, "Play", CommonBtnPlay);
 
             var so = new SerializedObject(root.GetComponent<StageInfoPopupView>());
             so.FindProperty("_stageTitle").objectReferenceValue     = title;
             so.FindProperty("_bestRecord").objectReferenceValue     = best;
             so.FindProperty("_playButton").objectReferenceValue     = play.GetComponent<Button>();
             so.FindProperty("_backdropButton").objectReferenceValue = backdrop.GetComponent<Button>();
+            so.FindProperty("_extraTurnsToggle").objectReferenceValue = toggleComp;
             var starsArr = so.FindProperty("_bestStarFills");
             starsArr.arraySize = 3;
             starsArr.GetArrayElementAtIndex(0).objectReferenceValue = s0;

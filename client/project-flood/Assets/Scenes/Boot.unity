@@ -148,9 +148,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e2ca933fbd711f94fb7f3e032cc3acc3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Game.Services.AuthService
-  _baseUrl: http://localhost:5000
-  _clientVersion: 1.0.0
-  _protocolVersion: 1
 --- !u!4 &83577188
 Transform:
   m_ObjectHideFlags: 0
