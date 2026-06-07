@@ -75,14 +75,21 @@ namespace Game.InGame.Controller
             }
 
             _goldEarned = 0;
-            _hudView?.Init(_stage.turn_limit, _stage.star1_ratio, _stage.star2_ratio);
-            if (_hudView != null) _hudView.OnPausePressed += OnPausePressed;
+
+            int extraTurns = 0;
+            if (ScrollStateCache.UseExtraTurnsItem)
+            {
+                extraTurns = 3;
+                ScrollStateCache.UseExtraTurnsItem = false;
+            }
 
             _controller.OnBoardUpdated      += OnBoardUpdated;
             _controller.OnContinueAvailable += OnContinueAvailable;
             _controller.OnStageEnd          += OnStageEnd;
 
-            _controller.Init(_stage);
+            _controller.Init(_stage, extraTurns);
+            _hudView?.Init(_stage.turn_limit + extraTurns, _controller.RemainingCells);
+            if (_hudView != null) _hudView.OnPausePressed += OnPausePressed;
             StageApiService.Instance?.StartAttempt(_stage.stage_id, response =>
             {
                 StaminaApiService.Instance?.FetchStamina();
@@ -97,10 +104,10 @@ namespace Game.InGame.Controller
             if (_hudView != null) _hudView.OnPausePressed -= OnPausePressed;
         }
 
-        private void OnBoardUpdated(int remainingTurns, float ratio)
+        private void OnBoardUpdated(int remainingTurns, int remainingCells)
         {
             _hudView?.UpdateTurns(remainingTurns);
-            _hudView?.UpdateRatio(ratio);
+            _hudView?.UpdateRemainingCells(remainingCells);
         }
 
         private void OnContinueAvailable()
@@ -115,12 +122,16 @@ namespace Game.InGame.Controller
 
         private void AcceptContinue()
         {
-            if (PlayerProgressService.Instance != null &&
-                !PlayerProgressService.Instance.SpendGold(GameConfig.ContinueCost))
+            var progress = PlayerProgressService.Instance;
+            if (progress != null && !progress.CanAfford(GameConfig.ContinueCost))
             {
                 UIManager.Instance?.ShowToast("골드 부족", ToastType.Warning);
                 return;
             }
+            progress?.SpendGold(GameConfig.ContinueCost);
+            CurrencyApiService.Instance?.SpendGold(GameConfig.ContinueCost, "continue",
+                onSuccess: snap => PlayerProgressService.Instance?.SetGold((int)snap.SoftAmount),
+                onError: err => Debug.LogWarning($"[InGame] currency spend sync failed: {err}"));
             UIManager.Instance?.CloseOverlay();
             _controller.Continue(GameConfig.ContinueExtraTurns);
         }
@@ -137,6 +148,7 @@ namespace Game.InGame.Controller
                 PlayerProgressService.Instance?.AddGold(_goldEarned);
                 PlayerProgressService.Instance?.RecordClear(_stage.stage_id, (int)result);
             }
+            // Note: _goldEarned is for UI display only; server gold is reconciled from ClearAttempt response below.
             else
             {
                 StageApiService.Instance?.FailAttempt(_stage.stage_id);
@@ -170,6 +182,8 @@ namespace Game.InGame.Controller
                     {
                         overlay.SetServerRank(response.StageRank, response.IsNewBest);
                         StaminaApiService.Instance?.FetchStamina();
+                        if (response.Currency != null)
+                            PlayerProgressService.Instance?.SetGold((int)response.Currency.SoftAmount);
                     }, error => Debug.LogWarning($"[InGameSceneEntry] stage clear sync failed: {error}"));
                 }
             }

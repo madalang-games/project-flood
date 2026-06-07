@@ -9,6 +9,7 @@ namespace Game.InGame.View
         [SerializeField] private Button _button;
         [SerializeField] private TextMeshProUGUI _countText;
         [SerializeField] private GameObject _selectedHighlight;
+        [SerializeField] private CanvasGroup _canvasGroup;
 
         public Button Button => _button;
 
@@ -20,6 +21,12 @@ namespace Game.InGame.View
                 _button.interactable = canUse;
             if (_selectedHighlight != null)
                 _selectedHighlight.SetActive(selected);
+
+            if (_canvasGroup != null)
+            {
+                bool isDimmed = !isDevMode && count == 0;
+                _canvasGroup.alpha = isDimmed ? 0.45f : 1f;
+            }
         }
     }
 }

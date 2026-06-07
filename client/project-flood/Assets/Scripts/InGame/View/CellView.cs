@@ -49,6 +49,38 @@ namespace Game.InGame.View
                 _targetHighlight.SetActive(active);
         }
 
+        private Coroutine _selectedCoroutine;
+
+        public void SetSelectedVisual(bool selected)
+        {
+            if (_selectedCoroutine != null)
+            {
+                StopCoroutine(_selectedCoroutine);
+                _selectedCoroutine = null;
+            }
+
+            if (selected)
+            {
+                _selectedCoroutine = StartCoroutine(AnimateSelectionPulse());
+            }
+            else
+            {
+                transform.localScale = _baseScale;
+                if (_baseRenderer != null) _baseRenderer.color = _baseColor;
+            }
+        }
+
+        private IEnumerator AnimateSelectionPulse()
+        {
+            while (true)
+            {
+                float t = Time.time * 6f;
+                float scaleFactor = 1.0f + Mathf.Sin(t) * 0.1f;
+                transform.localScale = _baseScale * scaleFactor;
+                yield return null;
+            }
+        }
+
         public void SetData(CellData? data, Color cellColor)
         {
             if (data == null || data.Value.cell_type == CellType.Void)

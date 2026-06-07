@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Collections;
 using Game.InGame.Board;
+using Game.InGame.Items;
 using ProjectFlood.Contracts.GameTypes;
 using ProjectFlood.Data.Generated;
 using UnityEngine;
@@ -335,6 +336,178 @@ namespace Game.InGame.View
             _background.transform.localPosition = Vector3.zero;
             _background.transform.localRotation = Quaternion.identity;
             _background.transform.localScale = Vector3.one;
+        }
+
+        public void SetCellSelectedHighlight(int row, int col, bool active)
+        {
+            if (IsValidCell(row, col))
+            {
+                _cellViews[row, col].SetSelectedVisual(active);
+            }
+        }
+
+        public void ClearAllCellSelectedHighlights()
+        {
+            if (_cellViews == null || _board == null) return;
+            for (int r = 0; r < _board.Height; r++)
+            for (int c = 0; c < _board.Width; c++)
+            {
+                if (IsValidCell(r, c))
+                {
+                    _cellViews[r, c].SetSelectedVisual(false);
+                }
+            }
+        }
+
+        public IEnumerator PlayCellSwap(int r1, int c1, int r2, int c2)
+        {
+            if (!IsValidCell(r1, c1) || !IsValidCell(r2, c2)) yield break;
+
+            var view1 = _cellViews[r1, c1];
+            var view2 = _cellViews[r2, c2];
+            if (view1 == null || view2 == null) yield break;
+
+            Vector3 start1 = _cellPositions[r1, c1];
+            Vector3 start2 = _cellPositions[r2, c2];
+
+            float duration = 0.35f;
+            float distance = Vector3.Distance(start1, start2);
+            float arcHeight = Mathf.Min(distance * 0.35f, _cellSize * 1.5f);
+
+            for (float t = 0f; t < duration; t += Time.deltaTime)
+            {
+                float p = t / duration;
+                float eased = EaseInOutQuad(p);
+                float arc = Mathf.Sin(p * Mathf.PI) * arcHeight;
+
+                Vector3 normal = Vector3.Cross(start2 - start1, Vector3.forward).normalized;
+                view1.transform.localPosition = Vector3.Lerp(start1, start2, eased) + normal * arc;
+                view2.transform.localPosition = Vector3.Lerp(start2, start1, eased) - normal * arc;
+
+                yield return null;
+            }
+
+            view1.transform.localPosition = start2;
+            view2.transform.localPosition = start1;
+
+            _cellViews[r1, c1] = view2;
+            _cellViews[r2, c2] = view1;
+        }
+
+        public IEnumerator PlayRowShift(CellData?[,] beforeRowShift, BoardState boardAfterRowShift, ShiftDirection direction)
+        {
+            float maxDelay = 0f;
+            float duration = 0.28f;
+            
+            var newCellViews = new CellView[boardAfterRowShift.Height, boardAfterRowShift.Width];
+            for (int r = 0; r < boardAfterRowShift.Height; r++)
+            for (int c = 0; c < boardAfterRowShift.Width; c++)
+            {
+                newCellViews[r, c] = _cellViews[r, c];
+            }
+
+            for (int r = 0; r < boardAfterRowShift.Height; r++)
+            {
+                var sourceCols = new List<int>();
+                for (int c = 0; c < boardAfterRowShift.Width; c++)
+                {
+                    var cell = beforeRowShift[r, c];
+                    if (cell != null && cell.Value.cell_type != CellType.Void)
+                    {
+                        sourceCols.Add(c);
+                    }
+                }
+
+                var destCols = new List<int>();
+                for (int c = 0; c < boardAfterRowShift.Width; c++)
+                {
+                    var cell = boardAfterRowShift.Grid[r, c];
+                    if (cell != null && cell.Value.cell_type != CellType.Void)
+                    {
+                        destCols.Add(c);
+                    }
+                }
+
+                var emptyViews = new List<CellView>();
+                for (int c = 0; c < boardAfterRowShift.Width; c++)
+                {
+                    var cell = beforeRowShift[r, c];
+                    bool isVoid = cell != null && cell.Value.cell_type == CellType.Void;
+                    if (!isVoid && !sourceCols.Contains(c))
+                    {
+                        emptyViews.Add(_cellViews[r, c]);
+                    }
+                }
+
+                for (int i = 0; i < destCols.Count && i < sourceCols.Count; i++)
+                {
+                    int src = sourceCols[i];
+                    int dest = destCols[i];
+                    if (src == dest) continue;
+
+                    var view = _cellViews[r, src];
+                    if (view != null)
+                    {
+                        float delay = 0f;
+                        maxDelay = Mathf.Max(maxDelay, duration);
+                        StartCoroutine(PlayCellSlide(view, _cellPositions[r, src], _cellPositions[r, dest], delay, duration));
+                    }
+                }
+
+                int emptyIdx = 0;
+                for (int c = 0; c < boardAfterRowShift.Width; c++)
+                {
+                    var cell = boardAfterRowShift.Grid[r, c];
+                    bool isVoid = cell != null && cell.Value.cell_type == CellType.Void;
+                    if (isVoid)
+                    {
+                        newCellViews[r, c] = _cellViews[r, c];
+                    }
+                    else
+                    {
+                        int destIdx = destCols.IndexOf(c);
+                        if (destIdx >= 0 && destIdx < sourceCols.Count)
+                        {
+                            int src = sourceCols[destIdx];
+                            newCellViews[r, c] = _cellViews[r, src];
+                        }
+                        else
+                        {
+                            newCellViews[r, c] = emptyViews[emptyIdx++];
+                        }
+                    }
+                }
+            }
+
+            for (int r = 0; r < boardAfterRowShift.Height; r++)
+            for (int c = 0; c < boardAfterRowShift.Width; c++)
+            {
+                _cellViews[r, c] = newCellViews[r, c];
+            }
+
+            if (maxDelay > 0f)
+                yield return new WaitForSeconds(maxDelay);
+
+            Refresh(boardAfterRowShift);
+        }
+
+        private IEnumerator PlayCellSlide(CellView view, Vector3 from, Vector3 to, float delay, float duration)
+        {
+            view.transform.localPosition = from;
+            if (delay > 0f) yield return new WaitForSeconds(delay);
+
+            for (float t = 0f; t < duration; t += Time.deltaTime)
+            {
+                float p = EaseInOutQuad(t / duration);
+                view.transform.localPosition = Vector3.LerpUnclamped(from, to, p);
+                yield return null;
+            }
+            view.transform.localPosition = to;
+        }
+
+        private static float EaseInOutQuad(float t)
+        {
+            return t < 0.5f ? 2f * t * t : 1f - Mathf.Pow(-2f * t + 2f, 2f) / 2f;
         }
 
         private static float EaseOutBack(float t)
