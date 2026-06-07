@@ -68,6 +68,8 @@ namespace Game.Editor
             CreateAccountPopup();
             CreateStageNodeView();
             CreateStaminaPopup();
+            CreateTutorialOverlay();
+            CreateChapterChest();
             
             // Generate Scenes as well
             SetupBoot();
@@ -119,6 +121,12 @@ namespace Game.Editor
 
         [MenuItem("Tools/UI Setup/Prefabs/StaminaPopup",     false, 126)]
         static void CreateStaminaPopupSingle()   { EnsureDirs(); CreateStaminaPopup();   AssetDatabase.Refresh(); }
+
+        [MenuItem("Tools/UI Setup/Prefabs/TutorialOverlay",  false, 127)]
+        static void CreateTutorialOverlaySingle() { EnsureDirs(); CreateTutorialOverlay(); AssetDatabase.Refresh(); }
+
+        [MenuItem("Tools/UI Setup/Prefabs/ChapterChest",     false, 128)]
+        static void CreateChapterChestSingle()    { EnsureDirs(); CreateChapterChest();    AssetDatabase.Refresh(); }
 
         [MenuItem("Tools/UI Setup/Prefabs/BootCanvas",       false, 123)]
         static void CreateBootCanvasSingle()     { EnsureDirs(); SetupBoot();            AssetDatabase.Refresh(); }
@@ -988,6 +996,144 @@ namespace Game.Editor
             so.ApplyModifiedProperties();
 
             Save(root, "StaminaPopupView");
+        }
+
+        static void CreateTutorialOverlay()
+        {
+            var root = FullScreen("TutorialOverlay");
+            var overlayScript = Comp<TutorialOverlay>(root);
+            
+            // Fullscreen Dismiss Button
+            var dismiss = Btn(root, "FullscreenDismissButton", Vector2.zero, new Vector2(1080, 1920), new Color(0, 0, 0, 0.4f), "");
+            Stretch(dismiss);
+            
+            // Spotlight Cutout
+            var spotlight = Child(root, "SpotlightCutout");
+            Fixed(spotlight, Vector2.zero, new Vector2(150, 150));
+            Img(spotlight, new Color(1, 1, 1, 0.1f));
+            
+            // Spotlight Glow
+            var glow = Child(spotlight, "SpotlightGlow");
+            Stretch(glow);
+            var glowRt = RT(glow);
+            glowRt.offsetMin = new Vector2(-10, -10);
+            glowRt.offsetMax = new Vector2(10, 10);
+            var glowImg = Img(glow, new Color(1, 0.9f, 0.4f, 0.8f));
+            
+            // Tooltip Bubble
+            var bubble = Child(root, "TooltipBubble");
+            Fixed(bubble, Vector2.zero, new Vector2(800, 300));
+            Img(bubble, new Color(0.1f, 0.15f, 0.25f, 0.95f));
+            
+            // Tooltip Text
+            var textGo = Child(bubble, "TooltipText");
+            Stretch(textGo);
+            var textRt = RT(textGo);
+            textRt.offsetMin = new Vector2(20, 20);
+            textRt.offsetMax = new Vector2(-20, -20);
+            var textTmp = textGo.GetComponent<TextMeshProUGUI>();
+            if (textTmp == null) textTmp = textGo.AddComponent<TextMeshProUGUI>();
+            textTmp.fontSizeMin = 24f;
+            textTmp.fontSizeMax = 36f;
+            textTmp.fontSize = 32f;
+            textTmp.color = Color.white;
+            textTmp.text = "Tutorial Message";
+            textTmp.alignment = TextAlignmentOptions.Center;
+            textTmp.enableWordWrapping = true;
+            
+            // Character Avatar (Floodie)
+            var avatar = Child(bubble, "CharacterAvatar");
+            var avatarRt = RT(avatar);
+            avatarRt.anchorMin = new Vector2(0, 0.5f);
+            avatarRt.anchorMax = new Vector2(0, 0.5f);
+            avatarRt.pivot = new Vector2(0.5f, 0.5f);
+            avatarRt.anchoredPosition = new Vector2(-60, 0);
+            avatarRt.sizeDelta = new Vector2(150, 150);
+            var avatarImg = Img(avatar, Color.cyan);
+            
+            // Finger Overlay
+            var finger = Child(root, "FingerOverlay");
+            Fixed(finger, Vector2.zero, new Vector2(100, 100));
+            Img(finger, new Color(1, 0.3f, 0.3f, 0.9f));
+            
+            // Setup Serialized Fields on TutorialOverlay script
+            var so = new SerializedObject(overlayScript);
+            so.FindProperty("_spotlightCutout").objectReferenceValue = spotlight.GetComponent<RectTransform>();
+            so.FindProperty("_spotlightGlow").objectReferenceValue = glowImg;
+            so.FindProperty("_tooltipBubble").objectReferenceValue = bubble.GetComponent<RectTransform>();
+            so.FindProperty("_tooltipText").objectReferenceValue = textTmp;
+            so.FindProperty("_fingerOverlay").objectReferenceValue = finger.GetComponent<RectTransform>();
+            so.FindProperty("_characterAvatar").objectReferenceValue = avatarImg;
+            so.FindProperty("_fullscreenDismissButton").objectReferenceValue = dismiss.GetComponent<Button>();
+            so.ApplyModifiedProperties();
+            
+            Save(root, "TutorialOverlay");
+        }
+
+        static void CreateChapterChest()
+        {
+            var root = new GameObject("ChapterChest");
+            var rootRt = RT(root);
+            rootRt.sizeDelta = new Vector2(120, 120);
+            
+            var chestImg = Img(root, Color.white);
+            var chestBtn = Comp<Button>(root);
+            var chestCg = Comp<CanvasGroup>(root);
+            var chestView = Comp<ChapterChestView>(root);
+            
+            // Glow Effect
+            var glow = Child(root, "GlowEffect");
+            var glowRt = RT(glow);
+            glowRt.sizeDelta = new Vector2(180, 180);
+            var glowImg = Img(glow, new Color(1, 0.85f, 0.3f, 0.5f));
+            Comp<UIPulseGlowEffect>(glow);
+            
+            // Dynamic Material with Shader
+            Shader glowShader = Shader.Find("UI/PulseGlow");
+            if (glowShader != null)
+            {
+                string matDir = "Assets/Resources/Prefabs/UI";
+                MkDir(matDir);
+                string matPath = $"{matDir}/PulseGlowMaterial.mat";
+                Material glowMat = AssetDatabase.LoadAssetAtPath<Material>(matPath);
+                if (glowMat == null)
+                {
+                    glowMat = new Material(glowShader);
+                    glowMat.name = "PulseGlowMaterial";
+                    AssetDatabase.CreateAsset(glowMat, matPath);
+                }
+                glowImg.material = glowMat;
+            }
+            
+            // Status Text
+            var statusTextGo = Child(root, "StatusText");
+            var textRt = RT(statusTextGo);
+            textRt.anchorMin = new Vector2(0.5f, 0);
+            textRt.anchorMax = new Vector2(0.5f, 0);
+            textRt.pivot = new Vector2(0.5f, 1f);
+            textRt.anchoredPosition = new Vector2(0, -10);
+            textRt.sizeDelta = new Vector2(150, 40);
+            
+            var textTmp = statusTextGo.GetComponent<TextMeshProUGUI>();
+            if (textTmp == null) textTmp = statusTextGo.AddComponent<TextMeshProUGUI>();
+            textTmp.fontSizeMin = 18f;
+            textTmp.fontSizeMax = 28f;
+            textTmp.fontSize = 24f;
+            textTmp.alignment = TextAlignmentOptions.Center;
+            textTmp.color = Color.yellow;
+            textTmp.text = "Locked";
+            textTmp.enableWordWrapping = true;
+            
+            // Bind Serialized Fields on ChapterChestView
+            var so = new SerializedObject(chestView);
+            so.FindProperty("_chestImage").objectReferenceValue = chestImg;
+            so.FindProperty("_statusText").objectReferenceValue = textTmp;
+            so.FindProperty("_button").objectReferenceValue = chestBtn;
+            so.FindProperty("_glowEffect").objectReferenceValue = glow;
+            so.FindProperty("_canvasGroup").objectReferenceValue = chestCg;
+            so.ApplyModifiedProperties();
+            
+            Save(root, "ChapterChest");
         }
 
         // ════════════════════════════════════════════════════════════════
