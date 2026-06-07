@@ -104,6 +104,16 @@ namespace Game.Services
             }
         }
 
+        public void ResetData()
+        {
+            _gold = 500;
+            _bestStars.Clear();
+            _unlocked.Clear();
+            _unlocked[1] = true;
+            _inventory.Clear();
+            Debug.Log("[PlayerProgressService] Memory cache cleared.");
+        }
+
         private void Load()
         {
             _gold = PlayerPrefs.GetInt(KeyGold, 500);

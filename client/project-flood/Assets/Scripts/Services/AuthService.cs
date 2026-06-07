@@ -43,15 +43,19 @@ namespace Game.Services
 
         public void Initialize(Action<AuthResult> onComplete)
         {
+            Debug.Log($"[AuthService] Initialize: IsAuthenticated={IsAuthenticated}, Provider={_provider}, HasToken={!string.IsNullOrEmpty(_accessToken)}");
+
             if (HasUsableAccessToken())
             {
+                Debug.Log("[AuthService] Using existing valid session.");
                 SyncServiceTokens();
                 onComplete?.Invoke(IsGuest ? AuthResult.Guest : AuthResult.Authenticated);
                 return;
             }
 
-            if (!string.IsNullOrEmpty(_refreshToken))
+            if (!string.IsNullOrEmpty(_refreshToken) && !IsOfflineToken(_refreshToken))
             {
+                Debug.Log("[AuthService] Attempting Token Refresh...");
                 Refresh((success, error) =>
                 {
                     if (success)
@@ -66,6 +70,7 @@ namespace Game.Services
                 return;
             }
 
+            Debug.Log("[AuthService] No valid session found. Attempting Guest Login...");
             LoginGuest((success, error) =>
             {
                 if (success)
@@ -74,18 +79,20 @@ namespace Game.Services
                 }
                 else
                 {
-                    // Fallback to offline/mock if server is not running in editor
-                    Debug.LogWarning($"[AUTH] Server guest login failed: {error}. Falling back to offline guest.");
+                    Debug.LogWarning($"[AuthService] Server guest login failed: {error}. Falling back to offline guest.");
                     SetupOfflineGuest();
                     onComplete?.Invoke(AuthResult.Guest);
                 }
             });
         }
 
+        private bool IsOfflineToken(string token) => token != null && token.StartsWith("offline_");
+
         public void LoginGuest(Action<bool, string> onComplete)
         {
             var clientId = GetOrCreateClientId();
             var req = new GuestLoginRequestJson { clientId = clientId, displayName = null };
+            Debug.Log($"[AuthService] Attempting Guest Login with ClientId: {clientId}");
             Post("/api/auth/guest", JsonUtility.ToJson(req), text =>
             {
                 var response = JsonUtility.FromJson<AuthResponseJson>(text);
@@ -158,6 +165,7 @@ namespace Game.Services
             if (string.IsNullOrEmpty(_refreshToken))
             {
                 ClearToken();
+                ClearAllLocalProgress();
                 onComplete?.Invoke(true, "");
                 return;
             }
@@ -166,12 +174,29 @@ namespace Game.Services
             Post("/api/auth/logout", JsonUtility.ToJson(req), text =>
             {
                 ClearToken();
+                ClearAllLocalProgress();
                 onComplete?.Invoke(true, "");
             }, error =>
             {
                 ClearToken();
+                ClearAllLocalProgress();
                 onComplete?.Invoke(true, ""); // Force logout locally even if request fails
             });
+        }
+
+        private void ClearAllLocalProgress()
+        {
+            // Clear all game-related PlayerPrefs to prevent account leakage
+            PlayerPrefs.DeleteAll(); 
+            PlayerPrefs.Save();
+            
+            // Clear memory-cached data in services
+            if (PlayerProgressService.Instance != null)
+            {
+                PlayerProgressService.Instance.ResetData();
+            }
+            
+            Debug.Log("[AuthService] All local progress cleared (Disk + Memory) for logout.");
         }
 
         private void CompleteSession(bool ok, string error, string provider, AuthResponseJson auth, Action<bool, string> onComplete)
@@ -254,7 +279,8 @@ namespace Game.Services
 
         private bool HasUsableAccessToken()
         {
-            return !string.IsNullOrEmpty(_accessToken) && _accessExpiresAt > DateTimeOffset.UtcNow.AddMinutes(5);
+            if (string.IsNullOrEmpty(_accessToken) || IsOfflineToken(_accessToken)) return false;
+            return _accessExpiresAt > DateTimeOffset.UtcNow.AddMinutes(5);
         }
 
         private string GetOrCreateClientId()
