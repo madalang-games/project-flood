@@ -86,6 +86,20 @@ namespace Game.Editor
         // stamina
         public const string StaminaMax = "stamina.max";
         public const string StaminaNextCharge = "stamina.next_charge";
+
+        // item
+        public const string ItemNameAddTurn = "item.name.add_turn";
+        public const string ItemDescAddTurn = "item.desc.add_turn";
+        public const string ItemNameBomb = "item.name.bomb";
+        public const string ItemDescBomb = "item.desc.bomb";
+        public const string ItemNameHRocket = "item.name.h_rocket";
+        public const string ItemDescHRocket = "item.desc.h_rocket";
+        public const string ItemNameColorSweep = "item.name.color_sweep";
+        public const string ItemDescColorSweep = "item.desc.color_sweep";
+        public const string ItemNameRowShift = "item.name.row_shift";
+        public const string ItemDescRowShift = "item.desc.row_shift";
+        public const string ItemNameCellSwap = "item.name.cell_swap";
+        public const string ItemDescCellSwap = "item.desc.cell_swap";
     }
 }
 #endif
