@@ -41,6 +41,12 @@ namespace Game.Services
             PlayerPrefs.SetInt(KeyGold, _gold);
         }
 
+        public void SetGold(int amount)
+        {
+            _gold = amount;
+            PlayerPrefs.SetInt(KeyGold, _gold);
+        }
+
         // --- Stage stars / unlock ---
         public int GetBestStars(int stageId)
         {

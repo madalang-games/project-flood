@@ -105,6 +105,15 @@ namespace Game.Services
         }
 
         [Serializable]
+        private class CurrencySnapshotJson
+        {
+            public long softAmount;
+
+            public ProjectFlood.Contracts.Currency.CurrencySnapshot ToContract()
+                => new ProjectFlood.Contracts.Currency.CurrencySnapshot { SoftAmount = softAmount };
+        }
+
+        [Serializable]
         private class StageAttemptEndJson
         {
             public string attemptId;
@@ -116,6 +125,7 @@ namespace Game.Services
             public int stageRank;
             public bool isNewBest;
             public string serverTime;
+            public CurrencySnapshotJson currency;
 
             public StageAttemptEndResponse ToContract() => new StageAttemptEndResponse
             {
@@ -128,6 +138,7 @@ namespace Game.Services
                 StageRank    = stageRank > 0 ? stageRank : null,
                 IsNewBest    = isNewBest,
                 ServerTime   = ParseTime(serverTime),
+                Currency     = currency?.ToContract(),
             };
         }
 

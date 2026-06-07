@@ -16,6 +16,7 @@ Namespace: `Game.Services`
 | `StageApiService.cs` | `StageApiService` | Optional server stage attempt start/clear/fail sync |
 | `RankingApiService.cs` | `RankingApiService` | Optional server ranking page/my-rank fetcher |
 | `StaminaApiService.cs` | `StaminaApiService` | Server stamina fetch + ad-life claim; caches last snapshot for client-side estimation |
+| `CurrencyApiService.cs` | `CurrencyApiService` | Server soft currency fetch + spend; syncs `PlayerProgressService.Gold` on response |
 
 ## Symbols
 | symbol | kind | note |
@@ -38,6 +39,7 @@ Namespace: `Game.Services`
 | `PlayerProgressService.CanAfford(int)` | method | Gold >= cost check |
 | `PlayerProgressService.SpendGold(int)` | method | Returns false if insufficient gold |
 | `PlayerProgressService.AddGold(int)` | method | Persists to PlayerPrefs |
+| `PlayerProgressService.SetGold(int)` | method | Overwrite gold to server-authoritative value; persists to PlayerPrefs |
 | `PlayerProgressService.GetBestStars(int)` | method | 0..3; lazy-loaded from PlayerPrefs |
 | `PlayerProgressService.IsStageUnlocked(int)` | method | Stage 1 always true; lazy-loaded |
 | `PlayerProgressService.RecordClear(int,int)` | method | Updates best stars + unlocks stageId+1 |
@@ -64,6 +66,8 @@ Namespace: `Game.Services`
 | `RankingApiService.FetchGlobalPage` | method | GET paged global ranking |
 | `RankingApiService.FetchMyGlobalRank` | method | GET current user's ranking card |
 | `RankingApiService.FetchMyStageRank` | method | GET current user's stage rank |
+| `CurrencyApiService.FetchGold` | method | GET `/api/currency`; calls `PlayerProgressService.SetGold` on success |
+| `CurrencyApiService.SpendGold` | method | POST `/api/currency/spend`; deducts server-side; calls `PlayerProgressService.SetGold` on success |
 
 ## Rules
 - All services are DDOL; place GameObjects in Boot scene only.

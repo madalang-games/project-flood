@@ -9,6 +9,7 @@ public partial class StaticDataService
 {
     private IReadOnlyDictionary<string, AdPlacementData> _adPlacements = new Dictionary<string, AdPlacementData>();
     private IReadOnlyDictionary<byte, ColorPaletteData> _colorPalettes = new Dictionary<byte, ColorPaletteData>();
+    private IReadOnlyDictionary<int, ItemData> _items = new Dictionary<int, ItemData>();
     private IReadOnlyDictionary<int, RewardGroupData> _rewardGroups = new Dictionary<int, RewardGroupData>();
     private IReadOnlyDictionary<string, RewardSourceData> _rewardSources = new Dictionary<string, RewardSourceData>();
     private IReadOnlyDictionary<int, StageData> _stages = new Dictionary<int, StageData>();
@@ -18,6 +19,7 @@ public partial class StaticDataService
     {
         var adPath = System.IO.Path.Combine(dataRoot, "ad");
         var commonPath = System.IO.Path.Combine(dataRoot, "common");
+        var itemPath = System.IO.Path.Combine(dataRoot, "item");
         var rewardPath = System.IO.Path.Combine(dataRoot, "reward");
         var stagePath = System.IO.Path.Combine(dataRoot, "stage");
         var staminaPath = System.IO.Path.Combine(dataRoot, "stamina");
@@ -37,6 +39,16 @@ public partial class StaticDataService
             .ToDictionary(r => r.color_id, r => new ColorPaletteData
             {
                 ColorId = r.color_id,
+            });
+        _items = ItemLoader.LoadAll(System.IO.Path.Combine(itemPath, "item.csv"))
+            .ToDictionary(r => r.item_id, r => new ItemData
+            {
+                ItemId = r.item_id,
+                NameKey = r.name_key,
+                DescKey = r.desc_key,
+                UseType = r.use_type,
+                EffectType = r.effect_type,
+                EffectValue = r.effect_value,
             });
         _rewardGroups = RewardGroupLoader.LoadAll(System.IO.Path.Combine(rewardPath, "reward_group.csv"))
             .ToDictionary(r => r.reward_group_id, r => new RewardGroupData
@@ -95,6 +107,8 @@ public partial class StaticDataService
     public IReadOnlyList<AdPlacementData> GetAllAdPlacements() => _adPlacements.Values.ToList();
     public ColorPaletteData? GetColorPalette(byte color_id) => _colorPalettes.GetValueOrDefault(color_id);
     public IReadOnlyList<ColorPaletteData> GetAllColorPalettes() => _colorPalettes.Values.ToList();
+    public ItemData? GetItem(int item_id) => _items.GetValueOrDefault(item_id);
+    public IReadOnlyList<ItemData> GetAllItems() => _items.Values.ToList();
     public RewardGroupData? GetRewardGroup(int reward_group_id) => _rewardGroups.GetValueOrDefault(reward_group_id);
     public IReadOnlyList<RewardGroupData> GetAllRewardGroups() => _rewardGroups.Values.ToList();
     public RewardSourceData? GetRewardSource(string source_id) => _rewardSources.GetValueOrDefault(source_id);

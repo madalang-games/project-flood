@@ -13,6 +13,7 @@
 | `AdController.cs` | `AdController` | `/api/ad` eligibility, interstitial shown, double reward claim |
 | `AuthController.cs` | `AuthController` | `/api/auth` proxy endpoints for guest, google, refresh, logout |
 | `BootstrapController.cs` | `BootstrapController` | `/api/bootstrap` configurations and schema/meta hash checks |
+| `CurrencyController.cs` | `CurrencyController` | `GET /api/currency` balance fetch; `POST /api/currency/spend` soft currency deduct |
 
 ## Symbols
 | symbol | kind | note |
@@ -32,6 +33,8 @@
 | `AdController.GetEligibility` | method | `GET /api/ad/eligibility` — interstitial cooldown state |
 | `AdController.InterstitialShown` | method | `POST /api/ad/interstitial/shown` — records shown timestamp |
 | `AdController.ClaimDoubleReward` | method | `POST /api/ad/double-reward/claim` — 2x stage clear reward |
+| `CurrencyController.Get` | method | `GET /api/currency` — current soft currency balance |
+| `CurrencyController.Spend` | method | `POST /api/currency/spend` — deduct soft currency; 400 if insufficient |
 
 ## Rules
 - Do not accept `user_id` from request bodies; use `ControllerBaseEx.PlayerId`.

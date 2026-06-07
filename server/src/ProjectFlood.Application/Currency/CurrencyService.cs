@@ -1,3 +1,4 @@
+using ProjectFlood.Application.Common;
 using ProjectFlood.Application.Logging;
 using ProjectFlood.Contracts.Currency;
 using ProjectFlood.Infrastructure.Generated;
@@ -24,6 +25,22 @@ public sealed class CurrencyService
         row.UpdatedAt = now;
 
         _db.EventLogs.Insert(EventLogFactory.CurrencyChanged(userId, correlationId, amount, reason, row.SoftAmount));
+        return new CurrencySnapshot { SoftAmount = row.SoftAmount };
+    }
+
+    public async Task<CurrencySnapshot> SpendSoftAsync(long userId, long amount, string reason, string correlationId, CancellationToken ct)
+    {
+        var now = DateTimeOffset.UtcNow;
+        var row = await _db.UserCurrency.FindAsync(userId, ct);
+
+        if (row is null || row.SoftAmount < amount)
+            throw new GameApiException(ErrorCodes.InsufficientCurrency, "Insufficient soft currency.");
+
+        row.SoftAmount -= amount;
+        row.UpdatedAt = now;
+
+        _db.EventLogs.Insert(EventLogFactory.CurrencyChanged(userId, correlationId, -amount, reason, row.SoftAmount));
+        await _db.SaveAsync(ct);
         return new CurrencySnapshot { SoftAmount = row.SoftAmount };
     }
 

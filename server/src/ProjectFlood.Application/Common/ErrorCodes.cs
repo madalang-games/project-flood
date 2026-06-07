@@ -16,4 +16,5 @@ public static class ErrorCodes
     public const string AdRewardVerifyFailed = "AD_REWARD_VERIFY_FAILED";
     public const string AdSsvPending = "AD_SSV_PENDING";
     public const string DoubleRewardNotEligible = "DOUBLE_REWARD_NOT_ELIGIBLE";
+    public const string InsufficientCurrency    = "INSUFFICIENT_CURRENCY";
 }

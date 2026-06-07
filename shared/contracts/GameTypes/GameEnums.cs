@@ -14,4 +14,20 @@ namespace ProjectFlood.Contracts.GameTypes
         Normal = 1,
         Hard   = 2,
     }
+
+    public enum ItemUseType
+    {
+        PreGame = 0,
+        InGame  = 1,
+    }
+
+    public enum ItemEffectType
+    {
+        AddTurns   = 0,
+        Bomb       = 1,
+        HRocket    = 2,
+        ColorSweep = 3,
+        RowShift   = 4,
+        CellSwap   = 5,
+    }
 }

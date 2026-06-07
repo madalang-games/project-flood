@@ -10,6 +10,8 @@ public partial interface IStaticDataService
     IReadOnlyList<AdPlacementData> GetAllAdPlacements();
     ColorPaletteData? GetColorPalette(byte color_id);
     IReadOnlyList<ColorPaletteData> GetAllColorPalettes();
+    ItemData? GetItem(int item_id);
+    IReadOnlyList<ItemData> GetAllItems();
     RewardGroupData? GetRewardGroup(int reward_group_id);
     IReadOnlyList<RewardGroupData> GetAllRewardGroups();
     RewardSourceData? GetRewardSource(string source_id);
