@@ -152,12 +152,18 @@ namespace Game.InGame.Controller
                 _goldEarned = CalculateGold((int)result, remainingTurns);
                 PlayerProgressService.Instance?.AddGold(_goldEarned);
                 PlayerProgressService.Instance?.RecordClear(_stage.stage_id, (int)result);
+                PlayerPrefs.DeleteKey("stage_fail_count_" + _stage.stage_id);
+                PlayerPrefs.Save();
             }
             // Note: _goldEarned is for UI display only; server gold is reconciled from ClearAttempt response below.
             else
             {
                 StageApiService.Instance?.FailAttempt(_stage.stage_id);
                 StaminaApiService.Instance?.FetchStamina();
+                int failCount = PlayerPrefs.GetInt("stage_fail_count_" + _stage.stage_id, 0) + 1;
+                PlayerPrefs.SetInt("stage_fail_count_" + _stage.stage_id, failCount);
+                PlayerPrefs.Save();
+                Services.Tutorial.TutorialManager.Instance?.CheckFailTriggers(_stage.stage_id, failCount);
             }
 
             float ratio     = _controller.ComputeRatioPublic();

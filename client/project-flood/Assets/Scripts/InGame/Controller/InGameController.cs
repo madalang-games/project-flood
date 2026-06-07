@@ -70,6 +70,10 @@ namespace Game.InGame.Controller
             _isPlaying    = true;
             _isAnimating  = false;
             _continueUsed = false;
+            if (Services.Tutorial.TutorialManager.Instance != null)
+            {
+                Services.Tutorial.TutorialManager.Instance.OnBoardReady(stage.stage_id, _board);
+            }
         }
 
         private void OnDestroy()
@@ -83,6 +87,30 @@ namespace Game.InGame.Controller
         private void Update()
         {
             if (!_isPlaying) return;
+            if (Services.Tutorial.TutorialManager.Instance != null && Services.Tutorial.TutorialManager.Instance.IsBlocking)
+            {
+                var step = Services.Tutorial.TutorialManager.Instance.CurrentStep;
+                if (step != null && step.target_ui_id.StartsWith("board_cell_"))
+                {
+                    Vector2? tutTapPos = ReadTapPosition();
+                    if (tutTapPos != null)
+                    {
+                        var (tutRow, tutCol) = _boardView.ScreenToCell(tutTapPos.Value);
+                        if (tutRow >= 0 && tutCol >= 0)
+                        {
+                            if (ParseCellTarget(step.target_ui_id, out int tr, out int tc))
+                            {
+                                if (tutRow == tr && tutCol == tc)
+                                {
+                                    HandleTap(tutRow, tutCol);
+                                    Services.Tutorial.TutorialManager.Instance.NextStep();
+                                }
+                            }
+                        }
+                    }
+                }
+                return;
+            }
             if (_isAnimating) return;
 
             // 1. Check RowShift Swipe Input (Higher priority)
@@ -504,6 +532,31 @@ namespace Game.InGame.Controller
                 pos = Touchscreen.current.primaryTouch.position.ReadValue();
                 return true;
             }
+            return false;
+        }
+
+        private static bool ParseCellTarget(string targetId, out int row, out int col)
+        {
+            row = -1;
+            col = -1;
+            try
+            {
+                int rStart = targetId.IndexOf('[');
+                int rEnd = targetId.IndexOf(']');
+                int cStart = targetId.IndexOf('[', rEnd + 1);
+                int cEnd = targetId.IndexOf(']', cStart + 1);
+                
+                if (rStart >= 0 && rEnd > rStart && cStart > rEnd && cEnd > cStart)
+                {
+                    string rStr = targetId.Substring(rStart + 1, rEnd - rStart - 1);
+                    string cStr = targetId.Substring(cStart + 1, cEnd - cStart - 1);
+                    if (int.TryParse(rStr, out row) && int.TryParse(cStr, out col))
+                    {
+                        return true;
+                    }
+                }
+            }
+            catch {}
             return false;
         }
     }

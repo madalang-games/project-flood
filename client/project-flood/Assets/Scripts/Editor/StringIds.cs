@@ -100,6 +100,20 @@ namespace Game.Editor
         public const string ItemDescRowShift = "item.desc.row_shift";
         public const string ItemNameCellSwap = "item.name.cell_swap";
         public const string ItemDescCellSwap = "item.desc.cell_swap";
+
+        // tut
+        public const string TutTapGroup = "tut.tap_group";
+        public const string TutGravityExplain = "tut.gravity_explain";
+        public const string TutTurnExplain = "tut.turn_explain";
+        public const string TutRatioExplain = "tut.ratio_explain";
+        public const string TutStarExplain = "tut.star_explain";
+        public const string TutFreeTap = "tut.free_tap";
+        public const string TutProtectorWhat = "tut.protector_what";
+        public const string TutProtectorHow = "tut.protector_how";
+        public const string TutCoreWarning = "tut.core_warning";
+        public const string TutObstacleWhat = "tut.obstacle_what";
+        public const string TutItemHintPrompt = "tut.item_hint_prompt";
+        public const string TutItemBombEffect = "tut.item_bomb_effect";
     }
 }
 #endif

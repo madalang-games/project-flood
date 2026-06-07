@@ -22,6 +22,10 @@ namespace Game.OutGame.Lobby
             RefreshGold();
             ShowTab(LobbyTab.Home);
             FetchServerState();
+            if (Services.Tutorial.TutorialManager.Instance != null)
+            {
+                Services.Tutorial.TutorialManager.Instance.CheckLobbyTriggers();
+            }
         }
 
         private void RefreshGold()

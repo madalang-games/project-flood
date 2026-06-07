@@ -30,4 +30,24 @@ namespace ProjectFlood.Contracts.GameTypes
         RowShift   = 4,
         CellSwap   = 5,
     }
+
+    public enum TutorialTriggerType
+    {
+        FirstLaunch = 0,
+        GimmickAppear = 1,
+        FailRepeat = 2,
+    }
+
+    public enum TutorialContentType
+    {
+        FingerOverlay = 0,
+        Tooltip = 1,
+        HighlightOnly = 2,
+    }
+
+    public enum TargetSpaceType
+    {
+        UI = 0,
+        World = 1,
+    }
 }

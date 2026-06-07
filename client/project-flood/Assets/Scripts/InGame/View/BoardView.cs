@@ -527,5 +527,11 @@ namespace Game.InGame.View
                 ? (Mathf.Pow(2f * t, 2f) * ((c2 + 1f) * 2f * t - c2)) / 2f
                 : (Mathf.Pow(2f * t - 2f, 2f) * ((c2 + 1f) * (t * 2f - 2f) + c2) + 2f) / 2f;
         }
+
+        public CellView GetCellView(int row, int col)
+        {
+            if (IsValidCell(row, col)) return _cellViews[row, col];
+            return null;
+        }
     }
 }

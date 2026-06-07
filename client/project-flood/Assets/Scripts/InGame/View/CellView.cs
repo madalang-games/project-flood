@@ -309,5 +309,13 @@ namespace Game.InGame.View
             const float c3 = c1 + 1f;
             return 1f + c3 * Mathf.Pow(t - 1f, 3f) + c1 * Mathf.Pow(t - 1f, 2f);
         }
+
+        public Vector3 GetWorldCenter() => transform.position;
+
+        public Bounds GetScreenBounds()
+        {
+            if (_baseRenderer != null) return _baseRenderer.bounds;
+            return new Bounds(transform.position, Vector3.one);
+        }
     }
 }
