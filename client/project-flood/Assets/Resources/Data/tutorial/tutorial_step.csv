@@ -1,0 +1,13 @@
+id,trigger_type,trigger_value,step_index,content_type,target_ui_id,target_space,text_key,auto_advance_sec,is_blocking
+101,FirstLaunch,1,0,FingerOverlay,board_cell_[4][3],World,tut.tap_group,0,true
+102,FirstLaunch,1,1,Tooltip,board_area,World,tut.gravity_explain,2,false
+103,FirstLaunch,1,2,HighlightOnly,hud_turn_count,UI,tut.turn_explain,2,false
+104,FirstLaunch,1,3,HighlightOnly,hud_ratio_bar,UI,tut.ratio_explain,2,false
+105,FirstLaunch,1,4,Tooltip,result_star_area,UI,tut.star_explain,0,false
+201,FirstLaunch,2,0,HighlightOnly,board_area,World,tut.free_tap,0,false
+301,GimmickAppear,Protector,0,HighlightOnly,board_protector_cell,World,tut.protector_what,2,false
+302,GimmickAppear,Protector,1,FingerOverlay,board_protector_cell,World,tut.protector_how,2,false
+401,GimmickAppear,Core,0,Tooltip,board_core_cell,World,tut.core_warning,3,false
+501,GimmickAppear,Obstacle,0,Tooltip,board_obstacle_cell,World,tut.obstacle_what,3,false
+601,FailRepeat,3,0,FingerOverlay,item_tray,UI,tut.item_hint_prompt,3,false
+602,FailRepeat,3,1,Tooltip,item_slot_bomb,UI,tut.item_bomb_effect,2,false

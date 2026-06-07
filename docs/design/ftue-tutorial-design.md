@@ -1,8 +1,8 @@
 # FTUE & Tutorial System Design — project-flood
 
-Date: 2026-06-04
-Status: draft
-Relates to: game-design.md, ingame-core-design.md, ui-ux-common-components.md §13, ui-ux-canvas-architecture.md, economy-system-design.md
+Date: 2026-06-08
+Status: accepted
+Relates to: [game-design.md](file:///c:/Users/SangHyeok/Desktop/git/madalang-games/project-flood/docs/design/game-design.md), [ingame-core-design.md](file:///c:/Users/SangHyeok/Desktop/git/madalang-games/project-flood/docs/design/ingame-core-design.md), [ui-ux-common-components.md](file:///c:/Users/SangHyeok/Desktop/git/madalang-games/project-flood/docs/design/ui-ux-common-components.md), [ui-ux-canvas-architecture.md](file:///c:/Users/SangHyeok/Desktop/git/madalang-games/project-flood/docs/design/ui-ux-canvas-architecture.md), [economy-system-design.md](file:///c:/Users/SangHyeok/Desktop/git/madalang-games/project-flood/docs/design/economy-system-design.md)
 
 ---
 

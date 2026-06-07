@@ -188,6 +188,18 @@
       "indexes": [
         { "name": "idx_user_inventory_user_id", "columns": ["user_id"], "unique": false }
       ]
+    },
+    {
+      "name": "user_tutorial_progress",
+      "comment": "Tracks completed tutorial steps per user.",
+      "columns": [
+        { "name": "user_id", "type": "int64", "pk": true, "null": false, "fk": "players.user_id" },
+        { "name": "tutorial_id", "type": "int32", "pk": true, "null": false },
+        { "name": "viewed_at", "type": "datetime", "null": false }
+      ],
+      "indexes": [
+        { "name": "idx_user_tutorial_progress_user_id", "columns": ["user_id"], "unique": false }
+      ]
     }
   ]
 }
