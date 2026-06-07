@@ -6,17 +6,20 @@ Namespace: `Game.Services`
 | file | class | role |
 |------|-------|------|
 | `StageDataService.cs` | `StageDataService` | DDOL singleton; loads Stage CSV via CsvLoader; GetStage(id), GetAll(), MaxStageId() |
-| `PlayerProgressService.cs` | `PlayerProgressService` | DDOL singleton; gold balance, per-stage stars/unlock stored in PlayerPrefs |
+| `PlayerProgressService.cs` | `PlayerProgressService` | DDOL singleton; gold balance, per-stage stars/unlock, booster inventories |
 | `AuthService.cs` | `AuthService` | DDOL singleton; auth result enum; Initialize(callback); stub until real HTTP auth wiring |
 | `LocalizationService.cs` | `LocalizationService` | DDOL singleton; loads string/error CSV tables; Get(key), GetError(code), SetLanguage(Language), GetFont(Language) |
 | `IAdService.cs` | `IAdService`, `AdWatchResult` | Ad service interface; WatchRewardedAd(placementId, cb); ShowInterstitialIfEligible(stageId, suppress, cb) |
 | `AdMobService.cs` | `AdMobService` | DDOL singleton; implements IAdService; multi-placement rewarded ads + interstitial; SSV nonce set before Show() |
 | `AdEligibilityCache.cs` | `AdEligibilityCache` | DDOL singleton; GET /api/ad/eligibility on session start; IsEligible(placementId); OnInterstitialShown() |
 | `NetworkService.cs` | `NetworkService` | DDOL singleton; centralised HTTP client; Get/Post; injects Application.version + authToken headers; configurable log level |
-| `StageApiService.cs` | `StageApiService` | Optional server stage attempt start/clear/fail sync |
+| `StageApiService.cs` | `StageApiService` | Server stage attempt start/clear/fail/revive sync |
 | `RankingApiService.cs` | `RankingApiService` | Optional server ranking page/my-rank fetcher |
 | `StaminaApiService.cs` | `StaminaApiService` | Server stamina fetch + ad-life claim; caches last snapshot for client-side estimation |
 | `CurrencyApiService.cs` | `CurrencyApiService` | Server soft currency fetch + spend; syncs `PlayerProgressService.Gold` on response |
+| `InventoryApiService.cs` | `InventoryApiService` | Server-backed items fetch + spend API client |
+| `RewardsApiService.cs` | `RewardsApiService` | Server rewards list fetch + claim API client |
+| `ErrorResponseJson.cs` | `ErrorResponseJson` | Serializable helper for server error code extraction |
 
 ## Symbols
 | symbol | kind | note |
@@ -68,6 +71,15 @@ Namespace: `Game.Services`
 | `RankingApiService.FetchMyStageRank` | method | GET current user's stage rank |
 | `CurrencyApiService.FetchGold` | method | GET `/api/currency`; calls `PlayerProgressService.SetGold` on success |
 | `CurrencyApiService.SpendGold` | method | POST `/api/currency/spend`; deducts server-side; calls `PlayerProgressService.SetGold` on success |
+| `InventoryApiService.FetchInventory` | method | GET `/api/inventory`; updates progress cache on success |
+| `InventoryApiService.SpendItem` | method | POST `/api/inventory/spend`; deducts server-side item balance |
+| `RewardsApiService.FetchRewardSources` | method | GET `/api/rewards`; fetch generic reward milestones status |
+| `RewardsApiService.ClaimReward` | method | POST `/api/rewards/claim`; claims milestone reward (gold/boosters) and syncs stamina/inventory |
+| `PlayerProgressService.GetItemCount` | method | Returns count of booster itemId |
+| `PlayerProgressService.SetItemCount` | method | Sets local count of booster itemId |
+| `PlayerProgressService.SetInventory` | method | Updates all item counts in cache from snapshot |
+| `StageApiService.ReviveAd` | method | POST `/api/stages/{stageId}/attempts/{attemptId}/revive-ad` with verification retry polling |
+| `StageApiService.CurrentAttempt` | prop | Active attempt metadata including revive limits |
 
 ## Rules
 - All services are DDOL; place GameObjects in Boot scene only.

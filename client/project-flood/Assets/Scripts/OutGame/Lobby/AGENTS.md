@@ -9,11 +9,12 @@ Namespace: `Game.OutGame.Lobby`
 | `HeaderView.cs` | `HeaderView` | Avatar tap → AccountPopup; stamina display (count/MAX/timer); stamina tap → StaminaPopupView |
 | `BottomNavBarView.cs` | `BottomNavBarView` | 3-tab nav; fires OnTabChanged |
 | `RankingTabView.cs` | `RankingTabView` | Ranking tab UI; stars/max-stage tabs, my rank, top page text |
-| `HomeTabView.cs` | `HomeTabView` | Chapter/stage scroll with object pool; stage node tap -> StageInfoPopup -> InGame |
+| `HomeTabView.cs` | `HomeTabView` | Chapter/stage scroll with object pool; milestone chest rendering + claim API |
 | `StageNodeView.cs` | `StageNodeView` | Pooled node: stage label, 3 star fills, lock overlay, pulse ring; Bind(id,stars,unlocked,current) |
-| `StageInfoPopupView.cs` | `StageInfoPopupView` | Stage info popup: title, best stars, best moves, PLAY button |
+| `StageInfoPopupView.cs` | `StageInfoPopupView` | Stage info popup: title, best stars, best moves, +3 turns toggle (checked against AddTurns inventory), PLAY button |
 | `StaminaPopupView.cs` | `StaminaPopupView` | Stamina popup: large heart + count, timer/MAX, Watch Ad (+1) button (dimmed at MAX), backdrop close |
-| `ScrollStateCache.cs` | `ScrollStateCache` | Static session memory: HomeScrollPosition, LastPlayedStageId |
+| `ScrollStateCache.cs` | `ScrollStateCache` | Static session memory: HomeScrollPosition, LastPlayedStageId, UseExtraTurnsItem |
+| `ShopTabView.cs` | `ShopTabView` | Shop tab UI; showcases coming-soon IAP preview packages (Starter, Item Bundles, No-Ads) |
 
 ## Symbols
 | symbol | kind | note |
@@ -36,6 +37,10 @@ Namespace: `Game.OutGame.Lobby`
 | `StaminaPopupView._watchAdButtonGroup` | SerializeField | CanvasGroup; alpha=0.35 + non-interactable when at MAX |
 | `StaminaPopupView.Refresh()` | method | Subscribes to `StaminaApiService.OnStaminaUpdated`; dimming logic |
 | `LobbyTab` | enum | Home / Shop / Ranking |
+| `ShopTabView` | component | Shop screen preview containing Starter Pack, Item Bundle, and No-Ads package preview buttons |
+| `ScrollStateCache.UseExtraTurnsItem` | prop | boolean; true if +3 turns booster is active for next attempt |
+| `HomeTabView.CreateChestNode` | method | Instantiates a cloned stage node as a 🎁 chest button near chapter-end stage node |
+| `HomeTabView.OnChestTapped` | method | Invokes generic reward claim API, grants Gold/booster items, shows toast, and refreshes UI |
 
 ## Rules
 - Scroll position must be saved in HomeTabView.OnDisable and restored in HomeTabView.OnEnable.
