@@ -17,4 +17,5 @@ public static class ErrorCodes
     public const string AdSsvPending = "AD_SSV_PENDING";
     public const string DoubleRewardNotEligible = "DOUBLE_REWARD_NOT_ELIGIBLE";
     public const string InsufficientCurrency    = "INSUFFICIENT_CURRENCY";
+    public const string StageLocked             = "STAGE_LOCKED";
 }

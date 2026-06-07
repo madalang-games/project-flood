@@ -43,6 +43,16 @@ public sealed class StageAttemptService
     public async Task<StageAttemptStartResponse> StartAsync(long userId, int stageId, string correlationId, CancellationToken ct)
     {
         var now = DateTimeOffset.UtcNow;
+
+        if (stageId > 1)
+        {
+            var total = await _db.UserRankingTotals.FindAsync(userId, ct);
+            if (total == null || total.MaxClearedStageId < stageId - 1)
+            {
+                throw new GameApiException(ErrorCodes.StageLocked, $"Stage {stageId} is locked.");
+            }
+        }
+
         var existing = await GetAttemptAsync(userId);
         if (existing is not null)
             _db.EventLogs.Insert(EventLogFactory.StageAttemptReplaced(userId, correlationId, existing.AttemptId, existing.StageId));
