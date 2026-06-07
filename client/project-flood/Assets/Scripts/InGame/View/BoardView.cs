@@ -471,9 +471,14 @@ namespace Game.InGame.View
                             int src = sourceCols[destIdx];
                             newCellViews[r, c] = _cellViews[r, src];
                         }
-                        else
+                        else if (emptyIdx < emptyViews.Count)
                         {
                             newCellViews[r, c] = emptyViews[emptyIdx++];
+                        }
+                        else
+                        {
+                            // Fallback if view counting logic has a mismatch
+                            newCellViews[r, c] = _cellViews[r, c];
                         }
                     }
                 }

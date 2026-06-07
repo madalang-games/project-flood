@@ -58,6 +58,7 @@ namespace Game.OutGame.Lobby
         {
             bool useBooster = _extraTurnsToggle != null && _extraTurnsToggle.isOn;
             ScrollStateCache.UseExtraTurnsItem = useBooster;
+            ScrollStateCache.LastPlayedStageId = _stageId;
 
             if (useBooster && Game.Services.InventoryApiService.Instance != null)
             {

@@ -25,7 +25,6 @@ namespace Game.InGame.Controller
         private const string InGameScene = "InGame";
 
 #if UNITY_EDITOR
-        private static int? _overrideStageId;
         private static bool _reloadQueued;
         private static bool _isFirstLoad = true;
 
@@ -48,7 +47,6 @@ namespace Game.InGame.Controller
                 _reloadQueued    = false;
                 if (!Application.isPlaying) return;
                 _isFirstLoad     = true;
-                _overrideStageId = _debugStageId;
                 SceneManager.LoadScene(SceneManager.GetActiveScene().name);
             };
         }
@@ -56,15 +54,17 @@ namespace Game.InGame.Controller
 
         private void Start()
         {
-#if UNITY_EDITOR
-            _isFirstLoad = false;
-            int stageId  = _overrideStageId ?? ScrollStateCache.LastPlayedStageId;
-            if (stageId <= 0) stageId = _debugStageId;
-            _overrideStageId = null;
-#else
             int stageId = ScrollStateCache.LastPlayedStageId;
-            if (stageId <= 0) stageId = _debugStageId;
-#endif
+
+            // Final safety fallback
+            if (stageId <= 0)
+            {
+                stageId = _debugStageId > 0 ? _debugStageId : 1;
+                ScrollStateCache.LastPlayedStageId = stageId;
+                Debug.Log($"[InGameSceneEntry] LastPlayedStageId was invalid, using debug fallback: {stageId}");
+            }
+
+            Debug.Log($"[InGameSceneEntry] Final Resolved StageId={stageId}");
             _stage = StageDataService.Instance?.GetStage(stageId)
                   ?? System.Array.Find(CsvLoader.Load<Stage>(Stage.ResourcePath), s => s.stage_id == stageId);
 
@@ -90,9 +90,26 @@ namespace Game.InGame.Controller
             _controller.Init(_stage, extraTurns);
             _hudView?.Init(_stage.turn_limit + extraTurns, _controller.RemainingCells);
             if (_hudView != null) _hudView.OnPausePressed += OnPausePressed;
+            
             StageApiService.Instance?.StartAttempt(_stage.stage_id, response =>
             {
-                StaminaApiService.Instance?.FetchStamina();
+                StaminaApiService.Instance?.UpdateStamina(response.Stamina, response.ServerTime);
+            }, error =>
+            {
+                if (error == "INSUFFICIENT_STAMINA")
+                {
+                    UIManager.Instance?.ShowPopup<OutGame.Lobby.StaminaPopupView>();
+                    GoToLobby();
+                }
+                else if (error == "STAGE_LOCKED")
+                {
+                    UIManager.Instance?.ShowToast("Stage is locked!", ToastType.Warning);
+                    GoToLobby();
+                }
+                else
+                {
+                    Debug.LogWarning($"[InGameSceneEntry] StartAttempt failed: {error}");
+                }
             });
         }
 
@@ -182,8 +199,18 @@ namespace Game.InGame.Controller
             var overlay = UIManager.Instance?.GetCurrentOverlay<ResultOverlayView>();
             if (overlay != null)
             {
-                overlay.OnRetry += () => { UIManager.Instance?.CloseOverlay(); SceneManager.LoadScene(InGameScene); };
-                overlay.OnNext  += () => { UIManager.Instance?.CloseOverlay(); ScrollStateCache.LastPlayedStageId = nextId; SceneManager.LoadScene(InGameScene); };
+                overlay.OnRetry += () => 
+                { 
+                    UIManager.Instance?.CloseOverlay(); 
+                    ScrollStateCache.LastPlayedStageId = _stage.stage_id;
+                    SceneManager.LoadScene(InGameScene); 
+                };
+                overlay.OnNext  += () => 
+                { 
+                    UIManager.Instance?.CloseOverlay(); 
+                    ScrollStateCache.LastPlayedStageId = nextId;
+                    SceneManager.LoadScene(InGameScene); 
+                };
                 overlay.OnMap   += () => { UIManager.Instance?.CloseOverlay(); GoToLobby(); };
 
                 if (!fail && StageApiService.Instance != null && StageApiService.Instance.HasAttemptFor(_stage.stage_id))

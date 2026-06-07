@@ -17,7 +17,8 @@ namespace Game.InGame.Controller
 
             string cells = stage.cells;
             int cellCount = cells.Length / 3;
-            for (int i = 0; i < cellCount; i++)
+            int maxCells = width * height;
+            for (int i = 0; i < cellCount && i < maxCells; i++)
             {
                 int row = i / width;
                 int col = i % width;
