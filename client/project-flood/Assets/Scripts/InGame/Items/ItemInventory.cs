@@ -8,9 +8,11 @@ namespace Game.InGame.Items
 
         private readonly Dictionary<ItemType, int> _counts = new Dictionary<ItemType, int>
         {
-            { ItemType.Bomb,    0 },
-            { ItemType.HRocket, 0 },
-            { ItemType.VRocket, 0 },
+            { ItemType.Bomb,       0 },
+            { ItemType.HRocket,    0 },
+            { ItemType.ColorSweep, 0 },
+            { ItemType.RowShift,   0 },
+            { ItemType.CellSwap,   0 },
         };
 
         public bool CanUse(ItemType type) => IsDevMode || GetCount(type) > 0;
