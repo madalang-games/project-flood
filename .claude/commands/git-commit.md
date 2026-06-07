@@ -18,7 +18,7 @@ Types: `feat` `fix` `refactor` `docs` `test` `chore` `build`
 - Always stage generated files: `*/generated/*`, `*/Generated/*` (must be included in commits to ensure consistency)
 - Use `git -C {path}` syntax — never `cd && git`
 - Multiple distinct work units → separate commits (do not squash)
-- If issue number is not provided, look for patterns in the current branch name (e.g., `feature/123-xyz`) or `TODO-List/` files.
+- If issue number is not provided, check in order: current branch name (e.g., `feature/123-xyz`) → `.claude/issues.cache.md` (run `/git-issue` first if missing) → `TODO-List/` files.
 
 ## Steps
 1. `git status` + `git diff --stat` → identify all changed files

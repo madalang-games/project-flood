@@ -1,5 +1,6 @@
 # AI Agent
 .claude/settings.local.json
+.claude/issues.cache.md
 .agents/cache/
 prompt_for_gemini.md
 prompt.md
