@@ -14,16 +14,19 @@ Checklist for stamina life gates, ad-stamina rewards, gold acquisition/consumpti
   - Reference: [StaminaService.cs:L37](file:///c:/Users/SangHyeok/Desktop/git/madalang-games/project-flood/server/src/ProjectFlood.Application/Stamina/StaminaService.cs#L37)
 - [x] **Unlimited Stamina**: Duration-based unlimited play time (stack policy `EXTEND`). Natural recovery continues during unlimited period.
   - Reference: [StaminaService.cs:L142](file:///c:/Users/SangHyeok/Desktop/git/madalang-games/project-flood/server/src/ProjectFlood.Application/Stamina/StaminaService.cs#L142)
-- [ ] **Stamina Client UI & API Hook**: Add stamina UI to Lobby HeaderView (showing current life/max, and recharge timer countdown). Intercept stage entry if stamina is 0.
-  - Status: Planned. Not yet present in client [HeaderView.cs](file:///c:/Users/SangHyeok/Desktop/git/madalang-games/project-flood/client/project-flood/Assets/Scripts/OutGame/Lobby/HeaderView.cs).
+- [x] **StaminaPopupView**: Stamina popup with large heart, count, timer/MAX label, and Watch Ad (+1) button (dimmed at MAX life).
+  - Reference: [StaminaPopupView.cs](file:///c:/Users/SangHyeok/Desktop/git/madalang-games/project-flood/client/project-flood/Assets/Scripts/OutGame/Lobby/StaminaPopupView.cs)
+- [x] **Stamina Client UI & API Hook**: HeaderView shows stamina count and regen timer; stamina panel tap opens StaminaPopupView; StageInfoPopupView checks stamina before allowing stage entry. StaminaApiService wired to UI.
+  - Status: Done. `LobbyView.Start()` calls `StaminaApiService.FetchStamina()` on lobby load. `HeaderView.Update()` polls estimated life every frame. `StageInfoPopupView.OnPlay` gates entry via `GetEstimatedLife()`.
+  - Reference: [HeaderView.cs](file:///c:/Users/SangHyeok/Desktop/git/madalang-games/project-flood/client/project-flood/Assets/Scripts/OutGame/Lobby/HeaderView.cs), [StageInfoPopupView.cs](file:///c:/Users/SangHyeok/Desktop/git/madalang-games/project-flood/client/project-flood/Assets/Scripts/OutGame/Lobby/StageInfoPopupView.cs), [StaminaApiService.cs](file:///c:/Users/SangHyeok/Desktop/git/madalang-games/project-flood/client/project-flood/Assets/Scripts/Services/StaminaApiService.cs)
 
 ## 2. Gold Economy (MVP)
 - [x] **Stage Clear Gold Reward**: Award gold based on performance: `BaseReward(stars) + (RemainingTurns * 5)`.
   - Reference: [InGameSceneEntry.cs:L190](file:///c:/Users/SangHyeok/Desktop/git/madalang-games/project-flood/client/project-flood/Assets/Scripts/InGame/Controller/InGameSceneEntry.cs#L190)
 - [x] **Continue Economy Sink**: On turn exhaustion, prompt player to spend 150 gold for +3 turns (once per attempt).
   - Reference: [InGameSceneEntry.cs:L113](file:///c:/Users/SangHyeok/Desktop/git/madalang-games/project-flood/client/project-flood/Assets/Scripts/InGame/Controller/InGameSceneEntry.cs#L113)
-- [ ] **Gold Server Sync**: Transition from local PlayerPrefs gold tracking to server-synced gold currency APIs.
-  - Status: Currently using local `PlayerProgressService` stubs. Needs synchronization with `user_currency` table.
+- [x] **Gold Server Sync**: Transition from local PlayerPrefs gold tracking to server-synced gold currency APIs.
+  - Status: Done. `CurrencyApiService` added with `FetchGold` (GET `/api/currency`) and `SpendGold` (POST `/api/currency/spend`). `LobbyView` fetches gold on load. Stage clear syncs from `StageAttemptEndResponse.Currency`. Continue spend deducts server-side via `SpendGold`. `PlayerProgressService.SetGold` applied on server responses.
 
 ## 3. Reward Claims (MVP)
 - [x] **Non-Ad Reward Claims**: Common API endpoint `/api/rewards/claim` to claim reward groups.

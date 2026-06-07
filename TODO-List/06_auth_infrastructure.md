@@ -7,8 +7,8 @@ Checklist for server deployment pipelines, database mappings, Redis state cachin
   - Reference: [JwtPublicKeyCache.cs](file:///c:/Users/SangHyeok/Desktop/git/madalang-games/project-flood/server/src/ProjectFlood.Infrastructure/Security/JwtPublicKeyCache.cs)
 - [x] **User ID Resolution Middleware**: Matches external JWT PID (`sub`) to internal incremental UID, registering custom claims.
   - Reference: [UserIdResolutionMiddleware.cs](file:///c:/Users/SangHyeok/Desktop/git/madalang-games/project-flood/server/src/ProjectFlood.API/Middleware/UserIdResolutionMiddleware.cs)
-- [ ] **Unity Client AuthService Server Integration**: Replace Guest device ID stub logic with real JWT authorization header handshakes to securely sync stats.
-  - Status: Stub only in [AuthService.cs](file:///c:/Users/SangHyeok/Desktop/git/madalang-games/project-flood/client/project-flood/Assets/Scripts/Services/AuthService.cs) (Phase 2).
+- [x] **Unity Client AuthService Server Integration**: Replace Guest device ID stub logic with real JWT authorization header handshakes to securely sync stats.
+  - Status: Done. `AuthService.Initialize()` calls `/api/auth/guest` (or `/api/auth/refresh` if token exists), stores JWT via `SecureTokenStorage`, and calls `NetworkService.SetAuthToken()` to attach `Authorization: Bearer` header on all API calls. Falls back to offline guest if server unreachable in editor.
 
 ## 2. Infrastructure & Cache (MVP)
 - [x] **Docker Compose Stack**: Single-script compose setup configuration for local MySQL db and Redis caching instances.
