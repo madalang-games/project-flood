@@ -2,6 +2,11 @@
 
 Namespace: `Game.Services`
 
+## Nav
+| path | role |
+|------|------|
+| `Tutorial/` | Client-side tutorial manager and step sequencer | → `Tutorial/AGENTS.md` |
+
 ## Files
 | file | class | role |
 |------|-------|------|
@@ -19,6 +24,7 @@ Namespace: `Game.Services`
 | `CurrencyApiService.cs` | `CurrencyApiService` | Server soft currency fetch + spend; syncs `PlayerProgressService.Gold` on response |
 | `InventoryApiService.cs` | `InventoryApiService` | Server-backed items fetch + spend API client |
 | `RewardsApiService.cs` | `RewardsApiService` | Server rewards list fetch + claim API client |
+| `TutorialApiService.cs` | `TutorialApiService` | Server-backed tutorial progress fetch + complete API client |
 | `ErrorResponseJson.cs` | `ErrorResponseJson` | Serializable helper for server error code extraction |
 
 ## Symbols

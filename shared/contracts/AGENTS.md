@@ -22,6 +22,7 @@ Consumed by:
 | `Ranking/` | Global and stage ranking DTOs |
 | `Account/` | Guest/social login, link, profile, and auth DTOs |
 | `Bootstrap/` | Client config, meta hash, and maintenance DTOs |
+| `Tutorial/` | Tutorial progress update DTOs |
 
 ## Rules
 - `netstandard2.1` only; no C# 10+ features, no nullable reference types at project level (use `#nullable enable` per file).

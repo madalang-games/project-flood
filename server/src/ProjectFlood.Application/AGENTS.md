@@ -10,6 +10,7 @@
 | `Ranking/` | Stage/global ranking aggregates, Redis indexes, rebuilds | `Ranking/AGENTS.md` |
 | `Rewards/` | Generic reward source, ad reward claim services, SSV infrastructure | `Rewards/AGENTS.md` |
 | `Currency/` | Soft currency balance service | `Currency/AGENTS.md` |
+| `Tutorial/` | Tutorial progress saving and retrieving service | `Tutorial/AGENTS.md` |
 
 ## Rules
 - Use-case layer: persistence via direct `AppDbContext` injection.

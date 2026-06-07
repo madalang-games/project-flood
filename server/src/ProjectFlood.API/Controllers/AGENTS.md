@@ -14,6 +14,7 @@
 | `AuthController.cs` | `AuthController` | `/api/auth` proxy endpoints for guest, google, refresh, logout |
 | `BootstrapController.cs` | `BootstrapController` | `/api/bootstrap` configurations and schema/meta hash checks |
 | `CurrencyController.cs` | `CurrencyController` | `GET /api/currency` balance fetch; `POST /api/currency/spend` soft currency deduct |
+| `TutorialController.cs` | `TutorialController` | `/api/tutorial` progress saving and retrieving endpoints |
 
 ## Symbols
 | symbol | kind | note |
@@ -35,6 +36,8 @@
 | `AdController.ClaimDoubleReward` | method | `POST /api/ad/double-reward/claim` — 2x stage clear reward |
 | `CurrencyController.Get` | method | `GET /api/currency` — current soft currency balance |
 | `CurrencyController.Spend` | method | `POST /api/currency/spend` — deduct soft currency; 400 if insufficient |
+| `TutorialController.GetProgress` | method | `GET /api/tutorial/progress` — fetch user completed tutorial list |
+| `TutorialController.CompleteTutorial` | method | `POST /api/tutorial/progress/{tutorialId}` — save completed tutorial step |
 
 ## Rules
 - Do not accept `user_id` from request bodies; use `ControllerBaseEx.PlayerId`.
@@ -46,3 +49,4 @@
 - Depends on: `ProjectFlood.Application.Stage.StageAttemptService`
 - Depends on: `ProjectFlood.Application.Ranking.RankingService`
 - Depends on: `ProjectFlood.Application.Rewards.RewardService`
+- Depends on: `ProjectFlood.Application.Tutorial.TutorialService`
