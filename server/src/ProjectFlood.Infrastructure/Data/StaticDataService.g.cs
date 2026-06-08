@@ -12,6 +12,7 @@ public partial class StaticDataService
     private IReadOnlyDictionary<int, ItemData> _items = new Dictionary<int, ItemData>();
     private IReadOnlyDictionary<int, RewardGroupData> _rewardGroups = new Dictionary<int, RewardGroupData>();
     private IReadOnlyDictionary<string, RewardSourceData> _rewardSources = new Dictionary<string, RewardSourceData>();
+    private IReadOnlyDictionary<int, ChapterData> _chapters = new Dictionary<int, ChapterData>();
     private IReadOnlyDictionary<int, StageData> _stages = new Dictionary<int, StageData>();
     private IReadOnlyDictionary<string, StaminaConfigData> _staminaConfigs = new Dictionary<string, StaminaConfigData>();
 
@@ -72,16 +73,24 @@ public partial class StaticDataService
                 UiSurface = r.ui_surface,
                 IsEnabled = r.is_enabled,
             });
+        _chapters = ChapterLoader.LoadAll(System.IO.Path.Combine(stagePath, "chapter.csv"))
+            .ToDictionary(r => r.chapter_id, r => new ChapterData
+            {
+                ChapterId = r.chapter_id,
+                UnlockChapterId = r.unlock_chapter_id,
+                RewardGroupId = r.reward_group_id,
+            });
         _stages = StageLoader.LoadAll(System.IO.Path.Combine(stagePath, "stage.csv"))
             .ToDictionary(r => r.stage_id, r => new StageData
             {
                 StageId = r.stage_id,
+                ChapterId = r.chapter_id,
                 BoardWidth = r.board_width,
                 BoardHeight = r.board_height,
                 TurnLimit = r.turn_limit,
                 Star1Ratio = r.star1_ratio,
                 Star2Ratio = r.star2_ratio,
-                Cells = r.cells,
+                VerifiedSolution = r.verified_solution,
                 RulesetVersion = r.ruleset_version,
                 RewardGroupId = r.reward_group_id,
                 RotationInterval = r.rotation_interval,
@@ -114,6 +123,8 @@ public partial class StaticDataService
     public IReadOnlyList<RewardGroupData> GetAllRewardGroups() => _rewardGroups.Values.ToList();
     public RewardSourceData? GetRewardSource(string source_id) => _rewardSources.GetValueOrDefault(source_id);
     public IReadOnlyList<RewardSourceData> GetAllRewardSources() => _rewardSources.Values.ToList();
+    public ChapterData? GetChapter(int chapter_id) => _chapters.GetValueOrDefault(chapter_id);
+    public IReadOnlyList<ChapterData> GetAllChapters() => _chapters.Values.ToList();
     public StageData? GetStage(int stage_id) => _stages.GetValueOrDefault(stage_id);
     public IReadOnlyList<StageData> GetAllStages() => _stages.Values.ToList();
     public StaminaConfigData? GetStaminaConfig(string config_id) => _staminaConfigs.GetValueOrDefault(config_id);

@@ -6,3 +6,5 @@ PK,NN,NN,NN
 2001,1,reward.stage_clear_easy,true
 2002,1,reward.stage_clear_normal,true
 2003,1,reward.stage_clear_hard,true
+3001,1,reward.chapter_1_clear,true
+3002,1,reward.chapter_2_clear,true

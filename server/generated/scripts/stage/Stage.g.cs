@@ -10,12 +10,13 @@ namespace ProjectFlood.Generated.Data
     public sealed class Stage
     {
         public int stage_id { get; set; }
+        public int chapter_id { get; set; }
         public sbyte board_width { get; set; }
         public sbyte board_height { get; set; }
         public sbyte turn_limit { get; set; }
         public float star1_ratio { get; set; }
         public float star2_ratio { get; set; }
-        public string cells { get; set; } = "";
+        public string verified_solution { get; set; } = "";
         public sbyte ruleset_version { get; set; }
         public int reward_group_id { get; set; }
         public sbyte rotation_interval { get; set; }
@@ -41,15 +42,16 @@ namespace ProjectFlood.Generated.Data
                 result.Add(new Stage
                 {
                     stage_id = idx.TryGetValue("stage_id", out var i0) && i0 < cols.Length && !string.IsNullOrEmpty(cols[i0]) ? int.Parse(cols[i0]) : default,
-                    board_width = idx.TryGetValue("board_width", out var i1) && i1 < cols.Length && !string.IsNullOrEmpty(cols[i1]) ? sbyte.Parse(cols[i1]) : default,
-                    board_height = idx.TryGetValue("board_height", out var i2) && i2 < cols.Length && !string.IsNullOrEmpty(cols[i2]) ? sbyte.Parse(cols[i2]) : default,
-                    turn_limit = idx.TryGetValue("turn_limit", out var i3) && i3 < cols.Length && !string.IsNullOrEmpty(cols[i3]) ? sbyte.Parse(cols[i3]) : default,
-                    star1_ratio = idx.TryGetValue("star1_ratio", out var i4) && i4 < cols.Length && !string.IsNullOrEmpty(cols[i4]) ? float.Parse(cols[i4], System.Globalization.CultureInfo.InvariantCulture) : default,
-                    star2_ratio = idx.TryGetValue("star2_ratio", out var i5) && i5 < cols.Length && !string.IsNullOrEmpty(cols[i5]) ? float.Parse(cols[i5], System.Globalization.CultureInfo.InvariantCulture) : default,
-                    cells = idx.TryGetValue("cells", out var i6) && i6 < cols.Length ? (cols[i6] ?? "") : "",
-                    ruleset_version = idx.TryGetValue("ruleset_version", out var i7) && i7 < cols.Length && !string.IsNullOrEmpty(cols[i7]) ? sbyte.Parse(cols[i7]) : default,
-                    reward_group_id = idx.TryGetValue("reward_group_id", out var i8) && i8 < cols.Length && !string.IsNullOrEmpty(cols[i8]) ? int.Parse(cols[i8]) : default,
-                    rotation_interval = idx.TryGetValue("rotation_interval", out var i9) && i9 < cols.Length && !string.IsNullOrEmpty(cols[i9]) ? sbyte.Parse(cols[i9]) : default,
+                    chapter_id = idx.TryGetValue("chapter_id", out var i1) && i1 < cols.Length && !string.IsNullOrEmpty(cols[i1]) ? int.Parse(cols[i1]) : default,
+                    board_width = idx.TryGetValue("board_width", out var i2) && i2 < cols.Length && !string.IsNullOrEmpty(cols[i2]) ? sbyte.Parse(cols[i2]) : default,
+                    board_height = idx.TryGetValue("board_height", out var i3) && i3 < cols.Length && !string.IsNullOrEmpty(cols[i3]) ? sbyte.Parse(cols[i3]) : default,
+                    turn_limit = idx.TryGetValue("turn_limit", out var i4) && i4 < cols.Length && !string.IsNullOrEmpty(cols[i4]) ? sbyte.Parse(cols[i4]) : default,
+                    star1_ratio = idx.TryGetValue("star1_ratio", out var i5) && i5 < cols.Length && !string.IsNullOrEmpty(cols[i5]) ? float.Parse(cols[i5], System.Globalization.CultureInfo.InvariantCulture) : default,
+                    star2_ratio = idx.TryGetValue("star2_ratio", out var i6) && i6 < cols.Length && !string.IsNullOrEmpty(cols[i6]) ? float.Parse(cols[i6], System.Globalization.CultureInfo.InvariantCulture) : default,
+                    verified_solution = idx.TryGetValue("verified_solution", out var i7) && i7 < cols.Length ? (cols[i7] ?? "") : "",
+                    ruleset_version = idx.TryGetValue("ruleset_version", out var i8) && i8 < cols.Length && !string.IsNullOrEmpty(cols[i8]) ? sbyte.Parse(cols[i8]) : default,
+                    reward_group_id = idx.TryGetValue("reward_group_id", out var i9) && i9 < cols.Length && !string.IsNullOrEmpty(cols[i9]) ? int.Parse(cols[i9]) : default,
+                    rotation_interval = idx.TryGetValue("rotation_interval", out var i10) && i10 < cols.Length && !string.IsNullOrEmpty(cols[i10]) ? sbyte.Parse(cols[i10]) : default,
                 });
             }
             return result;

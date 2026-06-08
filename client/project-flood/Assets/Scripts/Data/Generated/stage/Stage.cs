@@ -11,6 +11,8 @@ namespace ProjectFlood.Data.Generated
         public const string ResourcePath = "data/stage/stage";
 
         public int stage_id;
+        public int chapter_id;
+        public sbyte stage_order;
         public sbyte board_width;
         public sbyte board_height;
         public sbyte turn_limit;

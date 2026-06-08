@@ -87,3 +87,4 @@ tut.core_warning,This cell must be removed to clear the stage,이 셀을 제거�
 tut.obstacle_what,This cell cannot be removed by tapping,이 셀은 탭으로 제거할 수 없어요,,,,,,,,,,,,,
 tut.item_hint_prompt,Try using an item!,아이템을 써보세요!,,,,,,,,,,,,,
 tut.item_bomb_effect,Bomb: removes all surrounding cells at once,폭탄: 주변 셀을 한 번에 제거해요,,,,,,,,,,,,,
+chapter.name_fmt,Chapter {0},챕터 {0},,,,,,,,,,,,,

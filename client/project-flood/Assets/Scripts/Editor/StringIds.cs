@@ -115,6 +115,9 @@ namespace Game.Editor
         public const string TutObstacleWhat = "tut.obstacle_what";
         public const string TutItemHintPrompt = "tut.item_hint_prompt";
         public const string TutItemBombEffect = "tut.item_bomb_effect";
+
+        // chapter
+        public const string ChapterNameFmt = "chapter.name_fmt";
     }
 }
 #endif

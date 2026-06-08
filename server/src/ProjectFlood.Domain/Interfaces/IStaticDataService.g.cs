@@ -16,6 +16,8 @@ public partial interface IStaticDataService
     IReadOnlyList<RewardGroupData> GetAllRewardGroups();
     RewardSourceData? GetRewardSource(string source_id);
     IReadOnlyList<RewardSourceData> GetAllRewardSources();
+    ChapterData? GetChapter(int chapter_id);
+    IReadOnlyList<ChapterData> GetAllChapters();
     StageData? GetStage(int stage_id);
     IReadOnlyList<StageData> GetAllStages();
     StaminaConfigData? GetStaminaConfig(string config_id);

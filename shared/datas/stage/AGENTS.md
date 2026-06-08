@@ -3,12 +3,26 @@
 ## Files
 | file | role |
 |------|------|
+| `chapter.csv` | Chapter definitions: display order, unlock condition, clear reward, background theme |
 | `stage.csv` | Stage definitions: board layout, turn limit, color set, star thresholds, reward group |
 
-## CSV Columns
+## chapter.csv Columns
+| column | scope | type | note |
+|--------|-------|------|------|
+| `chapter_id` | CS | int32 PK | Sequential chapter number |
+| `display_order` | C | int8 | Chapter display order in scroll UI |
+| `unlock_chapter_id` | CS | int32 nullable | Chapter that must be cleared to unlock this chapter |
+| `reward_group_id` | S | int32 | Server chapter-clear reward group |
+| `bg_theme_id` | C | int8 | Client background theme ID (maps to shader/particle preset) |
+
+> Chapter display name derived from `chapter.name_fmt` in `client_string.csv` with `chapter_id` as arg.
+
+## stage.csv Columns
 | column | scope | type | note |
 |--------|-------|------|------|
 | `stage_id` | CS | int32 PK | Sequential stage number |
+| `chapter_id` | CS | int32 | FK: chapter — owning chapter |
+| `stage_order` | C | int8 | Display order within the chapter; allows mid-chapter insertion |
 | `board_width` | CS | int8 | Columns; server validates cells length |
 | `board_height` | CS | int8 | Rows; server validates cells length |
 | `turn_limit` | CS | int8 | Max valid taps; server validates `turns_used` |
@@ -20,6 +34,7 @@
 | `verified_solution` | C | string | Tap sequence `row,col;row,col;...` (0-indexed) |
 | `ruleset_version` | CS | int8 | Locks client/server validation compatibility |
 | `reward_group_id` | S | int32 | Server stage clear reward group |
+| `rotation_interval` | CS | int8 | Board rotation interval (0 = disabled) |
 
 ## Cell Encoding
 ```text
@@ -33,12 +48,22 @@ M = modifier hex char bitmask
 
 Parse: `cells[i*3 .. i*3+3]` for cell index i (row-major: i = row * board_width + col).
 
+## bg_theme_id Convention
+| id | intended look |
+|----|--------------|
+| 1  | Grassland (Easy) |
+| 2  | Ocean (Normal) |
+
+Client maps `bg_theme_id` → shader palette + particle preset. No sprite swap required per chapter.
+
 ## Rules
 - NEVER hand-edit `cells`; use the stage editor.
 - `color_ids` must list every color_id that appears in `cells`; editor validates this.
 - `star1_ratio` < `star2_ratio` always; star3 = full clear.
 - `verified_solution` must be re-recorded whenever board layout changes.
 - Server validation depends on all `CS` fields; do not downgrade those scopes without updating `StageAttemptService`.
+- `stage_order` controls in-chapter display; use it for boss/special stage insertion without renumbering `stage_id`.
+- `unlock_chapter_id` null = always unlocked (Chapter 1); server enforces unlock gate at stage-attempt time.
 
 ## Cross-refs
 - Consumed by: `Game.Services.StageDataService`
