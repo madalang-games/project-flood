@@ -21,7 +21,8 @@ public sealed class VersionCheckMiddleware
         var path = context.Request.Path.Value ?? "";
         if (path.StartsWith("/health", StringComparison.OrdinalIgnoreCase) ||
             path.StartsWith("/scalar", StringComparison.OrdinalIgnoreCase) ||
-            path.StartsWith("/openapi", StringComparison.OrdinalIgnoreCase))
+            path.StartsWith("/openapi", StringComparison.OrdinalIgnoreCase) ||
+            path.StartsWith("/swagger", StringComparison.OrdinalIgnoreCase))
         {
             await _next(context);
             return;
