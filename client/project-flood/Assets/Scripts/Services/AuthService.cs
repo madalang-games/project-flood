@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Game.Services
 {
-    public enum AuthResult { Authenticated, Guest, ReLoginRequired }
+    public enum AuthResult { Authenticated, Guest, ReLoginRequired, NewGuestCreated }
 
     public class AuthService : MonoBehaviour
     {
@@ -18,6 +18,7 @@ namespace Game.Services
         private const string AccessExpiresAtKey = "Auth.AccessExpiresAt";
         private const string ProviderKey = "Auth.Provider";
         private const string ClientIdKey = "Auth.ClientId";
+        private const string PlayerPrefsPidKey = "auth_pid";
 
         private ITokenStorage _storage;
         private string _accessToken = string.Empty;
@@ -26,6 +27,7 @@ namespace Game.Services
         private string _provider = string.Empty;
         private bool _refreshInFlight;
         private List<Action<bool, string>> _refreshWaiters;
+        private bool _accountSwitched;
 
         public bool IsAuthenticated => !string.IsNullOrEmpty(_accessToken);
         public bool IsGuest => _provider == "guest";
@@ -43,6 +45,7 @@ namespace Game.Services
 
         public void Initialize(Action<AuthResult> onComplete)
         {
+            _accountSwitched = false;
             Debug.Log($"[AuthService] Initialize: IsAuthenticated={IsAuthenticated}, Provider={_provider}, HasToken={!string.IsNullOrEmpty(_accessToken)}");
 
             if (HasUsableAccessToken())
@@ -75,7 +78,7 @@ namespace Game.Services
             {
                 if (success)
                 {
-                    onComplete?.Invoke(AuthResult.Guest);
+                    onComplete?.Invoke(_accountSwitched ? AuthResult.NewGuestCreated : AuthResult.Guest);
                 }
                 else
                 {
@@ -207,10 +210,20 @@ namespace Game.Services
                 return;
             }
 
+            // Detect account switch before any writes; clear stale progress if userId changed
+            var oldPid = PlayerPrefs.GetString(PlayerPrefsPidKey, string.Empty);
+            var newPid = auth.profile?.pid ?? string.Empty;
+            if (!string.IsNullOrEmpty(oldPid) && !string.IsNullOrEmpty(newPid) && oldPid != newPid)
+            {
+                Debug.LogWarning($"[AuthService] Account switch detected ({oldPid} → {newPid}). Clearing local progress.");
+                ClearAllLocalProgress();
+                _accountSwitched = true;
+            }
+
             _accessToken = auth.accessToken;
             _refreshToken = auth.refreshToken;
             _provider = provider;
-            
+
             if (DateTimeOffset.TryParse(auth.expiresAt, out var expires))
                 _accessExpiresAt = expires;
             else
@@ -220,7 +233,12 @@ namespace Game.Services
             _storage.Set(RefreshTokenKey, _refreshToken);
             _storage.Set(ProviderKey, _provider);
             _storage.Set(AccessExpiresAtKey, _accessExpiresAt.ToString("O"));
-            _storage.Save();
+
+            // Store PID in plain PlayerPrefs (survives SecureTokenStorage decryption failures)
+            if (!string.IsNullOrEmpty(newPid))
+                PlayerPrefs.SetString(PlayerPrefsPidKey, newPid);
+
+            _storage.Save(); // flushes all PlayerPrefs to disk including auth_userid
 
             SyncServiceTokens();
             OnAuthStateChanged?.Invoke(true, _provider);
