@@ -79,7 +79,7 @@ Namespace: `Game.Services`
 | `CurrencyApiService.SpendGold` | method | POST `/api/currency/spend`; deducts server-side; calls `PlayerProgressService.SetGold` on success |
 | `InventoryApiService.FetchInventory` | method | GET `/api/inventory`; updates progress cache on success |
 | `InventoryApiService.SpendItem` | method | POST `/api/inventory/spend`; deducts server-side item balance |
-| `RewardsApiService.FetchRewardSources` | method | GET `/api/rewards`; fetch generic reward milestones status |
+| `RewardsApiService.FetchRewardSources` | method | GET `/api/rewards/sources`; fetch generic reward milestones status |
 | `RewardsApiService.ClaimReward` | method | POST `/api/rewards/claim`; claims milestone reward (gold/boosters) and syncs stamina/inventory |
 | `PlayerProgressService.GetItemCount` | method | Returns count of booster itemId |
 | `PlayerProgressService.SetItemCount` | method | Sets local count of booster itemId |
