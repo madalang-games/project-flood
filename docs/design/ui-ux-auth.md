@@ -82,23 +82,38 @@ Shown only when OAuth account exists but all tokens are expired.
 
 ---
 
-## Guest → OAuth Link
+## Guest → OAuth Link Conflict Resolution (Royal Match Style)
 
-### New OAuth account (no existing server data)
-
-Guest data migrated server-side to the OAuth account automatically.
-
-### Existing OAuth account (server data already present)
+When linking a guest account to a social account (Google/Apple) that already has progress on the server, the client must present a comparison card to let the user explicitly choose which progress to keep.
 
 ```
-┌──────────────────────────────┐
-│  This account already has    │
-│  existing progress.          │
-│                              │
-│  [Use existing account data] │  → discard guest data
-│  [Migrate guest data]        │  → server-side migration
-└──────────────────────────────┘
+┌────────────────────────────────────────────────────────┐
+│               Resolve Account Conflict                 │
+│                                                        │
+│  We found progress on your social account.             │
+│  Please select the save file you wish to keep:         │
+│                                                        │
+│  [ Local (Guest) Save ]     [ Cloud (Social) Save ]    │
+│  - Max Stage: Stage 5       - Max Stage: Stage 48      │
+│  - Gold: 350                - Gold: 1,420              │
+│  - Stars: 12                - Stars: 115               │
+│  - Items: 2                 - Items: 15                │
+│                                                        │
+│  [ Keep Local Save ]        [ Keep Cloud Save ]        │
+└────────────────────────────────────────────────────────┘
 ```
+
+- **Conflict Screen**: Visual panel showing side-by-side comparison of local vs cloud data.
+- **Confirmation**: Selecting a save deletes the unselected progress from the server (or marks it as inactive/archived) and updates the active account reference.
+
+---
+
+## API Transactional Rate Limiting
+
+To prevent 어뷰징 (abuse) via cheat scripts calling game endpoints repeatedly:
+- **Rate Limit Scope**: Applies to transactional endpoints (Stage Attempt Start, Stage Attempt Clear, Reward Claim, Ad SSV Reward Claim).
+- **Rule Policy**: Standard sliding window rate limit of **5 requests per minute** per user ID on transactional endpoints.
+- **Handling**: Over-limit requests return `429 Too Many Requests` status with error code `RATE_LIMITED`. Client shows confirm/retry dialog and blocks clicking.
 
 ---
 

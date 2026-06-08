@@ -37,14 +37,14 @@ To encourage replayability and perfectionism, the system rewards 100% completion
 - **Condition:** All stages within the current chapter must have **3 Stars**.
 - **Interaction:** A "Golden Chest" appears on the Chapter Selection UI when the condition is met.
 - **Reward:** High-tier items (e.g., 5x Bombs, 1x Unlimited Stamina for 30m).
-- **Limit:** Claimable **once per chapter**.
+- **Reward Source Binding**: The chest maps to a unique `reward_source` (e.g. `chapter1_chest` in CSV) which resolves to a `reward_group_id` on the server.
+- **Server Verification**: The server verifies that all stages in the chapter have indeed achieved 3 stars in the `user_stage_progress` table before granting the reward.
 
 ---
 
-## 5. Visual Theme Progression
-Progression is visualized through environment changes.
-- **Chapter 1:** Calm water, bright colors.
-- **Chapter 2:** Deep sea, bioluminescent colors.
-- **Chapter 3:** Urban flood, industrial/gritty colors.
+## 5. Visual Theme Progression (Shader-Based)
 
-*Visual assets are mapped via `theme_key` in the client's `VisualService`.*
+Visual themes are implemented via a custom shader (`UIPulseGlow.shader` or theme-based shaders) and material instances.
+- **Theme Materials**: Each Chapter maps to a distinct Material that swaps visual elements and tint attributes.
+- **Shader Variables**: The shader reads `_ThemeColor1`, `_ThemeColor2`, and texture masks to dynamically color background panels, grid tiles, and glow effects, avoiding asset duplication.
+- **Resolution**: Loaded dynamically at runtime by `VisualService` matching the active `chapter.bg_theme_id`.

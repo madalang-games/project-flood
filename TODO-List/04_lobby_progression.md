@@ -28,8 +28,11 @@ Checklist for the main Lobby screen, stage roadmap view, progression mechanics, 
 - [x] **Stage-specific rankings**: Best turns ranking per stage (competition style: mine vs others). Rebuilt if Redis is lost.
   - Reference: [StageAttemptService.cs:L109](file:///c:/Users/SangHyeok/Desktop/git/madalang-games/project-flood/server/src/ProjectFlood.Application/Stage/StageAttemptService.cs#L109)
 
-## 4. Phase N (Meta progression & Chapter milestones)
-- [ ] **Chapter Groupings & Visual Themes**: Group stages into chapters (e.g. Stages 1-20 = Chapter 1). Update environment sprites/themes via `theme_key` (calm sea, deep bioluminescent, industrial flood).
-- [ ] **Chapter Milestone Chests**: Render chests on the Lobby Roadmap at the end of each Chapter. Unlocked and claimable (once) only when all stages in the chapter have 3 Stars. Grated high-tier rewards.
+- [x] **Chapter Groupings & Visual Themes**: Group stages into chapters. Update environment sprites/themes via `theme_key` using shader-based background swaps. (Completed)
+
+## 4. Lobby & Progression Expansion (Active Scope)
+- [ ] **Chapter Milestone Chests**: Render chests on the Lobby Roadmap at the end of each Chapter. Unlocked and claimable (once) only when all stages in the chapter have 3 Stars.
+  - [ ] Implement server verification during reward claim: check `user_stage_progress` for 3-star clears.
 - [ ] **Player Custom Profiles**: Allow players to change display names, and select/unlock unique profile avatars via gold or achievements.
+  - [ ] Implement backend profile update APIs and DB column for active avatar ID.
 - [ ] **Dynamic Ranking List Virtualization**: Optimize the Unity ranking UI with scroll virtualization to handle lists with thousands of entries efficiently.

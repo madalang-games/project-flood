@@ -122,6 +122,17 @@ Gimmick cells are introduced progressively as the player advances through stages
 - Gravity cannot pass through Void cells — each column is partitioned into independent gravity segments by Void boundaries.
 - CTM encoding: T=2 (`CellType.Void = 0x2`).
 
+#### Teleport Cell (Portal Gate)
+- Connects two coordinates on the board (Inlet/Outlet).
+- When a cell falls into the Inlet (which has a Void or empty below it in its local column, and behaves as a portal), it spawns/re-appears at the corresponding Outlet.
+- Gravity operates seamlessly through the portal: when a vacancy occurs below the Outlet, cells above the Inlet fall through, transitioning positions in-place.
+- Excluded from `initial_valid_cells` and does not count toward ratios.
+
+#### Conveyor Belt Cell
+- Specific paths on the board that shift all cells resting on them by 1 step in a designated direction (Left, Right, Up, Down) at the end of each player turn.
+- Shift resolves before gravity compaction: cells shift positions on the conveyor belt, and any resulting overhangs are then compacted downwards via `GravitySystem`.
+- Conveyor cells themselves are static background panels; the blocks resting on them are what shift.
+
 ### 5.3 Protector Strip Rules
 
 | Event | Strips Protector Layer? |

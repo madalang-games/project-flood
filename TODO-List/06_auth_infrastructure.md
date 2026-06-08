@@ -24,8 +24,10 @@ Checklist for server deployment pipelines, database mappings, Redis state cachin
 - [x] **Event Logs Audit Trail**: Log factories append entries to `event_logs` for critical database modifications (stamina delta, reward claim, stage clear, ads watched).
   - Reference: [EventLogFactory.cs (generated)](file:///c:/Users/SangHyeok/Desktop/git/madalang-games/project-flood/server/generated/scripts/Application/EventLogFactory.g.cs)
 
-## 4. Phase N (Production Scaling & OAuth)
+## 4. Auth & API Expansion (Active Scope)
 - [ ] **Platform OAuth API wiring**: Add sign-in providers (Google Play Games, Apple Game Center) to authenticate guest accounts to permanent social profiles on the server.
-- [ ] **Redis Cluster & DB Failover**: Configure cluster topologies, replica setups, and auto-failover strategies to guarantee high availability in production deployments.
-- [ ] **Rate Limiting Middleware**: Expand rate-limiting policies on transactional stage endpoints to prevent client cheat script exploits.
-- [ ] **Analytics Event Dispatchers**: Integrate analytics collectors (e.g. BigQuery or Firebase Analytics) to push logged event transactions asynchronously for business intelligence dashboarding.
+- [ ] **Rate Limiting Middleware**: Expand rate-limiting policies on transactional stage endpoints (attempts start, clear, reward claims) to prevent client cheat script exploits.
+
+## 5. Excluded Scope (Phase 2+)
+- [ ] **Redis Cluster & DB Failover**: Configure cluster topologies, replica setups, and auto-failover strategies to guarantee high availability in production deployments. (Excluded per user request)
+- [ ] **Analytics Event Dispatchers**: Integrate analytics collectors (e.g. BigQuery or Firebase Analytics) to push logged event transactions asynchronously for business intelligence dashboarding. (Excluded per user request)

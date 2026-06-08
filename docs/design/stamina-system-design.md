@@ -55,9 +55,20 @@ Stamina unlimited is a generic reward type, not a dedicated daily-stamina endpoi
 | Reward source | Why/how a user can claim a group, e.g. daily free HomeTab badge |
 | Claim state | Per-user source claim limit state |
 
-## Ad Reward Model
+## Ad Reward Model & Verification Flow
 Ad reward transactions are shared across stamina and future ad rewards.
 
+### 1. Ad Verification UX (SSV Callback Synchronization)
+- **Ad Completion**: When the player finishes watching a rewarded ad, the AdMob SDK fires the rewarded event.
+- **Loading Blocker Overlay**: Client immediately instantiates/shows a non-dismissible loading overlay (`LoadingOverlayView.prefab`) to block all user input, preventing premature dismissal.
+- **Verification Nonce & Polling**: The client sends the ad transaction verification request to the server. The client then polls the server status endpoint `/api/ad-rewards/status/{txId}` every 1 second (up to a maximum of 10 seconds).
+- **Grant & Dismiss**: Once the server responds that the SSV callback has resolved and rewards are granted (`status = GRANTED`), the client updates the UI currencies/stamina state and dismisses the loading overlay. If a timeout occurs, it alerts the user with a retry/network error.
+
+### 2. Ad Capping & Cooldown Policy
+- **No Daily Limit Capping**: There is no daily limit or cap on the number of rewarded ads a player can watch for Stamina or Revives.
+- **Client-Side Cooldown (AdMob Policy Compliance)**: To prevent malicious macro clicks or rapid ad requests that violate AdMob's invalid traffic policies, a strict **30-second cooldown** is enforced on the client side for each ad slot (Watch Ad button is dimmed with a countdown timer).
+
+### 3. Verification Rules
 | behavior | result |
 |----------|--------|
 | First valid claim | Grant reward and return `granted=true`, positive delta |

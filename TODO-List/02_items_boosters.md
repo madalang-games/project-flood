@@ -30,9 +30,18 @@ Checklist for player-activated boosters that modify board state outside the norm
 - [/] **VFX Animation Feedback**: Board has PlayRowShift and PlayCellSwap coroutines in BoardView. Basic slide/swap animations implemented. Needs hyper-casual grade vibrant juice/polish (particle bursts, color waves, sound) for Bomb, Rocket, ColorSweep, RowShift, CellSwap.
   - Status: PlayRowShift and PlayCellSwap exist in [BoardView.cs](file:///c:/Users/SangHyeok/Desktop/git/madalang-games/project-flood/client/project-flood/Assets/Scripts/InGame/View/BoardView.cs). Needs additional visual flash and punchy particle effects.
 
-## 3. Phase N (Monetization & Inventory Progression)
+## 3. Booster & Inventory Expansion (Active Scope)
 - [ ] **Server-Backed Item Inventory**: Persistence of item inventory counts per player in server DB, synchronized via client-login handshake.
-- [ ] **In-Game Item Shop purchase**: Add UI button to item slot when count = 0 to instantly buy boosters with gold (1 Bomb = 100 Gold).
-- [ ] **Pre-game Boosters selection**: Allow selecting boosters (e.g., "+3 starting turns", "double score") on the Lobby StageInfoPopup before entering the scene.
-- [ ] **Streak Boosters (Win Streaks)**: Win consecutive stages to get free starting boosters placed on the board (e.g., spawn random Rocket at stage start).
-- [ ] **Vibrant Item VFX/SFX**: Punchy sound effects (whoosh, explosion, metal hit) and particle sparks matching the visual palette of the active theme chapter.
+  - [ ] Implement DB transactional spend `/api/inventory/spend` and inventory sync API `/api/inventory`.
+- [ ] **In-Game Item Shop purchase**: Add UI button or cost badge to item slot when count = 0 to instantly buy boosters with gold (1 Bomb = 100 Gold).
+  - [ ] Create `/api/inventory/buy` endpoint to spend gold and add item.
+  - [ ] Update `ItemSlotView` and `ItemTrayView` to render gold buy badges when item count is 0.
+- [ ] **Pre-game Boosters selection**: Allow selecting boosters (e.g., "+3 starting turns", starting Bomb/Rocket) on the Lobby `StageInfoPopupView` before entering the scene.
+  - [ ] Deduct booster count immediately on stage load.
+  - [ ] Pre-spawn selected boosters at random coordinates on stage load.
+- [ ] **Streak Boosters (Win Streaks)**: Win consecutive stages to get free starting boosters placed on the board (Tier 1: 1 Rocket, Tier 2: 1 Rocket + 1 Bomb, Tier 3: 1 Rocket + 1 Bomb + 1 ColorSweep).
+  - [ ] Tracks win streak count in server DB, resetting on stage fail/forfeit.
+  - [ ] Auto-spawn streak boosters at random valid board coordinates at stage load.
+
+## 4. Polish (Active Scope)
+- [ ] **Vibrant Item VFX/SFX**: Punchy sound effects (whoosh, explosion, metal hit) and particle sparks matching the visual palette of the active theme chapter. (Moved from Phase N)

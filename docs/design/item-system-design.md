@@ -382,21 +382,42 @@ Obstacle destroyed by item does **not** change `initial_valid_cells`. The ratio 
 
 ---
 
-## 12. Phased Scope
+## 12. Phased Scope & Advanced Mechanics
 
-### MVP
-- 5 items: Bomb (3×3), H-Rocket (stops at Obstacle), ColorSweep (all same-color), RowShift (horizontal compaction, swipe gesture), CellSwap (two-cell swap)
-- Dev mode: Inspector toggle, ∞ badge, standard in-game tray UI
-- Item Use Phase: slot glow, board target highlight, single-tap execute (tap-to-target), swipe execute (RowShift), two-tap execute (CellSwap), cancel
-- Full rule engine integration (DirectHit protector, gravity, clear eval)
-- No turn cost; no auto-chain
+### 12.1 Server-Backed Item Inventory & Sync
+- **Authentication Handshake**: Upon successful login, the client fetches the player's booster inventory snapshot from the server using the `/api/inventory` endpoint.
+- **Transactional Spend**: When a booster is consumed in a stage attempt, the client sends a `POST /api/inventory/spend` request to verify and decrement the server count.
 
-### Phase 2
-- Earn mechanics: streak rewards, daily bonus
-- IAP purchase flow
-- Server-backed inventory persistence
-- New item types (candidate: ColorChange, Shield)
-- Shop UI
+### 12.2 In-Game Booster Tray Instant Purchase (Royal Match Style)
+- **Zero Inventory State**: When a player selects a booster slot with 0 count, the slot does not disable. Instead, it displays a Gold coin cost badge (e.g., "100 Gold" for Bomb).
+- **Execution Flow**: Tapping the slot triggers a `/api/inventory/buy` transaction. Upon success, the booster count increments by 1, and the game enters the Use Phase for that booster.
+
+### 12.3 Pre-Game Boosters Selection
+- **Stage Entrance Popup**: The `StageInfoPopupView` lists starting boosters (e.g., Starting Bomb, Starting H-Rocket, +3 turns).
+- **Consume Rules**: Selecting a booster consumes 1 count from the player's inventory immediately when entering the stage. If the player forfeits, the booster remains spent.
+- **Board Placement**: Pre-selected starting boosters are pre-spawned at random valid coordinates on the board during stage load.
+
+### 12.4 Win Streak Boosters (Royal Match Style)
+- **Progression Rule**: Winning consecutive stages increases the player's active Win Streak (Tier 1: 1 win, Tier 2: 2 wins, Tier 3: 3+ wins).
+- **Streak Buffs**:
+  - *Tier 1*: Starts stage with 1 pre-placed H-Rocket.
+  - *Tier 2*: Starts stage with 1 H-Rocket + 1 Bomb.
+  - *Tier 3*: Starts stage with 1 H-Rocket + 1 Bomb + 1 ColorSweep.
+- **Spawning**: Streak boosters are spawned at random valid coordinates on the board at stage start. If the player fails or forfeits, the streak resets to 0.
+
+### 12.5 Phased Scope
+
+### MVP (Phase 1 / Active Development)
+- 5 items: Bomb, H-Rocket, ColorSweep, RowShift, CellSwap.
+- Server-backed inventory sync and transactional spend.
+- In-game tray instant purchase with Gold.
+- Pre-game booster selection and immediate consumption on stage load.
+- Win Streak boosters (1-3 tiers) pre-placed on board.
+- Dev mode: Inspector toggle, ∞ badge.
+
+### Phase 2 (Future)
+- New item types (ColorChange, Shield).
+- Dedicated booster package bundles.
 
 ---
 

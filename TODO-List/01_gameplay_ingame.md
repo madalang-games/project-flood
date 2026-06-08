@@ -30,8 +30,14 @@ Checklist for the core match-and-collapse gameplay mechanics, rule engine, board
 - [x] **Stage End Triggers**: Auto-ends on 3-star (early termination) or turns = 0.
   - Reference: [InGameController.cs:L148](file:///c:/Users/SangHyeok/Desktop/git/madalang-games/project-flood/client/project-flood/Assets/Scripts/InGame/Controller/InGameController.cs#L148)
 
-## 4. Phase N (Sophistication & Advanced Gameplay)
+## 4. In-Game & Gimmick Development (Active Scope)
 - [ ] **Dynamic Turn-Interval Board Rotation**: Board automatically rotates 180° every N player turns (value read from `rotation_interval` field in stage data).
-- [ ] **Color Hide Gimmick**: Cells in specific zones or intervals have their colors hidden (rendered as gray or question marks), requiring players to deduce color matching.
+  - [ ] Implement automatic rotation simulation in Next.js web editor playtest mode (`tools/stage_editor/src/lib/game-rules.ts`).
+  - [ ] Support rotation logic in the auto-solver TS search algorithm (`tools/stage_editor/src/lib/solver.ts`).
+- [ ] **Interactive Dynamic Board Elements**:
+  - [ ] Implement Teleport/Portal cells: Inlet coordinate re-routes falling cells to Outlet coordinate. Modify C# `GravitySystem` and Next.js `game-rules.ts`.
+  - [ ] Implement Conveyor Belts: Shift cells resting on belt by 1 cell in path direction at turn end, before gravity.
 - [ ] **Automatic Board Solver**: Multi-step AI search algorithm (min-moves solver) integrated into editor export checks to mathematically verify stage solvable status.
-- [ ] **Interactive Dynamic Board Elements**: Introduce teleport/portal cells where falling blocks in one column spawn from another, or conveyor belts shifting rows at the end of each turn.
+
+## 5. Excluded Scope (Phase 2+)
+- [ ] **Color Hide Gimmick**: Cells in specific zones or intervals have their colors hidden (rendered as gray or question marks), requiring players to deduce color matching. (Excluded per user request)

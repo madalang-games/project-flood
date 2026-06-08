@@ -95,6 +95,32 @@ Run before writing to CSV. Results shown in UI.
 
 ---
 
+## Advanced Editor Features
+
+### 1. Image-to-Board Auto-Drafting
+- **Functionality**: Drag and drop any image file (.png, .jpg) directly onto the grid canvas.
+- **Processing**:
+  - The image is downscaled to the current `board_width` and `board_height` grid size using pixelation.
+  - Each pixel's RGB is mapped to the nearest color in `color_palette.csv` using Euclidean distance in LAB color space.
+  - Isolated single-pixel color anomalies are automatically merged with surrounding colors to avoid unsolvable layouts.
+
+### 2. Advanced Solver Metrics
+- **Functionality**: The auto-solver runs a state-space search when a playtest begins.
+- **Metrics Logged**:
+  - **Min Moves**: Minimum clicks needed to clear the stage.
+  - **Branching Factor**: Average number of valid moves available per state.
+  - **State Density**: Volume of explored states, providing a proxy difficulty score (easy, medium, hard).
+
+### 3. Undo / Redo Canvas Actions
+- **Keyboard Shortcuts**: Canvas supports standard `Ctrl+Z` (Undo) and `Ctrl+Y` / `Ctrl+Shift+Z` (Redo) to revert/restore paint actions.
+- **State Buffer**: Maintains a history stack of the board grid up to 50 edits.
+
+### 4. Hot-Reloading in Unity Editor
+- **Functionality**: When the web editor saves to `stage.csv`, a local file-system watcher in the Unity Editor detects the change.
+- **Action**: It automatically triggers the C# static data code generation pipeline (`tools/info_generator.bat`) and reloads stage assets in the running Unity Play mode without requiring a manual restart.
+
+---
+
 ## File Structure
 
 ```

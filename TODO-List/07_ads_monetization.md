@@ -24,8 +24,11 @@ Checklist for rewarded ads, interstitial ad display cooldowns, double rewards, A
 - [x] **Ad Eligibility Client Cache**: Client-side local cache to check eligibility variables before requesting interstitial displays.
   - Reference: [AdEligibilityCache.cs](file:///c:/Users/SangHyeok/Desktop/git/madalang-games/project-flood/client/project-flood/Assets/Scripts/Services/AdEligibilityCache.cs)
 
-## 4. Phase N (Monetization & Ad Optimization)
-- [ ] **IAP "No-Ads" Purchase**: Integrated In-App Purchases (Unity IAP) allowing users to purchase "No-Ads" package. If purchased, suppress forced interstitial ads (rewarded ads remain active).
-- [ ] **Mediation Integration**: Wire AppLovin MAX or Unity Ads Mediation to optimize ad fill rates and eCPM returns across networks.
-- [ ] **Ad Limit capping**: Enforce daily limits for rewarded ads (e.g. max 10 ad-based stamina claims per day) to prevent excessive inflation of game economy.
-- [ ] **Dynamic Ad Placement Configs**: Fetch ad placement variables (cooldown durations, min levels) from dynamic server configuration rather than static files.
+## 4. Ads Verification (Active Scope)
+- [ ] **Rewarded Ad Verify UX**: Show loading blocker overlay (`LoadingOverlayView.prefab`) while SSV callback settles after ad closes; prevent premature dismiss by polling `/api/ad-rewards/status/{txId}` every 1s (max 10s).
+- [ ] **AdMob Cooldown enforcement**: Enforce 30-second client-side cooldown on the ad buttons to prevent click spamming and comply with AdMob invalid traffic policies.
+
+## 5. Excluded Scope (Phase 2+)
+- [ ] **IAP "No-Ads" Purchase**: Integrated In-App Purchases (Unity IAP) allowing users to purchase "No-Ads" package. If purchased, suppress forced interstitial ads (rewarded ads remain active). (Excluded per user request)
+- [ ] **Mediation Integration**: Wire AppLovin MAX or Unity Ads Mediation to optimize ad fill rates and eCPM returns across networks. (Excluded per user request)
+- [ ] **Dynamic Ad Placement Configs**: Fetch ad placement variables (cooldown durations, min levels) from dynamic server configuration rather than static files. (Excluded per user request)

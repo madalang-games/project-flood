@@ -28,7 +28,7 @@ Checklist for the standalone Next.js Stage Editor (`tools/stage_editor/`) used t
 - [x] **CTM Hex encoding**: Decodes CTM format from CSV to 2D grid of `CellData`, and encodes it back on write. Auto-derives unique stage colors.
   - Reference: [ctm.ts](file:///c:/Users/SangHyeok/Desktop/git/madalang-games/project-flood/tools/stage_editor/src/lib/ctm.ts)
 
-## 4. Phase N (Content Generation & Editor Expansion)
+## 4. Content Generation & Editor Expansion (Active Scope)
 - [ ] **Image-to-Board Auto-Drafting**: Drag-and-drop an image file, pixelate to grid dimensions, map colors to closest LAB color space hex, and correct isolated color nodes automatically.
 - [ ] **Advanced Solver Metrics**: Log and display solvability difficulty rating (e.g. state space density, branching factor, minimum moves required) to help balance stage pacing.
 - [ ] **Hot-Reloading in Unity Editor**: Create an Editor script in Unity to trigger info_generator pipelines and refresh client stage assets directly when saving in the web editor.

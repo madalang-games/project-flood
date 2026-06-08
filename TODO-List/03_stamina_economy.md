@@ -34,9 +34,10 @@ Checklist for stamina life gates, ad-stamina rewards, gold acquisition/consumpti
 - [x] **Claim Limit Periods**: Enforce daily/hourly claim limits for rewards (stores progress in `user_reward_claim_state` table).
   - Reference: [EnsureStateAsync in StaminaService.cs](file:///c:/Users/SangHyeok/Desktop/git/madalang-games/project-flood/server/src/ProjectFlood.Application/Stamina/StaminaService.cs#L156)
 - [ ] **HomeTab Claim Badge UI**: In-game HUD or Lobby popup showing daily free items (e.g. daily gold chest or free unlimited stamina badge).
-  - Status: Planned.
+  - [ ] Implement client check for active reward source availability `/api/rewards/sources`.
+  - [ ] Render notification badge on home tab daily free button, showing popup when clicked.
 
-## 4. Phase N (Economy Advanced)
-- [ ] **Booster Shop UI**: UI panel inside Lobby allowing players to spend Gold to buy item bundles (1 Bomb = 100 gold, 1 Rocket = 80 gold).
-- [ ] **Stamina Shop / Purchases**: Shop options to buy unlimited stamina periods directly via real-money purchases (IAP integration) or high gold values.
-- [ ] **Dynamic Regen Modifiers**: Temporary items or subscription bonuses that speed up stamina recovery (e.g., 1 life per 300 seconds instead of 600).
+## 4. Excluded Scope (Phase 2+)
+- [ ] **Booster Shop UI**: UI panel inside Lobby allowing players to spend Gold to buy item bundles (1 Bomb = 100 gold, 1 Rocket = 80 gold). (Excluded per user request)
+- [ ] **Stamina Shop / Purchases**: Shop options to buy unlimited stamina periods directly via real-money purchases (IAP integration) or high gold values. (Excluded per user request)
+- [ ] **Dynamic Regen Modifiers**: Temporary items or subscription bonuses that speed up stamina recovery (e.g., 1 life per 300 seconds instead of 600). (Excluded per user request)

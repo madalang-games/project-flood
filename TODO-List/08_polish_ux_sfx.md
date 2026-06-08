@@ -18,7 +18,7 @@ Checklist for high-end aesthetics, micro-animations, screen transitions, particl
 - [x] **Localization Service**: Handles string replacements for multiple locales during runtime.
   - Reference: [LocalizationService.cs](file:///c:/Users/SangHyeok/Desktop/git/madalang-games/project-flood/client/project-flood/Assets/Scripts/Services/LocalizationService.cs)
 
-## 3. Phase N (Juice, Polish & Audio Integration)
+## 3. Juice, Polish & Audio Integration (Active Scope)
 - [ ] **Sound Manager (SFX/BGM)**: Singleton audio manager handling volume parameters and playing BGM tracks plus dynamic SFX clips (tap pop, bomb blast, rocket travel, gold coin collection, star unlock sounds, fail overlay chime).
 - [ ] **Micro-animations (Button Juice)**: Add scale bounces on button presses, hover glows, progress bar slides, and shaking animations on illegal moves.
 - [ ] **Celebration Screen Polish**: Add falling confetti particles, star-slam sequences, and counter rolls for gold rewards on the stage result screen.

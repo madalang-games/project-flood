@@ -25,7 +25,28 @@
 ```
 
 - Active tab: `UI_CTA` accent highlight
-- Ranking tab: MVP에서 greyed-out, 비활성
+- Bottom Tabs: `🏠 Home`, `🛒 Shop` (disabled/placeholder in MVP), `🏆 Rank` (active!)
+
+---
+
+## Ranking Tab (Global & Stage Leaderboard)
+
+To support leaderboards with thousands of entries without performance degradation:
+- **Dynamic Scroll Virtualization (Object Pooling)**:
+  - The UI ScrollRect only instantiates enough Ranking Entry prefabs to cover the visible viewport (plus 2 padding rows on top and bottom, typically ~10 rows).
+  - As the user scrolls, the view reuse manager shifts the out-of-view row components to the opposite edge and binds the new data index (nickname, avatar, score, rank).
+  - Eliminates garbage collection and draw-call spikes during scrolling.
+
+---
+
+## Settings Panel & Sound Integration
+
+Accessed via Settings button. Handles runtime configuration.
+
+### Sound Sliders (BGM & SFX)
+- **Controls**: Includes two Slider UI elements for BGM and SFX volume levels (0% to 100%).
+- **Interaction**: Dragging the slider sends real-time volume updates to the `SoundManager` singleton and persists the values in `PlayerPrefs` (`bgm_volume` and `sfx_volume`).
+- **Mute Toggles**: Checkboxes to quickly mute/unmute BGM or SFX without losing slider settings.
 
 ---
 

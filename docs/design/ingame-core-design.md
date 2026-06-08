@@ -131,3 +131,24 @@ Game.InGame.Rules      → GroupSelector, RemovalSystem, ProtectorSystem, Gravit
 Game.InGame.Controller → InGameController, TurnManager, StageLoader
 Game.InGame.View       → BoardView, CellView
 ```
+
+---
+
+## Portal & Conveyor Mechanics
+
+### Portal (Teleport Cell) Gravity Resolution
+- When resolving gravity, `GravitySystem` first builds column chains.
+- For column columns containing Portals (Inlet and Outlet):
+  - The Inlet cell acts as the top of its column segment, and the Outlet cell acts as the bottom of the column segment receiving from it.
+  - Vacancy at or below the Outlet pulls cells from above the Inlet:
+    `board[outletRow, outletCol] = board[inletRow - 1, inletCol]`
+  - Falling animation is tracked by `BoardView.PlayGravity` using a multi-phase translation pathway instead of a simple linear vertical path.
+
+### Conveyor Belt Shift Resolution
+- Happens inside `InGameController.HandleTapSequence` (and after items) **before** `GravitySystem.Apply()`.
+- Runs conveyor paths:
+  - Collects all cells lying on a conveyor path in order.
+  - Shifts cell data arrays by 1 step in the path direction.
+  - The tail of the conveyor is filled by the cell sliding off the adjacent slot, and the head slides onto the next.
+  - Overhangs created by conveyor shifts are subsequently resolved by `GravitySystem.Apply()`.
+
