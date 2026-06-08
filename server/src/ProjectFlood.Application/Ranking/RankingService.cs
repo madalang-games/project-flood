@@ -320,15 +320,15 @@ public sealed class RankingService
         if (userIds.Length == 0)
             return new Dictionary<long, GlobalRankingRow>();
 
-        return await _db.UserRankingTotals.JoinWithPlayers()
-            .Where(x => userIds.Contains(x.UserRankingTotal.UserId))
-            .Select(x => new GlobalRankingRow(
-                x.UserRankingTotal.UserId,
-                x.Player.DisplayName,
-                x.Player.AvatarId,
-                type == GlobalRankingType.Stars
-                    ? x.UserRankingTotal.TotalEarnedStars
-                    : x.UserRankingTotal.MaxClearedStageId))
+        if (type == GlobalRankingType.Stars)
+            return await _db.UserRankingTotals.Query()
+                .Where(x => userIds.Contains(x.UserId))
+                .Select(x => new GlobalRankingRow(x.UserId, x.Player!.DisplayName, x.Player!.AvatarId, x.TotalEarnedStars))
+                .ToDictionaryAsync(x => x.UserId, ct);
+
+        return await _db.UserRankingTotals.Query()
+            .Where(x => userIds.Contains(x.UserId))
+            .Select(x => new GlobalRankingRow(x.UserId, x.Player!.DisplayName, x.Player!.AvatarId, x.MaxClearedStageId))
             .ToDictionaryAsync(x => x.UserId, ct);
     }
 
