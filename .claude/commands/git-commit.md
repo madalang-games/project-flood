@@ -14,11 +14,11 @@ Types: `feat` `fix` `refactor` `docs` `test` `chore` `build`
 - Subject line ≤ 50 chars.
 
 ## Rules
-- Never stage: `.env*`, files in `.gitignore`
+- Never stage: `.env*`, files in `.gitignore` (gitignored = do not stage; reading for reference is allowed)
 - Always stage generated files: `*/generated/*`, `*/Generated/*` (must be included in commits to ensure consistency)
 - Use `git -C {path}` syntax — never `cd && git`
 - Multiple distinct work units → separate commits (do not squash)
-- If issue number is not provided, check in order: current branch name (e.g., `feature/123-xyz`) → `.claude/issues.cache.md` (run `/git-issue` first if missing) → `TODO-List/` files.
+- If issue number is not provided, check in order: current branch name (e.g., `feature/123-xyz`) → Read `.claude/issues.cache.md` with Read tool (file is gitignored but exists locally; only run `/git-issue` if Read returns file-not-found) → `TODO-List/` files.
 
 ## Steps
 1. `git status` + `git diff --stat` → identify all changed files
