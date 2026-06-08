@@ -15,6 +15,7 @@
 | `BootstrapController.cs` | `BootstrapController` | `/api/bootstrap` configurations and schema/meta hash checks |
 | `CurrencyController.cs` | `CurrencyController` | `GET /api/currency` balance fetch; `POST /api/currency/spend` soft currency deduct |
 | `TutorialController.cs` | `TutorialController` | `/api/tutorial` progress saving and retrieving endpoints |
+| `PlayerController.cs` | `PlayerController` | `GET /api/player/progress` — stage unlock state and best stars for the current player |
 
 ## Symbols
 | symbol | kind | note |
@@ -38,6 +39,7 @@
 | `CurrencyController.Spend` | method | `POST /api/currency/spend` — deduct soft currency; 400 if insufficient |
 | `TutorialController.GetProgress` | method | `GET /api/tutorial/progress` — fetch user completed tutorial list |
 | `TutorialController.CompleteTutorial` | method | `POST /api/tutorial/progress/{tutorialId}` — save completed tutorial step |
+| `PlayerController.GetProgress` | method | `GET /api/player/progress` — returns `PlayerProgressResponse` with maxClearedStageId and per-stage best stars |
 
 ## Rules
 - Do not accept `user_id` from request bodies; use `ControllerBaseEx.PlayerId`.

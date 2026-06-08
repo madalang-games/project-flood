@@ -26,6 +26,7 @@ Namespace: `Game.Services`
 | `RewardsApiService.cs` | `RewardsApiService` | Server rewards list fetch + claim API client |
 | `TutorialApiService.cs` | `TutorialApiService` | Server-backed tutorial progress fetch + complete API client |
 | `ErrorResponseJson.cs` | `ErrorResponseJson` | Serializable helper for server error code extraction |
+| `PlayerApiService.cs` | `PlayerApiService` | DDOL singleton; `GET /api/player/progress` fetch; deserializes to `PlayerProgressResponse` |
 
 ## Symbols
 | symbol | kind | note |
@@ -54,10 +55,10 @@ Namespace: `Game.Services`
 | `PlayerProgressService.RecordClear(int,int)` | method | Updates best stars + unlocks stageId+1 |
 | `AuthService.IsGuest` | prop | true until OAuth link |
 | `AuthService.UserId` | prop | Device UUID or OAuth ID |
-| `AuthService.Initialize(Action<AuthResult>)` | method | Stub: guest by default; fires AuthResult.ReLoginRequired if OAuth was linked |
+| `AuthService.Initialize(Action<AuthResult>)` | method | Guest by default; fires ReLoginRequired if OAuth refresh fails; fires NewGuestCreated if account switch detected |
 | `AuthService.LinkOAuth(string)` | method | Sets IsGuest=false, persists OAuth ID |
 | `AuthService.Logout()` | method | Clears all auth prefs |
-| `AuthResult` | enum | Authenticated / Guest / ReLoginRequired |
+| `AuthResult` | enum | Authenticated / Guest / ReLoginRequired / NewGuestCreated |
 | `AdWatchResult.Earned` | field | true if user earned the reward |
 | `AdWatchResult.AdToken` | field | SSV nonce; pass to server POST endpoint for reward claim |
 | `IAdService.WatchRewardedAd(string,Action<AdWatchResult?>)` | method | null result = cancel/fail/no-ad loaded |
@@ -84,6 +85,10 @@ Namespace: `Game.Services`
 | `PlayerProgressService.GetItemCount` | method | Returns count of booster itemId |
 | `PlayerProgressService.SetItemCount` | method | Sets local count of booster itemId |
 | `PlayerProgressService.SetInventory` | method | Updates all item counts in cache from snapshot |
+| `PlayerProgressService.LoadFromServer` | method | Overwrites unlock/star cache with server-authoritative `PlayerProgressResponse`; clears stale PlayerPrefs |
+| `PlayerApiService.Instance` | prop | DDOL singleton |
+| `PlayerApiService.FetchProgress` | method | GET /api/player/progress; callback (bool ok, PlayerProgressResponse) |
+| `AuthResult.NewGuestCreated` | enum value | Fired by Initialize() when a new guest account replaced the previous one (PID mismatch detected) |
 | `StageApiService.ReviveAd` | method | POST `/api/stages/{stageId}/attempts/{attemptId}/revive-ad` with verification retry polling |
 | `StageApiService.CurrentAttempt` | prop | Active attempt metadata including revive limits |
 

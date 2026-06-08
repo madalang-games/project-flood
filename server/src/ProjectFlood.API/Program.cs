@@ -9,6 +9,7 @@ using ProjectFlood.API.Filters;
 using ProjectFlood.API.Middleware;
 using ProjectFlood.Application.Currency;
 using ProjectFlood.Application.Inventory;
+using ProjectFlood.Application.Player;
 using ProjectFlood.Application.Ranking;
 using ProjectFlood.Application.Rewards;
 using ProjectFlood.Application.Stage;
@@ -75,6 +76,7 @@ builder.Services.AddHostedService(sp => sp.GetRequiredService<AdMobSsvKeyCache>(
 builder.Services.AddSingleton<StaminaConfigProvider>();
 builder.Services.AddScoped<StaminaService>();
 builder.Services.AddScoped<CurrencyService>();
+builder.Services.AddScoped<PlayerService>();
 builder.Services.AddScoped<RankingService>();
 builder.Services.AddScoped<StageAttemptService>();
 builder.Services.AddScoped<RewardService>();

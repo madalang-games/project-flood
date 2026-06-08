@@ -11,6 +11,7 @@ namespace Game.Editor
 
         // boot
         public const string BootLoading = "boot.loading";
+        public const string BootNewGuestSession = "boot.new_guest_session";
 
         // common
         public const string CommonBtnCancel = "common.btn_cancel";

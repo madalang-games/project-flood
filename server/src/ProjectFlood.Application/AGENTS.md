@@ -11,6 +11,7 @@
 | `Rewards/` | Generic reward source, ad reward claim services, SSV infrastructure | `Rewards/AGENTS.md` |
 | `Currency/` | Soft currency balance service | `Currency/AGENTS.md` |
 | `Tutorial/` | Tutorial progress saving and retrieving service | `Tutorial/AGENTS.md` |
+| `Player/` | Player progress summary (stage unlock state + best stars) | `Player/AGENTS.md` |
 
 ## Rules
 - Use-case layer: persistence via direct `AppDbContext` injection.

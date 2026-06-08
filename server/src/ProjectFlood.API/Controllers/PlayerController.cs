@@ -1,0 +1,21 @@
+using Microsoft.AspNetCore.Mvc;
+using ProjectFlood.Application.Player;
+using ProjectFlood.Contracts.Player;
+
+namespace ProjectFlood.API.Controllers;
+
+[ApiController]
+[Route("api/player")]
+public sealed class PlayerController : ControllerBaseEx
+{
+    private readonly PlayerService _player;
+
+    public PlayerController(PlayerService player)
+    {
+        _player = player;
+    }
+
+    [HttpGet("progress")]
+    public Task<PlayerProgressResponse> GetProgress(CancellationToken ct)
+        => _player.GetProgressAsync(PlayerId, ct);
+}

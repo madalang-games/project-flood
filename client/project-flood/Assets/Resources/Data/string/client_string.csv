@@ -1,6 +1,7 @@
 stringId,EN,KO,ZH_CN,ZH_TW,JA,RU,ES,PT,FR,DE,TH,AR,IT,TR,ID
 app.title,PROJECT FLOOD,프로젝트 플러드,,,,,,,,,,,,,
 boot.loading,Loading...,로딩 중...,,,,,,,,,,,,,
+boot.new_guest_session,Your previous session expired and you have been signed in as a new guest account. Link your account in Settings to keep your progress.,이전 세션이 만료되어 새 게스트 계정으로 로그인되었습니다. 설정에서 계정을 연동하면 진행 데이터를 보호할 수 있습니다.,,,,,,,,,,,,,
 common.btn_cancel,Cancel,취소,,,,,,,,,,,,,
 common.btn_confirm,Confirm,확인,,,,,,,,,,,,,
 common.btn_ok,OK,확인,,,,,,,,,,,,,

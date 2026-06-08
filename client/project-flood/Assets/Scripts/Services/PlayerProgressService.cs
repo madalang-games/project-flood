@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using ProjectFlood.Contracts.Player;
 using UnityEngine;
 
 namespace Game.Services
@@ -102,6 +103,41 @@ namespace Game.Services
             {
                 _inventory[item.ItemId] = item.Count;
             }
+        }
+
+        public void LoadFromServer(PlayerProgressResponse response)
+        {
+            if (response == null) return;
+
+            // Clear PlayerPrefs stage keys before rebuilding from server state
+            if (StageDataService.Instance != null)
+                foreach (var s in StageDataService.Instance.GetAll())
+                {
+                    PlayerPrefs.DeleteKey(KeyStarPrefix + s.stage_id);
+                    PlayerPrefs.DeleteKey(KeyUnlockPrefix + s.stage_id);
+                }
+
+            _bestStars.Clear();
+            _unlocked.Clear();
+            _unlocked[1] = true;
+
+            // Stage N unlocked when max_cleared_stage_id >= N-1 (mirrors server rule)
+            for (int i = 2; i <= response.MaxClearedStageId + 1; i++)
+            {
+                _unlocked[i] = true;
+                PlayerPrefs.SetInt(KeyUnlockPrefix + i, 1);
+            }
+
+            if (response.Stages != null)
+                foreach (var entry in response.Stages)
+                    if (entry.BestStar > 0)
+                    {
+                        _bestStars[entry.StageId] = entry.BestStar;
+                        PlayerPrefs.SetInt(KeyStarPrefix + entry.StageId, entry.BestStar);
+                    }
+
+            PlayerPrefs.Save();
+            Debug.Log($"[PlayerProgressService] Loaded from server: maxCleared={response.MaxClearedStageId}, stages={response.Stages?.Count ?? 0}");
         }
 
         public void ResetData()

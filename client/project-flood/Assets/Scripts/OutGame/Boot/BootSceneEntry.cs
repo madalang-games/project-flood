@@ -33,19 +33,41 @@ namespace Game.OutGame.Boot
         private void OnAuthResult(AuthResult result)
         {
             Debug.Log($"[Boot] AuthResult = {result}");
-            UIManager.Instance?.HideLoading();
 
             switch (result)
             {
                 case AuthResult.Authenticated:
                 case AuthResult.Guest:
-                    GoToLobby();
+                    FetchProgressThenGoToLobby(showNewGuestToast: false);
+                    break;
+
+                case AuthResult.NewGuestCreated:
+                    FetchProgressThenGoToLobby(showNewGuestToast: true);
                     break;
 
                 case AuthResult.ReLoginRequired:
+                    UIManager.Instance?.HideLoading();
                     ShowReLoginScreen();
                     break;
             }
+        }
+
+        private void FetchProgressThenGoToLobby(bool showNewGuestToast)
+        {
+            PlayerApiService.Instance.FetchProgress((ok, response) =>
+            {
+                if (ok && response != null)
+                    PlayerProgressService.Instance.LoadFromServer(response);
+
+                UIManager.Instance?.HideLoading();
+
+                if (showNewGuestToast)
+                    UIManager.Instance?.ShowToast(
+                        LocalizationService.Instance.Get("boot.new_guest_session"),
+                        Core.UI.ToastType.Warning);
+
+                GoToLobby();
+            });
         }
 
         private void GoToLobby()
