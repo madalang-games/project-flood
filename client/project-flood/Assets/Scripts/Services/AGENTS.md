@@ -27,6 +27,7 @@ Namespace: `Game.Services`
 | `TutorialApiService.cs` | `TutorialApiService` | Server-backed tutorial progress fetch + complete API client |
 | `ErrorResponseJson.cs` | `ErrorResponseJson` | Serializable helper for server error code extraction |
 | `PlayerApiService.cs` | `PlayerApiService` | DDOL singleton; `GET /api/player/progress` fetch; deserializes to `PlayerProgressResponse` |
+| `NetworkRetryOptions.cs` | `NetworkRetryOptions` | Options class for HTTP retries with exponential backoff, jitter, loading overlay, and toast messages |
 
 ## Symbols
 | symbol | kind | note |
@@ -91,6 +92,10 @@ Namespace: `Game.Services`
 | `AuthResult.NewGuestCreated` | enum value | Fired by Initialize() when a new guest account replaced the previous one (PID mismatch detected) |
 | `StageApiService.ReviveAd` | method | POST `/api/stages/{stageId}/attempts/{attemptId}/revive-ad` with verification retry polling |
 | `StageApiService.CurrentAttempt` | prop | Active attempt metadata including revive limits |
+| `NetworkRetryOptions.None` | prop | Preset that disables retries |
+| `NetworkRetryOptions.LobbyAndSave` | prop | Preset for important lobby and save requests (3 retries, overlay, and toast error messages) |
+| `NetworkService.Get(string,NetworkRetryOptions,Action<bool,string>)` | method | HTTP GET with custom retry options |
+| `NetworkService.Post(string,string,NetworkRetryOptions,Action<bool,string>)` | method | HTTP POST with custom retry options |
 
 ## Rules
 - All services are DDOL; place GameObjects in Boot scene only.

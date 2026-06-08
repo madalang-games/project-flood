@@ -40,7 +40,7 @@ namespace Game.Services
             var requestId = Guid.NewGuid().ToString("N");
             Debug.Log($"[StageApiService] StartAttempt: stageId={stageId}, requestId={requestId}");
             var body = $"{{\"clientRequestId\":\"{requestId}\"}}";
-            NetworkService.Instance.Post($"/api/stages/{stageId}/attempts/start", body, (ok, result) =>
+            NetworkService.Instance.Post($"/api/stages/{stageId}/attempts/start", body, NetworkRetryOptions.LobbyAndSave, (ok, result) =>
             {
                 if (!ok) 
                 { 
@@ -69,7 +69,7 @@ namespace Game.Services
                 + $"\"coreRemaining\":{request.CoreRemaining.ToString().ToLowerInvariant()}"
                 + "}";
 
-            NetworkService.Instance.Post($"/api/stages/{stageId}/attempts/{_currentAttempt.AttemptId}/clear", body, (ok, result) =>
+            NetworkService.Instance.Post($"/api/stages/{stageId}/attempts/{_currentAttempt.AttemptId}/clear", body, NetworkRetryOptions.LobbyAndSave, (ok, result) =>
             {
                 if (!ok) { onError?.Invoke(result); return; }
                 var json = JsonUtility.FromJson<StageAttemptEndJson>(result);

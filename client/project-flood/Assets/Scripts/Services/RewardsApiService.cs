@@ -18,7 +18,7 @@ namespace Game.Services
 
         public void FetchRewardSources(Action<RewardSourcesResponse> onSuccess = null, Action<string> onError = null)
         {
-            NetworkService.Instance.Get("/api/rewards/sources", (ok, result) =>
+            NetworkService.Instance.Get("/api/rewards/sources", NetworkRetryOptions.LobbyAndSave, (ok, result) =>
             {
                 if (!ok) { onError?.Invoke(result); return; }
                 var json = JsonUtility.FromJson<RewardSourcesResponseJson>(result);

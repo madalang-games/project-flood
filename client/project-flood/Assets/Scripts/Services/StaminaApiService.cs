@@ -47,7 +47,7 @@ namespace Game.Services
 
         public void FetchStamina(Action<StaminaStatusResponse> onSuccess = null, Action<string> onError = null)
         {
-            NetworkService.Instance.Get("/api/stamina", (ok, result) =>
+            NetworkService.Instance.Get("/api/stamina", NetworkRetryOptions.LobbyAndSave, (ok, result) =>
             {
                 if (!ok) { onError?.Invoke(result); return; }
                 var json     = JsonUtility.FromJson<StaminaStatusJson>(result);

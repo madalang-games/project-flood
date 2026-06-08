@@ -19,7 +19,7 @@ namespace Game.Services
 
         public void FetchProgress(Action<bool, PlayerProgressResponse> onComplete)
         {
-            NetworkService.Instance.Get("/api/player/progress", (ok, text) =>
+            NetworkService.Instance.Get("/api/player/progress", NetworkRetryOptions.LobbyAndSave, (ok, text) =>
             {
                 if (!ok) { onComplete?.Invoke(false, null); return; }
                 try

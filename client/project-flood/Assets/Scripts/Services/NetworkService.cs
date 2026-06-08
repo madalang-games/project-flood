@@ -84,37 +84,145 @@ namespace Game.Services
 
         /// <summary>HTTP GET 요청. onComplete(success, responseText|errorText)</summary>
         public void Get(string path, Action<bool, string> onComplete)
-            => StartCoroutine(SendGet(path, onComplete));
+            => StartCoroutine(SendGet(path, NetworkRetryOptions.None, onComplete));
+
+        /// <summary>HTTP GET 요청 (재시도 옵션 지정). onComplete(success, responseText|errorText)</summary>
+        public void Get(string path, NetworkRetryOptions retryOptions, Action<bool, string> onComplete)
+            => StartCoroutine(SendGet(path, retryOptions ?? NetworkRetryOptions.None, onComplete));
 
         /// <summary>HTTP POST 요청. onComplete(success, responseText|errorText)</summary>
         public void Post(string path, string jsonPayload, Action<bool, string> onComplete)
-            => StartCoroutine(SendWithBody(path, "POST", jsonPayload, onComplete));
+            => StartCoroutine(SendWithBody(path, "POST", jsonPayload, NetworkRetryOptions.None, onComplete));
+
+        /// <summary>HTTP POST 요청 (재시도 옵션 지정). onComplete(success, responseText|errorText)</summary>
+        public void Post(string path, string jsonPayload, NetworkRetryOptions retryOptions, Action<bool, string> onComplete)
+            => StartCoroutine(SendWithBody(path, "POST", jsonPayload, retryOptions ?? NetworkRetryOptions.None, onComplete));
 
         // ─── 내부 구현 ────────────────────────────────────────────────────
 
-        IEnumerator SendGet(string path, Action<bool, string> onComplete)
+        IEnumerator SendGet(string path, NetworkRetryOptions retryOptions, Action<bool, string> onComplete)
         {
             var url = BuildUrl(path);
-            using var req = UnityWebRequest.Get(url);
-            ApplyHeaders(req);
-            LogRequest("GET", path, null);
-            yield return req.SendWebRequest();
-            Complete(req, "GET", null, onComplete);
+            int attempt = 0;
+            bool didShowOverlay = false;
+
+            while (true)
+            {
+                using var req = UnityWebRequest.Get(url);
+                ApplyHeaders(req);
+                LogRequest("GET", path, null);
+                yield return req.SendWebRequest();
+
+                if (req.result == UnityWebRequest.Result.Success)
+                {
+                    if (didShowOverlay && retryOptions.ShowLoadingOverlay)
+                    {
+                        Core.UIManager.Instance?.HideLoading();
+                    }
+                    Complete(req, "GET", null, onComplete);
+                    yield break;
+                }
+
+                attempt++;
+                if (attempt <= retryOptions.MaxRetries && retryOptions.ShouldRetry(req.responseCode, req.result))
+                {
+                    if (retryOptions.ShowLoadingOverlay && !didShowOverlay)
+                    {
+                        Core.UIManager.Instance?.ShowLoading();
+                        didShowOverlay = true;
+                    }
+
+                    float delay = retryOptions.BaseDelaySeconds;
+                    if (retryOptions.UseExponentialBackoff)
+                    {
+                        delay *= Mathf.Pow(2, attempt - 1);
+                    }
+                    float jitter = delay * UnityEngine.Random.Range(-retryOptions.JitterRatio, retryOptions.JitterRatio);
+                    float finalDelay = Mathf.Max(0.1f, delay + jitter);
+
+                    Debug.LogWarning($"[NetworkService] GET Failed ({req.result}, Code: {req.responseCode}). Retrying {attempt}/{retryOptions.MaxRetries} in {finalDelay:F2}s... URL: {url}");
+                    yield return new WaitForSeconds(finalDelay);
+                    continue;
+                }
+
+                if (didShowOverlay && retryOptions.ShowLoadingOverlay)
+                {
+                    Core.UIManager.Instance?.HideLoading();
+                }
+
+                if (!string.IsNullOrEmpty(retryOptions.FailureToastMessage))
+                {
+                    Core.UIManager.Instance?.ShowToast(retryOptions.FailureToastMessage, Core.UI.ToastType.Warning);
+                }
+
+                Complete(req, "GET", null, onComplete);
+                yield break;
+            }
         }
 
-        IEnumerator SendWithBody(string path, string method, string jsonPayload, Action<bool, string> onComplete)
+        IEnumerator SendWithBody(string path, string method, string jsonPayload, NetworkRetryOptions retryOptions, Action<bool, string> onComplete)
         {
             var url = BuildUrl(path);
             var body = string.IsNullOrEmpty(jsonPayload) ? "{}" : jsonPayload;
-            using var req = new UnityWebRequest(url, method);
-            var bytes = Encoding.UTF8.GetBytes(body);
-            req.uploadHandler   = new UploadHandlerRaw(bytes);
-            req.downloadHandler = new DownloadHandlerBuffer();
-            req.SetRequestHeader("Content-Type", "application/json");
-            ApplyHeaders(req);
-            LogRequest(method, path, body);
-            yield return req.SendWebRequest();
-            Complete(req, method, body, onComplete);
+            int attempt = 0;
+            bool didShowOverlay = false;
+
+            while (true)
+            {
+                using var req = new UnityWebRequest(url, method);
+                var bytes = Encoding.UTF8.GetBytes(body);
+                req.uploadHandler   = new UploadHandlerRaw(bytes);
+                req.downloadHandler = new DownloadHandlerBuffer();
+                req.SetRequestHeader("Content-Type", "application/json");
+                ApplyHeaders(req);
+                LogRequest(method, path, body);
+                yield return req.SendWebRequest();
+
+                if (req.result == UnityWebRequest.Result.Success)
+                {
+                    if (didShowOverlay && retryOptions.ShowLoadingOverlay)
+                    {
+                        Core.UIManager.Instance?.HideLoading();
+                    }
+                    Complete(req, method, body, onComplete);
+                    yield break;
+                }
+
+                attempt++;
+                if (attempt <= retryOptions.MaxRetries && retryOptions.ShouldRetry(req.responseCode, req.result))
+                {
+                    if (retryOptions.ShowLoadingOverlay && !didShowOverlay)
+                    {
+                        Core.UIManager.Instance?.ShowLoading();
+                        didShowOverlay = true;
+                    }
+
+                    float delay = retryOptions.BaseDelaySeconds;
+                    if (retryOptions.UseExponentialBackoff)
+                    {
+                        delay *= Mathf.Pow(2, attempt - 1);
+                    }
+                    float jitter = delay * UnityEngine.Random.Range(-retryOptions.JitterRatio, retryOptions.JitterRatio);
+                    float finalDelay = Mathf.Max(0.1f, delay + jitter);
+
+                    Debug.LogWarning($"[NetworkService] {method} Failed ({req.result}, Code: {req.responseCode}). Retrying {attempt}/{retryOptions.MaxRetries} in {finalDelay:F2}s... URL: {url}");
+                    yield return new WaitForSeconds(finalDelay);
+                    continue;
+                }
+
+                if (didShowOverlay && retryOptions.ShowLoadingOverlay)
+                {
+                    Core.UIManager.Instance?.HideLoading();
+                }
+
+                if (!string.IsNullOrEmpty(retryOptions.FailureToastMessage))
+                {
+                    Core.UIManager.Instance?.ShowToast(retryOptions.FailureToastMessage, Core.UI.ToastType.Warning);
+                }
+
+                Complete(req, method, body, onComplete);
+                yield break;
+            }
         }
 
         string BuildUrl(string path)

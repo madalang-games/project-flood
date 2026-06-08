@@ -30,7 +30,7 @@ namespace Game.Services
 
         public void FetchGold(Action<CurrencySnapshot> onSuccess = null, Action<string> onError = null)
         {
-            NetworkService.Instance.Get("/api/currency", (ok, result) =>
+            NetworkService.Instance.Get("/api/currency", NetworkRetryOptions.LobbyAndSave, (ok, result) =>
             {
                 if (!ok) { onError?.Invoke(result); return; }
                 var json = JsonUtility.FromJson<CurrencySnapshotJson>(result);

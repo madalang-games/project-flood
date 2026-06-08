@@ -19,7 +19,7 @@ namespace Game.Services
 
         public void FetchInventory(Action<InventorySnapshot> onSuccess = null, Action<string> onError = null)
         {
-            NetworkService.Instance.Get("/api/inventory", (ok, result) =>
+            NetworkService.Instance.Get("/api/inventory", NetworkRetryOptions.LobbyAndSave, (ok, result) =>
             {
                 if (!ok) { onError?.Invoke(result); return; }
                 var json = JsonUtility.FromJson<InventorySnapshotJson>(result);
