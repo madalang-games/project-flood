@@ -228,8 +228,8 @@ namespace Game.Editor
             navHlg.padding = new RectOffset(20, 20, 20, 20);
             navHlg.spacing = 30;
 
-            var homeBtn    = BtnHlg(navBar, "HomeButton",    UI_BG_MID, "Home", NavHome);
             var shopBtn    = BtnHlg(navBar, "ShopButton",    UI_BG_MID, "Shop", NavShop);
+            var homeBtn    = BtnHlg(navBar, "HomeButton",    UI_BG_MID, "Home", NavHome);
             var rankBtn    = BtnHlg(navBar, "RankingButton", UI_BG_MID, "Rank", NavRanking);
 
             // Tab content area — fills between header and nav
@@ -315,11 +315,11 @@ namespace Game.Editor
 
             // Wire BottomNavBarView
             var soNav = new SerializedObject(bnv);
-            soNav.FindProperty("_homeButton").objectReferenceValue       = homeBtn.GetComponent<Button>();
             soNav.FindProperty("_shopButton").objectReferenceValue       = shopBtn.GetComponent<Button>();
+            soNav.FindProperty("_homeButton").objectReferenceValue       = homeBtn.GetComponent<Button>();
             soNav.FindProperty("_rankingButton").objectReferenceValue    = rankBtn.GetComponent<Button>();
-            soNav.FindProperty("_homeHighlight").objectReferenceValue    = homeBtn.transform.Find("Visual").GetComponent<Image>();
             soNav.FindProperty("_shopHighlight").objectReferenceValue    = shopBtn.transform.Find("Visual").GetComponent<Image>();
+            soNav.FindProperty("_homeHighlight").objectReferenceValue    = homeBtn.transform.Find("Visual").GetComponent<Image>();
             soNav.FindProperty("_rankingHighlight").objectReferenceValue = rankBtn.transform.Find("Visual").GetComponent<Image>();
             soNav.ApplyModifiedProperties();
 
