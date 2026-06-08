@@ -27,6 +27,7 @@ CMD: `tools/all_generator.bat` | `tools/info_generator.bat` | `tools/db_generato
 - NEVER store secrets in `template.ini` — secrets go in `.env`
 - CONFIG policy: env vars own deploy/runtime values; `template.ini` owns tooling values; no hardcoded config fallbacks
 - `_` prefix files/dirs are skipped by all gen tools (examples, drafts)
+- **AGENTS.md Maintenance**: Always update related `AGENTS.md` files (Nav, Symbols, etc.) immediately after completing any task or implementation.
 
 ## Clarification Protocol
 Stop and ask **before** implementing when: requirement is ambiguous with design impact, a clearly better alternative exists (not just style), or task touches DB schema / auth / cross-service contracts.

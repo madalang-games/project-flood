@@ -26,6 +26,7 @@ Unity 6 | URP 2D | C# | New Input System
 - NEVER edit `Assets/Resources/Data/` — source is `shared/datas/`, regenerate with `npm run gen:info`
 - NEVER edit `Assets/Scripts/Data/Generated/` or `Assets/Scripts/Generated/` — regenerate with gen tools
 - NEW_DIR: create `AGENTS.md` for it + update Nav above
+- **UI Prefabs**: Create required prefabs in accordance with the setup in [UIEditorSetup.cs](project-flood/Assets/Scripts/Editor/UIEditorSetup.cs).
 
 ## Conventions
 - Namespace mirrors folder path: `Game.InGame.Board`, `Game.OutGame.UI`, etc.
