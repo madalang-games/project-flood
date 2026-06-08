@@ -24,7 +24,9 @@ namespace Game.OutGame.Lobby
         private Stage[] _stages;
         private int     _currentStageId;
 
-        private readonly List<ChapterChestView> _chestNodes = new List<ChapterChestView>();
+        private readonly List<ChapterChestView>     _chestNodes = new List<ChapterChestView>();
+        private readonly List<ChapterBackgroundView> _bgViews    = new List<ChapterBackgroundView>();
+        private GameObject                           _bgGradientGo;
         private readonly Dictionary<string, bool> _chestClaimed = new Dictionary<string, bool>
         {
             { "chapter1_chest", false },
@@ -109,6 +111,11 @@ namespace Game.OutGame.Lobby
                 }
             }
 
+            if (_bgGradientGo != null) { Destroy(_bgGradientGo); _bgGradientGo = null; }
+            foreach (var bg in _bgViews)
+                if (bg != null) Destroy(bg.gameObject);
+            _bgViews.Clear();
+
             // Deactivate all pool nodes — prevents stale 0-position nodes on re-enable
             foreach (var n in _pool) n.gameObject.SetActive(false);
 
@@ -188,6 +195,7 @@ namespace Game.OutGame.Lobby
             CreateChestNode(3, 8, positions[8], totalHeight);
 
             BuildPath(positions, count, totalHeight);
+            BuildChapterBackgrounds(positions, count, totalHeight);
         }
 
         private void CreateChestNode(int chapterNum, int stageIndex, Vector2 stagePos, float totalHeight)
@@ -311,6 +319,85 @@ namespace Game.OutGame.Lobby
                     Game.Core.UIManager.Instance?.ShowToast($"Failed to claim chest: {error}", Game.Core.UI.ToastType.Warning);
                 }
             );
+        }
+
+        private void BuildChapterBackgrounds(Vector2[] positions, int count, float totalHeight)
+        {
+            var chapters = new Dictionary<int, (int first, int last)>();
+            for (int i = 0; i < count; i++)
+            {
+                int cid = _stages[i].chapter_id;
+                if (!chapters.TryGetValue(cid, out var range))
+                    chapters[cid] = (i, i);
+                else
+                    chapters[cid] = (range.first, i);
+            }
+
+            const float nodeHalf = 100f;
+            const float chPad    = 160f;
+
+            var sortedIds = new List<int>(chapters.Keys);
+            sortedIds.Sort();
+
+            var bounds = new Dictionary<int, (float yTop, float yBot)>();
+            foreach (int cid in sortedIds)
+            {
+                var r = chapters[cid];
+                bounds[cid] = (
+                    positions[r.last].y  + nodeHalf + chPad,
+                    positions[r.first].y - nodeHalf - chPad
+                );
+            }
+
+            // ── Single multi-stop gradient spanning ALL chapters ──────────────
+            // No seam strips needed: stops computed from chapter bounds ensure
+            // the gradient blends exactly at each chapter boundary.
+            // t = 0 (bottom of content) → t = 1 (top of content)
+            // t(y) = (totalHeight + y) / totalHeight  (y is negative anchor-top space)
+            {
+                var stopList = new List<(float t, Color color)>();
+                for (int c = 0; c < sortedIds.Count; c++)
+                {
+                    int   cid   = sortedIds[c];
+                    var   theme = ChapterBgTheme.Get(cid);
+                    var   (yTop, yBot) = bounds[cid];
+                    float tBot  = (totalHeight + yBot) / totalHeight;
+                    float tTop  = (totalHeight + yTop) / totalHeight;
+                    tBot = Mathf.Clamp01(tBot);
+                    tTop = Mathf.Clamp01(tTop);
+                    stopList.Add((tBot, theme.BottomColor));
+                    stopList.Add((tTop, theme.TopColor));
+                }
+
+                var gradGo = new GameObject("ChapterGradient", typeof(RectTransform));
+                gradGo.transform.SetParent(_contentRoot, false);
+                var grad = gradGo.AddComponent<UIVerticalGradient>();
+                grad.raycastTarget = false;
+                grad.SetStops(stopList.ToArray());
+                var grt = gradGo.GetComponent<RectTransform>();
+                grt.anchorMin = Vector2.zero;
+                grt.anchorMax = Vector2.one;
+                grt.offsetMin = grt.offsetMax = Vector2.zero;
+                gradGo.transform.SetSiblingIndex(0); // bottom of render stack
+                _bgGradientGo = gradGo;
+            }
+
+            // ── Per-chapter decoration views (on top of gradient, behind PathStrip) ──
+            // Create in reverse so ch1 dec index < ch2 dec index (ch1 renders behind ch2 at seam)
+            for (int c = sortedIds.Count - 1; c >= 0; c--)
+            {
+                int   cid          = sortedIds[c];
+                var   (yTop, yBot) = bounds[cid];
+                float height       = yTop - yBot;
+
+                var go = new GameObject($"ChapterBg_{cid}", typeof(RectTransform));
+                go.transform.SetParent(_contentRoot, false);
+                go.AddComponent<ScrollRectForwarder>();
+                var bgView = go.AddComponent<ChapterBackgroundView>();
+                bgView.Bind(chapterId: cid, bgThemeId: cid, yAnchoredTop: yTop, height: height);
+                go.transform.SetSiblingIndex(1); // after gradient (index 0), before PathStrip
+                _bgViews.Add(bgView);
+            }
         }
 
         private void BuildPath(Vector2[] nodePositions, int count, float totalHeight)

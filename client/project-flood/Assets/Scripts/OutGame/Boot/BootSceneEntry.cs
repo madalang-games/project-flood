@@ -10,6 +10,11 @@ namespace Game.OutGame.Boot
 
         private const string LobbyScene = "Lobby";
 
+        private void Awake()
+        {
+            Screen.orientation = ScreenOrientation.Portrait;
+        }
+
         private void Start()
         {
             Debug.Log("[Boot] Start");

@@ -24,6 +24,7 @@ Namespace: `Game.Core.UI`
 | `TutorialOverlay.cs` | `TutorialOverlay` | Canvas-based full-screen tutorial spotlight/tooltip overlay |
 | `TutorialTarget.cs` | `TutorialTarget` | Attach to any scene/UI GameObject; registers itself by `_targetId` so TutorialOverlay resolves targets without name coupling |
 | `UIPulseGlowEffect.cs` | `UIPulseGlowEffect` | Visual micro-animation component handling scale pulsing and rotational glow |
+| `UIVerticalGradient.cs` | `UIVerticalGradient` | MaskableGraphic 2-color vertical gradient via vertex colors; `SetColors(top,bottom)` |
 
 ## Symbols
 | symbol | kind | note |
