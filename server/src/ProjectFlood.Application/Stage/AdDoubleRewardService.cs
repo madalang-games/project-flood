@@ -40,7 +40,21 @@ public sealed class AdDoubleRewardService
 
         var result = await _adVerifier.VerifyAsync(request.Provider, request.AdToken, ct);
         if (!result.Verified)
+        {
+            var pending = new PendingAdClaim
+            {
+                UserId = userId,
+                PlacementId = "DOUBLE_REWARD_STAGE_CLEAR",
+                Provider = request.Provider,
+                AdToken = request.AdToken,
+                ContextType = "stage_clear",
+                ContextId = request.AttemptId,
+                RequestJson = System.Text.Json.JsonSerializer.Serialize(new { stageId = request.StageId, attemptId = request.AttemptId }),
+                CorrelationId = correlationId
+            };
+            await _redis.StringSetAsync($"pending_claim:{request.AdToken}", System.Text.Json.JsonSerializer.Serialize(pending), TimeSpan.FromMinutes(5));
             throw new GameApiException(ErrorCodes.AdSsvPending, "Ad SSV callback not yet received.");
+        }
 
         var existing = await _db.AdRewardTransactions.Query()
             .FirstOrDefaultAsync(x => x.Provider == request.Provider && x.ProviderTxId == result.ProviderTxId, ct);

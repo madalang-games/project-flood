@@ -22,11 +22,21 @@ namespace Game.InGame.View
         private Action _onForfeit;
         private Action<int> _onReviveSuccess;
 
+        private float    _cooldownTimer = 0f;
+        private TMP_Text _watchAdButtonText;
+        private string   _originalWatchAdButtonText = "Watch Ad";
+
         private void Awake()
         {
             _continueButton.onClick.AddListener(OnContinue);
             _forfeitButton.onClick.AddListener(OnForfeit);
-            if (_watchAdButton != null) _watchAdButton.onClick.AddListener(OnWatchAd);
+            if (_watchAdButton != null)
+            {
+                _watchAdButton.onClick.AddListener(OnWatchAd);
+                _watchAdButtonText = _watchAdButton.GetComponentInChildren<TMP_Text>();
+                if (_watchAdButtonText != null)
+                    _originalWatchAdButtonText = _watchAdButtonText.text;
+            }
         }
 
         public void Init(int continueCost, int currentGold, Action onContinue, Action onForfeit, Action<int> onReviveSuccess = null)
@@ -48,6 +58,25 @@ namespace Game.InGame.View
             RefreshAdButton();
         }
 
+        private void Update()
+        {
+            if (_cooldownTimer > 0f)
+            {
+                _cooldownTimer -= Time.deltaTime;
+                if (_cooldownTimer <= 0f)
+                {
+                    _cooldownTimer = 0f;
+                    if (_watchAdButtonText != null) _watchAdButtonText.text = _originalWatchAdButtonText;
+                    RefreshAdButton();
+                }
+                else
+                {
+                    if (_watchAdButtonText != null)
+                        _watchAdButtonText.text = $"{_originalWatchAdButtonText} ({Mathf.CeilToInt(_cooldownTimer)}s)";
+                }
+            }
+        }
+
         private void RefreshAdButton()
         {
             if (StageApiService.Instance == null || StageApiService.Instance.CurrentAttempt == null)
@@ -65,7 +94,12 @@ namespace Game.InGame.View
 
             if (_watchAdButton != null)
             {
-                _watchAdButton.gameObject.SetActive(remaining > 0);
+                bool showButton = remaining > 0;
+                _watchAdButton.gameObject.SetActive(showButton);
+                if (showButton)
+                {
+                    _watchAdButton.interactable = _cooldownTimer <= 0f;
+                }
             }
         }
 
@@ -89,6 +123,9 @@ namespace Game.InGame.View
             int stageId = attempt.StageId;
             string attemptId = attempt.AttemptId;
 
+            _cooldownTimer = 30f;
+            RefreshAdButton();
+
             UIManager.Instance?.ShowLoading();
             
             AdMobService.Instance.WatchRewardedAd("STAGE_REVIVE", result =>
@@ -107,6 +144,9 @@ namespace Game.InGame.View
                         {
                             UIManager.Instance?.HideLoading();
                             UIManager.Instance?.ShowToast($"Revive failed: {err}", ToastType.Warning);
+                            
+                            _cooldownTimer = 0f;
+                            if (_watchAdButtonText != null) _watchAdButtonText.text = _originalWatchAdButtonText;
                             RefreshAdButton();
                         });
                 }
@@ -114,6 +154,10 @@ namespace Game.InGame.View
                 {
                     UIManager.Instance?.HideLoading();
                     UIManager.Instance?.ShowToast("Ad failed or was cancelled.", ToastType.Warning);
+
+                    _cooldownTimer = 0f;
+                    if (_watchAdButtonText != null) _watchAdButtonText.text = _originalWatchAdButtonText;
+                    RefreshAdButton();
                 }
             });
         }

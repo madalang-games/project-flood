@@ -1,5 +1,6 @@
 using System;
 using System.Globalization;
+using System.Collections.Generic;
 using ProjectFlood.Contracts.Stage;
 using UnityEngine;
 
@@ -97,34 +98,36 @@ namespace Game.Services
 
         private System.Collections.IEnumerator PollReviveAd(int stageId, string attemptId, string provider, string adToken, int attempt, Action<StageReviveAdResponse> onSuccess, Action<string> onError)
         {
-            var body = $"{{\"provider\":\"{Escape(provider)}\",\"adToken\":\"{Escape(adToken)}\"}}";
-            bool complete = false;
-            string errorText = null;
-            StageReviveAdResponse response = null;
-
-            NetworkService.Instance.Post($"/api/stages/{stageId}/attempts/{attemptId}/revive-ad", body, (ok, result) =>
+            if (attempt == 0)
             {
-                if (ok)
+                var body = $"{{\"provider\":\"{Escape(provider)}\",\"adToken\":\"{Escape(adToken)}\"}}";
+                bool complete = false;
+                string errorText = null;
+                StageReviveAdResponse response = null;
+
+                NetworkService.Instance.Post($"/api/stages/{stageId}/attempts/{attemptId}/revive-ad", body, (ok, result) =>
                 {
-                    var json = JsonUtility.FromJson<StageReviveAdJson>(result);
-                    response = json.ToContract();
-                }
-                else
+                    if (ok)
+                    {
+                        var json = JsonUtility.FromJson<StageReviveAdJson>(result);
+                        response = json.ToContract();
+                    }
+                    else
+                    {
+                        errorText = result;
+                    }
+                    complete = true;
+                });
+
+                yield return new WaitUntil(() => complete);
+
+                if (response != null)
                 {
-                    errorText = result;
+                    _currentAttempt = response.Attempt;
+                    onSuccess?.Invoke(response);
+                    yield break;
                 }
-                complete = true;
-            });
 
-            yield return new WaitUntil(() => complete);
-
-            if (response != null)
-            {
-                _currentAttempt = response.Attempt;
-                onSuccess?.Invoke(response);
-            }
-            else
-            {
                 string code = null;
                 try
                 {
@@ -133,10 +136,61 @@ namespace Game.Services
                 }
                 catch {}
 
-                if (code == "AD_SSV_PENDING" && attempt < 10)
+                if (code == "AD_SSV_PENDING")
                 {
                     yield return new WaitForSeconds(1.0f);
                     StartCoroutine(PollReviveAd(stageId, attemptId, provider, adToken, attempt + 1, onSuccess, onError));
+                }
+                else
+                {
+                    onError?.Invoke(errorText);
+                }
+            }
+            else
+            {
+                bool complete = false;
+                string errorText = null;
+                string resultText = null;
+                bool isSuccess = false;
+
+                NetworkService.Instance.Get($"/api/ad-rewards/status/{adToken}", NetworkRetryOptions.LobbyAndSave, (ok, result) =>
+                {
+                    isSuccess = ok;
+                    if (ok) resultText = result;
+                    else errorText = result;
+                    complete = true;
+                });
+
+                yield return new WaitUntil(() => complete);
+
+                if (isSuccess && resultText != null)
+                {
+                    var statusResponse = JsonUtility.FromJson<AdRewardStatusJson>(resultText);
+                    if (statusResponse != null && statusResponse.status == "GRANTED")
+                    {
+                        var attemptSnapshot = statusResponse.attempt != null ? statusResponse.attempt.ToContract() : new StageAttemptSnapshot();
+                        _currentAttempt = attemptSnapshot;
+
+                        var reviveResponse = new StageReviveAdResponse
+                        {
+                            Granted = true,
+                            Duplicate = false,
+                            ReviveCount = statusResponse.reviveCount,
+                            TurnsGranted = statusResponse.turnsGranted,
+                            Attempt = attemptSnapshot,
+                            ServerTime = ParseTime(statusResponse.serverTime)
+                        };
+                        onSuccess?.Invoke(reviveResponse);
+                    }
+                    else if (attempt < 10)
+                    {
+                        yield return new WaitForSeconds(1.0f);
+                        StartCoroutine(PollReviveAd(stageId, attemptId, provider, adToken, attempt + 1, onSuccess, onError));
+                    }
+                    else
+                    {
+                        onError?.Invoke("Ad verification timeout.");
+                    }
                 }
                 else
                 {
@@ -244,6 +298,27 @@ namespace Game.Services
             => DateTimeOffset.TryParse(value, CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal, out var parsed)
                 ? parsed
                 : DateTimeOffset.MinValue;
+
+        [Serializable]
+        private class AdRewardStatusJson
+        {
+            public string status;
+            public string placementId;
+            public List<GrantedRewardJson> grantedRewards;
+            public StageAttemptSnapshotJson attempt;
+            public int reviveCount;
+            public int turnsGranted;
+            public string serverTime;
+        }
+
+        [Serializable]
+        private class GrantedRewardJson
+        {
+            public string rewardType;
+            public int targetId;
+            public int amount;
+            public int durationSeconds;
+        }
     }
 }
 #pragma warning restore 0649

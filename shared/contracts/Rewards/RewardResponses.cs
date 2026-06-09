@@ -46,4 +46,17 @@ namespace ProjectFlood.Contracts.Rewards
         public StaminaSnapshot Stamina { get; set; } = new StaminaSnapshot();
         public DateTimeOffset ServerTime { get; set; }
     }
+
+    public sealed class AdRewardStatusResponse
+    {
+        public string Status { get; set; } = string.Empty; // PENDING, GRANTED
+        public string PlacementId { get; set; } = string.Empty;
+        public List<GrantedRewardDto> GrantedRewards { get; set; } = new List<GrantedRewardDto>();
+        public StaminaSnapshot? Stamina { get; set; }
+        public ProjectFlood.Contracts.Currency.CurrencySnapshot? Currency { get; set; }
+        public int ReviveCount { get; set; }
+        public int TurnsGranted { get; set; }
+        public ProjectFlood.Contracts.Stage.StageAttemptSnapshot? Attempt { get; set; }
+        public DateTimeOffset ServerTime { get; set; }
+    }
 }

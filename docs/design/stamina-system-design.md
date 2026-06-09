@@ -76,6 +76,17 @@ Ad reward transactions are shared across stamina and future ad rewards.
 | Duplicate tx with different user/context | Reject with `AD_REWARD_DUPLICATE` |
 | Full life claim | Client dims first; server rejects with `STAMINA_FULL` |
 
+### 4. Rate Limiting Policy
+To prevent abusive requests on high-value endpoints, the server enforces a sliding window rate limit:
+- **Scope**: Applied to transactional endpoints (`Stage Attempt Start/Clear`, `Reward Claims`, `Ad SSV Reward Claim`).
+- **Limit**: `5 requests per minute` per authenticated user ID.
+- **Exception**: To allow rapid progression in early content, the rate limits on `Stage Attempt Start` and `Stage Attempt Clear` are **completely bypassed for stage_id <= 10**.
+- **Response**: Triggers `429 Too Many Requests` with an error code of `RATE_LIMITED`.
+
+### 5. Ad Verification Environments (Dev Mock vs Prod SSV)
+- **Dev Environment**: Rewarded ad callbacks use a mock verification flow. The client generates local dummy tokens, and the server resolves transactions directly without communicating with external AdMob servers.
+- **Prod Environment**: Strict AdMob Server-to-Server Verification (SSV) is enforced. The client submits public AdMob parameters, and the server validates the incoming SSV callback from AdMob's public key list before granting rewards.
+
 ## API Surface
 | method | route | purpose |
 |--------|-------|---------|

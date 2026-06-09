@@ -5,8 +5,8 @@ Checklist for rewarded ads, interstitial ad display cooldowns, double rewards, A
 ## 1. AdMob SDK & Placements (MVP)
 - [x] **AdMob Unity SDK Integration**: Core SDK setup with test placements for STAMINA_LIFE, STAGE_REVIVE, and DOUBLE_REWARD_STAGE_CLEAR.
   - Reference: [AdMobService.cs](file:///c:/Users/SangHyeok/Desktop/git/madalang-games/project-flood/client/project-flood/Assets/Scripts/Services/AdMobService.cs)
-- [/] **Rewarded Ad Request & Verify**: Request rewarded ads with custom verification nonce (SSV custom data), validating success callbacks.
-  - Status: Client requests nonce in [AdMobService.cs:L75](file:///c:/Users/SangHyeok/Desktop/git/madalang-games/project-flood/client/project-flood/Assets/Scripts/Services/AdMobService.cs#L75). Server receives callback in [AdSsvCallbackController.cs](file:///c:/Users/SangHyeok/Desktop/git/madalang-games/project-flood/server/src/ProjectFlood.API/Controllers/AdSsvCallbackController.cs) and tracks transactions in `ad_reward_transactions` table. Client needs to handle loading blocker overlay during verify delay.
+- [x] **Rewarded Ad Request & Verify**: Request rewarded ads with custom verification nonce (SSV custom data), validating success callbacks.
+  - Status: Client requests nonce in [AdMobService.cs:L75](file:///c:/Users/SangHyeok/Desktop/git/madalang-games/project-flood/client/project-flood/Assets/Scripts/Services/AdMobService.cs#L75). Server receives callback in [AdSsvCallbackController.cs](file:///c:/Users/SangHyeok/Desktop/git/madalang-games/project-flood/server/src/ProjectFlood.API/Controllers/AdSsvCallbackController.cs) and tracks transactions in `ad_reward_transactions` table. Client handles loading blocker overlay during verify delay.
 
 ## 2. In-Game Ad Placements (MVP)
 - [x] **Stamina Ad Placement**: Spend ad view to grant +1 life when life count is less than Max Life.
@@ -25,8 +25,8 @@ Checklist for rewarded ads, interstitial ad display cooldowns, double rewards, A
   - Reference: [AdEligibilityCache.cs](file:///c:/Users/SangHyeok/Desktop/git/madalang-games/project-flood/client/project-flood/Assets/Scripts/Services/AdEligibilityCache.cs)
 
 ## 4. Ads Verification (Active Scope)
-- [ ] **Rewarded Ad Verify UX**: Show loading blocker overlay (`LoadingOverlayView.prefab`) while SSV callback settles after ad closes; prevent premature dismiss by polling `/api/ad-rewards/status/{txId}` every 1s (max 10s).
-- [ ] **AdMob Cooldown enforcement**: Enforce 30-second client-side cooldown on the ad buttons to prevent click spamming and comply with AdMob invalid traffic policies.
+- [x] **Rewarded Ad Verify UX**: Show loading blocker overlay (`LoadingOverlayView.prefab`) while SSV callback settles after ad closes; prevent premature dismiss by polling `/api/ad-rewards/status/{txId}` every 1s (max 10s).
+- [x] **AdMob Cooldown enforcement**: Enforce 30-second client-side cooldown on the ad buttons to prevent click spamming and comply with AdMob invalid traffic policies.
 
 ## 5. Excluded Scope (Phase 2+)
 - [ ] **IAP "No-Ads" Purchase**: Integrated In-App Purchases (Unity IAP) allowing users to purchase "No-Ads" package. If purchased, suppress forced interstitial ads (rewarded ads remain active). (Excluded per user request)

@@ -21,6 +21,7 @@ namespace ProjectFlood.Contracts.Stage
     {
         public StageAttemptSnapshot Attempt { get; set; } = new StageAttemptSnapshot();
         public StaminaSnapshot Stamina { get; set; } = new StaminaSnapshot();
+        public int WinStreak { get; set; }
         public DateTimeOffset ServerTime { get; set; }
     }
 

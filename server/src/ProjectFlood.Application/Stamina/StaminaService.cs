@@ -4,6 +4,8 @@ using ProjectFlood.Application.Logging;
 using ProjectFlood.Application.Rewards;
 using ProjectFlood.Contracts.Stamina;
 using ProjectFlood.Infrastructure.Generated;
+using StackExchange.Redis;
+using System.Text.Json;
 
 namespace ProjectFlood.Application.Stamina;
 
@@ -12,12 +14,14 @@ public sealed class StaminaService
     private readonly AppDbContext _db;
     private readonly StaminaConfigProvider _config;
     private readonly IAdRewardVerifier _adVerifier;
+    private readonly IDatabase _redis;
 
-    public StaminaService(AppDbContext db, StaminaConfigProvider config, IAdRewardVerifier adVerifier)
+    public StaminaService(AppDbContext db, StaminaConfigProvider config, IAdRewardVerifier adVerifier, IConnectionMultiplexer redis)
     {
         _db = db;
         _config = config;
         _adVerifier = adVerifier;
+        _redis = redis.GetDatabase();
     }
 
     public async Task<StaminaStatusResponse> GetAsync(long userId, CancellationToken ct)
@@ -51,7 +55,21 @@ public sealed class StaminaService
 
         var result = await _adVerifier.VerifyAsync(provider, adToken, ct);
         if (!result.Verified)
+        {
+            var pending = new PendingAdClaim
+            {
+                UserId = userId,
+                PlacementId = "STAMINA_LIFE",
+                Provider = provider,
+                AdToken = adToken,
+                ContextType = "home",
+                ContextId = string.Empty,
+                RequestJson = string.Empty,
+                CorrelationId = correlationId
+            };
+            await _redis.StringSetAsync($"pending_claim:{adToken}", JsonSerializer.Serialize(pending), TimeSpan.FromMinutes(5));
             throw new GameApiException(ErrorCodes.AdSsvPending, "Ad SSV callback not yet received.");
+        }
 
         var existing = await FindAdTransactionAsync(provider, result.ProviderTxId, ct);
         if (existing is not null)

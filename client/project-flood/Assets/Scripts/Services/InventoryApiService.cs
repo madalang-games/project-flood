@@ -42,6 +42,23 @@ namespace Game.Services
             });
         }
 
+        public void BuyItem(int itemId, Action<BuyItemResponse> onSuccess = null, Action<string> onError = null)
+        {
+            var body = $"{{\"itemId\":{itemId}}}";
+            NetworkService.Instance.Post("/api/inventory/buy", body, (ok, result) =>
+            {
+                if (!ok) { onError?.Invoke(result); return; }
+                var json = JsonUtility.FromJson<BuyItemResponseJson>(result);
+                var response = json.ToContract();
+                if (response != null)
+                {
+                    PlayerProgressService.Instance?.SetInventory(response.Inventory);
+                    PlayerProgressService.Instance?.SetGold((int)response.Currency.SoftAmount);
+                }
+                onSuccess?.Invoke(response);
+            });
+        }
+
         private static string Escape(string value) => (value ?? string.Empty).Replace("\\", "\\\\").Replace("\"", "\\\"");
 
         [Serializable]
@@ -74,6 +91,35 @@ namespace Game.Services
                     }
                 }
                 return snapshot;
+            }
+        }
+
+        [Serializable]
+        private class CurrencySnapshotJson
+        {
+            public long softAmount;
+
+            public ProjectFlood.Contracts.Currency.CurrencySnapshot ToContract() => new ProjectFlood.Contracts.Currency.CurrencySnapshot
+            {
+                SoftAmount = softAmount
+            };
+        }
+
+        [Serializable]
+        private class BuyItemResponseJson
+        {
+            public InventorySnapshotJson inventory;
+            public CurrencySnapshotJson currency;
+            public string serverTime;
+
+            public BuyItemResponse ToContract()
+            {
+                return new BuyItemResponse
+                {
+                    Inventory = inventory?.ToContract() ?? new InventorySnapshot(),
+                    Currency = currency?.ToContract() ?? new ProjectFlood.Contracts.Currency.CurrencySnapshot(),
+                    ServerTime = DateTimeOffset.TryParse(serverTime, out var dt) ? dt : DateTimeOffset.UtcNow
+                };
             }
         }
     }

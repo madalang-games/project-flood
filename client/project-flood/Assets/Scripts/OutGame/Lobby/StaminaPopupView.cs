@@ -20,11 +20,22 @@ namespace Game.OutGame.Lobby
         [SerializeField] private Button      _closeButton;
         [SerializeField] private Button      _backdropButton;
 
+        private float    _cooldownTimer = 0f;
+        private TMP_Text _buttonText;
+        private string   _originalButtonText = "Watch Ad";
+
         private void Awake()
         {
             _watchAdButton?.onClick.AddListener(OnWatchAd);
             _closeButton?.onClick.AddListener(Close);
             _backdropButton?.onClick.AddListener(Close);
+
+            if (_watchAdButton != null)
+            {
+                _buttonText = _watchAdButton.GetComponentInChildren<TMP_Text>();
+                if (_buttonText != null)
+                    _originalButtonText = _buttonText.text;
+            }
         }
 
         private void OnEnable()
@@ -40,7 +51,25 @@ namespace Game.OutGame.Lobby
             if (api != null) api.OnStaminaUpdated -= Refresh;
         }
 
-        private void Update() => RefreshTimer();
+        private void Update()
+        {
+            if (_cooldownTimer > 0f)
+            {
+                _cooldownTimer -= Time.deltaTime;
+                if (_cooldownTimer <= 0f)
+                {
+                    _cooldownTimer = 0f;
+                    if (_buttonText != null) _buttonText.text = _originalButtonText;
+                    Refresh();
+                }
+                else
+                {
+                    if (_buttonText != null)
+                        _buttonText.text = $"{_originalButtonText} ({Mathf.CeilToInt(_cooldownTimer)}s)";
+                }
+            }
+            RefreshTimer();
+        }
 
         private void Refresh()
         {
@@ -55,13 +84,16 @@ namespace Game.OutGame.Lobby
             if (_countText != null)
                 _countText.text = latest.IsUnlimited ? "∞" : estimated.ToString();
 
-            // Dim Watch Ad button when at MAX or unlimited
+            // Dim Watch Ad button when at MAX or unlimited or in cooldown
             bool isMax = !latest.IsUnlimited && estimated >= latest.Max;
+            bool isInCooldown = _cooldownTimer > 0f;
+            bool shouldDisable = isMax || isInCooldown;
+
             if (_watchAdButtonGroup != null)
             {
-                _watchAdButtonGroup.alpha        = isMax ? 0.35f : 1f;
-                _watchAdButtonGroup.interactable = !isMax;
-                _watchAdButtonGroup.blocksRaycasts = !isMax;
+                _watchAdButtonGroup.alpha        = shouldDisable ? 0.35f : 1f;
+                _watchAdButtonGroup.interactable = !shouldDisable;
+                _watchAdButtonGroup.blocksRaycasts = !shouldDisable;
             }
 
             RefreshTimer();
@@ -108,21 +140,44 @@ namespace Game.OutGame.Lobby
         private void OnWatchAd()
         {
             var api = StaminaApiService.Instance;
-            if (api == null) return;
+            if (api == null || AdMobService.Instance == null) return;
+
+            _cooldownTimer = 30f;
+            Refresh();
 
             Game.Core.UIManager.Instance?.ShowLoading();
-            api.ClaimAdLife("rewarded_video", "dummy_ad_token",
-                onSuccess: _ =>
+            AdMobService.Instance.WatchRewardedAd("STAMINA_LIFE", result =>
+            {
+                if (!result.HasValue || !result.Value.Earned)
                 {
                     Game.Core.UIManager.Instance?.HideLoading();
-                    Game.Core.UIManager.Instance?.ShowToast("+1 Life!", Core.UI.ToastType.Success);
+                    Game.Core.UIManager.Instance?.ShowToast(
+                        LocalizationService.Instance.Get("error.ad_failed") ?? "Ad watched failed.", 
+                        Core.UI.ToastType.Warning);
+
+                    _cooldownTimer = 0f;
+                    if (_buttonText != null) _buttonText.text = _originalButtonText;
                     Refresh();
-                },
-                onError: err =>
-                {
-                    Game.Core.UIManager.Instance?.HideLoading();
-                    Game.Core.UIManager.Instance?.ShowToast($"Ad error: {err}", Core.UI.ToastType.Warning);
-                });
+                    return;
+                }
+
+                api.ClaimAdLife("admob", result.Value.AdToken,
+                    onSuccess: _ =>
+                    {
+                        Game.Core.UIManager.Instance?.HideLoading();
+                        Game.Core.UIManager.Instance?.ShowToast("+1 Life!", Core.UI.ToastType.Success);
+                        Refresh();
+                    },
+                    onError: err =>
+                    {
+                        Game.Core.UIManager.Instance?.HideLoading();
+                        Game.Core.UIManager.Instance?.ShowToast($"Ad error: {err}", Core.UI.ToastType.Warning);
+
+                        _cooldownTimer = 0f;
+                        if (_buttonText != null) _buttonText.text = _originalButtonText;
+                        Refresh();
+                    });
+            });
         }
 
         private void Close()

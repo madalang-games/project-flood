@@ -98,4 +98,52 @@ public sealed class InventoryService
 
         return await GetInventoryAsync(userId, ct);
     }
+
+    public async Task<(InventorySnapshot Inventory, ProjectFlood.Contracts.Currency.CurrencySnapshot Currency)> BuyItemAsync(
+        long userId,
+        int itemId,
+        string correlationId,
+        CancellationToken ct)
+    {
+        var now = DateTimeOffset.UtcNow;
+        var cost = 100;
+
+        await using var tx = await _db.Database.BeginTransactionAsync(ct);
+
+        var currencyRow = await _db.UserCurrency.FindAsync(userId, ct);
+        if (currencyRow is null || currencyRow.SoftAmount < cost)
+            throw new GameApiException(ErrorCodes.InsufficientCurrency, "Insufficient gold balance to purchase booster.");
+
+        currencyRow.SoftAmount -= cost;
+        currencyRow.UpdatedAt = now;
+        _db.EventLogs.Insert(EventLogFactory.CurrencyChanged(userId, correlationId, -cost, "buy_booster", currencyRow.SoftAmount));
+
+        var invRow = await _db.UserInventory.FindAsync(userId, itemId, ct);
+        if (invRow is null)
+        {
+            invRow = new UserInventoryRow
+            {
+                UserId = userId,
+                ItemId = itemId,
+                Count = 0,
+                UpdatedAt = now
+            };
+            _db.UserInventory.Insert(invRow);
+        }
+
+        invRow.Count += 1;
+        invRow.UpdatedAt = now;
+        _db.EventLogs.Insert(EventLogFactory.InventoryChanged(userId, correlationId, itemId, 1, "buy_booster", invRow.Count));
+
+        await _db.SaveAsync(ct);
+        await tx.CommitAsync(ct);
+
+        var inventorySnapshot = await GetInventoryAsync(userId, ct);
+        var currencySnapshot = new ProjectFlood.Contracts.Currency.CurrencySnapshot
+        {
+            SoftAmount = currencyRow.SoftAmount
+        };
+
+        return (inventorySnapshot, currencySnapshot);
+    }
 }

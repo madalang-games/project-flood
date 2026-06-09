@@ -1,5 +1,6 @@
 using System;
 using System.Globalization;
+using System.Collections.Generic;
 using ProjectFlood.Contracts.Stamina;
 using UnityEngine;
 
@@ -64,34 +65,36 @@ namespace Game.Services
 
         private System.Collections.IEnumerator PollClaimAdLife(string provider, string adToken, int attempt, Action<StaminaAdLifeRewardResponse> onSuccess, Action<string> onError)
         {
-            var body = $"{{\"provider\":\"{Escape(provider)}\",\"adToken\":\"{Escape(adToken)}\"}}";
-            bool complete = false;
-            string errorText = null;
-            StaminaAdLifeRewardResponse response = null;
-
-            NetworkService.Instance.Post("/api/stamina/ad-life-reward", body, (ok, result) =>
+            if (attempt == 0)
             {
-                if (ok)
+                var body = $"{{\"provider\":\"{Escape(provider)}\",\"adToken\":\"{Escape(adToken)}\"}}";
+                bool complete = false;
+                string errorText = null;
+                StaminaAdLifeRewardResponse response = null;
+
+                NetworkService.Instance.Post("/api/stamina/ad-life-reward", body, (ok, result) =>
                 {
-                    var json = JsonUtility.FromJson<StaminaAdLifeRewardJson>(result);
-                    response = json.ToContract();
-                }
-                else
+                    if (ok)
+                    {
+                        var json = JsonUtility.FromJson<StaminaAdLifeRewardJson>(result);
+                        response = json.ToContract();
+                    }
+                    else
+                    {
+                        errorText = result;
+                    }
+                    complete = true;
+                });
+
+                yield return new WaitUntil(() => complete);
+
+                if (response != null)
                 {
-                    errorText = result;
+                    UpdateStamina(response.Stamina, response.ServerTime);
+                    onSuccess?.Invoke(response);
+                    yield break;
                 }
-                complete = true;
-            });
 
-            yield return new WaitUntil(() => complete);
-
-            if (response != null)
-            {
-                UpdateStamina(response.Stamina, response.ServerTime);
-                onSuccess?.Invoke(response);
-            }
-            else
-            {
                 string code = null;
                 try
                 {
@@ -100,10 +103,61 @@ namespace Game.Services
                 }
                 catch {}
 
-                if (code == "AD_SSV_PENDING" && attempt < 10)
+                if (code == "AD_SSV_PENDING")
                 {
                     yield return new WaitForSeconds(1.0f);
                     StartCoroutine(PollClaimAdLife(provider, adToken, attempt + 1, onSuccess, onError));
+                }
+                else
+                {
+                    onError?.Invoke(errorText);
+                }
+            }
+            else
+            {
+                bool complete = false;
+                string errorText = null;
+                string resultText = null;
+                bool isSuccess = false;
+
+                NetworkService.Instance.Get($"/api/ad-rewards/status/{adToken}", NetworkRetryOptions.LobbyAndSave, (ok, result) =>
+                {
+                    isSuccess = ok;
+                    if (ok) resultText = result;
+                    else errorText = result;
+                    complete = true;
+                });
+
+                yield return new WaitUntil(() => complete);
+
+                if (isSuccess && resultText != null)
+                {
+                    var statusResponse = JsonUtility.FromJson<AdRewardStatusJson>(resultText);
+                    if (statusResponse != null && statusResponse.status == "GRANTED")
+                    {
+                        var staminaSnapshot = statusResponse.stamina?.ToContract() ?? new StaminaSnapshot();
+                        var serverTime = ParseTime(statusResponse.serverTime) ?? DateTimeOffset.UtcNow;
+                        UpdateStamina(staminaSnapshot, serverTime);
+
+                        var rewardResponse = new StaminaAdLifeRewardResponse
+                        {
+                            Granted = true,
+                            Duplicate = false,
+                            Delta = statusResponse.GrantedLifeAmount(),
+                            Stamina = staminaSnapshot,
+                            ServerTime = serverTime
+                        };
+                        onSuccess?.Invoke(rewardResponse);
+                    }
+                    else if (attempt < 10)
+                    {
+                        yield return new WaitForSeconds(1.0f);
+                        StartCoroutine(PollClaimAdLife(provider, adToken, attempt + 1, onSuccess, onError));
+                    }
+                    else
+                    {
+                        onError?.Invoke("Ad verification timeout.");
+                    }
                 }
                 else
                 {
@@ -232,6 +286,36 @@ namespace Game.Services
             return DateTimeOffset.TryParse(value, CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal, out var parsed)
                 ? parsed
                 : (DateTimeOffset?)null;
+        }
+
+        [Serializable]
+        private class AdRewardStatusJson
+        {
+            public string status;
+            public string placementId;
+            public List<GrantedRewardJson> grantedRewards;
+            public StaminaSnapshotJson stamina;
+            public string serverTime;
+
+            public int GrantedLifeAmount()
+            {
+                if (grantedRewards == null) return 0;
+                foreach (var r in grantedRewards)
+                {
+                    if (r.rewardType == "STAMINA_LIFE")
+                        return r.amount;
+                }
+                return 0;
+            }
+        }
+
+        [Serializable]
+        private class GrantedRewardJson
+        {
+            public string rewardType;
+            public int targetId;
+            public int amount;
+            public int durationSeconds;
         }
     }
 }

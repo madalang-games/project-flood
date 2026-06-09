@@ -22,4 +22,16 @@ public sealed class InventoryController : ControllerBaseEx
     [HttpPost("spend")]
     public Task<InventorySnapshot> Spend([FromBody] SpendItemRequest request, CancellationToken ct)
         => _inventory.SpendItemAsync(PlayerId, request.ItemId, request.Amount, request.Reason, CorrelationId, ct);
+
+    [HttpPost("buy")]
+    public async Task<BuyItemResponse> Buy([FromBody] BuyItemRequest request, CancellationToken ct)
+    {
+        var (inventory, currency) = await _inventory.BuyItemAsync(PlayerId, request.ItemId, CorrelationId, ct);
+        return new BuyItemResponse
+        {
+            Inventory = inventory,
+            Currency = currency,
+            ServerTime = System.DateTimeOffset.UtcNow
+        };
+    }
 }
