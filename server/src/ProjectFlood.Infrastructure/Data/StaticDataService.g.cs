@@ -8,6 +8,7 @@ namespace ProjectFlood.Infrastructure.Data;
 public partial class StaticDataService
 {
     private IReadOnlyDictionary<string, AdPlacementData> _adPlacements = new Dictionary<string, AdPlacementData>();
+    private IReadOnlyDictionary<int, AvatarData> _avatars = new Dictionary<int, AvatarData>();
     private IReadOnlyDictionary<byte, ColorPaletteData> _colorPalettes = new Dictionary<byte, ColorPaletteData>();
     private IReadOnlyDictionary<int, ItemData> _items = new Dictionary<int, ItemData>();
     private IReadOnlyDictionary<int, RewardGroupData> _rewardGroups = new Dictionary<int, RewardGroupData>();
@@ -19,6 +20,7 @@ public partial class StaticDataService
     private void InitGeneratedData(string dataRoot)
     {
         var adPath = System.IO.Path.Combine(dataRoot, "ad");
+        var avatarPath = System.IO.Path.Combine(dataRoot, "avatar");
         var commonPath = System.IO.Path.Combine(dataRoot, "common");
         var itemPath = System.IO.Path.Combine(dataRoot, "item");
         var rewardPath = System.IO.Path.Combine(dataRoot, "reward");
@@ -35,6 +37,14 @@ public partial class StaticDataService
                 AdType = r.ad_type,
                 CooldownSeconds = r.cooldown_seconds,
                 MinStage = r.min_stage,
+            });
+        _avatars = AvatarLoader.LoadAll(System.IO.Path.Combine(avatarPath, "avatar.csv"))
+            .ToDictionary(r => r.avatar_id, r => new AvatarData
+            {
+                AvatarId = r.avatar_id,
+                ResourceName = r.resource_name,
+                UnlockCost = r.unlock_cost,
+                UnlockType = r.unlock_type,
             });
         _colorPalettes = ColorPaletteLoader.LoadAll(System.IO.Path.Combine(commonPath, "color_palette.csv"))
             .ToDictionary(r => r.color_id, r => new ColorPaletteData
@@ -90,10 +100,13 @@ public partial class StaticDataService
                 TurnLimit = r.turn_limit,
                 Star1Ratio = r.star1_ratio,
                 Star2Ratio = r.star2_ratio,
+                Cells = r.cells,
                 VerifiedSolution = r.verified_solution,
                 RulesetVersion = r.ruleset_version,
                 RewardGroupId = r.reward_group_id,
                 RotationInterval = r.rotation_interval,
+                PortalData = r.portal_data,
+                ConveyorData = r.conveyor_data,
             });
         _staminaConfigs = StaminaConfigLoader.LoadAll(System.IO.Path.Combine(staminaPath, "stamina_config.csv"))
             .ToDictionary(r => r.config_id, r => new StaminaConfigData
@@ -115,6 +128,8 @@ public partial class StaticDataService
 
     public AdPlacementData? GetAdPlacement(string placement_id) => _adPlacements.GetValueOrDefault(placement_id);
     public IReadOnlyList<AdPlacementData> GetAllAdPlacements() => _adPlacements.Values.ToList();
+    public AvatarData? GetAvatar(int avatar_id) => _avatars.GetValueOrDefault(avatar_id);
+    public IReadOnlyList<AvatarData> GetAllAvatars() => _avatars.Values.ToList();
     public ColorPaletteData? GetColorPalette(byte color_id) => _colorPalettes.GetValueOrDefault(color_id);
     public IReadOnlyList<ColorPaletteData> GetAllColorPalettes() => _colorPalettes.Values.ToList();
     public ItemData? GetItem(int item_id) => _items.GetValueOrDefault(item_id);

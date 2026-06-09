@@ -8,6 +8,8 @@ public partial interface IStaticDataService
 {
     AdPlacementData? GetAdPlacement(string placement_id);
     IReadOnlyList<AdPlacementData> GetAllAdPlacements();
+    AvatarData? GetAvatar(int avatar_id);
+    IReadOnlyList<AvatarData> GetAllAvatars();
     ColorPaletteData? GetColorPalette(byte color_id);
     IReadOnlyList<ColorPaletteData> GetAllColorPalettes();
     ItemData? GetItem(int item_id);

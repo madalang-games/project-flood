@@ -12,8 +12,11 @@ public class StageData
     public sbyte TurnLimit { get; set; }
     public float Star1Ratio { get; set; }
     public float Star2Ratio { get; set; }
+    public string Cells { get; set; } = "";
     public string VerifiedSolution { get; set; } = "";
     public sbyte RulesetVersion { get; set; }
     public int RewardGroupId { get; set; }
     public sbyte RotationInterval { get; set; }
+    public string PortalData { get; set; } = "";
+    public string ConveyorData { get; set; } = "";
 }

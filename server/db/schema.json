@@ -169,6 +169,8 @@
         { "name": "total_stars_achieved_at", "type": "datetime", "null": true },
         { "name": "max_cleared_stage_id",    "type": "int32",    "null": false, "default": 0 },
         { "name": "max_stage_achieved_at",   "type": "datetime", "null": true },
+        { "name": "win_streak",              "type": "int32",    "null": false, "default": 0 },
+        { "name": "max_win_streak",          "type": "int32",    "null": false, "default": 0 },
         { "name": "updated_at",              "type": "datetime", "null": false }
       ],
       "indexes": [

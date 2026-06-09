@@ -18,6 +18,7 @@ using ProjectFlood.Application.Tutorial;
 using ProjectFlood.Domain.Interfaces;
 using ProjectFlood.Domain.Utilities;
 using ProjectFlood.Infrastructure.Concurrency;
+using ProjectFlood.Infrastructure.Data;
 using ProjectFlood.Infrastructure.Generated;
 using ProjectFlood.Infrastructure.Security;
 using ProjectFlood.Contracts.Common;
@@ -54,6 +55,9 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 // 2. Redis
 builder.Services.AddSingleton<IConnectionMultiplexer>(_ => ConnectionMultiplexer.Connect(appConfig.Redis.ConnectionString));
+
+// 3. Static data
+builder.Services.AddSingleton<IStaticDataService, StaticDataService>();
 
 // 3. Infrastructure and shared services
 builder.Services.AddSingleton<UserSerializer>();
@@ -163,6 +167,7 @@ app.UseSerilogRequestLogging(options =>
 app.UseMiddleware<ApiExceptionMiddleware>();
 app.UseAuthentication();
 app.UseMiddleware<UserIdResolutionMiddleware>();
+app.UseMiddleware<RateLimitingMiddleware>();
 app.UseAuthorization();
 app.UseRateLimiter();
 app.UseMiddleware<VersionCheckMiddleware>();
