@@ -13,6 +13,8 @@ namespace Game.OutGame.Lobby
         [SerializeField] private Button     _backdropButton;
         [SerializeField] private GameObject[] _bestStarFills; // 3 stars
         [SerializeField] private Toggle     _extraTurnsToggle;
+        [SerializeField] private Toggle     _bombToggle;
+        [SerializeField] private Toggle     _hRocketToggle;
 
         private int    _stageId;
         private Action _onPlay;
@@ -52,12 +54,41 @@ namespace Game.OutGame.Lobby
                     toggleText.text = $"+3 Turns ({addTurnsCount})";
                 }
             }
+
+            int bombCount = Game.Services.PlayerProgressService.Instance != null ? Game.Services.PlayerProgressService.Instance.GetItemCount(2) : 0;
+            if (_bombToggle != null)
+            {
+                _bombToggle.interactable = bombCount > 0;
+                _bombToggle.isOn = false;
+                var toggleText = _bombToggle.GetComponentInChildren<TMPro.TMP_Text>();
+                if (toggleText != null)
+                {
+                    toggleText.text = $"Starting Bomb ({bombCount})";
+                }
+            }
+
+            int hRocketCount = Game.Services.PlayerProgressService.Instance != null ? Game.Services.PlayerProgressService.Instance.GetItemCount(3) : 0;
+            if (_hRocketToggle != null)
+            {
+                _hRocketToggle.interactable = hRocketCount > 0;
+                _hRocketToggle.isOn = false;
+                var toggleText = _hRocketToggle.GetComponentInChildren<TMPro.TMP_Text>();
+                if (toggleText != null)
+                {
+                    toggleText.text = $"Starting Rocket ({hRocketCount})";
+                }
+            }
         }
 
         private void OnPlay()
         {
             bool useBooster = _extraTurnsToggle != null && _extraTurnsToggle.isOn;
+            bool useBomb = _bombToggle != null && _bombToggle.isOn;
+            bool useHRocket = _hRocketToggle != null && _hRocketToggle.isOn;
+
             ScrollStateCache.UseExtraTurnsItem = useBooster;
+            ScrollStateCache.UseStartingBomb = useBomb;
+            ScrollStateCache.UseStartingHRocket = useHRocket;
             ScrollStateCache.LastPlayedStageId = _stageId;
 
             if (useBooster && Game.Services.InventoryApiService.Instance != null)
@@ -65,6 +96,20 @@ namespace Game.OutGame.Lobby
                 Game.Services.InventoryApiService.Instance.SpendItem(1, 1, "use_pre_game",
                     onSuccess: snap => Debug.Log("[StageInfoPopup] spent AddTurns booster on server"),
                     onError: err => Debug.LogWarning($"[StageInfoPopup] failed to spend booster: {err}"));
+            }
+
+            if (useBomb && Game.Services.InventoryApiService.Instance != null)
+            {
+                Game.Services.InventoryApiService.Instance.SpendItem(2, 1, "use_pre_game",
+                    onSuccess: snap => Debug.Log("[StageInfoPopup] spent Bomb booster on server"),
+                    onError: err => Debug.LogWarning($"[StageInfoPopup] failed to spend bomb booster: {err}"));
+            }
+
+            if (useHRocket && Game.Services.InventoryApiService.Instance != null)
+            {
+                Game.Services.InventoryApiService.Instance.SpendItem(3, 1, "use_pre_game",
+                    onSuccess: snap => Debug.Log("[StageInfoPopup] spent HRocket booster on server"),
+                    onError: err => Debug.LogWarning($"[StageInfoPopup] failed to spend hrocket booster: {err}"));
             }
 
             var staminaApi = Game.Services.StaminaApiService.Instance;

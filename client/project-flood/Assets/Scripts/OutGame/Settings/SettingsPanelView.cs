@@ -9,6 +9,8 @@ namespace Game.OutGame.Settings
         [SerializeField] private Toggle   _bgmToggle;
         [SerializeField] private Toggle   _sfxToggle;
         [SerializeField] private Toggle   _screenShakeToggle;
+        [SerializeField] private Slider   _bgmSlider;
+        [SerializeField] private Slider   _sfxSlider;
         [SerializeField] private Button   _accountButton;
         [SerializeField] private Button   _backdropButton;
         [SerializeField] private TMP_Text _versionText;
@@ -19,28 +21,41 @@ namespace Game.OutGame.Settings
 
         private void Awake()
         {
-            _bgmToggle.isOn         = PlayerPrefs.GetInt(KeyBGM,         1) == 1;
-            _sfxToggle.isOn         = PlayerPrefs.GetInt(KeySFX,         1) == 1;
-            _screenShakeToggle.isOn = PlayerPrefs.GetInt(KeyScreenShake, 1) == 1;
+            if (Game.Services.SoundManager.Instance != null)
+            {
+                var snd = Game.Services.SoundManager.Instance;
+                _bgmToggle.isOn = !snd.BGMMute;
+                _sfxToggle.isOn = !snd.SFXMute;
 
-            _bgmToggle.onValueChanged.AddListener(v         => { PlayerPrefs.SetInt(KeyBGM,         v ? 1 : 0); ApplyBGM(v); });
-            _sfxToggle.onValueChanged.AddListener(v         => { PlayerPrefs.SetInt(KeySFX,         v ? 1 : 0); ApplySFX(v); });
+                if (_bgmSlider != null)
+                {
+                    _bgmSlider.value = snd.BGMVolume;
+                    _bgmSlider.onValueChanged.AddListener(v => snd.BGMVolume = v);
+                }
+                if (_sfxSlider != null)
+                {
+                    _sfxSlider.value = snd.SFXVolume;
+                    _sfxSlider.onValueChanged.AddListener(v => snd.SFXVolume = v);
+                }
+
+                _bgmToggle.onValueChanged.AddListener(v => snd.BGMMute = !v);
+                _sfxToggle.onValueChanged.AddListener(v => snd.SFXMute = !v);
+            }
+            else
+            {
+                _bgmToggle.isOn         = PlayerPrefs.GetInt(KeyBGM,         1) == 1;
+                _sfxToggle.isOn         = PlayerPrefs.GetInt(KeySFX,         1) == 1;
+                _bgmToggle.onValueChanged.AddListener(v         => { PlayerPrefs.SetInt(KeyBGM,         v ? 1 : 0); });
+                _sfxToggle.onValueChanged.AddListener(v         => { PlayerPrefs.SetInt(KeySFX,         v ? 1 : 0); });
+            }
+
+            _screenShakeToggle.isOn = PlayerPrefs.GetInt(KeyScreenShake, 1) == 1;
             _screenShakeToggle.onValueChanged.AddListener(v => { PlayerPrefs.SetInt(KeyScreenShake, v ? 1 : 0); });
 
             _accountButton.onClick.AddListener(OnAccountTapped);
             if (_backdropButton != null) _backdropButton.onClick.AddListener(Close);
 
             if (_versionText != null) _versionText.text = $"v{Application.version}";
-        }
-
-        private static void ApplyBGM(bool on)
-        {
-            AudioListener.volume = (on || PlayerPrefs.GetInt("setting_sfx", 1) == 1) ? 1f : 0f;
-        }
-
-        private static void ApplySFX(bool on)
-        {
-            // Phase 2: SFX AudioMixer control
         }
 
         private void OnAccountTapped()

@@ -6,6 +6,7 @@ using Game.InGame.View;
 using Game.OutGame.Boot;
 using Game.OutGame.Lobby;
 using Game.OutGame.Settings;
+using Game.Utils;
 using TMPro;
 using UnityEditor;
 using UnityEngine;
@@ -278,10 +279,7 @@ namespace Game.Editor
                 nodeAsset = AssetDatabase.LoadAssetAtPath<GameObject>(BaseCommonPath + "/StageNodeView.prefab");
 
             var soHtv = new SerializedObject(htv);
-            soHtv.FindProperty("_scrollRect").objectReferenceValue   = scrollRect;
-            soHtv.FindProperty("_contentRoot").objectReferenceValue  = contentRt;
-            if (nodeAsset != null)
-                soHtv.FindProperty("_stageNodePrefab").objectReferenceValue = nodeAsset;
+            soHtv.FindProperty("_scrollRect").objectReferenceValue = scrollRect;
             soHtv.ApplyModifiedProperties();
 
             var shopTab = Child(tabContent, "ShopTab");  Stretch(shopTab); shopTab.SetActive(false);
@@ -294,6 +292,44 @@ namespace Game.Editor
             var myRank = TMP(rankingTab, "MyRankText", Center(0, 270, 760, 80), 24, UI_TEXT, "My Rank: -", null, TextCategory.Normal);
             var entries = TMP(rankingTab, "EntriesText", Center(0, -160, 820, 700), 20, UI_TEXT, "Ranking unavailable", null, TextCategory.Normal);
             entries.alignment = TextAlignmentOptions.TopLeft;
+
+            // Generate VirtualizedScrollRect hierarchy
+            var scrollRectGo = Child(rankingTab, "VirtualizedScrollRect");
+            Fixed(scrollRectGo, new Vector2(0, -160), new Vector2(820, 700));
+            var rankScrollRect = Comp<ScrollRect>(scrollRectGo);
+            rankScrollRect.horizontal = false;
+            rankScrollRect.vertical = true;
+
+            var rankViewportGo = Child(scrollRectGo, "Viewport");
+            Stretch(rankViewportGo);
+            Comp<RectMask2D>(rankViewportGo);
+            rankScrollRect.viewport = rankViewportGo.GetComponent<RectTransform>();
+
+            var rankContentGo = Child(rankViewportGo, "Content");
+            var rankContentRt = rankContentGo.GetComponent<RectTransform>();
+            rankContentRt.anchorMin = new Vector2(0, 1);
+            rankContentRt.anchorMax = new Vector2(1, 1);
+            rankContentRt.pivot = new Vector2(0.5f, 1);
+            rankContentRt.sizeDelta = new Vector2(0, 0);
+            rankScrollRect.content = rankContentRt;
+
+            var vScroll = Comp<VirtualizedScrollRect>(scrollRectGo);
+
+            var itemPrefabGo = Child(scrollRectGo, "RankingItemPrefab");
+            Fixed(itemPrefabGo, new Vector2(0, 0), new Vector2(820, 80));
+            Img(itemPrefabGo, UI_BG_MID);
+
+            TMP(itemPrefabGo, "RankText", Center(-300, 0, 150, 60), 20, UI_CTA, "#1", null, TextCategory.Normal);
+            TMP(itemPrefabGo, "NameText", Center(-50, 0, 300, 60), 20, UI_TEXT, "Player Name", null, TextCategory.Normal);
+            TMP(itemPrefabGo, "ScoreText", Center(300, 0, 150, 60), 20, UI_CTA, "100", null, TextCategory.Normal);
+
+            var soVScroll = new SerializedObject(vScroll);
+            soVScroll.FindProperty("_itemPrefab").objectReferenceValue = itemPrefabGo.GetComponent<RectTransform>();
+            soVScroll.FindProperty("_itemHeight").floatValue = 80f;
+            soVScroll.FindProperty("_spacing").floatValue = 5f;
+            soVScroll.ApplyModifiedProperties();
+
+            itemPrefabGo.SetActive(false);
 
             // Wire LobbyView refs
             var soLobby = new SerializedObject(canvas.GetComponent<LobbyView>());
@@ -311,6 +347,7 @@ namespace Game.Editor
             soRanking.FindProperty("_titleText").objectReferenceValue = rankTitle;
             soRanking.FindProperty("_myRankText").objectReferenceValue = myRank;
             soRanking.FindProperty("_entriesText").objectReferenceValue = entries;
+            soRanking.FindProperty("_virtualizedScrollRect").objectReferenceValue = vScroll;
             soRanking.ApplyModifiedProperties();
 
             // Wire BottomNavBarView

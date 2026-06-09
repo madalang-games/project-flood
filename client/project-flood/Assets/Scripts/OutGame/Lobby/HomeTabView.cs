@@ -38,8 +38,9 @@ namespace Game.OutGame.Lobby
 
         private void Awake()
         {
-            // ScrollRect needs a raycast target on the viewport to receive drag input
-            // over empty space. Add a transparent Image if one doesn't exist.
+            if (_contentRoot == null && _scrollRect != null)
+                _contentRoot = _scrollRect.content;
+
             var viewport = _scrollRect != null ? _scrollRect.viewport : null;
             if (viewport != null && viewport.GetComponent<Image>() == null)
             {
