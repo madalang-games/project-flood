@@ -1,4 +1,4 @@
-import { cloneBoard, findGroup, applyRemoval, applyGravity, evaluate } from './game-rules';
+import { cloneBoard, findGroup, applyRemoval, applyGravity, applyConveyors, rotate180, evaluate } from './game-rules';
 import type { Board } from './game-rules';
 
 const MAX_BFS_STATES = 5000;
@@ -43,6 +43,9 @@ function greedySolve(
   initialValid: number,
   star1: number,
   star2: number,
+  portalData?: string,
+  conveyorData?: string,
+  rotationInterval?: number,
 ): [number, number][] | null {
   let b = cloneBoard(board);
   const moves: [number, number][] = [];
@@ -60,7 +63,16 @@ function greedySolve(
     }
 
     moves.push([bestR, bestC]);
-    b = applyGravity(applyRemoval(b, findGroup(b, bestR, bestC)));
+    b = applyRemoval(b, findGroup(b, bestR, bestC));
+    b = applyConveyors(b, conveyorData);
+    b = applyGravity(b, portalData);
+
+    const newMovesCount = moves.length;
+    if (rotationInterval && rotationInterval > 0 && newMovesCount % rotationInterval === 0) {
+      b = rotate180(b);
+      b = applyGravity(b, portalData);
+    }
+
     if (evaluate(b, initialValid, star1, star2).stars === 3) return moves;
   }
   return null;
@@ -74,6 +86,9 @@ export function autoSolve(
   initialValid: number,
   star1: number,
   star2: number,
+  portalData?: string,
+  conveyorData?: string,
+  rotationInterval?: number,
 ): [number, number][] | null {
   const visited = new Set<string>([boardHash(board)]);
   const queue: BFSNode[] = [{ board: cloneBoard(board), moves: [] }];
@@ -81,7 +96,7 @@ export function autoSolve(
   while (queue.length > 0) {
     if (visited.size > MAX_BFS_STATES) {
       // State space too large — fall back to greedy
-      return greedySolve(board, turnLimit, initialValid, star1, star2);
+      return greedySolve(board, turnLimit, initialValid, star1, star2, portalData, conveyorData, rotationInterval);
     }
 
     const { board: b, moves } = queue.shift()!;
@@ -91,8 +106,17 @@ export function autoSolve(
     if (starts.length === 0) starts = findAllGroupStarts(b, 1);
 
     for (const [r, c] of starts) {
-      const nb = applyGravity(applyRemoval(b, findGroup(b, r, c)));
+      let nb = applyRemoval(b, findGroup(b, r, c));
+      nb = applyConveyors(nb, conveyorData);
+      nb = applyGravity(nb, portalData);
+
       const newMoves: [number, number][] = [...moves, [r, c]];
+      const newMovesCount = newMoves.length;
+
+      if (rotationInterval && rotationInterval > 0 && newMovesCount % rotationInterval === 0) {
+        nb = rotate180(nb);
+        nb = applyGravity(nb, portalData);
+      }
 
       if (evaluate(nb, initialValid, star1, star2).stars === 3) return newMoves;
 

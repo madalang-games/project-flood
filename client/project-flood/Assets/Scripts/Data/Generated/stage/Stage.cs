@@ -24,5 +24,7 @@ namespace ProjectFlood.Data.Generated
         public string verified_solution;
         public sbyte ruleset_version;
         public sbyte rotation_interval;
+        public string portal_data;
+        public string conveyor_data;
     }
 }

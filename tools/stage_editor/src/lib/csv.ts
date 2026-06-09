@@ -45,24 +45,30 @@ function serializeCSVLine(fields: string[]): string {
 function rowToStage(fields: string[]): StageRow {
   return {
     stage_id:          parseInt(fields[0]),
-    board_width:       parseInt(fields[1]),
-    board_height:      parseInt(fields[2]),
-    turn_limit:        parseInt(fields[3]),
-    difficulty:        parseInt(fields[4]),
-    color_ids:         fields[5] ?? '0',
-    star1_ratio:       parseFloat(fields[6]),
-    star2_ratio:       parseFloat(fields[7]),
-    cells:             fields[8] ?? '',
-    verified_solution: fields[9] ?? '',
-    ruleset_version:   parseInt(fields[10]) || 1,
-    reward_group_id:   parseInt(fields[11]) || 0,
-    rotation_interval: parseInt(fields[12]) || 0,
+    chapter_id:        parseInt(fields[1]) || 1,
+    stage_order:       parseInt(fields[2]) || 1,
+    board_width:       parseInt(fields[3]),
+    board_height:      parseInt(fields[4]),
+    turn_limit:        parseInt(fields[5]),
+    difficulty:        parseInt(fields[6]),
+    color_ids:         fields[7] ?? '0',
+    star1_ratio:       parseFloat(fields[8]),
+    star2_ratio:       parseFloat(fields[9]),
+    cells:             fields[10] ?? '',
+    verified_solution: fields[11] ?? '',
+    ruleset_version:   parseInt(fields[12]) || 1,
+    reward_group_id:   parseInt(fields[13]) || 0,
+    rotation_interval: parseInt(fields[14]) || 0,
+    portal_data:       fields[15] ?? '',
+    conveyor_data:     fields[16] ?? '',
   };
 }
 
 function stageToRow(s: StageRow): string[] {
   return [
     String(s.stage_id),
+    String(s.chapter_id ?? 1),
+    String(s.stage_order ?? 1),
     String(s.board_width),
     String(s.board_height),
     String(s.turn_limit),
@@ -75,6 +81,8 @@ function stageToRow(s: StageRow): string[] {
     String(s.ruleset_version),
     String(s.reward_group_id ?? 0),
     String(s.rotation_interval ?? 0),
+    s.portal_data ?? '',
+    s.conveyor_data ?? '',
   ];
 }
 

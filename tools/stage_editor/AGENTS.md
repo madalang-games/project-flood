@@ -41,11 +41,12 @@ Standalone development tool. Reads/writes `shared/datas/stage/stage.csv` and `sh
 | `src/lib/csv.ts` | `readPalette` | Parse color_palette.csv → PaletteColor[] |
 | `src/lib/game-rules.ts` | `findGroup` | BFS same-color group from (r,c); Void/Obstacle excluded |
 | `src/lib/game-rules.ts` | `applyRemoval` | Strip protector or remove cells |
-| `src/lib/game-rules.ts` | `applyGravity` | Downward column compaction; Void cells = segment boundaries |
+| `src/lib/game-rules.ts` | `applyGravity` | TS port: downward gravity with portal routing support |
+| `src/lib/game-rules.ts` | `applyConveyors` | TS port: conveyor path movement shifts |
 | `src/lib/game-rules.ts` | `rotate180` | 180° board rotation: `[r][c] → [H-1-r][W-1-c]` |
 | `src/lib/game-rules.ts` | `evaluate` | clearance_ratio + star result; Void excluded |
 | `src/lib/validator.ts` | `validate` | Replay solution + core warnings |
-| `src/lib/solver.ts` | `autoSolve` | BFS (min-move) up to 5 000 states → greedy fallback; single-cell fallback when no ≥2 groups |
+| `src/lib/solver.ts` | `autoSolve` | BFS (min-move) with portal, conveyor, and rotation support → greedy fallback; single-cell fallback when no ≥2 groups |
 | `src/lib/ini.ts` | `parseIni` | Minimal INI parser — returns `Record<section, Record<key, string>>` |
 
 ## Symbols
@@ -64,6 +65,8 @@ Standalone development tool. Reads/writes `shared/datas/stage/stage.csv` and `sh
 - Launch via `tools/stage_editor.bat` (sets `PROJECT_ROOT` automatically) or run `npm run dev` inside `tools/stage_editor/` with `PROJECT_ROOT` pointing to project-flood root
 - CSV paths resolve via `PROJECT_ROOT` env var — must point to project-flood root (not `tools/`)
 - `lib/game-rules.ts` must mirror C# rule engine — update both when rules change (findGroup, applyGravity, evaluate, countInitialValidCells all have Void handling)
+- Supports Ctrl+Z (Undo) and Ctrl+Y (Redo) stack on paint actions
+- Supports Drag-and-Drop image loading for pixelation (LAB color mapping & isolated pixel removal)
 - NEVER write to `shared/datas/` manually from outside this service during editor session
 - `_` prefix files/dirs skipped per project convention
 - NEW_DIR: create `AGENTS.md` for it + update Nav above

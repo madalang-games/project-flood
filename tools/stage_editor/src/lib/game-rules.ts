@@ -58,25 +58,114 @@ export function applyRemoval(board: Board, group: [number, number][]): Board {
   return b;
 }
 
-export function applyGravity(board: Board): Board {
+function parsePortals(portalData?: string): Map<string, [number, number]> {
+  const map = new Map<string, [number, number]>();
+  if (!portalData) return map;
+  const portals = portalData.split(';');
+  for (const p of portals) {
+    if (!p.trim()) continue;
+    const parts = p.split('->');
+    if (parts.length === 2) {
+      const inletParts = parts[0].split(',');
+      const outletParts = parts[1].split(',');
+      if (inletParts.length === 2 && outletParts.length === 2) {
+        const inR = parseInt(inletParts[0].trim());
+        const inC = parseInt(inletParts[1].trim());
+        const outR = parseInt(outletParts[0].trim());
+        const outC = parseInt(outletParts[1].trim());
+        map.set(`${outR},${outC}`, [inR, inC]);
+      }
+    }
+  }
+  return map;
+}
+
+export function applyGravity(board: Board, portalData?: string): Board {
   const b = cloneBoard(board);
   const rows = b.length;
   const cols = b[0]?.length ?? 0;
+  const outletToInlet = parsePortals(portalData);
 
-  // Mirrors C# GravitySystem: Void cells are fixed segment boundaries.
-  for (let c = 0; c < cols; c++) {
-    let writeRow = rows - 1;
-    for (let r = rows - 1; r >= 0; r--) {
-      const cell = b[r][c];
-      if (cell?.type === 'Void') {
-        while (writeRow > r) b[writeRow--][c] = null;
-        writeRow = r - 1;
-        continue;
+  const findGravitySource = (r: number, c: number): [number, number] | null => {
+    let currR = r;
+    let currC = c;
+    while (true) {
+      let next: [number, number];
+      const inlet = outletToInlet.get(`${currR},${currC}`);
+      if (inlet) {
+        next = inlet;
+      } else {
+        next = [currR - 1, currC];
       }
-      if (cell !== null) b[writeRow--][c] = cell;
+
+      const [nextR, nextC] = next;
+      if (nextR < 0 || nextR >= rows || nextC < 0 || nextC >= cols) {
+        return null;
+      }
+
+      const cell = b[nextR][nextC];
+      if (cell) {
+        if (cell.type === 'Void' || cell.type === 'Obstacle') {
+          return null;
+        }
+        return next;
+      }
+      currR = nextR;
+      currC = nextC;
     }
-    while (writeRow >= 0) b[writeRow--][c] = null;
+  };
+
+  for (let r = rows - 1; r >= 0; r--) {
+    for (let c = 0; c < cols; c++) {
+      const cell = b[r][c];
+      if (cell && cell.type === 'Void') continue;
+      if (cell && cell.type === 'Obstacle') continue;
+
+      if (cell === null) {
+        const source = findGravitySource(r, c);
+        if (source) {
+          const [sr, sc] = source;
+          b[r][c] = b[sr][sc];
+          b[sr][sc] = null;
+        }
+      }
+    }
   }
+
+  return b;
+}
+
+export function applyConveyors(board: Board, conveyorData?: string): Board {
+  const b = cloneBoard(board);
+  if (!conveyorData) return b;
+
+  const paths = conveyorData.split(';');
+  for (const path of paths) {
+    if (!path.trim()) continue;
+    const parts = path.split('->');
+    const coords: [number, number][] = [];
+    for (const part of parts) {
+      const xy = part.split(',');
+      if (xy.length === 2) {
+        coords.push([parseInt(xy[0].trim()), parseInt(xy[1].trim())]);
+      }
+    }
+    if (coords.length > 1) {
+      const lastIdx = coords.length - 1;
+      const [lastR, lastC] = coords[lastIdx];
+      const lastCell = b[lastR][lastC] ? { ...b[lastR][lastC]! } : null;
+
+      for (let i = lastIdx; i > 0; i--) {
+        const [toR, toC] = coords[i];
+        const [fromR, fromC] = coords[i - 1];
+        b[toR][toC] = b[fromR][fromC];
+      }
+
+      const [firstR, firstC] = coords[0];
+      b[firstR][firstC] = lastCell;
+    }
+  }
+
   return b;
 }
 

@@ -8,6 +8,7 @@ import {
   findGroup,
   applyRemoval,
   applyGravity,
+  applyConveyors,
   rotate180,
   evaluate,
   countInitialValidCells,
@@ -38,6 +39,47 @@ function makeDefaultGrid(w: number, h: number): CellData[][] {
   );
 }
 
+// RGB to LAB color mapping helper
+function rgbToLab(r: number, g: number, b: number): [number, number, number] {
+  let rNorm = r / 255;
+  let gNorm = g / 255;
+  let bNorm = b / 255;
+
+  rNorm = rNorm > 0.04045 ? Math.pow((rNorm + 0.055) / 1.055, 2.4) : rNorm / 12.92;
+  gNorm = gNorm > 0.04045 ? Math.pow((gNorm + 0.055) / 1.055, 2.4) : gNorm / 12.92;
+  bNorm = bNorm > 0.04045 ? Math.pow((bNorm + 0.055) / 1.055, 2.4) : bNorm / 12.92;
+
+  rNorm *= 100;
+  gNorm *= 100;
+  bNorm *= 100;
+
+  const x = rNorm * 0.4124 + gNorm * 0.3576 + bNorm * 0.1805;
+  const y = rNorm * 0.2126 + gNorm * 0.7152 + bNorm * 0.0722;
+  const z = rNorm * 0.0193 + gNorm * 0.1192 + bNorm * 0.9505;
+
+  let xNorm = x / 95.047;
+  let yNorm = y / 100.000;
+  let zNorm = z / 108.883;
+
+  xNorm = xNorm > 0.008856 ? Math.pow(xNorm, 1/3) : (7.787 * xNorm) + (16 / 116);
+  yNorm = yNorm > 0.008856 ? Math.pow(yNorm, 1/3) : (7.787 * yNorm) + (16 / 116);
+  zNorm = zNorm > 0.008856 ? Math.pow(zNorm, 1/3) : (7.787 * zNorm) + (16 / 116);
+
+  const L = (116 * yNorm) - 16;
+  const a = 500 * (xNorm - yNorm);
+  const bVal = 200 * (yNorm - zNorm);
+
+  return [L, a, bVal];
+}
+
+function colorDistLab(lab1: [number, number, number], lab2: [number, number, number]): number {
+  return Math.sqrt(
+    Math.pow(lab1[0] - lab2[0], 2) +
+    Math.pow(lab1[1] - lab2[1], 2) +
+    Math.pow(lab1[2] - lab2[2], 2)
+  );
+}
+
 export default function EditorPage() {
   const [stages, setStages] = useState<StageRow[]>([]);
   const [selectedId, setSelectedId] = useState<number | null>(null);
@@ -49,10 +91,47 @@ export default function EditorPage() {
   const [playtestState, setPlaytestState] = useState<PlaytestState | null>(null);
   const [validationResult, setValidationResult] = useState<ValidationResult | null>(null);
   const [showGenerator, setShowGenerator] = useState(false);
+  const [history, setHistory] = useState<CellData[][][]>([]);
+  const [redoHistory, setRedoHistory] = useState<CellData[][][]>([]);
 
   useEffect(() => {
     fetch('/api/stages').then(r => r.json()).then(setStages).catch(console.error);
     fetch('/api/palette').then(r => r.json()).then(setPalette).catch(console.error);
+  }, []);
+
+  // Keyboard shortcut listener for Undo/Redo
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (document.activeElement?.tagName === 'INPUT' || document.activeElement?.tagName === 'TEXTAREA') {
+        return;
+      }
+      if (e.ctrlKey && e.key.toLowerCase() === 'z') {
+        e.preventDefault();
+        setHistory(prevHistory => {
+          if (prevHistory.length === 0) return prevHistory;
+          const prev = prevHistory[prevHistory.length - 1];
+          setGrid(currentGrid => {
+            setRedoHistory(prevRedo => [...prevRedo, currentGrid.map(r => r.map(c => ({ ...c })))]);
+            return prev.map(r => r.map(c => ({ ...c })));
+          });
+          return prevHistory.slice(0, -1);
+        });
+      } else if (e.ctrlKey && e.key.toLowerCase() === 'y') {
+        e.preventDefault();
+        setRedoHistory(prevRedo => {
+          if (prevRedo.length === 0) return prevRedo;
+          const next = prevRedo[prevRedo.length - 1];
+          setGrid(currentGrid => {
+            setHistory(prevHistory => [...prevHistory, currentGrid.map(r => r.map(c => ({ ...c })))]);
+            return next.map(r => r.map(c => ({ ...c })));
+          });
+          return prevRedo.slice(0, -1);
+        });
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
 
   const loadStage = useCallback((stage: StageRow) => {
@@ -60,6 +139,8 @@ export default function EditorPage() {
     setGrid(decodeCells(stage.cells, stage.board_width, stage.board_height));
     setMeta({
       stage_id: stage.stage_id,
+      chapter_id: stage.chapter_id ?? 1,
+      stage_order: stage.stage_order ?? 1,
       board_width: stage.board_width,
       board_height: stage.board_height,
       turn_limit: stage.turn_limit,
@@ -69,10 +150,15 @@ export default function EditorPage() {
       verified_solution: stage.verified_solution,
       ruleset_version: stage.ruleset_version,
       reward_group_id: stage.reward_group_id,
+      rotation_interval: stage.rotation_interval ?? 0,
+      portal_data: stage.portal_data ?? '',
+      conveyor_data: stage.conveyor_data ?? '',
     });
     setPlaytestState(null);
     setValidationResult(null);
     setSelectedCell(null);
+    setHistory([]);
+    setRedoHistory([]);
   }, []);
 
   const handleSelect = useCallback((id: number) => {
@@ -84,9 +170,11 @@ export default function EditorPage() {
     const w = 4, h = 4;
     const cells = '000'.repeat(w * h);
     const payload = {
+      chapter_id: 1, stage_order: 1,
       board_width: w, board_height: h, turn_limit: 20, difficulty: 1,
       color_ids: '0', star1_ratio: 0.80, star2_ratio: 0.90,
       cells, verified_solution: '', ruleset_version: 1, reward_group_id: 0,
+      rotation_interval: 0, portal_data: '', conveyor_data: '',
     };
     const res = await fetch('/api/stages', {
       method: 'POST',
@@ -109,6 +197,144 @@ export default function EditorPage() {
     }
   }, [selectedId]);
 
+  const handleDragStart = useCallback(() => {
+    setGrid(currentGrid => {
+      setHistory(prev => [...prev, currentGrid.map(r => r.map(c => ({ ...c })))]);
+      setRedoHistory([]);
+      return currentGrid;
+    });
+  }, []);
+
+  const handleImageDrop = useCallback((file: File) => {
+    if (!meta) return;
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const img = new Image();
+      img.onload = () => {
+        const w = meta.board_width;
+        const h = meta.board_height;
+
+        const canvas = document.createElement('canvas');
+        canvas.width = w;
+        canvas.height = h;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return;
+
+        ctx.drawImage(img, 0, 0, w, h);
+        const imgData = ctx.getImageData(0, 0, w, h);
+        const data = imgData.data;
+
+        const paletteLabs = palette.map(p => rgbToLab(p.r, p.g, p.b));
+
+        const tempGrid: CellData[][] = Array.from({ length: h }, () =>
+          Array.from({ length: w }, () => ({ colorId: 0, type: 'Basic', protector: 0, isCore: false }))
+        );
+
+        for (let r = 0; r < h; r++) {
+          for (let c = 0; c < w; c++) {
+            const idx = (r * w + c) * 4;
+            const rVal = data[idx];
+            const gVal = data[idx + 1];
+            const bVal = data[idx + 2];
+            const aVal = data[idx + 3];
+
+            if (aVal < 50) {
+              tempGrid[r][c] = { colorId: 0, type: 'Void', protector: 0, isCore: false };
+            } else {
+              const lab = rgbToLab(rVal, gVal, bVal);
+              let bestIndex = 0;
+              let bestDist = Infinity;
+
+              paletteLabs.forEach((pLab, pIdx) => {
+                const dist = colorDistLab(lab, pLab);
+                if (dist < bestDist) {
+                  bestDist = dist;
+                  bestIndex = pIdx;
+                }
+              });
+
+              tempGrid[r][c] = { colorId: palette[bestIndex].color_id, type: 'Basic', protector: 0, isCore: false };
+            }
+          }
+        }
+
+        // Isolated pixel removal filter
+        const finalGrid = tempGrid.map(row => row.map(cell => ({ ...cell })));
+
+        for (let r = 0; r < h; r++) {
+          for (let c = 0; c < w; c++) {
+            const centerCell = tempGrid[r][c];
+            if (centerCell.type !== 'Basic') continue;
+
+            let sameNeighbors = 0;
+            const colorCounts: Record<number, number> = {};
+            let voidCount = 0;
+            let obstacleCount = 0;
+
+            for (let dr = -1; dr <= 1; dr++) {
+              for (let dc = -1; dc <= 1; dc++) {
+                if (dr === 0 && dc === 0) continue;
+                const nr = r + dr;
+                const nc = c + dc;
+                if (nr >= 0 && nr < h && nc >= 0 && nc < w) {
+                  const neighbor = tempGrid[nr][nc];
+                  if (neighbor.type === 'Basic') {
+                    if (neighbor.colorId === centerCell.colorId) {
+                      sameNeighbors++;
+                    }
+                    colorCounts[neighbor.colorId] = (colorCounts[neighbor.colorId] || 0) + 1;
+                  } else if (neighbor.type === 'Void') {
+                    voidCount++;
+                  } else if (neighbor.type === 'Obstacle') {
+                    obstacleCount++;
+                  }
+                }
+              }
+            }
+
+            if (sameNeighbors === 0) {
+              let bestColorId = centerCell.colorId;
+              let maxCount = 0;
+              let bestType: 'Basic' | 'Void' | 'Obstacle' = 'Basic';
+
+              for (const [cidStr, count] of Object.entries(colorCounts)) {
+                const cid = parseInt(cidStr);
+                if (count > maxCount) {
+                  maxCount = count;
+                  bestColorId = cid;
+                  bestType = 'Basic';
+                }
+              }
+
+              if (voidCount > maxCount) {
+                maxCount = voidCount;
+                bestType = 'Void';
+              }
+              if (obstacleCount > maxCount) {
+                maxCount = obstacleCount;
+                bestType = 'Obstacle';
+              }
+
+              if (bestType === 'Basic') {
+                finalGrid[r][c] = { colorId: bestColorId, type: 'Basic', protector: 0, isCore: false };
+              } else {
+                finalGrid[r][c] = { colorId: 0, type: bestType, protector: 0, isCore: false };
+              }
+            }
+          }
+        }
+
+        setGrid(currentGrid => {
+          setHistory(prev => [...prev, currentGrid.map(r => r.map(c => ({ ...c })))]);
+          setRedoHistory([]);
+          return finalGrid;
+        });
+      };
+      img.src = event.target?.result as string;
+    };
+    reader.readAsDataURL(file);
+  }, [meta, palette]);
+
   const handleLeftClick = useCallback((r: number, c: number) => {
     if (playtestState) {
       if (playtestState.result) return;
@@ -116,8 +342,16 @@ export default function EditorPage() {
       if (group.length === 0) return;
 
       let b = applyRemoval(playtestState.board, group);
-      b = applyGravity(b);
+      b = applyConveyors(b, meta?.conveyor_data);
+      b = applyGravity(b, meta?.portal_data);
       const turns = playtestState.turns - 1;
+      const movesMade = meta!.turn_limit - turns;
+
+      if (meta?.rotation_interval && meta.rotation_interval > 0 && movesMade % meta.rotation_interval === 0) {
+        b = rotate180(b);
+        b = applyGravity(b, meta?.portal_data);
+      }
+
       const result = evaluate(b, playtestState.initialValid, meta!.star1_ratio, meta!.star2_ratio);
       const isEnd = turns === 0 || result.stars === 3;
       const newMoves = playtestState.isRecording
@@ -144,6 +378,7 @@ export default function EditorPage() {
         protector: isNonBasic ? 0 : brush.protector,
         isCore: isNonBasic ? false : brush.isCore,
       };
+      setRedoHistory([]);
       setGrid(prev => {
         const next = prev.map(row => [...row]);
         next[r][c] = cell;
@@ -155,6 +390,7 @@ export default function EditorPage() {
 
   const handleRightClick = useCallback((r: number, c: number) => {
     if (playtestState) return;
+    setRedoHistory([]);
     setGrid(prev => {
       const next = prev.map(row => [...row]);
       next[r][c] = { colorId: 0, type: 'Obstacle', protector: 0, isCore: false };
@@ -167,6 +403,11 @@ export default function EditorPage() {
   }, []);
 
   const handleResize = useCallback((w: number, h: number) => {
+    setGrid(currentGrid => {
+      setHistory(prev => [...prev, currentGrid.map(r => r.map(c => ({ ...c })))]);
+      setRedoHistory([]);
+      return currentGrid;
+    });
     setGrid(prev => {
       const next: CellData[][] = [];
       for (let r = 0; r < h; r++) {
@@ -220,10 +461,10 @@ export default function EditorPage() {
     setPlaytestState(prev => {
       if (!prev) return prev;
       const rotated = rotate180(prev.board);
-      const withGravity = applyGravity(rotated);
+      const withGravity = applyGravity(rotated, meta?.portal_data);
       return { ...prev, board: withGravity };
     });
-  }, []);
+  }, [meta]);
 
   const handleGenerate = useCallback((settings: GeneratorSettings) => {
     if (!meta) return;
@@ -270,10 +511,17 @@ export default function EditorPage() {
       initialValid,
       meta.star1_ratio,
       meta.star2_ratio,
+      meta.portal_data,
+      meta.conveyor_data,
+      meta.rotation_interval
     );
     const verifiedSolution = solution ? solution.map(([r, c]) => `${r},${c}`).join(';') : '';
 
-    setGrid(newGrid);
+    setGrid(currentGrid => {
+      setHistory(prev => [...prev, currentGrid.map(r => r.map(c => ({ ...c })))]);
+      setRedoHistory([]);
+      return newGrid;
+    });
     setValidationResult(null);
     setMeta(prev => prev ? { ...prev, verified_solution: verifiedSolution } : prev);
   }, [meta]);
@@ -306,6 +554,8 @@ export default function EditorPage() {
                 isPlaytest={!!playtestState}
                 onLeftClick={handleLeftClick}
                 onRightClick={handleRightClick}
+                onDragStart={handleDragStart}
+                onImageDrop={handleImageDrop}
               />
             </div>
             <div className="flex-shrink-0">
@@ -336,7 +586,8 @@ export default function EditorPage() {
                 playtestResult={playtestState?.result ?? null}
                 validationResult={validationResult}
                 onStartPlaytest={() => {
-                  const board: Board = grid.map(row => row.map(cell => ({ ...cell })));
+                  let board: Board = grid.map(row => row.map(cell => ({ ...cell })));
+                  board = applyGravity(board, meta?.portal_data);
                   setPlaytestState({
                     board,
                     turns: meta.turn_limit,

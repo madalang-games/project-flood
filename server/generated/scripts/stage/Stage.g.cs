@@ -16,10 +16,13 @@ namespace ProjectFlood.Generated.Data
         public sbyte turn_limit { get; set; }
         public float star1_ratio { get; set; }
         public float star2_ratio { get; set; }
+        public string cells { get; set; } = "";
         public string verified_solution { get; set; } = "";
         public sbyte ruleset_version { get; set; }
         public int reward_group_id { get; set; }
         public sbyte rotation_interval { get; set; }
+        public string portal_data { get; set; } = "";
+        public string conveyor_data { get; set; } = "";
     }
 
     public static class StageLoader
@@ -48,10 +51,13 @@ namespace ProjectFlood.Generated.Data
                     turn_limit = idx.TryGetValue("turn_limit", out var i4) && i4 < cols.Length && !string.IsNullOrEmpty(cols[i4]) ? sbyte.Parse(cols[i4]) : default,
                     star1_ratio = idx.TryGetValue("star1_ratio", out var i5) && i5 < cols.Length && !string.IsNullOrEmpty(cols[i5]) ? float.Parse(cols[i5], System.Globalization.CultureInfo.InvariantCulture) : default,
                     star2_ratio = idx.TryGetValue("star2_ratio", out var i6) && i6 < cols.Length && !string.IsNullOrEmpty(cols[i6]) ? float.Parse(cols[i6], System.Globalization.CultureInfo.InvariantCulture) : default,
-                    verified_solution = idx.TryGetValue("verified_solution", out var i7) && i7 < cols.Length ? (cols[i7] ?? "") : "",
-                    ruleset_version = idx.TryGetValue("ruleset_version", out var i8) && i8 < cols.Length && !string.IsNullOrEmpty(cols[i8]) ? sbyte.Parse(cols[i8]) : default,
-                    reward_group_id = idx.TryGetValue("reward_group_id", out var i9) && i9 < cols.Length && !string.IsNullOrEmpty(cols[i9]) ? int.Parse(cols[i9]) : default,
-                    rotation_interval = idx.TryGetValue("rotation_interval", out var i10) && i10 < cols.Length && !string.IsNullOrEmpty(cols[i10]) ? sbyte.Parse(cols[i10]) : default,
+                    cells = idx.TryGetValue("cells", out var i7) && i7 < cols.Length ? (cols[i7] ?? "") : "",
+                    verified_solution = idx.TryGetValue("verified_solution", out var i8) && i8 < cols.Length ? (cols[i8] ?? "") : "",
+                    ruleset_version = idx.TryGetValue("ruleset_version", out var i9) && i9 < cols.Length && !string.IsNullOrEmpty(cols[i9]) ? sbyte.Parse(cols[i9]) : default,
+                    reward_group_id = idx.TryGetValue("reward_group_id", out var i10) && i10 < cols.Length && !string.IsNullOrEmpty(cols[i10]) ? int.Parse(cols[i10]) : default,
+                    rotation_interval = idx.TryGetValue("rotation_interval", out var i11) && i11 < cols.Length && !string.IsNullOrEmpty(cols[i11]) ? sbyte.Parse(cols[i11]) : default,
+                    portal_data = idx.TryGetValue("portal_data", out var i12) && i12 < cols.Length ? (cols[i12] ?? "") : "",
+                    conveyor_data = idx.TryGetValue("conveyor_data", out var i13) && i13 < cols.Length ? (cols[i13] ?? "") : "",
                 });
             }
             return result;

@@ -14,6 +14,8 @@ interface Props {
   isPlaytest: boolean;
   onLeftClick: (r: number, c: number) => void;
   onRightClick: (r: number, c: number) => void;
+  onDragStart?: () => void;
+  onImageDrop?: (file: File) => void;
 }
 
 // Hyper-casual pixel-art palette
@@ -99,6 +101,8 @@ export default function BoardEditor({
   isPlaytest,
   onLeftClick,
   onRightClick,
+  onDragStart,
+  onImageDrop,
 }: Props) {
   const rows = displayGrid.length;
   const cols = displayGrid[0]?.length ?? 0;
@@ -112,6 +116,7 @@ export default function BoardEditor({
     }
     isDragging.current = true;
     dragButton.current = button;
+    onDragStart?.();
     if (button === 0) onLeftClick(r, c);
     else if (button === 2) onRightClick(r, c);
   };
@@ -123,6 +128,19 @@ export default function BoardEditor({
   };
 
   const stopDrag = () => { isDragging.current = false; };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    if (isPlaytest) return;
+    const file = e.dataTransfer.files[0];
+    if (file && file.type.startsWith('image/')) {
+      onImageDrop?.(file);
+    }
+  };
 
   return (
     <div
@@ -136,6 +154,8 @@ export default function BoardEditor({
       }}
       onMouseUp={stopDrag}
       onMouseLeave={stopDrag}
+      onDragOver={handleDragOver}
+      onDrop={handleDrop}
     >
       {playtestResult && (
         <div

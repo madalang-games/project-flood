@@ -9,6 +9,8 @@ export interface CellData {
 
 export interface StageRow {
   stage_id: number;
+  chapter_id: number;
+  stage_order: number;
   board_width: number;
   board_height: number;
   turn_limit: number;
@@ -21,6 +23,8 @@ export interface StageRow {
   ruleset_version: number;
   reward_group_id: number;
   rotation_interval: number;
+  portal_data: string;
+  conveyor_data: string;
 }
 
 export interface PaletteColor {
