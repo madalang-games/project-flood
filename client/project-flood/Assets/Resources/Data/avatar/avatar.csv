@@ -1,0 +1,6 @@
+avatar_id,resource_name,unlock_cost,unlock_type
+1,avatar_free_01,0,free
+2,avatar_free_02,0,free
+3,avatar_gold_01,500,gold
+4,avatar_gold_02,1000,gold
+5,avatar_gold_03,2000,gold

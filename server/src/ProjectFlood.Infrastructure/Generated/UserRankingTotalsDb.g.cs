@@ -17,6 +17,8 @@ public sealed class UserRankingTotalsRow
     public DateTimeOffset? TotalStarsAchievedAt { get; set; }
     public int MaxClearedStageId { get; set; }
     public DateTimeOffset? MaxStageAchievedAt { get; set; }
+    public int WinStreak { get; set; }
+    public int MaxWinStreak { get; set; }
     public DateTimeOffset UpdatedAt { get; set; }
     public PlayersRow? Player { get; set; }
 }
@@ -45,6 +47,14 @@ internal sealed class UserRankingTotalsDbConfiguration : IEntityTypeConfiguratio
         builder.Property(e => e.MaxStageAchievedAt)
             .HasColumnName(UserRankingTotalsDb.Schema.MaxStageAchievedAt)
             .HasColumnType("datetime(6)");
+        builder.Property(e => e.WinStreak)
+            .HasColumnName(UserRankingTotalsDb.Schema.WinStreak)
+            .HasDefaultValue(0)
+            .IsRequired();
+        builder.Property(e => e.MaxWinStreak)
+            .HasColumnName(UserRankingTotalsDb.Schema.MaxWinStreak)
+            .HasDefaultValue(0)
+            .IsRequired();
         builder.Property(e => e.UpdatedAt)
             .HasColumnName(UserRankingTotalsDb.Schema.UpdatedAt)
             .HasColumnType("datetime(6)")
@@ -70,6 +80,8 @@ public sealed class UserRankingTotalsDb
         public const string TotalStarsAchievedAt = "total_stars_achieved_at";
         public const string MaxClearedStageId = "max_cleared_stage_id";
         public const string MaxStageAchievedAt = "max_stage_achieved_at";
+        public const string WinStreak = "win_streak";
+        public const string MaxWinStreak = "max_win_streak";
         public const string UpdatedAt = "updated_at";
     }
 

@@ -1,4 +1,5 @@
 using Game.Services;
+using Game.Utils;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -12,6 +13,7 @@ namespace Game.OutGame.Lobby
         [SerializeField] private TMP_Text _titleText;
         [SerializeField] private TMP_Text _myRankText;
         [SerializeField] private TMP_Text _entriesText;
+        [SerializeField] private VirtualizedScrollRect _virtualizedScrollRect;
 
         private const int PageLimit = 50;
         private string _rankingType = "stars";
@@ -44,19 +46,46 @@ namespace Game.OutGame.Lobby
 
             api.FetchGlobalPage(_rankingType, 0, PageLimit, page =>
             {
-                if (_entriesText == null) return;
                 if (page.Entries.Count == 0)
                 {
-                    _entriesText.text = LocalizationService.Instance.Get("lobby.ranking.no_data");
+                    if (_entriesText != null) _entriesText.text = LocalizationService.Instance.Get("lobby.ranking.no_data");
+                    if (_virtualizedScrollRect != null) _virtualizedScrollRect.gameObject.SetActive(false);
                     return;
                 }
 
-                var lines = new System.Text.StringBuilder();
-                foreach (var entry in page.Entries)
-                    lines.Append('#').Append(entry.Rank).Append("  ")
-                         .Append(entry.DisplayName).Append("  ")
-                         .Append(entry.Score).AppendLine();
-                _entriesText.text = lines.ToString();
+                if (_virtualizedScrollRect != null)
+                {
+                    if (_entriesText != null) _entriesText.gameObject.SetActive(false);
+                    _virtualizedScrollRect.gameObject.SetActive(true);
+
+                    var entryList = page.Entries;
+                    _virtualizedScrollRect.Init(entryList.Count, (idx, go) =>
+                    {
+                        if (idx < 0 || idx >= entryList.Count) return;
+                        var entry = entryList[idx];
+
+                        var rankText = go.transform.Find("RankText")?.GetComponent<TMP_Text>();
+                        var nameText = go.transform.Find("NameText")?.GetComponent<TMP_Text>();
+                        var scoreText = go.transform.Find("ScoreText")?.GetComponent<TMP_Text>();
+
+                        if (rankText != null) rankText.text = $"#{entry.Rank}";
+                        if (nameText != null) nameText.text = entry.DisplayName;
+                        if (scoreText != null) scoreText.text = entry.Score.ToString();
+                    });
+                }
+                else
+                {
+                    if (_entriesText != null)
+                    {
+                        _entriesText.gameObject.SetActive(true);
+                        var lines = new System.Text.StringBuilder();
+                        foreach (var entry in page.Entries)
+                            lines.Append('#').Append(entry.Rank).Append("  ")
+                                 .Append(entry.DisplayName).Append("  ")
+                                 .Append(entry.Score).AppendLine();
+                        _entriesText.text = lines.ToString();
+                    }
+                }
             }, _ => SetUnavailable());
 
             api.FetchMyGlobalRank(_rankingType, mine =>
@@ -82,6 +111,7 @@ namespace Game.OutGame.Lobby
             if (_titleText != null) _titleText.text = LocalizationService.Instance.Get("lobby.ranking.default_title");
             if (_myRankText != null) _myRankText.text = LocalizationService.Instance.Get("lobby.ranking.my_rank_empty");
             if (_entriesText != null) _entriesText.text = LocalizationService.Instance.Get("lobby.ranking.unavailable");
+            if (_virtualizedScrollRect != null) _virtualizedScrollRect.gameObject.SetActive(false);
         }
     }
 }

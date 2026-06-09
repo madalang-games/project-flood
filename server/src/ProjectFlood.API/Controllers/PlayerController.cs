@@ -18,4 +18,8 @@ public sealed class PlayerController : ControllerBaseEx
     [HttpGet("progress")]
     public Task<PlayerProgressResponse> GetProgress(CancellationToken ct)
         => _player.GetProgressAsync(PlayerId, ct);
+
+    [HttpPost("profile")]
+    public Task<UserProfileUpdateResponse> UpdateProfile([FromBody] UserProfileUpdateRequest request, CancellationToken ct)
+        => _player.UpdateProfileAsync(PlayerId, request, CorrelationId, ct);
 }

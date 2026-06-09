@@ -30,6 +30,11 @@ Server computes stars from static stage data:
 - otherwise the clear request is invalid
 
 ## 3. DB Model
+`players`
+- Stores player accounts.
+- `display_name` (string(64)): Player's custom public name.
+- `avatar_id` (int32): Reference to static metadata avatar image (default to 1). Users do not upload custom images; avatars are selected from pre-defined IDs.
+
 `user_stage_progress`
 - One row per user/stage.
 - Stores `best_star`, `best_turns_used`, first clear time, best update times.
@@ -42,6 +47,8 @@ Server computes stars from static stage data:
 `user_ranking_totals`
 - One row per user.
 - Stores `total_earned_stars`, timestamp when the current total was achieved, `max_cleared_stage_id`, and timestamp when that max was achieved.
+- Stores `win_streak`: Current consecutive stage clears. Resets to 0 upon stage failure or abandonment.
+- Stores `max_win_streak`: All-time highest consecutive stage clears. Does not decrease when a streak is broken. Updated only when `win_streak` exceeds `max_win_streak` on clear.
 - Used to rebuild global ranking Redis keys.
 
 ## 4. Stage Ranking
@@ -93,4 +100,19 @@ Ranking API:
 - `GET /api/rankings/stages/{stageId}/me`
 - `POST /api/rankings/admin/rebuild`
 
+Profile API:
+- `POST /api/player/profile`
+  - Request: `display_name` (optional), `avatar_id` (optional)
+  - Validates avatar unlock conditions using `avatar.csv`.
+  - Response: Updated `user_id`, `display_name`, `avatar_id`.
+
 Page size is clamped server-side. Clients should use paging instead of requesting the full leaderboard.
+
+## 7. Avatar Metadata (`avatar.csv`)
+Avatars are defined in `shared/datas/avatar/avatar.csv` static metadata. Players cannot upload custom images, they must select from predefined options.
+
+Fields:
+- `avatar_id`: Unique integer key.
+- `resource_name`: Unity sprite reference name.
+- `unlock_cost`: Soft currency (gold) required to unlock (0 if free).
+- `unlock_type`: Condition category (`free`, `gold`, `achievement`).

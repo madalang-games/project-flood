@@ -31,8 +31,8 @@ Checklist for the main Lobby screen, stage roadmap view, progression mechanics, 
 - [x] **Chapter Groupings & Visual Themes**: Group stages into chapters. Update environment sprites/themes via `theme_key` using shader-based background swaps. (Completed)
 
 ## 4. Lobby & Progression Expansion (Active Scope)
-- [ ] **Chapter Milestone Chests**: Render chests on the Lobby Roadmap at the end of each Chapter. Unlocked and claimable (once) only when all stages in the chapter have 3 Stars.
-  - [ ] Implement server verification during reward claim: check `user_stage_progress` for 3-star clears.
-- [ ] **Player Custom Profiles**: Allow players to change display names, and select/unlock unique profile avatars via gold or achievements.
-  - [ ] Implement backend profile update APIs and DB column for active avatar ID.
-- [ ] **Dynamic Ranking List Virtualization**: Optimize the Unity ranking UI with scroll virtualization to handle lists with thousands of entries efficiently.
+- [x] **Chapter Milestone Chests**: Render chests on the Lobby Roadmap at the end of each Chapter. Unlocked and claimable (once) only when all stages in the chapter have 3 Stars.
+  - [x] Implement server verification during reward claim: check `user_stage_progress` for 3-star clears.
+- [x] **Player Custom Profiles**: Allow players to change display names, and select/unlock unique profile avatars via gold or achievements.
+  - [x] Implement backend profile update APIs and DB column for active avatar ID.
+- [x] **Dynamic Ranking List Virtualization**: Optimize the Unity ranking UI with scroll virtualization to handle lists with thousands of entries efficiently.
