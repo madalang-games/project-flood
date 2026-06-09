@@ -16,6 +16,8 @@
 | `CurrencyController.cs` | `CurrencyController` | `GET /api/currency` balance fetch; `POST /api/currency/spend` soft currency deduct |
 | `TutorialController.cs` | `TutorialController` | `/api/tutorial` progress saving and retrieving endpoints |
 | `PlayerController.cs` | `PlayerController` | `GET /api/player/progress` — stage unlock state and best stars for the current player |
+| `AdRewardsStatusController.cs` | `AdRewardsStatusController` | `/api/ad-rewards/status/{adToken}` polling check for verified SSV rewards |
+| `InventoryController.cs` | `InventoryController` | `/api/inventory` endpoints for syncing, spending, and buying booster items |
 
 ## Symbols
 | symbol | kind | note |
@@ -40,6 +42,10 @@
 | `TutorialController.GetProgress` | method | `GET /api/tutorial/progress` — fetch user completed tutorial list |
 | `TutorialController.CompleteTutorial` | method | `POST /api/tutorial/progress/{tutorialId}` — save completed tutorial step |
 | `PlayerController.GetProgress` | method | `GET /api/player/progress` — returns `PlayerProgressResponse` with maxClearedStageId and per-stage best stars |
+| `AdRewardsStatusController.GetStatus` | method | GET status of pending reward verification |
+| `InventoryController.Sync` | method | GET current player inventory |
+| `InventoryController.Spend` | method | POST spend items |
+| `InventoryController.Buy` | method | POST buy items with Gold |
 
 ## Rules
 - Do not accept `user_id` from request bodies; use `ControllerBaseEx.PlayerId`.

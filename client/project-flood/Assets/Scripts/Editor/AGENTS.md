@@ -13,6 +13,7 @@
 | `FontLocalizationConfigGenerator.cs` | `FontLocalizationConfigGenerator` | [MenuItem] reads tools/subset_tool/config.json → creates FontLocalizationConfig.asset with per-language fonts; sets TMP fallback |
 | `StringIds.cs` | `StringIds` | **AUTO-GENERATED** by `gen:info` from `client_string.csv`; key constants; used by UIEditorSetup via `using static` |
 | `StringCsvPostprocessor.cs` | `StringCsvPostprocessor` | AssetPostprocessor; watches `Data/string/client_string.csv` reimport → calls `LocalizedText.RefreshAllInEditor()`; menu: `Tools/Localization/Refresh Editor Text Preview` |
+| `UnityStageFileWatcher.cs` | `UnityStageFileWatcher` | [InitializeOnLoad] watches changes to shared `stage.csv` and auto-runs generation scripts |
 
 ## Symbols
 | symbol | kind | note |
@@ -24,6 +25,7 @@
 | `UIEditorSetup.CreateAllPrefabs()` | method | [MenuItem "Tools/UI Setup/1"] creates all popup/overlay prefabs |
 | `FontLocalizationConfigGenerator.Generate()` | method | [MenuItem "Tools/Localization/Generate Font Config"] creates FontLocalizationConfig.asset from config.json |
 | `StringIds` | class | All client_string.csv key constants; import with `using static Game.Editor.StringIds` |
+| `UnityStageFileWatcher` | class | Active file system watcher for local hot-reloads |
 
 ## Rules
 - Editor-only folder — auto-excluded from player builds

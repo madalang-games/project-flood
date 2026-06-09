@@ -5,10 +5,12 @@
 |------|-------|------|
 | `CsvLoader.cs` | `CsvLoader` | Loads typed arrays from Resources CSV via reflection; supports patch override |
 | `ArcLayoutGroup.cs` | `ArcLayoutGroup` | MonoBehaviour; arranges child RectTransforms in circular arc |
+| `VirtualizedScrollRect.cs` | `VirtualizedScrollRect` | MonoBehaviour; highly optimized vertical scroll virtualization pooling UI items |
 
 ## Symbols
 | symbol | kind | note |
 |--------|------|------|
+| `VirtualizedScrollRect.Init(int,Action<int,GameObject>)` | method | Initializes scroll virtualization and binds visibility callback |
 | `CsvLoader.Load<T>(string)` | method | static; checks `persistentDataPath/data_patch/{path}.csv` first, falls back to `Resources.Load`; supports sbyte/byte/short/ushort/int/uint/long/ulong/float/double/bool/string/Enum |
 | `CsvLoader.WritePatchFile(string,string)` | method | static; writes CSV text to patch dir |
 | `CsvLoader.GetPatchedMetaHash()` | method | static; reads `data_patch/meta_hash.txt` |

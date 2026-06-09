@@ -8,7 +8,7 @@ Namespace: `Game.OutGame.Lobby`
 | `LobbyView.cs` | `LobbyView` | Root lobby controller; shows/hides tabs; refreshes gold |
 | `HeaderView.cs` | `HeaderView` | Avatar tap → AccountPopup; stamina display (count/MAX/timer); stamina tap → StaminaPopupView |
 | `BottomNavBarView.cs` | `BottomNavBarView` | 3-tab nav; fires OnTabChanged |
-| `RankingTabView.cs` | `RankingTabView` | Ranking tab UI; stars/max-stage tabs, my rank, top page text |
+| `RankingTabView.cs` | `RankingTabView` | Ranking tab UI; stars/max-stage tabs, my rank, virtualized list via VirtualizedScrollRect |
 | `HomeTabView.cs` | `HomeTabView` | Chapter/stage scroll with object pool; milestone chest rendering + claim API |
 | `ChapterChestView.cs` | `ChapterChestView` | Milestone chest node displaying Locked (INACTIVE), Claim! (ACTIVE), or Cleared (CLAIMED) states |
 | `StageNodeView.cs` | `StageNodeView` | Pooled node: stage label, 3 star fills, lock overlay, pulse ring; Bind(id,stars,unlocked,current) |

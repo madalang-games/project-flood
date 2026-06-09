@@ -14,7 +14,7 @@ Focus: Wiring client scenes to live server APIs, stabilizing stamina gate, and r
 | [04_lobby_progression.md](04_lobby_progression.md) | Lobby Roadmap & Leaderboards | ✅ MVP done |
 | [05_stage_editor.md](05_stage_editor.md) | Web Stage Editor & Solver | ✅ MVP done |
 | [06_auth_infrastructure.md](06_auth_infrastructure.md) | Platform Auth & DB/Redis Stack | ✅ MVP done |
-| [07_ads_monetization.md](07_ads_monetization.md) | AdMob Rewarded/Interstitial | [/] Partial — rewarded verify overlay missing |
+| [07_ads_monetization.md](07_ads_monetization.md) | AdMob Rewarded/Interstitial | ✅ MVP done |
 | [08_polish_ux_sfx.md](08_polish_ux_sfx.md) | Visual Polish, VFX, Audio | [/] Basic done — juice/SFX not started |
 
 ---
@@ -23,10 +23,9 @@ Focus: Wiring client scenes to live server APIs, stabilizing stamina gate, and r
 
 These are the remaining gaps that block a shippable MVP:
 
-### A. Rewarded Ad Verify UX [07]
+### ~~A. Rewarded Ad Verify UX [07]~~ ✅ Done
 - Client sends nonce; server receives SSV callback — flow is wired
-- Missing: loading blocker overlay while SSV callback settles (user can tap away prematurely)
-- **Next action**: Show modal spinner after ad closes; poll or wait for server confirmation before dismissing
+- Modal spinner is shown after ad closes; polls server status for confirmation before dismissing
 
 ### ~~B. Stamina Gate E2E~~ ✅ Done
 ### ~~C. Gold Server Sync~~ ✅ Done
@@ -35,7 +34,7 @@ These are the remaining gaps that block a shippable MVP:
 ---
 
 ## 3. In Progress (Active Sprint)
-- [/] **Rewarded Ad Verify UX**: Show loading spinner while SSV callback settles after ad closes; prevent premature dismiss.
+- [/] **VFX & Audio Juice**: Adding game sound effects, background music handling via SoundManager, and puzzle visual polish.
 
 ---
 

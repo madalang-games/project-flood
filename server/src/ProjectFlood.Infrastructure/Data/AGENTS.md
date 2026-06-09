@@ -3,7 +3,8 @@
 ## Files
 | file | class | role |
 |------|-------|------|
-| `StaticDataService.g.cs` | `StaticDataService` | Generated static-data lookup methods |
+| `StaticDataService.cs` | `StaticDataService` | Partial class: declares `IStaticDataService`, constructor calls `InitGeneratedData` |
+| `StaticDataService.g.cs` | `StaticDataService` | Generated: fields, `InitGeneratedData`, `Get*` implementations — DO NOT EDIT |
 
 ## Symbols
 | symbol | kind | note |

@@ -28,10 +28,14 @@ Namespace: `Game.Services`
 | `ErrorResponseJson.cs` | `ErrorResponseJson` | Serializable helper for server error code extraction |
 | `PlayerApiService.cs` | `PlayerApiService` | DDOL singleton; `GET /api/player/progress` fetch; deserializes to `PlayerProgressResponse` |
 | `NetworkRetryOptions.cs` | `NetworkRetryOptions` | Options class for HTTP retries with exponential backoff, jitter, loading overlay, and toast messages |
+| `SoundManager.cs` | `SoundManager` | DDOL singleton; handles background music (BGM) playback, sound effects (SFX), and volume/mute status stored in PlayerPrefs |
 
 ## Symbols
 | symbol | kind | note |
 |--------|------|------|
+| `SoundManager.Instance` | prop | DDOL singleton |
+| `SoundManager.PlayBGM(AudioClip)` | method | Plays loopable background music |
+| `SoundManager.PlaySFX(AudioClip)` | method | Plays one-shot sound effects |
 | `NetworkService.Instance` | prop | DDOL singleton; lazy-instantiated if not in scene |
 | `NetworkService.SetAuthToken(string)` | method | Called by AuthService after login; injects Bearer token into all subsequent requests |
 | `NetworkService.Get(string,Action<bool,string>)` | method | HTTP GET; path relative to AppConfig BaseUrl |
