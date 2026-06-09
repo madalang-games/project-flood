@@ -72,12 +72,14 @@ public sealed class StageAttemptService
 
         await _redis.StringSetAsync(UserAttemptKey(userId), JsonSerializer.Serialize(attempt), TimeSpan.FromSeconds(timeoutSeconds));
         _db.EventLogs.Insert(EventLogFactory.StageAttemptStarted(userId, correlationId, attempt.AttemptId, stageId, lifeSpent, attempt.ExpiresAt));
-        await _db.SaveAsync(ct);
+        var totals = await _db.UserRankingTotals.FindAsync(userId, ct);
+        var winStreak = totals?.WinStreak ?? 0;
 
         return new StageAttemptStartResponse
         {
             Attempt = ToSnapshot(attempt),
             Stamina = snapshot,
+            WinStreak = winStreak,
             ServerTime = now,
         };
     }
@@ -117,6 +119,18 @@ public sealed class StageAttemptService
 
         rankingResult = await _ranking.RecordClearAsync(userId, stageId, attempt.AttemptId, request, evaluation, correlationId, now, ct);
         var stageRank = await _ranking.GetStageRankAsync(stageId, rankingResult.BestTurnsUsed, ct);
+
+        var rankingTotals = await _db.UserRankingTotals.FindAsync(userId, ct);
+        if (rankingTotals != null)
+        {
+            rankingTotals.WinStreak++;
+            if (rankingTotals.WinStreak > rankingTotals.MaxWinStreak)
+            {
+                rankingTotals.MaxWinStreak = rankingTotals.WinStreak;
+            }
+            rankingTotals.UpdatedAt = now;
+        }
+
         _db.EventLogs.Insert(EventLogFactory.StageAttemptCleared(userId, correlationId, attempt.AttemptId, stageId, attempt.LifeSpent));
         await _db.SaveAsync(ct);
         await tx.CommitAsync(ct);
@@ -144,6 +158,14 @@ public sealed class StageAttemptService
         var attempt = await RequireAttemptAsync(userId, stageId, attemptId);
         var now = DateTimeOffset.UtcNow;
         await _redis.KeyDeleteAsync(UserAttemptKey(userId));
+
+        var rankingTotals = await _db.UserRankingTotals.FindAsync(userId, ct);
+        if (rankingTotals != null)
+        {
+            rankingTotals.WinStreak = 0;
+            rankingTotals.UpdatedAt = now;
+        }
+
         _db.EventLogs.Insert(EventLogFactory.StageAttemptFailed(userId, correlationId, attempt.AttemptId, stageId, string.IsNullOrWhiteSpace(reason) ? "fail" : reason));
         await _db.SaveAsync(ct);
         var stamina = (await _stamina.GetAsync(userId, ct)).Stamina;
@@ -179,7 +201,21 @@ public sealed class StageAttemptService
 
         var result = await _adVerifier.VerifyAsync(provider, adToken, ct);
         if (!result.Verified)
+        {
+            var pending = new PendingAdClaim
+            {
+                UserId = userId,
+                PlacementId = "STAGE_REVIVE",
+                Provider = provider,
+                AdToken = adToken,
+                ContextType = "stage_attempt",
+                ContextId = attemptId,
+                RequestJson = JsonSerializer.Serialize(new { stageId, attemptId }),
+                CorrelationId = correlationId
+            };
+            await _redis.StringSetAsync($"pending_claim:{adToken}", JsonSerializer.Serialize(pending), TimeSpan.FromMinutes(5));
             throw new GameApiException(ErrorCodes.AdSsvPending, "Ad SSV callback not yet received.");
+        }
 
         var existing = await _db.AdRewardTransactions.Query()
             .FirstOrDefaultAsync(x => x.Provider == provider && x.ProviderTxId == result.ProviderTxId, ct);

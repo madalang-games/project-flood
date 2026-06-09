@@ -6,6 +6,9 @@ namespace ProjectFlood.Contracts.GameTypes
         Basic    = 0x0,
         Obstacle = 0x1,
         Void     = 0x2,
+        Bomb     = 0x3,
+        HRocket  = 0x4,
+        ColorSweep = 0x5,
     }
 
     public enum Difficulty

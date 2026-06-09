@@ -94,6 +94,7 @@ namespace Game.InGame.Controller
             StageApiService.Instance?.StartAttempt(_stage.stage_id, response =>
             {
                 StaminaApiService.Instance?.UpdateStamina(response.Stamina, response.ServerTime);
+                ScrollStateCache.CurrentWinStreak = response.WinStreak;
             }, error =>
             {
                 if (error == "INSUFFICIENT_STAMINA")

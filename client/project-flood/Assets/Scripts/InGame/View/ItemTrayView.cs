@@ -42,7 +42,7 @@ namespace Game.InGame.View
         private void RefreshSlot(ItemSlotView slot, ItemType type, ItemManager manager)
         {
             if (slot == null) return;
-            bool canUse = !_isLocked && manager.CanUse(type);
+            bool canUse = !_isLocked && (manager.CanUse(type) || manager.GetCount(type) == 0);
             bool selected = manager.IsInUsePhase && manager.SelectedItem == type;
             slot.Refresh(manager.GetCount(type), manager.IsDevMode, canUse, selected);
         }

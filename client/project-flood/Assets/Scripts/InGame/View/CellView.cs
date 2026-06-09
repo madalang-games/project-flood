@@ -16,6 +16,9 @@ namespace Game.InGame.View
         [SerializeField] private Sprite _obstacleSprite;
         [SerializeField] private Sprite _protectorSprite1;
         [SerializeField] private Sprite _protectorSprite2;
+        [SerializeField] private Sprite _bombSprite;
+        [SerializeField] private Sprite _hRocketSprite;
+        [SerializeField] private Sprite _colorSweepSprite;
 
         private const float ColorBoost = 1.25f;
 
@@ -92,8 +95,16 @@ namespace Game.InGame.View
             gameObject.SetActive(true);
             var cell = data.Value;
 
-            _baseRenderer.sprite = cell.cell_type == CellType.Obstacle ? _obstacleSprite : _basicSprite;
-            _baseRenderer.color = cell.cell_type == CellType.Obstacle ? Color.white : cellColor;
+            Sprite targetSprite = _basicSprite;
+            if (cell.cell_type == CellType.Obstacle) targetSprite = _obstacleSprite;
+            else if (cell.cell_type == CellType.Bomb && _bombSprite != null) targetSprite = _bombSprite;
+            else if (cell.cell_type == CellType.HRocket && _hRocketSprite != null) targetSprite = _hRocketSprite;
+            else if (cell.cell_type == CellType.ColorSweep && _colorSweepSprite != null) targetSprite = _colorSweepSprite;
+
+            _baseRenderer.sprite = targetSprite;
+
+            bool isColorless = cell.cell_type == CellType.Obstacle || cell.cell_type == CellType.Bomb || cell.cell_type == CellType.HRocket;
+            _baseRenderer.color = isColorless ? Color.white : cellColor;
             _baseColor = _baseRenderer.color;
             transform.localScale = _baseScale;
             SetRenderersAlpha(1f);

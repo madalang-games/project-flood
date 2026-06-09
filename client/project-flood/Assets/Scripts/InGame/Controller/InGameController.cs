@@ -5,6 +5,7 @@ using Game.InGame.Board;
 using Game.InGame.Items;
 using Game.InGame.Rules;
 using Game.InGame.View;
+using Game.OutGame.Lobby;
 using ProjectFlood.Contracts.GameTypes;
 using ProjectFlood.Contracts.Stage;
 using ProjectFlood.Data.Generated;
@@ -43,6 +44,9 @@ namespace Game.InGame.Controller
         {
             _stage = stage;
             _board = StageLoader.Load(stage);
+
+            SpawnStartingBoosters();
+
             _turnManager = new TurnManager(stage.turn_limit + extraTurns);
             _boardView.Build(_board, StageLoader.ParseColorIds(stage.color_ids));
 
@@ -176,7 +180,14 @@ namespace Game.InGame.Controller
             var tapped = _board.Grid[row, col];
             if (tapped == null || tapped.Value.cell_type == CellType.Void) return;
 
-            HandleTap(row, col);
+            if (tapped.Value.cell_type == CellType.Bomb || tapped.Value.cell_type == CellType.HRocket || tapped.Value.cell_type == CellType.ColorSweep)
+            {
+                HandleSpecialCellTap(row, col, tapped.Value.cell_type);
+            }
+            else
+            {
+                HandleTap(row, col);
+            }
         }
 
         public void TriggerRotateBoard()
@@ -246,6 +257,8 @@ namespace Game.InGame.Controller
 
             RemovalSystem.Remove(_board, group);
             yield return _boardView.PlayRemovalEffects(_board, group, row, col);
+
+            ShiftConveyors();
 
             var beforeGravity = CloneGrid(_board);
             GravitySystem.Apply(_board);
@@ -319,6 +332,8 @@ namespace Game.InGame.Controller
                 RemovalSystem.Remove(_board, cells);
                 yield return _boardView.PlayRemovalEffects(_board, cells, originRow, originCol);
 
+                ShiftConveyors();
+
                 var beforeGravity = CloneGrid(_board);
                 GravitySystem.Apply(_board);
                 yield return _boardView.PlayGravity(beforeGravity, _board);
@@ -361,6 +376,8 @@ namespace Game.InGame.Controller
             yield return _boardView.PlayRowShift(beforeRowShift, _board, direction);
 
             // Gravity must run after RowShift slide resolves
+            ShiftConveyors();
+
             var beforeGravity = CloneGrid(_board);
             GravitySystem.Apply(_board);
             yield return _boardView.PlayGravity(beforeGravity, _board);
@@ -387,6 +404,49 @@ namespace Game.InGame.Controller
         {
             if (!_isPlaying || _isAnimating) return;
             _boardView.ClearAllCellSelectedHighlights(); // Clear any visual swap highlights
+
+            if (!_isDevMode && _itemManager.GetCount(type) <= 0)
+            {
+                var cost = 100;
+                if (Services.PlayerProgressService.Instance != null && !Services.PlayerProgressService.Instance.CanAfford(cost))
+                {
+                    Core.UIManager.Instance?.ShowToast("Insufficient Gold!", Core.UI.ToastType.Warning);
+                    return;
+                }
+
+                int itemId = type switch
+                {
+                    ItemType.Bomb => 2,
+                    ItemType.HRocket => 3,
+                    ItemType.ColorSweep => 4,
+                    ItemType.RowShift => 5,
+                    ItemType.CellSwap => 6,
+                    _ => 0
+                };
+
+                if (itemId > 0 && Services.InventoryApiService.Instance != null)
+                {
+                    Core.UIManager.Instance?.ShowLoading();
+                    Services.InventoryApiService.Instance.BuyItem(itemId,
+                        onSuccess: response =>
+                        {
+                            Core.UIManager.Instance?.HideLoading();
+                            Core.UIManager.Instance?.ShowToast("Purchased booster!", Core.UI.ToastType.Success);
+                            if (_itemTrayView != null)
+                            {
+                                _itemTrayView.Refresh(_itemManager);
+                            }
+                            _itemManager.SelectItem(type);
+                        },
+                        onError: err =>
+                        {
+                            Core.UIManager.Instance?.HideLoading();
+                            Core.UIManager.Instance?.ShowToast($"Purchase failed: {err}", Core.UI.ToastType.Warning);
+                        });
+                }
+                return;
+            }
+
             _itemManager.SelectItem(type);
         }
 
@@ -561,6 +621,158 @@ namespace Game.InGame.Controller
             }
             catch {}
             return false;
+        }
+        private void SpawnStartingBoosters()
+        {
+            if (_board == null) return;
+
+            var validCoords = new List<(int r, int c)>();
+            for (int r = 0; r < _board.Height; r++)
+            {
+                for (int c = 0; c < _board.Width; c++)
+                {
+                    var cell = _board.Grid[r, c];
+                    if (cell.HasValue && cell.Value.cell_type == CellType.Basic && !cell.Value.is_core && cell.Value.protector_strength == 0)
+                    {
+                        validCoords.Add((r, c));
+                    }
+                }
+            }
+
+            var rnd = new System.Random();
+            for (int i = validCoords.Count - 1; i > 0; i--)
+            {
+                int j = rnd.Next(i + 1);
+                var temp = validCoords[i];
+                validCoords[i] = validCoords[j];
+                validCoords[j] = temp;
+            }
+
+            var boostersToSpawn = new List<CellType>();
+
+            if (ScrollStateCache.UseStartingBomb)
+            {
+                boostersToSpawn.Add(CellType.Bomb);
+                ScrollStateCache.UseStartingBomb = false;
+            }
+            if (ScrollStateCache.UseStartingHRocket)
+            {
+                boostersToSpawn.Add(CellType.HRocket);
+                ScrollStateCache.UseStartingHRocket = false;
+            }
+
+            int streak = ScrollStateCache.CurrentWinStreak;
+            if (streak >= 3)
+            {
+                boostersToSpawn.Add(CellType.HRocket);
+                boostersToSpawn.Add(CellType.Bomb);
+                boostersToSpawn.Add(CellType.ColorSweep);
+            }
+            else if (streak == 2)
+            {
+                boostersToSpawn.Add(CellType.HRocket);
+                boostersToSpawn.Add(CellType.Bomb);
+            }
+            else if (streak == 1)
+            {
+                boostersToSpawn.Add(CellType.HRocket);
+            }
+
+            int spawnCount = Mathf.Min(boostersToSpawn.Count, validCoords.Count);
+            for (int i = 0; i < spawnCount; i++)
+            {
+                var (r, c) = validCoords[i];
+                var oldCell = _board.Grid[r, c].Value;
+                _board.Grid[r, c] = new CellData
+                {
+                    color_id = oldCell.color_id,
+                    cell_type = boostersToSpawn[i],
+                    protector_strength = 0,
+                    is_core = false
+                };
+                Debug.Log($"[InGameController] Spawned starting booster {boostersToSpawn[i]} at ({r}, {c})");
+            }
+        }
+
+        private void HandleSpecialCellTap(int row, int col, CellType type)
+        {
+            ItemType itemType = type switch
+            {
+                CellType.Bomb => ItemType.Bomb,
+                CellType.HRocket => ItemType.HRocket,
+                CellType.ColorSweep => ItemType.ColorSweep,
+                _ => ItemType.Bomb
+            };
+
+            IItemEffect effect = itemType switch
+            {
+                ItemType.Bomb => new BombEffect(),
+                ItemType.HRocket => new HRocketEffect(),
+                ItemType.ColorSweep => new ColorSweepEffect(),
+                _ => null
+            };
+
+            if (effect == null) return;
+
+            var cells = effect.GetAffectedCells(_board, row, col);
+            if (cells == null || cells.Count == 0) return;
+
+            StartCoroutine(HandleSpecialCellSequence(row, col, cells, itemType));
+        }
+
+        private IEnumerator HandleSpecialCellSequence(int originRow, int originCol, List<(int row, int col)> cells, ItemType itemType)
+        {
+            _isAnimating = true;
+
+            if (_itemTrayView != null) _itemTrayView.SetLocked(true);
+
+            RemovalSystem.Remove(_board, cells);
+            yield return _boardView.PlayRemovalEffects(_board, cells, originRow, originCol);
+
+            ShiftConveyors();
+
+            var beforeGravity = CloneGrid(_board);
+            GravitySystem.Apply(_board);
+            yield return _boardView.PlayGravity(beforeGravity, _board);
+
+            var result = ClearEvaluator.Evaluate(_board, _stage.star1_ratio, _stage.star2_ratio);
+            OnBoardUpdated?.Invoke(_turnManager.RemainingTurns, CountRemainingBasicCells());
+            if (result == StarResult.Star3)
+            {
+                _isPlaying = false;
+                OnStageEnd?.Invoke(result, _turnManager.RemainingTurns);
+            }
+
+            if (_itemTrayView != null)
+            {
+                _itemTrayView.SetLocked(false);
+                _itemTrayView.Refresh(_itemManager);
+            }
+
+            _isAnimating = false;
+        }
+
+        private void ShiftConveyors()
+        {
+            if (_board == null || _board.ConveyorPaths == null) return;
+
+            foreach (var path in _board.ConveyorPaths)
+            {
+                if (path == null || path.Count < 2) continue;
+
+                int lastIdx = path.Count - 1;
+                var lastCell = _board.Grid[path[lastIdx].r, path[lastIdx].c];
+
+                for (int i = lastIdx; i > 0; i--)
+                {
+                    var to = path[i];
+                    var from = path[i - 1];
+                    _board.Grid[to.r, to.c] = _board.Grid[from.r, from.c];
+                }
+
+                var first = path[0];
+                _board.Grid[first.r, first.c] = lastCell;
+            }
         }
     }
 }

@@ -8,13 +8,26 @@ namespace Game.InGame.Board
         public int InitialValidCells { get; }
         public bool HasCore { get; }
 
-        public BoardState(CellData?[,] grid, int initialValidCells, bool hasCore)
+        public System.Collections.Generic.Dictionary<(int r, int c), (int r, int c)> InletToOutlet { get; }
+        public System.Collections.Generic.Dictionary<(int r, int c), (int r, int c)> OutletToInlet { get; }
+        public System.Collections.Generic.List<System.Collections.Generic.List<(int r, int c)>> ConveyorPaths { get; }
+
+        public BoardState(
+            CellData?[,] grid,
+            int initialValidCells,
+            bool hasCore,
+            System.Collections.Generic.Dictionary<(int r, int c), (int r, int c)> inletToOutlet = null,
+            System.Collections.Generic.Dictionary<(int r, int c), (int r, int c)> outletToInlet = null,
+            System.Collections.Generic.List<System.Collections.Generic.List<(int r, int c)>> conveyorPaths = null)
         {
             Grid = grid;
             Width = grid.GetLength(1);
             Height = grid.GetLength(0);
             InitialValidCells = initialValidCells;
             HasCore = hasCore;
+            InletToOutlet = inletToOutlet ?? new System.Collections.Generic.Dictionary<(int r, int c), (int r, int c)>();
+            OutletToInlet = outletToInlet ?? new System.Collections.Generic.Dictionary<(int r, int c), (int r, int c)>();
+            ConveyorPaths = conveyorPaths ?? new System.Collections.Generic.List<System.Collections.Generic.List<(int r, int c)>>();
         }
 
         public void Rotate180()

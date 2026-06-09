@@ -10,22 +10,44 @@ namespace Game.InGame.View
         [SerializeField] private TextMeshProUGUI _countText;
         [SerializeField] private GameObject _selectedHighlight;
         [SerializeField] private CanvasGroup _canvasGroup;
+        [SerializeField] private GameObject _goldBadge;
+        [SerializeField] private TextMeshProUGUI _goldBadgeText;
 
         public Button Button => _button;
 
-        public void Refresh(int count, bool isDevMode, bool canUse, bool selected)
+        public void Refresh(int count, bool isDevMode, bool canUse, bool selected, int goldCost = 100)
         {
+            bool isZero = !isDevMode && count == 0;
+
             if (_countText != null)
+            {
                 _countText.text = isDevMode ? "∞" : count.ToString();
+                _countText.gameObject.SetActive(!isZero);
+            }
+
+            if (_goldBadge != null)
+            {
+                _goldBadge.SetActive(isZero);
+            }
+
+            if (_goldBadgeText != null && isZero)
+            {
+                _goldBadgeText.text = goldCost.ToString();
+            }
+
             if (_button != null)
-                _button.interactable = canUse;
+            {
+                // Can tap to buy with gold if count is 0 and not locked
+                _button.interactable = canUse || isZero;
+            }
+
             if (_selectedHighlight != null)
                 _selectedHighlight.SetActive(selected);
 
             if (_canvasGroup != null)
             {
-                bool isDimmed = !isDevMode && count == 0;
-                _canvasGroup.alpha = isDimmed ? 0.45f : 1f;
+                // Maintain full opacity for gold badge visibility when zero
+                _canvasGroup.alpha = 1f;
             }
         }
     }
