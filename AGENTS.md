@@ -28,6 +28,7 @@ CMD: `tools/all_generator.bat` | `tools/info_generator.bat` | `tools/db_generato
 - CONFIG policy: env vars own deploy/runtime values; `template.ini` owns tooling values; no hardcoded config fallbacks
 - `_` prefix files/dirs are skipped by all gen tools (examples, drafts)
 - **AGENTS.md Maintenance**: Always update related `AGENTS.md` files (Nav, Symbols, etc.) immediately after completing any task or implementation.
+- **Git Commit Protocol**: If `read_file` is blocked by ignore patterns, you MUST use `run_shell_command` (e.g., `Get-Content .claude/issues.cache.md`) to retrieve issue numbers as specified in `.claude/commands/git-commit.md`.
 
 ## Clarification Protocol
 Stop and ask **before** implementing when: requirement is ambiguous with design impact, a clearly better alternative exists (not just style), or task touches DB schema / auth / cross-service contracts.
