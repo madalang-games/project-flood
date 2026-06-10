@@ -93,9 +93,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Game.Core.UI.ToastView
   _messageText: {fileID: 0}
   _iconImage: {fileID: 0}
-  _warningIcon: {fileID: 0}
-  _successIcon: {fileID: 0}
-  _errorIcon: {fileID: 0}
+  _warningIcon: {fileID: 21300000, guid: 76de562b265cde04da7d88cdf4007f4a, type: 3}
+  _successIcon: {fileID: 21300000, guid: 2a01c9c27d9fb3c47b472250e35adc14, type: 3}
+  _errorIcon: {fileID: 21300000, guid: a359a6ded9ae77946b97f47c4e221a12, type: 3}
 --- !u!225 &557552238314911526
 CanvasGroup:
   m_ObjectHideFlags: 0

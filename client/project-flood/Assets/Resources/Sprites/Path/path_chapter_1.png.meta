@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 7d60102d548743147b5d300f266c9c1d
+guid: 9b1ab303b15c08142be40e7848823946
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -4147250894113515580
-    second: ui_resource_v6_50_0
+      213: -4210684115002035545
+    second: path_chapter_1_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -40,13 +40,13 @@ TextureImporter:
     filterMode: 1
     aniso: 1
     mipBias: 0
-    wrapU: 1
-    wrapV: 1
-    wrapW: 1
+    wrapU: 0
+    wrapV: 0
+    wrapW: 0
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
-  spriteMode: 1
+  spriteMode: 2
   spriteExtrude: 1
   spriteMeshType: 1
   alignment: 0
@@ -100,7 +100,7 @@ TextureImporter:
     buildTarget: Android
     maxTextureSize: 2048
     resizeAlgorithm: 0
-    textureFormat: 51
+    textureFormat: 48
     textureCompression: 1
     compressionQuality: 50
     crunchedCompression: 0
@@ -113,23 +113,23 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: ui_resource_v6_50_0
+      name: path_chapter_1_0
       rect:
         serializedVersion: 2
-        x: 0
+        x: 112
         y: 0
-        width: 113
-        height: 115
+        width: 57
+        height: 2172
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 4c751fde8410276c0800000000000000
-      internalID: -4147250894113515580
+      spriteID: 7a27ce74b15a095c0800000000000000
+      internalID: -4210684115002035545
       vertices: []
       indices: 
       edges: []
@@ -138,7 +138,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 5e97eb03825dee720800000000000000
+    spriteID: a441dc999b64af540a6e31817237ff72
     internalID: 0
     vertices: []
     indices: 
@@ -148,7 +148,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      ui_resource_v6_50_0: -4147250894113515580
+      path_chapter_1_0: -4210684115002035545
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

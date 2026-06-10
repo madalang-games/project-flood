@@ -151,7 +151,7 @@ MonoBehaviour:
   _boardView: {fileID: 839554436}
   _itemTrayView: {fileID: 0}
   _rowShiftOverlay: {fileID: 0}
-  _isDevMode: 1
+  _isDevMode: 0
 --- !u!4 &57415803
 Transform:
   m_ObjectHideFlags: 0
@@ -159,6 +159,50 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 57415801}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &210231945
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 210231947}
+  - component: {fileID: 210231946}
+  m_Layer: 0
+  m_Name: InGameSceneBackgroundView
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &210231946
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 210231945}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cc5035d11e9342d48bc26bad7b089d23, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Game.InGame.View.InGameSceneBackgroundView
+--- !u!4 &210231947
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 210231945}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
@@ -198,6 +242,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Game.InGame.Controller.InGameSceneEntry
   _controller: {fileID: 57415802}
   _hudView: {fileID: 1759101007}
+  _sceneBg: {fileID: 210231946}
   _debugStageId: 1
 --- !u!4 &416285465
 Transform:
@@ -464,6 +509,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4454411fdb90531459dc312418098b61, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Game.InGame.View.BoardBackground
+  _themes: []
   _boardColor: {r: 0.118, g: 0.118, b: 0.18, a: 1}
   _socketColor: {r: 0.165, g: 0.165, b: 0.243, a: 1}
   _socketHighlight: {r: 0.216, g: 0.216, b: 0.314, a: 1}
@@ -472,6 +518,24 @@ MonoBehaviour:
   _neonPink: {r: 1, g: 0.22, b: 0.78, a: 1}
   _animateTexture: 1
   _effectFps: 12
+  _socketSprites:
+  - {fileID: 1252807697152455993, guid: da4f82985ba1f1345b0752484c9d6647, type: 3}
+  - {fileID: 6505771506262075123, guid: 614a646e3598652438fa7149b7df5b4d, type: 3}
+  - {fileID: 5329740396341766162, guid: 07d254c22af408b4dbc2e120504522f9, type: 3}
+  - {fileID: -5894762336825776218, guid: 426e0ae2b256a0d469598977a1fbd9ac, type: 3}
+  - {fileID: 7788427486156348677, guid: 94a148dec3b9660409c4bc65d72259e7, type: 3}
+  - {fileID: 3004001787131319761, guid: 7bc65fea14754ae42b95792dad5a0c71, type: 3}
+  - {fileID: -8746085867661209028, guid: bd1d72746ff641b4dae1145a353e10af, type: 3}
+  - {fileID: 3623377172439080101, guid: 7b868c614d115f747a3d509e59a82bfc, type: 3}
+  - {fileID: 5357250738667748547, guid: c3461624c14cee44f90b84679ad753df, type: 3}
+  - {fileID: -7778724689897927917, guid: 534051c36e051854482e3cf770a5e9d7, type: 3}
+  - {fileID: 5337946625999744216, guid: 059c8f94b21d2d343bbf90d9f2aed841, type: 3}
+  - {fileID: -2612087330954814712, guid: c68a3d0b654bfe04e994a36710c3ebc0, type: 3}
+  - {fileID: -5892024686622319204, guid: 4c9c0cf85081dac458d5d96f9a48a889, type: 3}
+  - {fileID: -7462187633005668503, guid: bf16ca9fd10056c4891de99fa50666b8, type: 3}
+  - {fileID: 307381745227503199, guid: 203aef0f712556948b8bf247ffb4418a, type: 3}
+  - {fileID: -3719160481881671803, guid: ef111fc991718894ebf6ed87b1252ddb, type: 3}
+  _defaultSocketSprite: {fileID: -3719160481881671803, guid: 01bf888acfc2ad949a154d45c9aa9c77, type: 3}
 --- !u!4 &817599703
 Transform:
   m_ObjectHideFlags: 0
@@ -1086,3 +1150,4 @@ SceneRoots:
   - {fileID: 1839499482}
   - {fileID: 416285465}
   - {fileID: 1759101006}
+  - {fileID: 210231947}

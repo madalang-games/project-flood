@@ -1,0 +1,7826 @@
+fileFormatVersion: 2
+guid: 6c3137d8049898b4892d2da405cb19b8
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -4210684115002035545
+    second: path_chapter_1_0
+  - first:
+      213: -2139092820181124745
+    second: path_chapter_1_1
+  - first:
+      213: 3548704722794938936
+    second: path_chapter_1_2
+  - first:
+      213: -8479345379981088357
+    second: path_chapter_1_3
+  - first:
+      213: 1550707583074476471
+    second: path_chapter_1_4
+  - first:
+      213: 5370864294417569124
+    second: path_chapter_1_5
+  - first:
+      213: 5823887820338119001
+    second: path_chapter_1_6
+  - first:
+      213: 8767713145519656307
+    second: path_chapter_1_7
+  - first:
+      213: -1421867196729838940
+    second: path_chapter_1_8
+  - first:
+      213: 6016918534329318149
+    second: path_chapter_1_9
+  - first:
+      213: 2016115598766490613
+    second: path_chapter_1_10
+  - first:
+      213: -6132034270635532565
+    second: path_chapter_1_11
+  - first:
+      213: 3316553918279955265
+    second: path_chapter_1_12
+  - first:
+      213: 8952516253821478511
+    second: path_chapter_1_13
+  - first:
+      213: 7631482764125948865
+    second: path_chapter_1_14
+  - first:
+      213: 4390048035077411706
+    second: path_chapter_1_15
+  - first:
+      213: 2753980646217254010
+    second: path_chapter_1_16
+  - first:
+      213: -5003500832447770080
+    second: path_chapter_1_17
+  - first:
+      213: -5188338997783333396
+    second: path_chapter_1_18
+  - first:
+      213: -6335165489625008664
+    second: path_chapter_1_19
+  - first:
+      213: 1045872784193872613
+    second: path_chapter_1_20
+  - first:
+      213: 465617487809150327
+    second: path_chapter_1_21
+  - first:
+      213: -5122433675251047826
+    second: path_chapter_1_22
+  - first:
+      213: -3609486397652004184
+    second: path_chapter_1_23
+  - first:
+      213: 4580255037009518104
+    second: path_chapter_1_24
+  - first:
+      213: -9127061798189804482
+    second: path_chapter_1_25
+  - first:
+      213: 8498039025940517224
+    second: path_chapter_1_26
+  - first:
+      213: -1677053495590178000
+    second: path_chapter_1_27
+  - first:
+      213: -605558219487079331
+    second: path_chapter_1_28
+  - first:
+      213: 5130075331184050689
+    second: path_chapter_1_29
+  - first:
+      213: 439612765538662037
+    second: path_chapter_1_30
+  - first:
+      213: 1074676668163345126
+    second: path_chapter_1_31
+  - first:
+      213: -2790911049504445939
+    second: path_chapter_1_32
+  - first:
+      213: -2145755055587673430
+    second: path_chapter_1_33
+  - first:
+      213: -6515643316278186781
+    second: path_chapter_1_34
+  - first:
+      213: -6788860681629652169
+    second: path_chapter_1_35
+  - first:
+      213: 7460464148756614150
+    second: path_chapter_1_36
+  - first:
+      213: -5609509189260788492
+    second: path_chapter_1_37
+  - first:
+      213: -7824888456222979077
+    second: path_chapter_1_38
+  - first:
+      213: 1133247651163894626
+    second: path_chapter_1_39
+  - first:
+      213: -1172256518468962655
+    second: path_chapter_1_40
+  - first:
+      213: -6005307740981473052
+    second: path_chapter_1_41
+  - first:
+      213: 2799933578073924876
+    second: path_chapter_1_42
+  - first:
+      213: 3585535536411882739
+    second: path_chapter_1_43
+  - first:
+      213: 3310493024555930076
+    second: path_chapter_1_44
+  - first:
+      213: -2678276935799496202
+    second: path_chapter_1_45
+  - first:
+      213: -110268374393258370
+    second: path_chapter_1_46
+  - first:
+      213: -7128159284053394576
+    second: path_chapter_1_47
+  - first:
+      213: 4170170727988745686
+    second: path_chapter_1_48
+  - first:
+      213: -2627467560567242666
+    second: path_chapter_1_49
+  - first:
+      213: 2182114250443133274
+    second: path_chapter_1_50
+  - first:
+      213: 5738782267935805200
+    second: path_chapter_1_51
+  - first:
+      213: -2003436098739764202
+    second: path_chapter_1_52
+  - first:
+      213: 8081548620646229576
+    second: path_chapter_1_53
+  - first:
+      213: -3852385406957387318
+    second: path_chapter_1_54
+  - first:
+      213: 2904814464971171839
+    second: path_chapter_1_55
+  - first:
+      213: -2570300884835794277
+    second: path_chapter_1_56
+  - first:
+      213: -2438578306950515088
+    second: path_chapter_1_57
+  - first:
+      213: -8567610546147800974
+    second: path_chapter_1_58
+  - first:
+      213: -9219968801949032134
+    second: path_chapter_1_59
+  - first:
+      213: -5862801416063508551
+    second: path_chapter_1_60
+  - first:
+      213: -4435610700138206100
+    second: path_chapter_1_61
+  - first:
+      213: 1495906397479721154
+    second: path_chapter_1_62
+  - first:
+      213: -7711845343734088954
+    second: path_chapter_1_63
+  - first:
+      213: -6017430071278225776
+    second: path_chapter_1_64
+  - first:
+      213: -367105097869069156
+    second: path_chapter_1_65
+  - first:
+      213: 8661563814469075952
+    second: path_chapter_1_66
+  - first:
+      213: -3902903403846305557
+    second: path_chapter_1_67
+  - first:
+      213: 4926463419985771164
+    second: path_chapter_1_68
+  - first:
+      213: -3138431024731943727
+    second: path_chapter_1_69
+  - first:
+      213: -1735705688451582763
+    second: path_chapter_1_70
+  - first:
+      213: 8804680745989289085
+    second: path_chapter_1_71
+  - first:
+      213: 6387744506232805664
+    second: path_chapter_1_72
+  - first:
+      213: -1316878161267574661
+    second: path_chapter_1_73
+  - first:
+      213: 3512040395112317414
+    second: path_chapter_1_74
+  - first:
+      213: 7444424893322601269
+    second: path_chapter_1_75
+  - first:
+      213: 7718722701156760898
+    second: path_chapter_1_76
+  - first:
+      213: 4095521592089040897
+    second: path_chapter_1_77
+  - first:
+      213: 6664193276864118269
+    second: path_chapter_1_78
+  - first:
+      213: 2129992173616901274
+    second: path_chapter_1_79
+  - first:
+      213: 3023641014299623158
+    second: path_chapter_1_80
+  - first:
+      213: -7649547582039718088
+    second: path_chapter_1_81
+  - first:
+      213: -201230529539419117
+    second: path_chapter_1_82
+  - first:
+      213: 2031606833074089295
+    second: path_chapter_1_83
+  - first:
+      213: -3363124814062741985
+    second: path_chapter_1_84
+  - first:
+      213: -8189751481460312619
+    second: path_chapter_1_85
+  - first:
+      213: 7062896842387916380
+    second: path_chapter_1_86
+  - first:
+      213: -1465197936316912779
+    second: path_chapter_1_87
+  - first:
+      213: -3590052426742184097
+    second: path_chapter_1_88
+  - first:
+      213: 4808857405123166895
+    second: path_chapter_1_89
+  - first:
+      213: 768386119387975172
+    second: path_chapter_1_90
+  - first:
+      213: 2425659904590409109
+    second: path_chapter_1_91
+  - first:
+      213: -4450361887264389864
+    second: path_chapter_1_92
+  - first:
+      213: -2828417429786405075
+    second: path_chapter_1_93
+  - first:
+      213: 1463783819841473781
+    second: path_chapter_1_94
+  - first:
+      213: 4022244777219932886
+    second: path_chapter_1_95
+  - first:
+      213: -6554686031952278876
+    second: path_chapter_1_96
+  - first:
+      213: -691277463914987515
+    second: path_chapter_1_97
+  - first:
+      213: -6357398508140105426
+    second: path_chapter_1_98
+  - first:
+      213: -8639553428503004573
+    second: path_chapter_1_99
+  - first:
+      213: -1035020355771862276
+    second: path_chapter_1_100
+  - first:
+      213: -7440197512720510162
+    second: path_chapter_1_101
+  - first:
+      213: -617417037914171976
+    second: path_chapter_1_102
+  - first:
+      213: 1413626853942115639
+    second: path_chapter_1_103
+  - first:
+      213: -6670974609269776219
+    second: path_chapter_1_104
+  - first:
+      213: 936263193937371031
+    second: path_chapter_1_105
+  - first:
+      213: -4765606101675994440
+    second: path_chapter_1_106
+  - first:
+      213: -8376765354805112913
+    second: path_chapter_1_107
+  - first:
+      213: 1292019393645814065
+    second: path_chapter_1_108
+  - first:
+      213: 8600426465674632521
+    second: path_chapter_1_109
+  - first:
+      213: -269902607356162670
+    second: path_chapter_1_110
+  - first:
+      213: 4868100374486503192
+    second: path_chapter_1_111
+  - first:
+      213: 6388976662101978464
+    second: path_chapter_1_112
+  - first:
+      213: -5915777536067243190
+    second: path_chapter_1_113
+  - first:
+      213: -8776776056051899155
+    second: path_chapter_1_114
+  - first:
+      213: 4749467095306629158
+    second: path_chapter_1_115
+  - first:
+      213: -8256576836501157251
+    second: path_chapter_1_116
+  - first:
+      213: 6321743508639374579
+    second: path_chapter_1_117
+  - first:
+      213: -242508471453863350
+    second: path_chapter_1_118
+  - first:
+      213: 7285676971603856047
+    second: path_chapter_1_119
+  - first:
+      213: 367639043467830591
+    second: path_chapter_1_120
+  - first:
+      213: -7059759527348654809
+    second: path_chapter_1_121
+  - first:
+      213: 1154880476369754450
+    second: path_chapter_1_122
+  - first:
+      213: 2769757593969136524
+    second: path_chapter_1_123
+  - first:
+      213: 3908166628303518210
+    second: path_chapter_1_124
+  - first:
+      213: -6113522639368745020
+    second: path_chapter_1_125
+  - first:
+      213: -7496157946119032403
+    second: path_chapter_1_126
+  - first:
+      213: -3346472321112100360
+    second: path_chapter_1_127
+  - first:
+      213: 1607539117346820982
+    second: path_chapter_1_128
+  - first:
+      213: 6796476253209275944
+    second: path_chapter_1_129
+  - first:
+      213: 1541349013475667211
+    second: path_chapter_1_130
+  - first:
+      213: -9216283803654976261
+    second: path_chapter_1_131
+  - first:
+      213: -9102556082206578279
+    second: path_chapter_1_132
+  - first:
+      213: 2746796951456652938
+    second: path_chapter_1_133
+  - first:
+      213: -7362874441564306973
+    second: path_chapter_1_134
+  - first:
+      213: 7450869844822443893
+    second: path_chapter_1_135
+  - first:
+      213: -7660849804653632153
+    second: path_chapter_1_136
+  - first:
+      213: -8338202839640581153
+    second: path_chapter_1_137
+  - first:
+      213: 3966238283863931964
+    second: path_chapter_1_138
+  - first:
+      213: -3714603899489563146
+    second: path_chapter_1_139
+  - first:
+      213: 6066402776189427986
+    second: path_chapter_1_140
+  - first:
+      213: -689010865373540134
+    second: path_chapter_1_141
+  - first:
+      213: -7773311112186842045
+    second: path_chapter_1_142
+  - first:
+      213: -4635340772906744205
+    second: path_chapter_1_143
+  - first:
+      213: -4236945718758824574
+    second: path_chapter_1_144
+  - first:
+      213: 5171201800496821099
+    second: path_chapter_1_145
+  - first:
+      213: 5573898768102797130
+    second: path_chapter_1_146
+  - first:
+      213: -7068366123703167847
+    second: path_chapter_1_147
+  - first:
+      213: -4680772341364617956
+    second: path_chapter_1_148
+  - first:
+      213: 5463408805484341936
+    second: path_chapter_1_149
+  - first:
+      213: 3251352381519262259
+    second: path_chapter_1_150
+  - first:
+      213: -9188619804487390735
+    second: path_chapter_1_151
+  - first:
+      213: 1421210465252035747
+    second: path_chapter_1_152
+  - first:
+      213: 5058406535572515537
+    second: path_chapter_1_153
+  - first:
+      213: -3705428731596079655
+    second: path_chapter_1_154
+  - first:
+      213: 2321432247114789418
+    second: path_chapter_1_155
+  - first:
+      213: 5609816408707660607
+    second: path_chapter_1_156
+  - first:
+      213: 5784662667145125159
+    second: path_chapter_1_157
+  - first:
+      213: -8898792523736099345
+    second: path_chapter_1_158
+  - first:
+      213: 3955461002484748715
+    second: path_chapter_1_159
+  - first:
+      213: 4021466212614975324
+    second: path_chapter_1_160
+  - first:
+      213: 2772297272158109652
+    second: path_chapter_1_161
+  - first:
+      213: -4485137396720611798
+    second: path_chapter_1_162
+  - first:
+      213: -4242654196242706622
+    second: path_chapter_1_163
+  - first:
+      213: -1879584451386077742
+    second: path_chapter_1_164
+  - first:
+      213: -4818705410201174805
+    second: path_chapter_1_165
+  - first:
+      213: 2979141701156876684
+    second: path_chapter_1_166
+  - first:
+      213: -2826246818362920442
+    second: path_chapter_1_167
+  - first:
+      213: 8503447208460371633
+    second: path_chapter_1_168
+  - first:
+      213: -9188464521462308510
+    second: path_chapter_1_169
+  - first:
+      213: -72906956306450519
+    second: path_chapter_1_170
+  - first:
+      213: 832611473751964722
+    second: path_chapter_1_171
+  - first:
+      213: 8606475792713404511
+    second: path_chapter_1_172
+  - first:
+      213: 1025962492942786443
+    second: path_chapter_1_173
+  - first:
+      213: 6047645557922660426
+    second: path_chapter_1_174
+  - first:
+      213: -626804148682377515
+    second: path_chapter_1_175
+  - first:
+      213: -5856646368398116310
+    second: path_chapter_1_176
+  - first:
+      213: -3229133590314484851
+    second: path_chapter_1_177
+  - first:
+      213: -9163623963039008625
+    second: path_chapter_1_178
+  - first:
+      213: -3081899388806687996
+    second: path_chapter_1_179
+  - first:
+      213: 5671155731227755870
+    second: path_chapter_1_180
+  - first:
+      213: -8980259135980125117
+    second: path_chapter_1_181
+  - first:
+      213: 5930610480738174589
+    second: path_chapter_1_182
+  - first:
+      213: -7063968552871324028
+    second: path_chapter_1_183
+  - first:
+      213: 1905219914508080555
+    second: path_chapter_1_184
+  - first:
+      213: 4495564626164843318
+    second: path_chapter_1_185
+  - first:
+      213: 6261784443111099445
+    second: path_chapter_1_186
+  - first:
+      213: -7640467806664453644
+    second: path_chapter_1_187
+  - first:
+      213: -5650372605105575221
+    second: path_chapter_1_188
+  - first:
+      213: 2183772310080210661
+    second: path_chapter_1_189
+  - first:
+      213: -6717303812293442632
+    second: path_chapter_1_190
+  - first:
+      213: 8809509020157530498
+    second: path_chapter_1_191
+  - first:
+      213: -8174223801974992737
+    second: path_chapter_1_192
+  - first:
+      213: 6199548985637574408
+    second: path_chapter_1_193
+  - first:
+      213: 7115732914672016817
+    second: path_chapter_1_194
+  - first:
+      213: 8260579834311930109
+    second: path_chapter_1_195
+  - first:
+      213: -4250145363891249629
+    second: path_chapter_1_196
+  - first:
+      213: -1773581850112211133
+    second: path_chapter_1_197
+  - first:
+      213: -3447298625690042080
+    second: path_chapter_1_198
+  - first:
+      213: 4270224536494161384
+    second: path_chapter_1_199
+  - first:
+      213: -4288022182473946930
+    second: path_chapter_1_200
+  - first:
+      213: 5742230990851222625
+    second: path_chapter_1_201
+  - first:
+      213: 5451838001994301135
+    second: path_chapter_1_202
+  - first:
+      213: 4222938647686704128
+    second: path_chapter_1_203
+  - first:
+      213: -7974389706601802009
+    second: path_chapter_1_204
+  - first:
+      213: -6071304880297626578
+    second: path_chapter_1_205
+  - first:
+      213: 2708538454419894509
+    second: path_chapter_1_206
+  - first:
+      213: 5966980665560851934
+    second: path_chapter_1_207
+  - first:
+      213: 8248898617446543223
+    second: path_chapter_1_208
+  - first:
+      213: -4047142662908693014
+    second: path_chapter_1_209
+  - first:
+      213: 8427969058583550613
+    second: path_chapter_1_210
+  - first:
+      213: 2450435898441082406
+    second: path_chapter_1_211
+  - first:
+      213: 7605275191801051212
+    second: path_chapter_1_212
+  - first:
+      213: 5762105265297860407
+    second: path_chapter_1_213
+  - first:
+      213: 6959340366971114667
+    second: path_chapter_1_214
+  - first:
+      213: -4817791449217069018
+    second: path_chapter_1_215
+  - first:
+      213: -4562505707870880709
+    second: path_chapter_1_216
+  - first:
+      213: -7863546221450435444
+    second: path_chapter_1_217
+  - first:
+      213: -963126017254355160
+    second: path_chapter_1_218
+  - first:
+      213: 544993061298994908
+    second: path_chapter_1_219
+  - first:
+      213: -1045833961912860131
+    second: path_chapter_1_220
+  - first:
+      213: 33730823051637162
+    second: path_chapter_1_221
+  - first:
+      213: -9218874023062599383
+    second: path_chapter_1_222
+  - first:
+      213: -5074673141556320383
+    second: path_chapter_1_223
+  - first:
+      213: 9051771626157349864
+    second: path_chapter_1_224
+  - first:
+      213: 266733129405563923
+    second: path_chapter_1_225
+  - first:
+      213: -9161751592299825596
+    second: path_chapter_1_226
+  - first:
+      213: 3478702799031053307
+    second: path_chapter_1_227
+  - first:
+      213: 6906810675037547263
+    second: path_chapter_1_228
+  - first:
+      213: 5608938448156227027
+    second: path_chapter_1_229
+  - first:
+      213: 6441880331402942737
+    second: path_chapter_1_230
+  - first:
+      213: -2370214481543455604
+    second: path_chapter_1_231
+  - first:
+      213: -1606391962933310787
+    second: path_chapter_1_232
+  - first:
+      213: -8475124656379477350
+    second: path_chapter_1_233
+  - first:
+      213: -2907687479417294637
+    second: path_chapter_1_234
+  - first:
+      213: 3432972145613580152
+    second: path_chapter_1_235
+  - first:
+      213: 6543341235775591320
+    second: path_chapter_1_236
+  - first:
+      213: -4017200077783085431
+    second: path_chapter_1_237
+  - first:
+      213: -1547274677117608225
+    second: path_chapter_1_238
+  - first:
+      213: -6480553743731803483
+    second: path_chapter_1_239
+  - first:
+      213: 5168467849977287020
+    second: path_chapter_1_240
+  - first:
+      213: 1501285038930684581
+    second: path_chapter_1_241
+  - first:
+      213: 8107043323320011723
+    second: path_chapter_1_242
+  - first:
+      213: 7647339093776675217
+    second: path_chapter_1_243
+  - first:
+      213: 5182988996851070044
+    second: path_chapter_1_244
+  - first:
+      213: -8702617224252361141
+    second: path_chapter_1_245
+  - first:
+      213: 8763207382147823394
+    second: path_chapter_1_246
+  - first:
+      213: -3434267145910989916
+    second: path_chapter_1_247
+  - first:
+      213: 7439881308230536774
+    second: path_chapter_1_248
+  - first:
+      213: -8016036242257096954
+    second: path_chapter_1_249
+  - first:
+      213: -8476767291923634546
+    second: path_chapter_1_250
+  - first:
+      213: -916182078774124832
+    second: path_chapter_1_251
+  - first:
+      213: 3311492833326965214
+    second: path_chapter_1_252
+  - first:
+      213: -5224088357295144466
+    second: path_chapter_1_253
+  - first:
+      213: 9153858604267494456
+    second: path_chapter_1_254
+  - first:
+      213: -426525752990271952
+    second: path_chapter_1_255
+  - first:
+      213: -2203025888791549383
+    second: path_chapter_1_256
+  - first:
+      213: -6988801682604829306
+    second: path_chapter_1_257
+  - first:
+      213: -7523900205431493109
+    second: path_chapter_1_258
+  - first:
+      213: -7550078452352863812
+    second: path_chapter_1_259
+  - first:
+      213: -1611819174122860307
+    second: path_chapter_1_260
+  - first:
+      213: 5630878599156545237
+    second: path_chapter_1_261
+  - first:
+      213: -3349393044462271896
+    second: path_chapter_1_262
+  - first:
+      213: -3271706214745756872
+    second: path_chapter_1_263
+  - first:
+      213: 841456822221835511
+    second: path_chapter_1_264
+  - first:
+      213: -8048535459280201458
+    second: path_chapter_1_265
+  - first:
+      213: 284184027801221240
+    second: path_chapter_1_266
+  - first:
+      213: 4821037758126595756
+    second: path_chapter_1_267
+  - first:
+      213: -7317181365782142050
+    second: path_chapter_1_268
+  - first:
+      213: -4247656866372996612
+    second: path_chapter_1_269
+  - first:
+      213: 4038640281790902687
+    second: path_chapter_1_270
+  - first:
+      213: 5859322655391501560
+    second: path_chapter_1_271
+  - first:
+      213: 3680919851935191697
+    second: path_chapter_1_272
+  - first:
+      213: -2164313199979640190
+    second: path_chapter_1_273
+  - first:
+      213: 2206576160073065733
+    second: path_chapter_1_274
+  - first:
+      213: -910021383124802926
+    second: path_chapter_1_275
+  - first:
+      213: 1457521237501197641
+    second: path_chapter_1_276
+  - first:
+      213: -5506875096386582123
+    second: path_chapter_1_277
+  - first:
+      213: -6744069992223680411
+    second: path_chapter_1_278
+  - first:
+      213: -304359727254745516
+    second: path_chapter_1_279
+  - first:
+      213: 2092942464558171865
+    second: path_chapter_1_280
+  - first:
+      213: 948682920970435978
+    second: path_chapter_1_281
+  - first:
+      213: -4318653566780066898
+    second: path_chapter_1_282
+  - first:
+      213: -448769539893308219
+    second: path_chapter_1_283
+  - first:
+      213: -5161918038578285042
+    second: path_chapter_1_284
+  - first:
+      213: 4725025627574912379
+    second: path_chapter_1_285
+  - first:
+      213: -4799714954217517232
+    second: path_chapter_1_286
+  - first:
+      213: -6660941631085522236
+    second: path_chapter_1_287
+  - first:
+      213: 918160584286960718
+    second: path_chapter_1_288
+  - first:
+      213: 6336039157944696457
+    second: path_chapter_1_289
+  - first:
+      213: -2922745676017961016
+    second: path_chapter_1_290
+  - first:
+      213: 7794236740020257186
+    second: path_chapter_1_291
+  - first:
+      213: 4896847367253703936
+    second: path_chapter_1_292
+  - first:
+      213: 2034460322513191354
+    second: path_chapter_1_293
+  - first:
+      213: 923469203651370962
+    second: path_chapter_1_294
+  - first:
+      213: 4201542314844013898
+    second: path_chapter_1_295
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 0
+    wrapV: 0
+    wrapW: 0
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: 48
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 1
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: path_chapter_1_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 580
+        height: 2172
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7a27ce74b15a095c0800000000000000
+      internalID: -4210684115002035545
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_1
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 2137
+        width: 107
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 779f387d96a6052e0800000000000000
+      internalID: -2139092820181124745
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_2
+      rect:
+        serializedVersion: 2
+        x: 531
+        y: 2075
+        width: 193
+        height: 97
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 83281feb4288f3130800000000000000
+      internalID: 3548704722794938936
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_3
+      rect:
+        serializedVersion: 2
+        x: 576
+        y: 2083
+        width: 15
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b99a06a6d40535a80800000000000000
+      internalID: -8479345379981088357
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_4
+      rect:
+        serializedVersion: 2
+        x: 601
+        y: 2049
+        width: 10
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7b1a8afa458358510800000000000000
+      internalID: 1550707583074476471
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_5
+      rect:
+        serializedVersion: 2
+        x: 74
+        y: 1949
+        width: 52
+        height: 85
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4659695ae94298a40800000000000000
+      internalID: 5370864294417569124
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_6
+      rect:
+        serializedVersion: 2
+        x: 109
+        y: 2011
+        width: 23
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9514af6cd1b92d050800000000000000
+      internalID: 5823887820338119001
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_7
+      rect:
+        serializedVersion: 2
+        x: 601
+        y: 2031
+        width: 8
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 37dc83b07ac2da970800000000000000
+      internalID: 8767713145519656307
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_8
+      rect:
+        serializedVersion: 2
+        x: 122
+        y: 1966
+        width: 28
+        height: 42
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4a233256153844ce0800000000000000
+      internalID: -1421867196729838940
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_9
+      rect:
+        serializedVersion: 2
+        x: 551
+        y: 1973
+        width: 14
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 50bb9292783608350800000000000000
+      internalID: 6016918534329318149
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_10
+      rect:
+        serializedVersion: 2
+        x: 648
+        y: 1995
+        width: 13
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5f3c99a847eaafb10800000000000000
+      internalID: 2016115598766490613
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_11
+      rect:
+        serializedVersion: 2
+        x: 569
+        y: 1972
+        width: 8
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bee5f3cd153a6eaa0800000000000000
+      internalID: -6132034270635532565
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_12
+      rect:
+        serializedVersion: 2
+        x: 607
+        y: 1964
+        width: 26
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 143b1818734c60e20800000000000000
+      internalID: 3316553918279955265
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_13
+      rect:
+        serializedVersion: 2
+        x: 620
+        y: 1976
+        width: 18
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f66a0f2b91abd3c70800000000000000
+      internalID: 8952516253821478511
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_14
+      rect:
+        serializedVersion: 2
+        x: 644
+        y: 1950
+        width: 60
+        height: 31
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1cb4e31042978e960800000000000000
+      internalID: 7631482764125948865
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_15
+      rect:
+        serializedVersion: 2
+        x: 129
+        y: 1925
+        width: 50
+        height: 47
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a73d0bdad659cec30800000000000000
+      internalID: 4390048035077411706
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_16
+      rect:
+        serializedVersion: 2
+        x: 571
+        y: 1955
+        width: 35
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a7484187eca183620800000000000000
+      internalID: 2753980646217254010
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_17
+      rect:
+        serializedVersion: 2
+        x: 622
+        y: 1957
+        width: 9
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0225498a08eff8ab0800000000000000
+      internalID: -5003500832447770080
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_18
+      rect:
+        serializedVersion: 2
+        x: 637
+        y: 1959
+        width: 7
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ce571d6ab215ff7b0800000000000000
+      internalID: -5188338997783333396
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_19
+      rect:
+        serializedVersion: 2
+        x: 118
+        y: 1937
+        width: 11
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8e576956d88f418a0800000000000000
+      internalID: -6335165489625008664
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_20
+      rect:
+        serializedVersion: 2
+        x: 557
+        y: 1946
+        width: 13
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5e2ef1681cfa38e00800000000000000
+      internalID: 1045872784193872613
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_21
+      rect:
+        serializedVersion: 2
+        x: 536
+        y: 1891
+        width: 33
+        height: 39
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 77df21263a4367600800000000000000
+      internalID: 465617487809150327
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_22
+      rect:
+        serializedVersion: 2
+        x: 566
+        y: 1921
+        width: 14
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e62a92156b579e8b0800000000000000
+      internalID: -5122433675251047826
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_23
+      rect:
+        serializedVersion: 2
+        x: 619
+        y: 1923
+        width: 13
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8a21956ce3788edc0800000000000000
+      internalID: -3609486397652004184
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_24
+      rect:
+        serializedVersion: 2
+        x: 625
+        y: 1917
+        width: 9
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 81e55ad50b5509f30800000000000000
+      internalID: 4580255037009518104
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_25
+      rect:
+        serializedVersion: 2
+        x: 633
+        y: 1927
+        width: 7
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e34dbdbd6a9265180800000000000000
+      internalID: -9127061798189804482
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_26
+      rect:
+        serializedVersion: 2
+        x: 147
+        y: 1917
+        width: 6
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 861579438791fe570800000000000000
+      internalID: 8498039025940517224
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_27
+      rect:
+        serializedVersion: 2
+        x: 131
+        y: 1863
+        width: 12
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 033350e2bb8e9b8e0800000000000000
+      internalID: -1677053495590178000
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_28
+      rect:
+        serializedVersion: 2
+        x: 132
+        y: 1880
+        width: 7
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d5497acf100a897f0800000000000000
+      internalID: -605558219487079331
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_29
+      rect:
+        serializedVersion: 2
+        x: 576
+        y: 1859
+        width: 34
+        height: 48
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 102483a5550b13740800000000000000
+      internalID: 5130075331184050689
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_30
+      rect:
+        serializedVersion: 2
+        x: 607
+        y: 1872
+        width: 12
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 596b8a82b71d91600800000000000000
+      internalID: 439612765538662037
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_31
+      rect:
+        serializedVersion: 2
+        x: 618
+        y: 1876
+        width: 15
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6eac64e5cb40aee00800000000000000
+      internalID: 1074676668163345126
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_32
+      rect:
+        serializedVersion: 2
+        x: 150
+        y: 1872
+        width: 8
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d0a2396ff21b449d0800000000000000
+      internalID: -2790911049504445939
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_33
+      rect:
+        serializedVersion: 2
+        x: 598
+        y: 1848
+        width: 18
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: aaab2b8452fb832e0800000000000000
+      internalID: -2145755055587673430
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_34
+      rect:
+        serializedVersion: 2
+        x: 614
+        y: 1853
+        width: 13
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3ec271adce8c395a0800000000000000
+      internalID: -6515643316278186781
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_35
+      rect:
+        serializedVersion: 2
+        x: 69
+        y: 1830
+        width: 10
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 73b29d1dd2f19c1a0800000000000000
+      internalID: -6788860681629652169
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_36
+      rect:
+        serializedVersion: 2
+        x: 555
+        y: 1829
+        width: 10
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 60ccc26bd94e88760800000000000000
+      internalID: 7460464148756614150
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_37
+      rect:
+        serializedVersion: 2
+        x: 603
+        y: 1827
+        width: 8
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4fc32d1ec150722b0800000000000000
+      internalID: -5609509189260788492
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_38
+      rect:
+        serializedVersion: 2
+        x: 565
+        y: 1814
+        width: 11
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bfb46c73869686390800000000000000
+      internalID: -7824888456222979077
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_39
+      rect:
+        serializedVersion: 2
+        x: 585
+        y: 1805
+        width: 7
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2637b2a0cba1abf00800000000000000
+      internalID: 1133247651163894626
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_40
+      rect:
+        serializedVersion: 2
+        x: 142
+        y: 1789
+        width: 13
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1a6750748ee4bbfe0800000000000000
+      internalID: -1172256518468962655
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_41
+      rect:
+        serializedVersion: 2
+        x: 582
+        y: 1783
+        width: 16
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4e055e35d6cd8aca0800000000000000
+      internalID: -6005307740981473052
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_42
+      rect:
+        serializedVersion: 2
+        x: 127
+        y: 1774
+        width: 7
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c05e8cb21cc5bd620800000000000000
+      internalID: 2799933578073924876
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_43
+      rect:
+        serializedVersion: 2
+        x: 134
+        y: 1777
+        width: 10
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3f4be59c29162c130800000000000000
+      internalID: 3585535536411882739
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_44
+      rect:
+        serializedVersion: 2
+        x: 147
+        y: 1780
+        width: 9
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cd19018bddb31fd20800000000000000
+      internalID: 3310493024555930076
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_45
+      rect:
+        serializedVersion: 2
+        x: 86
+        y: 1741
+        width: 18
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6f1ac872159d4dad0800000000000000
+      internalID: -2678276935799496202
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_46
+      rect:
+        serializedVersion: 2
+        x: 602
+        y: 1766
+        width: 11
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e7e745a6f7f387ef0800000000000000
+      internalID: -110268374393258370
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_47
+      rect:
+        serializedVersion: 2
+        x: 613
+        y: 1758
+        width: 6
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 07b3893d5e0b31d90800000000000000
+      internalID: -7128159284053394576
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_48
+      rect:
+        serializedVersion: 2
+        x: 133
+        y: 1747
+        width: 15
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6d5508ebe2c6fd930800000000000000
+      internalID: 4170170727988745686
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_49
+      rect:
+        serializedVersion: 2
+        x: 570
+        y: 1741
+        width: 12
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6500781bc2c598bd0800000000000000
+      internalID: -2627467560567242666
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_50
+      rect:
+        serializedVersion: 2
+        x: 556
+        y: 1725
+        width: 14
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a511bf4795d684e10800000000000000
+      internalID: 2182114250443133274
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_51
+      rect:
+        serializedVersion: 2
+        x: 570
+        y: 1730
+        width: 9
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 01fcf9b311044af40800000000000000
+      internalID: 5738782267935805200
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_52
+      rect:
+        serializedVersion: 2
+        x: 649
+        y: 1704
+        width: 11
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6140c6c9b7d5234e0800000000000000
+      internalID: -2003436098739764202
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_53
+      rect:
+        serializedVersion: 2
+        x: 65
+        y: 1699
+        width: 17
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 846aaa017ad672070800000000000000
+      internalID: 8081548620646229576
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_54
+      rect:
+        serializedVersion: 2
+        x: 569
+        y: 1712
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ac1086812e3998ac0800000000000000
+      internalID: -3852385406957387318
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_55
+      rect:
+        serializedVersion: 2
+        x: 589
+        y: 1702
+        width: 14
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ff7e5039d59ff4820800000000000000
+      internalID: 2904814464971171839
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_56
+      rect:
+        serializedVersion: 2
+        x: 622
+        y: 1693
+        width: 15
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b928d7996f4745cd0800000000000000
+      internalID: -2570300884835794277
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_57
+      rect:
+        serializedVersion: 2
+        x: 698
+        y: 1697
+        width: 6
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 076bd3133fd682ed0800000000000000
+      internalID: -2438578306950515088
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_58
+      rect:
+        serializedVersion: 2
+        x: 616
+        y: 1685
+        width: 15
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 27848f6f99bb91980800000000000000
+      internalID: -8567610546147800974
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_59
+      rect:
+        serializedVersion: 2
+        x: 583
+        y: 1667
+        width: 22
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a31e4af59371c0080800000000000000
+      internalID: -9219968801949032134
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_60
+      rect:
+        serializedVersion: 2
+        x: 615
+        y: 1673
+        width: 9
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9bf90eeac2523aea0800000000000000
+      internalID: -5862801416063508551
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_61
+      rect:
+        serializedVersion: 2
+        x: 68
+        y: 1654
+        width: 8
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c6c2750b19b8172c0800000000000000
+      internalID: -4435610700138206100
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_62
+      rect:
+        serializedVersion: 2
+        x: 76
+        y: 1645
+        width: 8
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2c8530f51f682c410800000000000000
+      internalID: 1495906397479721154
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_63
+      rect:
+        serializedVersion: 2
+        x: 118
+        y: 1654
+        width: 9
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 60bbafbd4850af490800000000000000
+      internalID: -7711845343734088954
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_64
+      rect:
+        serializedVersion: 2
+        x: 559
+        y: 1648
+        width: 22
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 09635bc5b3bcd7ca0800000000000000
+      internalID: -6017430071278225776
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_65
+      rect:
+        serializedVersion: 2
+        x: 623
+        y: 1655
+        width: 7
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c947746cbd7c7eaf0800000000000000
+      internalID: -367105097869069156
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_66
+      rect:
+        serializedVersion: 2
+        x: 119
+        y: 1630
+        width: 9
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0f38ec8f56e043870800000000000000
+      internalID: 8661563814469075952
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_67
+      rect:
+        serializedVersion: 2
+        x: 133
+        y: 1622
+        width: 10
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: be8f31d580a16d9c0800000000000000
+      internalID: -3902903403846305557
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_68
+      rect:
+        serializedVersion: 2
+        x: 562
+        y: 1619
+        width: 15
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c9a353301605e5440800000000000000
+      internalID: 4926463419985771164
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_69
+      rect:
+        serializedVersion: 2
+        x: 577
+        y: 1589
+        width: 18
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1dc89c27c9d0274d0800000000000000
+      internalID: -3138431024731943727
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_70
+      rect:
+        serializedVersion: 2
+        x: 651
+        y: 1576
+        width: 6
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5d4f73d5fd889e7e0800000000000000
+      internalID: -1735705688451582763
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_71
+      rect:
+        serializedVersion: 2
+        x: 138
+        y: 1579
+        width: 10
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d74b9614d72803a70800000000000000
+      internalID: 8804680745989289085
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_72
+      rect:
+        serializedVersion: 2
+        x: 600
+        y: 1579
+        width: 8
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 02995f1e8c3d5a850800000000000000
+      internalID: 6387744506232805664
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_73
+      rect:
+        serializedVersion: 2
+        x: 121
+        y: 1568
+        width: 7
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b783d291a4289bde0800000000000000
+      internalID: -1316878161267574661
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_74
+      rect:
+        serializedVersion: 2
+        x: 136
+        y: 1572
+        width: 7
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6e10e7bb1264db030800000000000000
+      internalID: 3512040395112317414
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_75
+      rect:
+        serializedVersion: 2
+        x: 646
+        y: 1567
+        width: 8
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 533a19b8ff8ef4760800000000000000
+      internalID: 7444424893322601269
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_76
+      rect:
+        serializedVersion: 2
+        x: 115
+        y: 1552
+        width: 14
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 24d3132b6696e1b60800000000000000
+      internalID: 7718722701156760898
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_77
+      rect:
+        serializedVersion: 2
+        x: 571
+        y: 1562
+        width: 10
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 108d862603736d830800000000000000
+      internalID: 4095521592089040897
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_78
+      rect:
+        serializedVersion: 2
+        x: 125
+        y: 1550
+        width: 7
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: dfd38061a78fb7c50800000000000000
+      internalID: 6664193276864118269
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_79
+      rect:
+        serializedVersion: 2
+        x: 649
+        y: 1547
+        width: 10
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a9c2cc2c8904f8d10800000000000000
+      internalID: 2129992173616901274
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_80
+      rect:
+        serializedVersion: 2
+        x: 73
+        y: 1514
+        width: 20
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6fe71a98b7126f920800000000000000
+      internalID: 3023641014299623158
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_81
+      rect:
+        serializedVersion: 2
+        x: 89
+        y: 1535
+        width: 18
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8370310d00957d590800000000000000
+      internalID: -7649547582039718088
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_82
+      rect:
+        serializedVersion: 2
+        x: 568
+        y: 1518
+        width: 10
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 314d6d846e5153df0800000000000000
+      internalID: -201230529539419117
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_83
+      rect:
+        serializedVersion: 2
+        x: 613
+        y: 1507
+        width: 11
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f4d23a896a7b13c10800000000000000
+      internalID: 2031606833074089295
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_84
+      rect:
+        serializedVersion: 2
+        x: 565
+        y: 1508
+        width: 10
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f161d7adcc7c351d0800000000000000
+      internalID: -3363124814062741985
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_85
+      rect:
+        serializedVersion: 2
+        x: 82
+        y: 1464
+        width: 13
+        height: 31
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5d534d43b68285e80800000000000000
+      internalID: -8189751481460312619
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_86
+      rect:
+        serializedVersion: 2
+        x: 107
+        y: 1484
+        width: 8
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c5682cfd143740260800000000000000
+      internalID: 7062896842387916380
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_87
+      rect:
+        serializedVersion: 2
+        x: 117
+        y: 1470
+        width: 16
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 57be1386d329aabe0800000000000000
+      internalID: -1465197936316912779
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_88
+      rect:
+        serializedVersion: 2
+        x: 146
+        y: 1483
+        width: 24
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f57c00bb6529d2ec0800000000000000
+      internalID: -3590052426742184097
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_89
+      rect:
+        serializedVersion: 2
+        x: 556
+        y: 1486
+        width: 9
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fa28fdfd45e7cb240800000000000000
+      internalID: 4808857405123166895
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_90
+      rect:
+        serializedVersion: 2
+        x: 566
+        y: 1474
+        width: 20
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 40e0670ca1bd9aa00800000000000000
+      internalID: 768386119387975172
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_91
+      rect:
+        serializedVersion: 2
+        x: 634
+        y: 1475
+        width: 16
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 59de40fd4dca9a120800000000000000
+      internalID: 2425659904590409109
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_92
+      rect:
+        serializedVersion: 2
+        x: 76
+        y: 1381
+        width: 94
+        height: 92
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8154bab41732d32c0800000000000000
+      internalID: -4450361887264389864
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_93
+      rect:
+        serializedVersion: 2
+        x: 556
+        y: 1471
+        width: 9
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d27de0d45517fb8d0800000000000000
+      internalID: -2828417429786405075
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_94
+      rect:
+        serializedVersion: 2
+        x: 566
+        y: 1449
+        width: 64
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5fc8d91f0a7605410800000000000000
+      internalID: 1463783819841473781
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_95
+      rect:
+        serializedVersion: 2
+        x: 654
+        y: 1471
+        width: 13
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6d24dd96052e1d730800000000000000
+      internalID: 4022244777219932886
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_96
+      rect:
+        serializedVersion: 2
+        x: 614
+        y: 1450
+        width: 16
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4aa054b38c31905a0800000000000000
+      internalID: -6554686031952278876
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_97
+      rect:
+        serializedVersion: 2
+        x: 641
+        y: 1455
+        width: 12
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5004d122fc61866f0800000000000000
+      internalID: -691277463914987515
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_98
+      rect:
+        serializedVersion: 2
+        x: 657
+        y: 1458
+        width: 8
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e21f5b26dbbf5c7a0800000000000000
+      internalID: -6357398508140105426
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_99
+      rect:
+        serializedVersion: 2
+        x: 568
+        y: 1450
+        width: 10
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 36af11c5ee32a1880800000000000000
+      internalID: -8639553428503004573
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_100
+      rect:
+        serializedVersion: 2
+        x: 542
+        y: 1399
+        width: 44
+        height: 33
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cf27bee587ed2a1f0800000000000000
+      internalID: -1035020355771862276
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_101
+      rect:
+        serializedVersion: 2
+        x: 615
+        y: 1423
+        width: 11
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e239c8338cb1fb890800000000000000
+      internalID: -7440197512720510162
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_102
+      rect:
+        serializedVersion: 2
+        x: 624
+        y: 1419
+        width: 10
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8b51ad8a97e7e67f0800000000000000
+      internalID: -617417037914171976
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_103
+      rect:
+        serializedVersion: 2
+        x: 634
+        y: 1410
+        width: 7
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 73d3c2a42263e9310800000000000000
+      internalID: 1413626853942115639
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_104
+      rect:
+        serializedVersion: 2
+        x: 141
+        y: 1356
+        width: 18
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5a023dcefefeb63a0800000000000000
+      internalID: -6670974609269776219
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_105
+      rect:
+        serializedVersion: 2
+        x: 143
+        y: 1376
+        width: 14
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 79fd8e21a664efc00800000000000000
+      internalID: 936263193937371031
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_106
+      rect:
+        serializedVersion: 2
+        x: 576
+        y: 1361
+        width: 50
+        height: 45
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8b21b22ff7a2dddb0800000000000000
+      internalID: -4765606101675994440
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_107
+      rect:
+        serializedVersion: 2
+        x: 86
+        y: 1354
+        width: 11
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fafca04ba40cfbb80800000000000000
+      internalID: -8376765354805112913
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_108
+      rect:
+        serializedVersion: 2
+        x: 595
+        y: 1350
+        width: 20
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 131ac290bcc2ee110800000000000000
+      internalID: 1292019393645814065
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_109
+      rect:
+        serializedVersion: 2
+        x: 622
+        y: 1363
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 94d9763bd4ada5770800000000000000
+      internalID: 8600426465674632521
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_110
+      rect:
+        serializedVersion: 2
+        x: 88
+        y: 1344
+        width: 7
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 29d8594320d114cf0800000000000000
+      internalID: -269902607356162670
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_111
+      rect:
+        serializedVersion: 2
+        x: 96
+        y: 1334
+        width: 20
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 81fc6309f77fe8340800000000000000
+      internalID: 4868100374486503192
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_112
+      rect:
+        serializedVersion: 2
+        x: 552
+        y: 1354
+        width: 13
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 06d69d68c643aa850800000000000000
+      internalID: 6388976662101978464
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_113
+      rect:
+        serializedVersion: 2
+        x: 67
+        y: 1342
+        width: 10
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a43f9709cafe6eda0800000000000000
+      internalID: -5915777536067243190
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_114
+      rect:
+        serializedVersion: 2
+        x: 563
+        y: 1339
+        width: 10
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: de46fd9ada0a23680800000000000000
+      internalID: -8776776056051899155
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_115
+      rect:
+        serializedVersion: 2
+        x: 634
+        y: 1343
+        width: 6
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6207820d82f79e140800000000000000
+      internalID: 4749467095306629158
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_116
+      rect:
+        serializedVersion: 2
+        x: 24
+        y: 1305
+        width: 9
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d7a41a7cc1fba6d80800000000000000
+      internalID: -8256576836501157251
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_117
+      rect:
+        serializedVersion: 2
+        x: 73
+        y: 1318
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3fcd4912a385bb750800000000000000
+      internalID: 6321743508639374579
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_118
+      rect:
+        serializedVersion: 2
+        x: 87
+        y: 1322
+        width: 8
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a4238ff74df62acf0800000000000000
+      internalID: -242508471453863350
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_119
+      rect:
+        serializedVersion: 2
+        x: 93
+        y: 1292
+        width: 23
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: faa01b0ca9ceb1560800000000000000
+      internalID: 7285676971603856047
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_120
+      rect:
+        serializedVersion: 2
+        x: 98
+        y: 1320
+        width: 14
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f35e67f13cd1a1500800000000000000
+      internalID: 367639043467830591
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_121
+      rect:
+        serializedVersion: 2
+        x: 125
+        y: 1310
+        width: 8
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 72d24b43d12b60e90800000000000000
+      internalID: -7059759527348654809
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_122
+      rect:
+        serializedVersion: 2
+        x: 146
+        y: 1281
+        width: 22
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2599d08aca5f60010800000000000000
+      internalID: 1154880476369754450
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_123
+      rect:
+        serializedVersion: 2
+        x: 150
+        y: 1313
+        width: 14
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c83987e5bd7207620800000000000000
+      internalID: 2769757593969136524
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_124
+      rect:
+        serializedVersion: 2
+        x: 591
+        y: 1308
+        width: 21
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 20a311397d89c3630800000000000000
+      internalID: 3908166628303518210
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_125
+      rect:
+        serializedVersion: 2
+        x: 648
+        y: 1280
+        width: 33
+        height: 47
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4cf0e12ec87682ba0800000000000000
+      internalID: -6113522639368745020
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_126
+      rect:
+        serializedVersion: 2
+        x: 82
+        y: 1286
+        width: 10
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: da17a59701c48f790800000000000000
+      internalID: -7496157946119032403
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_127
+      rect:
+        serializedVersion: 2
+        x: 102
+        y: 1283
+        width: 13
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8f1bf618721fe81d0800000000000000
+      internalID: -3346472321112100360
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_128
+      rect:
+        serializedVersion: 2
+        x: 616
+        y: 1289
+        width: 11
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 67390046f402f4610800000000000000
+      internalID: 1607539117346820982
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_129
+      rect:
+        serializedVersion: 2
+        x: 85
+        y: 1277
+        width: 7
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 82eaaec942fe15e50800000000000000
+      internalID: 6796476253209275944
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_130
+      rect:
+        serializedVersion: 2
+        x: 95
+        y: 1269
+        width: 9
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b0dad17e2c8f36510800000000000000
+      internalID: 1541349013475667211
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_131
+      rect:
+        serializedVersion: 2
+        x: 119
+        y: 1272
+        width: 23
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bfc85f5e5be291080800000000000000
+      internalID: -9216283803654976261
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_132
+      rect:
+        serializedVersion: 2
+        x: 552
+        y: 1264
+        width: 51
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 999610c78793da180800000000000000
+      internalID: -9102556082206578279
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_133
+      rect:
+        serializedVersion: 2
+        x: 608
+        y: 1267
+        width: 9
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a8e13b136459e1620800000000000000
+      internalID: 2746796951456652938
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_134
+      rect:
+        serializedVersion: 2
+        x: 618
+        y: 1275
+        width: 17
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3e1c1c0a4b0d1d990800000000000000
+      internalID: -7362874441564306973
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_135
+      rect:
+        serializedVersion: 2
+        x: 52
+        y: 1257
+        width: 9
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 577cf40c5aec66760800000000000000
+      internalID: 7450869844822443893
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_136
+      rect:
+        serializedVersion: 2
+        x: 613
+        y: 1266
+        width: 15
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 765effb01b13fa590800000000000000
+      internalID: -7660849804653632153
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_137
+      rect:
+        serializedVersion: 2
+        x: 137
+        y: 1223
+        width: 17
+        height: 37
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fdbd11ee1b0c84c80800000000000000
+      internalID: -8338202839640581153
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_138
+      rect:
+        serializedVersion: 2
+        x: 618
+        y: 1245
+        width: 12
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c3cb34484b8ea0730800000000000000
+      internalID: 3966238283863931964
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_139
+      rect:
+        serializedVersion: 2
+        x: 645
+        y: 1256
+        width: 11
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6fdc4a92f63137cc0800000000000000
+      internalID: -3714603899489563146
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_140
+      rect:
+        serializedVersion: 2
+        x: 69
+        y: 1239
+        width: 10
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 211e63b0f21303450800000000000000
+      internalID: 6066402776189427986
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_141
+      rect:
+        serializedVersion: 2
+        x: 94
+        y: 1239
+        width: 12
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ad0960bb4442076f0800000000000000
+      internalID: -689010865373540134
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_142
+      rect:
+        serializedVersion: 2
+        x: 50
+        y: 1217
+        width: 10
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 344b18d6ab6af1490800000000000000
+      internalID: -7773311112186842045
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_143
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 1227
+        width: 6
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 376420a4026fbafb0800000000000000
+      internalID: -4635340772906744205
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_144
+      rect:
+        serializedVersion: 2
+        x: 89
+        y: 1228
+        width: 7
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 285a4cc21585335c0800000000000000
+      internalID: -4236945718758824574
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_145
+      rect:
+        serializedVersion: 2
+        x: 658
+        y: 1217
+        width: 8
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b63397ca3acc3c740800000000000000
+      internalID: 5171201800496821099
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_146
+      rect:
+        serializedVersion: 2
+        x: 582
+        y: 1189
+        width: 20
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a4f21c6d5677a5d40800000000000000
+      internalID: 5573898768102797130
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_147
+      rect:
+        serializedVersion: 2
+        x: 586
+        y: 1211
+        width: 8
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9949446d57e18ed90800000000000000
+      internalID: -7068366123703167847
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_148
+      rect:
+        serializedVersion: 2
+        x: 59
+        y: 1196
+        width: 9
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c1d0d76fa5e8a0fb0800000000000000
+      internalID: -4680772341364617956
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_149
+      rect:
+        serializedVersion: 2
+        x: 67
+        y: 1179
+        width: 13
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0baa2a9bc5de1db40800000000000000
+      internalID: 5463408805484341936
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_150
+      rect:
+        serializedVersion: 2
+        x: 77
+        y: 1166
+        width: 8
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 332731cb3cf1f1d20800000000000000
+      internalID: 3251352381519262259
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_151
+      rect:
+        serializedVersion: 2
+        x: 108
+        y: 1169
+        width: 9
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1f9e861a8f67b7080800000000000000
+      internalID: -9188619804487390735
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_152
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 1175
+        width: 7
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3ac4a64636729b310800000000000000
+      internalID: 1421210465252035747
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_153
+      rect:
+        serializedVersion: 2
+        x: 658
+        y: 1166
+        width: 12
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1da605a81f1133640800000000000000
+      internalID: 5058406535572515537
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_154
+      rect:
+        serializedVersion: 2
+        x: 121
+        y: 1154
+        width: 15
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9dd70b8633ca39cc0800000000000000
+      internalID: -3705428731596079655
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_155
+      rect:
+        serializedVersion: 2
+        x: 148
+        y: 1158
+        width: 10
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a22f96b4452673020800000000000000
+      internalID: 2321432247114789418
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_156
+      rect:
+        serializedVersion: 2
+        x: 549
+        y: 1147
+        width: 18
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f3b7d283d421add40800000000000000
+      internalID: 5609816408707660607
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_157
+      rect:
+        serializedVersion: 2
+        x: 580
+        y: 1139
+        width: 25
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 72d16ac1c00474050800000000000000
+      internalID: 5784662667145125159
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_158
+      rect:
+        serializedVersion: 2
+        x: 614
+        y: 1162
+        width: 7
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fe5dec4f853218480800000000000000
+      internalID: -8898792523736099345
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_159
+      rect:
+        serializedVersion: 2
+        x: 125
+        y: 1126
+        width: 10
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ba1930823de94e630800000000000000
+      internalID: 3955461002484748715
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_160
+      rect:
+        serializedVersion: 2
+        x: 148
+        y: 1132
+        width: 9
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c5fa627b63e1fc730800000000000000
+      internalID: 4021466212614975324
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_161
+      rect:
+        serializedVersion: 2
+        x: 700
+        y: 1131
+        width: 8
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4dfb4c64ead297620800000000000000
+      internalID: 2772297272158109652
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_162
+      rect:
+        serializedVersion: 2
+        x: 576
+        y: 1119
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a2ec5ab0d4791c1c0800000000000000
+      internalID: -4485137396720611798
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_163
+      rect:
+        serializedVersion: 2
+        x: 589
+        y: 1086
+        width: 25
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 24f0220bc701f15c0800000000000000
+      internalID: -4242654196242706622
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_164
+      rect:
+        serializedVersion: 2
+        x: 76
+        y: 999
+        width: 46
+        height: 75
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2dd09c166ef5ae5e0800000000000000
+      internalID: -1879584451386077742
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_165
+      rect:
+        serializedVersion: 2
+        x: 112
+        y: 1066
+        width: 18
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: becb4b3c5f4802db0800000000000000
+      internalID: -4818705410201174805
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_166
+      rect:
+        serializedVersion: 2
+        x: 585
+        y: 1070
+        width: 10
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c813201d799085920800000000000000
+      internalID: 2979141701156876684
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_167
+      rect:
+        serializedVersion: 2
+        x: 569
+        y: 1049
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 60276e72e7727c8d0800000000000000
+      internalID: -2826246818362920442
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_168
+      rect:
+        serializedVersion: 2
+        x: 109
+        y: 1016
+        width: 14
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1b64192de20520670800000000000000
+      internalID: 8503447208460371633
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_169
+      rect:
+        serializedVersion: 2
+        x: 127
+        y: 1005
+        width: 24
+        height: 41
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 261a5f643340c7080800000000000000
+      internalID: -9188464521462308510
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_170
+      rect:
+        serializedVersion: 2
+        x: 663
+        y: 1000
+        width: 7
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9a7f2bf628bfcfef0800000000000000
+      internalID: -72906956306450519
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_171
+      rect:
+        serializedVersion: 2
+        x: 118
+        y: 979
+        width: 9
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 23c76e859b70e8b00800000000000000
+      internalID: 832611473751964722
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_172
+      rect:
+        serializedVersion: 2
+        x: 125
+        y: 981
+        width: 36
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f505ea86228507770800000000000000
+      internalID: 8606475792713404511
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_173
+      rect:
+        serializedVersion: 2
+        x: 133
+        y: 968
+        width: 10
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b8f9ab89373fc3e00800000000000000
+      internalID: 1025962492942786443
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_174
+      rect:
+        serializedVersion: 2
+        x: 576
+        y: 978
+        width: 9
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a400377d79d8de350800000000000000
+      internalID: 6047645557922660426
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_175
+      rect:
+        serializedVersion: 2
+        x: 147
+        y: 969
+        width: 8
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5d6bb0e92f42d47f0800000000000000
+      internalID: -626804148682377515
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_176
+      rect:
+        serializedVersion: 2
+        x: 562
+        y: 967
+        width: 9
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a2a7c84682309bea0800000000000000
+      internalID: -5856646368398116310
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_177
+      rect:
+        serializedVersion: 2
+        x: 649
+        y: 903
+        width: 55
+        height: 68
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d8bf509bb10df23d0800000000000000
+      internalID: -3229133590314484851
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_178
+      rect:
+        serializedVersion: 2
+        x: 142
+        y: 953
+        width: 6
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f887dcb7e8444d080800000000000000
+      internalID: -9163623963039008625
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_179
+      rect:
+        serializedVersion: 2
+        x: 559
+        y: 927
+        width: 6
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4031fa0a5d4ea35d0800000000000000
+      internalID: -3081899388806687996
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_180
+      rect:
+        serializedVersion: 2
+        x: 572
+        y: 922
+        width: 12
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e5540c9271ef3be40800000000000000
+      internalID: 5671155731227755870
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_181
+      rect:
+        serializedVersion: 2
+        x: 618
+        y: 918
+        width: 19
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 344c2f035e5bf5380800000000000000
+      internalID: -8980259135980125117
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_182
+      rect:
+        serializedVersion: 2
+        x: 557
+        y: 913
+        width: 8
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d768b9d7fc2cd4250800000000000000
+      internalID: 5930610480738174589
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_183
+      rect:
+        serializedVersion: 2
+        x: 613
+        y: 904
+        width: 24
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4861395170eb7fd90800000000000000
+      internalID: -7063968552871324028
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_184
+      rect:
+        serializedVersion: 2
+        x: 112
+        y: 903
+        width: 11
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ba5114ffa63b07a10800000000000000
+      internalID: 1905219914508080555
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_185
+      rect:
+        serializedVersion: 2
+        x: 580
+        y: 897
+        width: 24
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6330e5f7534736e30800000000000000
+      internalID: 4495564626164843318
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_186
+      rect:
+        serializedVersion: 2
+        x: 100
+        y: 874
+        width: 10
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 53c44bf46c356e650800000000000000
+      internalID: 6261784443111099445
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_187
+      rect:
+        serializedVersion: 2
+        x: 148
+        y: 855
+        width: 24
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4f115f1c20b97f590800000000000000
+      internalID: -7640467806664453644
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_188
+      rect:
+        serializedVersion: 2
+        x: 563
+        y: 876
+        width: 15
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bca65187d08d591b0800000000000000
+      internalID: -5650372605105575221
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_189
+      rect:
+        serializedVersion: 2
+        x: 622
+        y: 877
+        width: 10
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5e64aac88515e4e10800000000000000
+      internalID: 2183772310080210661
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_190
+      rect:
+        serializedVersion: 2
+        x: 563
+        y: 858
+        width: 9
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8b34fd3c5c757c2a0800000000000000
+      internalID: -6717303812293442632
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_191
+      rect:
+        serializedVersion: 2
+        x: 627
+        y: 868
+        width: 8
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 281d61077c9a14a70800000000000000
+      internalID: 8809509020157530498
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_192
+      rect:
+        serializedVersion: 2
+        x: 85
+        y: 848
+        width: 11
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f90dcb0d2c25f8e80800000000000000
+      internalID: -8174223801974992737
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_193
+      rect:
+        serializedVersion: 2
+        x: 104
+        y: 854
+        width: 13
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8079f80b4f8390650800000000000000
+      internalID: 6199548985637574408
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_194
+      rect:
+        serializedVersion: 2
+        x: 122
+        y: 849
+        width: 11
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1bd9497926920c260800000000000000
+      internalID: 7115732914672016817
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_195
+      rect:
+        serializedVersion: 2
+        x: 596
+        y: 850
+        width: 10
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: df0fae6c79973a270800000000000000
+      internalID: 8260579834311930109
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_196
+      rect:
+        serializedVersion: 2
+        x: 92
+        y: 826
+        width: 12
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 32e1d7d4f437405c0800000000000000
+      internalID: -4250145363891249629
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_197
+      rect:
+        serializedVersion: 2
+        x: 131
+        y: 844
+        width: 6
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3474bf344b8f267e0800000000000000
+      internalID: -1773581850112211133
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_198
+      rect:
+        serializedVersion: 2
+        x: 576
+        y: 825
+        width: 15
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0218d0d1a2cb820d0800000000000000
+      internalID: -3447298625690042080
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_199
+      rect:
+        serializedVersion: 2
+        x: 136
+        y: 835
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8ed34e06792e24b30800000000000000
+      internalID: 4270224536494161384
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_200
+      rect:
+        serializedVersion: 2
+        x: 72
+        y: 796
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ec825a04b82ed74c0800000000000000
+      internalID: -4288022182473946930
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_201
+      rect:
+        serializedVersion: 2
+        x: 618
+        y: 778
+        width: 41
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 16c2deb99a080bf40800000000000000
+      internalID: 5742230990851222625
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_202
+      rect:
+        serializedVersion: 2
+        x: 57
+        y: 780
+        width: 11
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fce78d917c1d8ab40800000000000000
+      internalID: 5451838001994301135
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_203
+      rect:
+        serializedVersion: 2
+        x: 647
+        y: 774
+        width: 8
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 00c62a37354ea9a30800000000000000
+      internalID: 4222938647686704128
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_204
+      rect:
+        serializedVersion: 2
+        x: 56
+        y: 750
+        width: 17
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7e6d77ddfc6455190800000000000000
+      internalID: -7974389706601802009
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_205
+      rect:
+        serializedVersion: 2
+        x: 105
+        y: 744
+        width: 12
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e24b3c6e0646ebba0800000000000000
+      internalID: -6071304880297626578
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_206
+      rect:
+        serializedVersion: 2
+        x: 109
+        y: 754
+        width: 14
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: de0fe24bf59a69520800000000000000
+      internalID: 2708538454419894509
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_207
+      rect:
+        serializedVersion: 2
+        x: 122
+        y: 745
+        width: 8
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ed5e0680d49fec250800000000000000
+      internalID: 5966980665560851934
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_208
+      rect:
+        serializedVersion: 2
+        x: 615
+        y: 709
+        width: 49
+        height: 58
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 77fac198699f97270800000000000000
+      internalID: 8248898617446543223
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_209
+      rect:
+        serializedVersion: 2
+        x: 72
+        y: 736
+        width: 9
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ae5bff5d039a5d7c0800000000000000
+      internalID: -4047142662908693014
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_210
+      rect:
+        serializedVersion: 2
+        x: 117
+        y: 716
+        width: 10
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 59a1bda943926f470800000000000000
+      internalID: 8427969058583550613
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_211
+      rect:
+        serializedVersion: 2
+        x: 118
+        y: 701
+        width: 18
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 62622777772b10220800000000000000
+      internalID: 2450435898441082406
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_212
+      rect:
+        serializedVersion: 2
+        x: 141
+        y: 709
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c4874621e7d5b8960800000000000000
+      internalID: 7605275191801051212
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_213
+      rect:
+        serializedVersion: 2
+        x: 122
+        y: 691
+        width: 7
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 737ac78b53c17ff40800000000000000
+      internalID: 5762105265297860407
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_214
+      rect:
+        serializedVersion: 2
+        x: 129
+        y: 697
+        width: 10
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ba4995c013b849060800000000000000
+      internalID: 6959340366971114667
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_215
+      rect:
+        serializedVersion: 2
+        x: 633
+        y: 679
+        width: 13
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6209083e334c32db0800000000000000
+      internalID: -4817791449217069018
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_216
+      rect:
+        serializedVersion: 2
+        x: 105
+        y: 671
+        width: 28
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b3cf9ac5b39bea0c0800000000000000
+      internalID: -4562505707870880709
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_217
+      rect:
+        serializedVersion: 2
+        x: 108
+        y: 661
+        width: 8
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c84e49bdf521fd290800000000000000
+      internalID: -7863546221450435444
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_218
+      rect:
+        serializedVersion: 2
+        x: 124
+        y: 640
+        width: 20
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 82f0e9b7df942a2f0800000000000000
+      internalID: -963126017254355160
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_219
+      rect:
+        serializedVersion: 2
+        x: 562
+        y: 650
+        width: 41
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cde77cf3d44309700800000000000000
+      internalID: 544993061298994908
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_220
+      rect:
+        serializedVersion: 2
+        x: 578
+        y: 669
+        width: 7
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d12052e7d837c71f0800000000000000
+      internalID: -1045833961912860131
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_221
+      rect:
+        serializedVersion: 2
+        x: 615
+        y: 670
+        width: 13
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: aa179fd3106d77000800000000000000
+      internalID: 33730823051637162
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_222
+      rect:
+        serializedVersion: 2
+        x: 617
+        y: 656
+        width: 10
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 92907427beaff0080800000000000000
+      internalID: -9218874023062599383
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_223
+      rect:
+        serializedVersion: 2
+        x: 653
+        y: 664
+        width: 10
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 187e15e1aa32399b0800000000000000
+      internalID: -5074673141556320383
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_224
+      rect:
+        serializedVersion: 2
+        x: 142
+        y: 637
+        width: 6
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8eb911de55a5e9d70800000000000000
+      internalID: 9051771626157349864
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_225
+      rect:
+        serializedVersion: 2
+        x: 615
+        y: 611
+        width: 13
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3140c043e50a3b300800000000000000
+      internalID: 266733129405563923
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_226
+      rect:
+        serializedVersion: 2
+        x: 548
+        y: 605
+        width: 18
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4467994c77bead080800000000000000
+      internalID: -9161751592299825596
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_227
+      rect:
+        serializedVersion: 2
+        x: 572
+        y: 608
+        width: 10
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bfb2767c3c5d64030800000000000000
+      internalID: 3478702799031053307
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_228
+      rect:
+        serializedVersion: 2
+        x: 132
+        y: 568
+        width: 18
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ffa2d7017bbe9df50800000000000000
+      internalID: 6906810675037547263
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_229
+      rect:
+        serializedVersion: 2
+        x: 575
+        y: 556
+        width: 19
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3d5f1691dc3f6dd40800000000000000
+      internalID: 5608938448156227027
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_230
+      rect:
+        serializedVersion: 2
+        x: 615
+        y: 571
+        width: 11
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 11919d6e708266950800000000000000
+      internalID: 6441880331402942737
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_231
+      rect:
+        serializedVersion: 2
+        x: 105
+        y: 545
+        width: 15
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c8c9d1aac7e4b1fd0800000000000000
+      internalID: -2370214481543455604
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_232
+      rect:
+        serializedVersion: 2
+        x: 114
+        y: 555
+        width: 11
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: dba415f4503f4b9e0800000000000000
+      internalID: -1606391962933310787
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_233
+      rect:
+        serializedVersion: 2
+        x: 126
+        y: 552
+        width: 10
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a92c855370f426a80800000000000000
+      internalID: -8475124656379477350
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_234
+      rect:
+        serializedVersion: 2
+        x: 95
+        y: 534
+        width: 8
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3d03b7f94a1d5a7d0800000000000000
+      internalID: -2907687479417294637
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_235
+      rect:
+        serializedVersion: 2
+        x: 600
+        y: 538
+        width: 14
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 877ab1f4afd54af20800000000000000
+      internalID: 3432972145613580152
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_236
+      rect:
+        serializedVersion: 2
+        x: 81
+        y: 524
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 893d1929f2e9eca50800000000000000
+      internalID: 6543341235775591320
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_237
+      rect:
+        serializedVersion: 2
+        x: 134
+        y: 528
+        width: 11
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 98e411430d90048c0800000000000000
+      internalID: -4017200077783085431
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_238
+      rect:
+        serializedVersion: 2
+        x: 34
+        y: 515
+        width: 43
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fde927401e9f68ae0800000000000000
+      internalID: -1547274677117608225
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_239
+      rect:
+        serializedVersion: 2
+        x: 140
+        y: 513
+        width: 9
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5aab90d94b27016a0800000000000000
+      internalID: -6480553743731803483
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_240
+      rect:
+        serializedVersion: 2
+        x: 595
+        y: 514
+        width: 9
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c615ce630261ab740800000000000000
+      internalID: 5168467849977287020
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_241
+      rect:
+        serializedVersion: 2
+        x: 616
+        y: 511
+        width: 10
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5aa621ce9c2a5d410800000000000000
+      internalID: 1501285038930684581
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_242
+      rect:
+        serializedVersion: 2
+        x: 44
+        y: 369
+        width: 106
+        height: 108
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bcb013913f0028070800000000000000
+      internalID: 8107043323320011723
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_243
+      rect:
+        serializedVersion: 2
+        x: 87
+        y: 487
+        width: 7
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1913481736ec02a60800000000000000
+      internalID: 7647339093776675217
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_244
+      rect:
+        serializedVersion: 2
+        x: 104
+        y: 470
+        width: 28
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c54f010380dade740800000000000000
+      internalID: 5182988996851070044
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_245
+      rect:
+        serializedVersion: 2
+        x: 568
+        y: 447
+        width: 11
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b46fd343eb71a3780800000000000000
+      internalID: -8702617224252361141
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_246
+      rect:
+        serializedVersion: 2
+        x: 573
+        y: 440
+        width: 22
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 22770024faa2d9970800000000000000
+      internalID: 8763207382147823394
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_247
+      rect:
+        serializedVersion: 2
+        x: 606
+        y: 437
+        width: 19
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4ab4e20f9380750d0800000000000000
+      internalID: -3434267145910989916
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_248
+      rect:
+        serializedVersion: 2
+        x: 616
+        y: 455
+        width: 11
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 64e4624b1a4cf3760800000000000000
+      internalID: 7439881308230536774
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_249
+      rect:
+        serializedVersion: 2
+        x: 618
+        y: 472
+        width: 7
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 60fcb99228151c090800000000000000
+      internalID: -8016036242257096954
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_250
+      rect:
+        serializedVersion: 2
+        x: 649
+        y: 436
+        width: 55
+        height: 74
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e86ed315f097c5a80800000000000000
+      internalID: -8476767291923634546
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_251
+      rect:
+        serializedVersion: 2
+        x: 545
+        y: 374
+        width: 20
+        height: 47
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0eed615e0411943f0800000000000000
+      internalID: -916182078774124832
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_252
+      rect:
+        serializedVersion: 2
+        x: 618
+        y: 419
+        width: 11
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ed1a4b6df29c4fd20800000000000000
+      internalID: 3311492833326965214
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_253
+      rect:
+        serializedVersion: 2
+        x: 150
+        y: 388
+        width: 21
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ee14b24415f4087b0800000000000000
+      internalID: -5224088357295144466
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_254
+      rect:
+        serializedVersion: 2
+        x: 624
+        y: 399
+        width: 13
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 83c548fb6e9090f70800000000000000
+      internalID: 9153858604267494456
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_255
+      rect:
+        serializedVersion: 2
+        x: 150
+        y: 374
+        width: 8
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0367575661da41af0800000000000000
+      internalID: -426525752990271952
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_256
+      rect:
+        serializedVersion: 2
+        x: 576
+        y: 360
+        width: 17
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 93a279350a74d61e0800000000000000
+      internalID: -2203025888791549383
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_257
+      rect:
+        serializedVersion: 2
+        x: 87
+        y: 340
+        width: 9
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 685dfaed5e9c20f90800000000000000
+      internalID: -6988801682604829306
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_258
+      rect:
+        serializedVersion: 2
+        x: 141
+        y: 361
+        width: 8
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b0e64c160acb59790800000000000000
+      internalID: -7523900205431493109
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_259
+      rect:
+        serializedVersion: 2
+        x: 151
+        y: 352
+        width: 8
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cb13d2d46abb83790800000000000000
+      internalID: -7550078452352863812
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_260
+      rect:
+        serializedVersion: 2
+        x: 107
+        y: 351
+        width: 8
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: de05e3c300ba1a9e0800000000000000
+      internalID: -1611819174122860307
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_261
+      rect:
+        serializedVersion: 2
+        x: 102
+        y: 331
+        width: 7
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5d633149046e42e40800000000000000
+      internalID: 5630878599156545237
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_262
+      rect:
+        serializedVersion: 2
+        x: 557
+        y: 307
+        width: 13
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 86289ab95c09481d0800000000000000
+      internalID: -3349393044462271896
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_263
+      rect:
+        serializedVersion: 2
+        x: 564
+        y: 314
+        width: 10
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 83b24ac28809892d0800000000000000
+      internalID: -3271706214745756872
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_264
+      rect:
+        serializedVersion: 2
+        x: 145
+        y: 299
+        width: 8
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7fc8c5685847dab00800000000000000
+      internalID: 841456822221835511
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_265
+      rect:
+        serializedVersion: 2
+        x: 148
+        y: 287
+        width: 17
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e09d77b84abdd4090800000000000000
+      internalID: -8048535459280201458
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_266
+      rect:
+        serializedVersion: 2
+        x: 102
+        y: 274
+        width: 22
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8787eeb1edf91f300800000000000000
+      internalID: 284184027801221240
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_267
+      rect:
+        serializedVersion: 2
+        x: 130
+        y: 275
+        width: 9
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cae91ed4c44c7e240800000000000000
+      internalID: 4821037758126595756
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_268
+      rect:
+        serializedVersion: 2
+        x: 151
+        y: 280
+        width: 8
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e93a27fd056247a90800000000000000
+      internalID: -7317181365782142050
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_269
+      rect:
+        serializedVersion: 2
+        x: 595
+        y: 236
+        width: 57
+        height: 56
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cf1b618c59a4d05c0800000000000000
+      internalID: -4247656866372996612
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_270
+      rect:
+        serializedVersion: 2
+        x: 97
+        y: 260
+        width: 8
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f91fabb40f12c0830800000000000000
+      internalID: 4038640281790902687
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_271
+      rect:
+        serializedVersion: 2
+        x: 142
+        y: 217
+        width: 22
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8fc420b39ee705150800000000000000
+      internalID: 5859322655391501560
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_272
+      rect:
+        serializedVersion: 2
+        x: 148
+        y: 229
+        width: 11
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 192d74d5a11451330800000000000000
+      internalID: 3680919851935191697
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_273
+      rect:
+        serializedVersion: 2
+        x: 581
+        y: 229
+        width: 16
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 28a46849c90d6f1e0800000000000000
+      internalID: -2164313199979640190
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_274
+      rect:
+        serializedVersion: 2
+        x: 587
+        y: 223
+        width: 6
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 505200f93555f9e10800000000000000
+      internalID: 2206576160073065733
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_275
+      rect:
+        serializedVersion: 2
+        x: 83
+        y: 208
+        width: 6
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 29226d0af54fe53f0800000000000000
+      internalID: -910021383124802926
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_276
+      rect:
+        serializedVersion: 2
+        x: 91
+        y: 210
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 94db8ddd7d72a3410800000000000000
+      internalID: 1457521237501197641
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_277
+      rect:
+        serializedVersion: 2
+        x: 99
+        y: 210
+        width: 30
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 599ce69c646a393b0800000000000000
+      internalID: -5506875096386582123
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_278
+      rect:
+        serializedVersion: 2
+        x: 557
+        y: 208
+        width: 22
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 568d22dd2104862a0800000000000000
+      internalID: -6744069992223680411
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_279
+      rect:
+        serializedVersion: 2
+        x: 83
+        y: 198
+        width: 7
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 45ecb0dc072b6cbf0800000000000000
+      internalID: -304359727254745516
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_280
+      rect:
+        serializedVersion: 2
+        x: 100
+        y: 173
+        width: 8
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9d602572510ab0d10800000000000000
+      internalID: 2092942464558171865
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_281
+      rect:
+        serializedVersion: 2
+        x: 116
+        y: 151
+        width: 35
+        height: 44
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a8d3cec17166a2d00800000000000000
+      internalID: 948682920970435978
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_282
+      rect:
+        serializedVersion: 2
+        x: 569
+        y: 128
+        width: 29
+        height: 46
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ea3b914567f0114c0800000000000000
+      internalID: -4318653566780066898
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_283
+      rect:
+        serializedVersion: 2
+        x: 117
+        y: 125
+        width: 26
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5c4d4ac2b76a5c9f0800000000000000
+      internalID: -448769539893308219
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_284
+      rect:
+        serializedVersion: 2
+        x: 650
+        y: 121
+        width: 8
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e063cd694ee2d58b0800000000000000
+      internalID: -5161918038578285042
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_285
+      rect:
+        serializedVersion: 2
+        x: 122
+        y: 84
+        width: 7
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b75483626c9a29140800000000000000
+      internalID: 4725025627574912379
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_286
+      rect:
+        serializedVersion: 2
+        x: 149
+        y: 96
+        width: 23
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 05f0cbaddacf36db0800000000000000
+      internalID: -4799714954217517232
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_287
+      rect:
+        serializedVersion: 2
+        x: 646
+        y: 95
+        width: 12
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4c25981b0e49f83a0800000000000000
+      internalID: -6660941631085522236
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_288
+      rect:
+        serializedVersion: 2
+        x: 700
+        y: 0
+        width: 24
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e4c7031df26fdbc00800000000000000
+      internalID: 918160584286960718
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_289
+      rect:
+        serializedVersion: 2
+        x: 597
+        y: 66
+        width: 12
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 98e324c5b022ee750800000000000000
+      internalID: 6336039157944696457
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_290
+      rect:
+        serializedVersion: 2
+        x: 108
+        y: 52
+        width: 22
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8c7f3240b425077d0800000000000000
+      internalID: -2922745676017961016
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_291
+      rect:
+        serializedVersion: 2
+        x: 593
+        y: 26
+        width: 27
+        height: 37
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2a1c438f401ba2c60800000000000000
+      internalID: 7794236740020257186
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_292
+      rect:
+        serializedVersion: 2
+        x: 133
+        y: 28
+        width: 15
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 00db6746cb815f340800000000000000
+      internalID: 4896847367253703936
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_293
+      rect:
+        serializedVersion: 2
+        x: 538
+        y: 31
+        width: 33
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ab1860162eadb3c10800000000000000
+      internalID: 2034460322513191354
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_294
+      rect:
+        serializedVersion: 2
+        x: 590
+        y: 28
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2df17a41952d0dc00800000000000000
+      internalID: 923469203651370962
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: path_chapter_1_295
+      rect:
+        serializedVersion: 2
+        x: 153
+        y: 21
+        width: 9
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a45cc018970ee4a30800000000000000
+      internalID: 4201542314844013898
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      path_chapter_1_0: -4210684115002035545
+      path_chapter_1_1: -2139092820181124745
+      path_chapter_1_10: 2016115598766490613
+      path_chapter_1_100: -1035020355771862276
+      path_chapter_1_101: -7440197512720510162
+      path_chapter_1_102: -617417037914171976
+      path_chapter_1_103: 1413626853942115639
+      path_chapter_1_104: -6670974609269776219
+      path_chapter_1_105: 936263193937371031
+      path_chapter_1_106: -4765606101675994440
+      path_chapter_1_107: -8376765354805112913
+      path_chapter_1_108: 1292019393645814065
+      path_chapter_1_109: 8600426465674632521
+      path_chapter_1_11: -6132034270635532565
+      path_chapter_1_110: -269902607356162670
+      path_chapter_1_111: 4868100374486503192
+      path_chapter_1_112: 6388976662101978464
+      path_chapter_1_113: -5915777536067243190
+      path_chapter_1_114: -8776776056051899155
+      path_chapter_1_115: 4749467095306629158
+      path_chapter_1_116: -8256576836501157251
+      path_chapter_1_117: 6321743508639374579
+      path_chapter_1_118: -242508471453863350
+      path_chapter_1_119: 7285676971603856047
+      path_chapter_1_12: 3316553918279955265
+      path_chapter_1_120: 367639043467830591
+      path_chapter_1_121: -7059759527348654809
+      path_chapter_1_122: 1154880476369754450
+      path_chapter_1_123: 2769757593969136524
+      path_chapter_1_124: 3908166628303518210
+      path_chapter_1_125: -6113522639368745020
+      path_chapter_1_126: -7496157946119032403
+      path_chapter_1_127: -3346472321112100360
+      path_chapter_1_128: 1607539117346820982
+      path_chapter_1_129: 6796476253209275944
+      path_chapter_1_13: 8952516253821478511
+      path_chapter_1_130: 1541349013475667211
+      path_chapter_1_131: -9216283803654976261
+      path_chapter_1_132: -9102556082206578279
+      path_chapter_1_133: 2746796951456652938
+      path_chapter_1_134: -7362874441564306973
+      path_chapter_1_135: 7450869844822443893
+      path_chapter_1_136: -7660849804653632153
+      path_chapter_1_137: -8338202839640581153
+      path_chapter_1_138: 3966238283863931964
+      path_chapter_1_139: -3714603899489563146
+      path_chapter_1_14: 7631482764125948865
+      path_chapter_1_140: 6066402776189427986
+      path_chapter_1_141: -689010865373540134
+      path_chapter_1_142: -7773311112186842045
+      path_chapter_1_143: -4635340772906744205
+      path_chapter_1_144: -4236945718758824574
+      path_chapter_1_145: 5171201800496821099
+      path_chapter_1_146: 5573898768102797130
+      path_chapter_1_147: -7068366123703167847
+      path_chapter_1_148: -4680772341364617956
+      path_chapter_1_149: 5463408805484341936
+      path_chapter_1_15: 4390048035077411706
+      path_chapter_1_150: 3251352381519262259
+      path_chapter_1_151: -9188619804487390735
+      path_chapter_1_152: 1421210465252035747
+      path_chapter_1_153: 5058406535572515537
+      path_chapter_1_154: -3705428731596079655
+      path_chapter_1_155: 2321432247114789418
+      path_chapter_1_156: 5609816408707660607
+      path_chapter_1_157: 5784662667145125159
+      path_chapter_1_158: -8898792523736099345
+      path_chapter_1_159: 3955461002484748715
+      path_chapter_1_16: 2753980646217254010
+      path_chapter_1_160: 4021466212614975324
+      path_chapter_1_161: 2772297272158109652
+      path_chapter_1_162: -4485137396720611798
+      path_chapter_1_163: -4242654196242706622
+      path_chapter_1_164: -1879584451386077742
+      path_chapter_1_165: -4818705410201174805
+      path_chapter_1_166: 2979141701156876684
+      path_chapter_1_167: -2826246818362920442
+      path_chapter_1_168: 8503447208460371633
+      path_chapter_1_169: -9188464521462308510
+      path_chapter_1_17: -5003500832447770080
+      path_chapter_1_170: -72906956306450519
+      path_chapter_1_171: 832611473751964722
+      path_chapter_1_172: 8606475792713404511
+      path_chapter_1_173: 1025962492942786443
+      path_chapter_1_174: 6047645557922660426
+      path_chapter_1_175: -626804148682377515
+      path_chapter_1_176: -5856646368398116310
+      path_chapter_1_177: -3229133590314484851
+      path_chapter_1_178: -9163623963039008625
+      path_chapter_1_179: -3081899388806687996
+      path_chapter_1_18: -5188338997783333396
+      path_chapter_1_180: 5671155731227755870
+      path_chapter_1_181: -8980259135980125117
+      path_chapter_1_182: 5930610480738174589
+      path_chapter_1_183: -7063968552871324028
+      path_chapter_1_184: 1905219914508080555
+      path_chapter_1_185: 4495564626164843318
+      path_chapter_1_186: 6261784443111099445
+      path_chapter_1_187: -7640467806664453644
+      path_chapter_1_188: -5650372605105575221
+      path_chapter_1_189: 2183772310080210661
+      path_chapter_1_19: -6335165489625008664
+      path_chapter_1_190: -6717303812293442632
+      path_chapter_1_191: 8809509020157530498
+      path_chapter_1_192: -8174223801974992737
+      path_chapter_1_193: 6199548985637574408
+      path_chapter_1_194: 7115732914672016817
+      path_chapter_1_195: 8260579834311930109
+      path_chapter_1_196: -4250145363891249629
+      path_chapter_1_197: -1773581850112211133
+      path_chapter_1_198: -3447298625690042080
+      path_chapter_1_199: 4270224536494161384
+      path_chapter_1_2: 3548704722794938936
+      path_chapter_1_20: 1045872784193872613
+      path_chapter_1_200: -4288022182473946930
+      path_chapter_1_201: 5742230990851222625
+      path_chapter_1_202: 5451838001994301135
+      path_chapter_1_203: 4222938647686704128
+      path_chapter_1_204: -7974389706601802009
+      path_chapter_1_205: -6071304880297626578
+      path_chapter_1_206: 2708538454419894509
+      path_chapter_1_207: 5966980665560851934
+      path_chapter_1_208: 8248898617446543223
+      path_chapter_1_209: -4047142662908693014
+      path_chapter_1_21: 465617487809150327
+      path_chapter_1_210: 8427969058583550613
+      path_chapter_1_211: 2450435898441082406
+      path_chapter_1_212: 7605275191801051212
+      path_chapter_1_213: 5762105265297860407
+      path_chapter_1_214: 6959340366971114667
+      path_chapter_1_215: -4817791449217069018
+      path_chapter_1_216: -4562505707870880709
+      path_chapter_1_217: -7863546221450435444
+      path_chapter_1_218: -963126017254355160
+      path_chapter_1_219: 544993061298994908
+      path_chapter_1_22: -5122433675251047826
+      path_chapter_1_220: -1045833961912860131
+      path_chapter_1_221: 33730823051637162
+      path_chapter_1_222: -9218874023062599383
+      path_chapter_1_223: -5074673141556320383
+      path_chapter_1_224: 9051771626157349864
+      path_chapter_1_225: 266733129405563923
+      path_chapter_1_226: -9161751592299825596
+      path_chapter_1_227: 3478702799031053307
+      path_chapter_1_228: 6906810675037547263
+      path_chapter_1_229: 5608938448156227027
+      path_chapter_1_23: -3609486397652004184
+      path_chapter_1_230: 6441880331402942737
+      path_chapter_1_231: -2370214481543455604
+      path_chapter_1_232: -1606391962933310787
+      path_chapter_1_233: -8475124656379477350
+      path_chapter_1_234: -2907687479417294637
+      path_chapter_1_235: 3432972145613580152
+      path_chapter_1_236: 6543341235775591320
+      path_chapter_1_237: -4017200077783085431
+      path_chapter_1_238: -1547274677117608225
+      path_chapter_1_239: -6480553743731803483
+      path_chapter_1_24: 4580255037009518104
+      path_chapter_1_240: 5168467849977287020
+      path_chapter_1_241: 1501285038930684581
+      path_chapter_1_242: 8107043323320011723
+      path_chapter_1_243: 7647339093776675217
+      path_chapter_1_244: 5182988996851070044
+      path_chapter_1_245: -8702617224252361141
+      path_chapter_1_246: 8763207382147823394
+      path_chapter_1_247: -3434267145910989916
+      path_chapter_1_248: 7439881308230536774
+      path_chapter_1_249: -8016036242257096954
+      path_chapter_1_25: -9127061798189804482
+      path_chapter_1_250: -8476767291923634546
+      path_chapter_1_251: -916182078774124832
+      path_chapter_1_252: 3311492833326965214
+      path_chapter_1_253: -5224088357295144466
+      path_chapter_1_254: 9153858604267494456
+      path_chapter_1_255: -426525752990271952
+      path_chapter_1_256: -2203025888791549383
+      path_chapter_1_257: -6988801682604829306
+      path_chapter_1_258: -7523900205431493109
+      path_chapter_1_259: -7550078452352863812
+      path_chapter_1_26: 8498039025940517224
+      path_chapter_1_260: -1611819174122860307
+      path_chapter_1_261: 5630878599156545237
+      path_chapter_1_262: -3349393044462271896
+      path_chapter_1_263: -3271706214745756872
+      path_chapter_1_264: 841456822221835511
+      path_chapter_1_265: -8048535459280201458
+      path_chapter_1_266: 284184027801221240
+      path_chapter_1_267: 4821037758126595756
+      path_chapter_1_268: -7317181365782142050
+      path_chapter_1_269: -4247656866372996612
+      path_chapter_1_27: -1677053495590178000
+      path_chapter_1_270: 4038640281790902687
+      path_chapter_1_271: 5859322655391501560
+      path_chapter_1_272: 3680919851935191697
+      path_chapter_1_273: -2164313199979640190
+      path_chapter_1_274: 2206576160073065733
+      path_chapter_1_275: -910021383124802926
+      path_chapter_1_276: 1457521237501197641
+      path_chapter_1_277: -5506875096386582123
+      path_chapter_1_278: -6744069992223680411
+      path_chapter_1_279: -304359727254745516
+      path_chapter_1_28: -605558219487079331
+      path_chapter_1_280: 2092942464558171865
+      path_chapter_1_281: 948682920970435978
+      path_chapter_1_282: -4318653566780066898
+      path_chapter_1_283: -448769539893308219
+      path_chapter_1_284: -5161918038578285042
+      path_chapter_1_285: 4725025627574912379
+      path_chapter_1_286: -4799714954217517232
+      path_chapter_1_287: -6660941631085522236
+      path_chapter_1_288: 918160584286960718
+      path_chapter_1_289: 6336039157944696457
+      path_chapter_1_29: 5130075331184050689
+      path_chapter_1_290: -2922745676017961016
+      path_chapter_1_291: 7794236740020257186
+      path_chapter_1_292: 4896847367253703936
+      path_chapter_1_293: 2034460322513191354
+      path_chapter_1_294: 923469203651370962
+      path_chapter_1_295: 4201542314844013898
+      path_chapter_1_3: -8479345379981088357
+      path_chapter_1_30: 439612765538662037
+      path_chapter_1_31: 1074676668163345126
+      path_chapter_1_32: -2790911049504445939
+      path_chapter_1_33: -2145755055587673430
+      path_chapter_1_34: -6515643316278186781
+      path_chapter_1_35: -6788860681629652169
+      path_chapter_1_36: 7460464148756614150
+      path_chapter_1_37: -5609509189260788492
+      path_chapter_1_38: -7824888456222979077
+      path_chapter_1_39: 1133247651163894626
+      path_chapter_1_4: 1550707583074476471
+      path_chapter_1_40: -1172256518468962655
+      path_chapter_1_41: -6005307740981473052
+      path_chapter_1_42: 2799933578073924876
+      path_chapter_1_43: 3585535536411882739
+      path_chapter_1_44: 3310493024555930076
+      path_chapter_1_45: -2678276935799496202
+      path_chapter_1_46: -110268374393258370
+      path_chapter_1_47: -7128159284053394576
+      path_chapter_1_48: 4170170727988745686
+      path_chapter_1_49: -2627467560567242666
+      path_chapter_1_5: 5370864294417569124
+      path_chapter_1_50: 2182114250443133274
+      path_chapter_1_51: 5738782267935805200
+      path_chapter_1_52: -2003436098739764202
+      path_chapter_1_53: 8081548620646229576
+      path_chapter_1_54: -3852385406957387318
+      path_chapter_1_55: 2904814464971171839
+      path_chapter_1_56: -2570300884835794277
+      path_chapter_1_57: -2438578306950515088
+      path_chapter_1_58: -8567610546147800974
+      path_chapter_1_59: -9219968801949032134
+      path_chapter_1_6: 5823887820338119001
+      path_chapter_1_60: -5862801416063508551
+      path_chapter_1_61: -4435610700138206100
+      path_chapter_1_62: 1495906397479721154
+      path_chapter_1_63: -7711845343734088954
+      path_chapter_1_64: -6017430071278225776
+      path_chapter_1_65: -367105097869069156
+      path_chapter_1_66: 8661563814469075952
+      path_chapter_1_67: -3902903403846305557
+      path_chapter_1_68: 4926463419985771164
+      path_chapter_1_69: -3138431024731943727
+      path_chapter_1_7: 8767713145519656307
+      path_chapter_1_70: -1735705688451582763
+      path_chapter_1_71: 8804680745989289085
+      path_chapter_1_72: 6387744506232805664
+      path_chapter_1_73: -1316878161267574661
+      path_chapter_1_74: 3512040395112317414
+      path_chapter_1_75: 7444424893322601269
+      path_chapter_1_76: 7718722701156760898
+      path_chapter_1_77: 4095521592089040897
+      path_chapter_1_78: 6664193276864118269
+      path_chapter_1_79: 2129992173616901274
+      path_chapter_1_8: -1421867196729838940
+      path_chapter_1_80: 3023641014299623158
+      path_chapter_1_81: -7649547582039718088
+      path_chapter_1_82: -201230529539419117
+      path_chapter_1_83: 2031606833074089295
+      path_chapter_1_84: -3363124814062741985
+      path_chapter_1_85: -8189751481460312619
+      path_chapter_1_86: 7062896842387916380
+      path_chapter_1_87: -1465197936316912779
+      path_chapter_1_88: -3590052426742184097
+      path_chapter_1_89: 4808857405123166895
+      path_chapter_1_9: 6016918534329318149
+      path_chapter_1_90: 768386119387975172
+      path_chapter_1_91: 2425659904590409109
+      path_chapter_1_92: -4450361887264389864
+      path_chapter_1_93: -2828417429786405075
+      path_chapter_1_94: 1463783819841473781
+      path_chapter_1_95: 4022244777219932886
+      path_chapter_1_96: -6554686031952278876
+      path_chapter_1_97: -691277463914987515
+      path_chapter_1_98: -6357398508140105426
+      path_chapter_1_99: -8639553428503004573
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
