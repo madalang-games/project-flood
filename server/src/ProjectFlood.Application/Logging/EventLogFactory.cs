@@ -46,9 +46,6 @@ public static class EventLogFactory
     public static EventLogsRow StageClearRewardGranted(long userId, string correlationId, int stageId, int rewardGroupId)
         => Create(userId, EventLogIds.StageClearRewardGranted, correlationId, new { stage_id = stageId, reward_group_id = rewardGroupId });
 
-    public static EventLogsRow CurrencyChanged(long userId, string correlationId, long delta, string reason, long amountAfter)
-        => Create(userId, EventLogIds.CurrencyChanged, correlationId, new { delta, reason, amount_after = amountAfter });
-
     public static EventLogsRow AdInterstitialShown(long userId, string correlationId, int stageId)
         => Create(userId, EventLogIds.AdInterstitialShown, correlationId, new { stage_id = stageId });
 

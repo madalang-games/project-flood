@@ -22,6 +22,7 @@ public sealed partial class AppDbContext : DbContext
     internal DbSet<UserRankingTotalsRow> _UserRankingTotals => Set<UserRankingTotalsRow>();
     internal DbSet<UserInventoryRow> _UserInventory => Set<UserInventoryRow>();
     internal DbSet<UserTutorialProgressRow> _UserTutorialProgress => Set<UserTutorialProgressRow>();
+    internal DbSet<CurrencyLogsRow> _CurrencyLogs => Set<CurrencyLogsRow>();
 
     public PlayersDb Players { get; }
     public SessionsDb Sessions { get; }
@@ -36,6 +37,7 @@ public sealed partial class AppDbContext : DbContext
     public UserRankingTotalsDb UserRankingTotals { get; }
     public UserInventoryDb UserInventory { get; }
     public UserTutorialProgressDb UserTutorialProgress { get; }
+    public CurrencyLogsDb CurrencyLogs { get; }
 
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
     {
@@ -52,6 +54,7 @@ public sealed partial class AppDbContext : DbContext
         UserRankingTotals = new UserRankingTotalsDb(this);
         UserInventory = new UserInventoryDb(this);
         UserTutorialProgress = new UserTutorialProgressDb(this);
+        CurrencyLogs = new CurrencyLogsDb(this);
     }
 
     public Task SaveAsync(CancellationToken ct = default) => SaveChangesAsync(ct);
@@ -72,5 +75,6 @@ public sealed partial class AppDbContext : DbContext
         mb.ApplyConfiguration(new UserRankingTotalsDbConfiguration());
         mb.ApplyConfiguration(new UserInventoryDbConfiguration());
         mb.ApplyConfiguration(new UserTutorialProgressDbConfiguration());
+        mb.ApplyConfiguration(new CurrencyLogsDbConfiguration());
     }
 }

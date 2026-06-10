@@ -24,7 +24,7 @@
 - Redis loss is accepted; invalid attempt requests fail.
 - Attempt TTL comes from `StaminaConfigProvider`.
 - Clear validation uses `ruleset_version`, `turns_used`, `remaining_basic_cells`, and `core_remaining` against server-side stage static data.
-- Stage clear reward: look up `stage.reward_group_id`, call `RewardService.GrantRewardGroupAsync`, then set Redis eligibility key.
+- Stage clear reward: granted only on first clear (`UserStageProgress.FirstClearedAt == null`); look up `stage.reward_group_id`, call `RewardService.GrantRewardGroupAsync`, then set Redis eligibility key. Retries earn no reward.
 - Double reward: consumes eligibility key on success; `InterstitialSuppressed=true` signals client to skip next interstitial.
 
 ## Cross-refs

@@ -8,15 +8,17 @@
 ## Symbols
 | symbol | kind | note |
 |--------|------|------|
-| `CurrencyService.GrantSoftAsync` | method | Adds amount to `user_currency.soft_amount`, logs CurrencyChanged event |
-| `CurrencyService.SpendSoftAsync` | method | Deducts amount; throws `InsufficientCurrency` if balance insufficient; logs CurrencyChanged event |
+| `CurrencyService.GrantSoftAsync` | method | Adds amount to `user_currency`, inserts `currency_logs` row with balance_before/after; no SaveAsync — caller saves |
+| `CurrencyService.SpendSoftAsync` | method | Deducts amount; throws `InsufficientCurrency` if insufficient; inserts `currency_logs` row; calls SaveAsync |
 | `CurrencyService.GetAsync` | method | Returns `CurrencySnapshot` (0 if no row) |
 
 ## Rules
 - `user_currency` row created lazily on first grant.
-- All mutations go through `GrantSoftAsync` or `SpendSoftAsync` for consistent event logging.
+- ALL soft currency mutations must go through `GrantSoftAsync` or `SpendSoftAsync` — direct `user_currency` mutation bypasses audit trail.
+- `GrantSoftAsync` does NOT call SaveAsync; `SpendSoftAsync` does. Callers inside transactions may safely call SpendSoftAsync — intermediate SaveAsync is within the open transaction.
 - Spend throws `GameApiException(InsufficientCurrency)` — never floors to 0.
+- `currency_type` is always `"soft"` until multi-currency is introduced.
 
 ## Cross-refs
-- Depends on: `ProjectFlood.Infrastructure.Generated.UserCurrencyRow`
-- Consumed by: `ProjectFlood.Application.Rewards.RewardService`
+- Depends on: `ProjectFlood.Infrastructure.Generated.UserCurrencyRow`, `ProjectFlood.Infrastructure.Generated.CurrencyLogsRow`
+- Consumed by: `ProjectFlood.Application.Rewards.RewardService`, `ProjectFlood.Application.Inventory.InventoryService`, `ProjectFlood.Application.Player.PlayerService`

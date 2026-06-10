@@ -3,7 +3,7 @@ using ProjectFlood.Contracts.Player;
 using ProjectFlood.Infrastructure.Generated;
 using ProjectFlood.Domain.Interfaces;
 using ProjectFlood.Application.Common;
-using ProjectFlood.Application.Logging;
+using ProjectFlood.Application.Currency;
 
 namespace ProjectFlood.Application.Player;
 
@@ -11,26 +11,58 @@ public sealed class PlayerService
 {
     private readonly AppDbContext _db;
     private readonly IStaticDataService _staticData;
+    private readonly CurrencyService _currency;
 
-    public PlayerService(AppDbContext db, IStaticDataService staticData)
+    public PlayerService(AppDbContext db, IStaticDataService staticData, CurrencyService currency)
     {
         _db = db;
         _staticData = staticData;
+        _currency = currency;
     }
 
     public async Task<PlayerProgressResponse> GetProgressAsync(long userId, CancellationToken ct)
     {
         var totals = await _db.UserRankingTotals.FindAsync(userId, ct);
+        var player = await _db.Players.FindAsync(userId, ct);
 
         var stages = await _db.UserStageProgress.Query()
             .Where(s => s.UserId == userId && s.BestStar > 0)
             .Select(s => new StageProgressEntry { StageId = s.StageId, BestStar = s.BestStar })
             .ToListAsync(ct);
 
+        var claims = await _db.UserRewardClaimState.Query()
+            .Where(x => x.UserId == userId)
+            .Select(x => x.SourceId)
+            .ToListAsync(ct);
+
+        var unlockedAvatarIds = new List<int>();
+        var unlockedBoardThemeIds = new List<int>();
+
+        foreach (var sourceId in claims)
+        {
+            if (sourceId.StartsWith("avatar_unlock:"))
+            {
+                if (int.TryParse(sourceId.Substring("avatar_unlock:".Length), out var avatarId))
+                {
+                    unlockedAvatarIds.Add(avatarId);
+                }
+            }
+            else if (sourceId.StartsWith("board_theme_unlock:"))
+            {
+                if (int.TryParse(sourceId.Substring("board_theme_unlock:".Length), out var themeId))
+                {
+                    unlockedBoardThemeIds.Add(themeId);
+                }
+            }
+        }
+
         return new PlayerProgressResponse
         {
             MaxClearedStageId = totals?.MaxClearedStageId ?? 0,
             Stages = stages,
+            UnlockedAvatarIds = unlockedAvatarIds,
+            EquippedBoardThemeId = player?.EquippedBoardThemeId ?? 1,
+            UnlockedBoardThemeIds = unlockedBoardThemeIds
         };
     }
 
@@ -51,6 +83,18 @@ public sealed class PlayerService
             var cleanName = request.DisplayName.Trim();
             if (cleanName.Length is < 2 or > 24)
                 throw new GameApiException("INVALID_DISPLAY_NAME", "Display name must be between 2 and 24 characters.");
+
+            foreach (char c in cleanName)
+            {
+                if (!((c >= 'a' && c <= 'z') || 
+                      (c >= 'A' && c <= 'Z') || 
+                      (c >= '0' && c <= '9') || 
+                      c == ' ' || c == '_' || c == '-'))
+                {
+                    throw new GameApiException("INVALID_DISPLAY_NAME", "Display name contains invalid characters. Only letters, numbers, spaces, underscores, and hyphens are allowed.");
+                }
+            }
+
             player.DisplayName = cleanName;
         }
 
@@ -63,7 +107,7 @@ public sealed class PlayerService
                 if (avatarData == null)
                     throw new GameApiException("AVATAR_NOT_FOUND", "Avatar not found.");
 
-                if (avatarData.UnlockType == "gold")
+                if (avatarData.UnlockType == "gold" || avatarData.UnlockType == "silver")
                 {
                     var claimKey = $"avatar_unlock:{avatarId}";
                     var isUnlocked = await _db.UserRewardClaimState.Query()
@@ -71,12 +115,7 @@ public sealed class PlayerService
 
                     if (!isUnlocked)
                     {
-                        var currency = await _db.UserCurrency.FindAsync(userId, ct);
-                        if (currency == null || currency.SoftAmount < avatarData.UnlockCost)
-                            throw new GameApiException("INSUFFICIENT_GOLD", "Not enough gold to unlock this avatar.");
-
-                        currency.SoftAmount -= avatarData.UnlockCost;
-                        currency.UpdatedAt = DateTimeOffset.UtcNow;
+                        await _currency.SpendSoftAsync(userId, avatarData.UnlockCost, "avatar_unlock", correlationId, ct);
 
                         _db.UserRewardClaimState.Insert(new UserRewardClaimStateRow
                         {
@@ -87,8 +126,6 @@ public sealed class PlayerService
                             LastClaimedAt = DateTimeOffset.UtcNow,
                             UpdatedAt = DateTimeOffset.UtcNow
                         });
-
-                        _db.EventLogs.Insert(EventLogFactory.CurrencyChanged(userId, correlationId, -avatarData.UnlockCost, "avatar_unlock", currency.SoftAmount));
                     }
                 }
                 else if (avatarData.UnlockType == "achievement")
@@ -105,6 +142,50 @@ public sealed class PlayerService
             }
         }
 
+        if (request.BoardThemeId.HasValue)
+        {
+            var themeId = request.BoardThemeId.Value;
+            if (themeId != player.EquippedBoardThemeId)
+            {
+                var themeData = _staticData.GetBoardTheme(themeId);
+                if (themeData == null)
+                    throw new GameApiException("BOARD_THEME_NOT_FOUND", "Board theme not found.");
+
+                if (themeData.UnlockType == "gold" || themeData.UnlockType == "silver")
+                {
+                    var claimKey = $"board_theme_unlock:{themeId}";
+                    var isUnlocked = await _db.UserRewardClaimState.Query()
+                        .AnyAsync(x => x.UserId == userId && x.SourceId == claimKey, ct);
+
+                    if (!isUnlocked)
+                    {
+                        await _currency.SpendSoftAsync(userId, themeData.UnlockCost, "board_theme_unlock", correlationId, ct);
+
+                        _db.UserRewardClaimState.Insert(new UserRewardClaimStateRow
+                        {
+                            UserId = userId,
+                            SourceId = claimKey,
+                            PeriodKey = "once",
+                            ClaimCount = 1,
+                            LastClaimedAt = DateTimeOffset.UtcNow,
+                            UpdatedAt = DateTimeOffset.UtcNow
+                        });
+                    }
+                }
+                else if (themeData.UnlockType == "achievement")
+                {
+                    var claimKey = $"board_theme_unlock:{themeId}";
+                    var isUnlocked = await _db.UserRewardClaimState.Query()
+                        .AnyAsync(x => x.UserId == userId && x.SourceId == claimKey, ct);
+
+                    if (!isUnlocked)
+                        throw new GameApiException("BOARD_THEME_LOCKED", "This board theme must be unlocked via achievements.");
+                }
+
+                player.EquippedBoardThemeId = themeId;
+            }
+        }
+
         player.LastLoginAt = DateTimeOffset.UtcNow;
         await _db.SaveAsync(ct);
         await tx.CommitAsync(ct);
@@ -112,7 +193,8 @@ public sealed class PlayerService
         return new UserProfileUpdateResponse
         {
             DisplayName = player.DisplayName,
-            AvatarId = player.AvatarId
+            AvatarId = player.AvatarId,
+            BoardThemeId = player.EquippedBoardThemeId
         };
     }
 }

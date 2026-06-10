@@ -1,5 +1,4 @@
 using ProjectFlood.Application.Common;
-using ProjectFlood.Application.Logging;
 using ProjectFlood.Contracts.Currency;
 using ProjectFlood.Infrastructure.Generated;
 
@@ -21,10 +20,21 @@ public sealed class CurrencyService
             _db.UserCurrency.Insert(row);
         }
 
+        var balanceBefore = row.SoftAmount;
         row.SoftAmount += amount;
         row.UpdatedAt = now;
 
-        _db.EventLogs.Insert(EventLogFactory.CurrencyChanged(userId, correlationId, amount, reason, row.SoftAmount));
+        _db.CurrencyLogs.Insert(new CurrencyLogsRow
+        {
+            UserId = userId,
+            CurrencyType = "soft",
+            Delta = amount,
+            BalanceBefore = balanceBefore,
+            BalanceAfter = row.SoftAmount,
+            Reason = reason,
+            CorrelationId = correlationId,
+            CreatedAt = now,
+        });
         return new CurrencySnapshot { SoftAmount = row.SoftAmount };
     }
 
@@ -36,10 +46,21 @@ public sealed class CurrencyService
         if (row is null || row.SoftAmount < amount)
             throw new GameApiException(ErrorCodes.InsufficientCurrency, "Insufficient soft currency.");
 
+        var balanceBefore = row.SoftAmount;
         row.SoftAmount -= amount;
         row.UpdatedAt = now;
 
-        _db.EventLogs.Insert(EventLogFactory.CurrencyChanged(userId, correlationId, -amount, reason, row.SoftAmount));
+        _db.CurrencyLogs.Insert(new CurrencyLogsRow
+        {
+            UserId = userId,
+            CurrencyType = "soft",
+            Delta = -amount,
+            BalanceBefore = balanceBefore,
+            BalanceAfter = row.SoftAmount,
+            Reason = reason,
+            CorrelationId = correlationId,
+            CreatedAt = now,
+        });
         await _db.SaveAsync(ct);
         return new CurrencySnapshot { SoftAmount = row.SoftAmount };
     }

@@ -16,6 +16,7 @@ public sealed class PlayersRow
     public string PlatformPid { get; set; } = string.Empty;
     public string DisplayName { get; set; } = string.Empty;
     public int AvatarId { get; set; }
+    public int EquippedBoardThemeId { get; set; }
     public DateTimeOffset AccountCreatedAt { get; set; }
     public DateTimeOffset LastLoginAt { get; set; }
 }
@@ -42,6 +43,10 @@ internal sealed class PlayersDbConfiguration : IEntityTypeConfiguration<PlayersR
             .HasColumnName(PlayersDb.Schema.AvatarId)
             .HasDefaultValue(1)
             .IsRequired();
+        builder.Property(e => e.EquippedBoardThemeId)
+            .HasColumnName(PlayersDb.Schema.EquippedBoardThemeId)
+            .HasDefaultValue(1)
+            .IsRequired();
         builder.Property(e => e.AccountCreatedAt)
             .HasColumnName(PlayersDb.Schema.AccountCreatedAt)
             .HasColumnType("datetime(6)")
@@ -64,6 +69,7 @@ public sealed class PlayersDb
         public const string PlatformPid = "platform_pid";
         public const string DisplayName = "display_name";
         public const string AvatarId = "avatar_id";
+        public const string EquippedBoardThemeId = "equipped_board_theme_id";
         public const string AccountCreatedAt = "account_created_at";
         public const string LastLoginAt = "last_login_at";
     }
@@ -82,7 +88,7 @@ public sealed class PlayersDb
 
     public Task InsertIgnoreAsync(PlayersRow row, CancellationToken ct = default)
         => _db.Database.ExecuteSqlInterpolatedAsync(
-            $"INSERT IGNORE INTO `players` (`user_id`, `platform_pid`, `display_name`, `avatar_id`, `account_created_at`, `last_login_at`) VALUES ({row.UserId}, {row.PlatformPid}, {row.DisplayName}, {row.AvatarId}, {row.AccountCreatedAt.UtcDateTime}, {row.LastLoginAt.UtcDateTime})",
+            $"INSERT IGNORE INTO `players` (`user_id`, `platform_pid`, `display_name`, `avatar_id`, `equipped_board_theme_id`, `account_created_at`, `last_login_at`) VALUES ({row.UserId}, {row.PlatformPid}, {row.DisplayName}, {row.AvatarId}, {row.EquippedBoardThemeId}, {row.AccountCreatedAt.UtcDateTime}, {row.LastLoginAt.UtcDateTime})",
             ct);
 
     public IQueryable<PlayersRow> Query() => _db._Players.AsQueryable();
@@ -133,5 +139,9 @@ public sealed class PlayersDb
 
     public IQueryable<(PlayersRow Player, UserTutorialProgressRow UserTutorialProgress)> JoinWithUserTutorialProgress()
         => Query().Join(_db._UserTutorialProgress, l => l.UserId, r => r.UserId,
+            (l, r) => ValueTuple.Create(l, r));
+
+    public IQueryable<(PlayersRow Player, CurrencyLogsRow CurrencyLog)> JoinWithCurrencyLogs()
+        => Query().Join(_db._CurrencyLogs, l => l.UserId, r => r.UserId,
             (l, r) => ValueTuple.Create(l, r));
 }

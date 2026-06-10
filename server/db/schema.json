@@ -14,6 +14,7 @@
         { "name": "platform_pid",       "type": "string(24)", "null": false, "unique": true },
         { "name": "display_name",       "type": "string(64)", "null": false },
         { "name": "avatar_id",          "type": "int32",      "null": false, "default": 1 },
+        { "name": "equipped_board_theme_id", "type": "int32",  "null": false, "default": 1 },
         { "name": "account_created_at", "type": "datetime",   "null": false },
         { "name": "last_login_at",      "type": "datetime",   "null": false }
       ]
@@ -201,6 +202,25 @@
       ],
       "indexes": [
         { "name": "idx_user_tutorial_progress_user_id", "columns": ["user_id"], "unique": false }
+      ]
+    },
+    {
+      "name": "currency_logs",
+      "comment": "Append-only audit log for all soft currency mutations. Never UPDATE or DELETE.",
+      "columns": [
+        { "name": "id",             "type": "int64",      "pk": true, "auto": true, "null": false },
+        { "name": "user_id",        "type": "int64",      "null": false, "fk": "players.user_id" },
+        { "name": "currency_type",  "type": "string(32)", "null": false },
+        { "name": "delta",          "type": "int64",      "null": false },
+        { "name": "balance_before", "type": "int64",      "null": false },
+        { "name": "balance_after",  "type": "int64",      "null": false },
+        { "name": "reason",         "type": "string(256)","null": false },
+        { "name": "correlation_id", "type": "string(36)", "null": false },
+        { "name": "created_at",     "type": "datetime",   "null": false }
+      ],
+      "indexes": [
+        { "name": "idx_currency_logs_user_id",        "columns": ["user_id"],        "unique": false },
+        { "name": "idx_currency_logs_correlation_id", "columns": ["correlation_id"], "unique": false }
       ]
     }
   ]

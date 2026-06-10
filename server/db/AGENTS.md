@@ -41,6 +41,13 @@ Fix: Add `"conflict": "ignore"` to the table in `schema.json`; gen:orm generates
 | `stage_clear_records` | Append-only clear audit with validation inputs |
 | `user_ranking_totals` | Global stars/max-stage aggregates for Redis rebuild |
 
+## Currency Audit Table
+| table | role |
+|-------|------|
+| `currency_logs` | Append-only audit log for all soft currency mutations (balance_before, balance_after, reason, correlation_id). Never UPDATE or DELETE. |
+
+`currency_logs` is the source of truth for currency flow auditing. All mutations go through `CurrencyService.GrantSoftAsync` / `SpendSoftAsync`.
+
 ## Cross-refs
 - Gen output: `server/db/migrations/` SQL files
 - Consumed by: `ProjectFlood.Infrastructure.Generated.AppDbContext`

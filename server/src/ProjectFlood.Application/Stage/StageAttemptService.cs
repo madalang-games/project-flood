@@ -72,6 +72,7 @@ public sealed class StageAttemptService
 
         await _redis.StringSetAsync(UserAttemptKey(userId), JsonSerializer.Serialize(attempt), TimeSpan.FromSeconds(timeoutSeconds));
         _db.EventLogs.Insert(EventLogFactory.StageAttemptStarted(userId, correlationId, attempt.AttemptId, stageId, lifeSpent, attempt.ExpiresAt));
+        await _db.SaveAsync(ct);
         var totals = await _db.UserRankingTotals.FindAsync(userId, ct);
         var winStreak = totals?.WinStreak ?? 0;
 
@@ -108,7 +109,10 @@ public sealed class StageAttemptService
             ? await _stamina.RefundAttemptLifeAsync(userId, correlationId, ct)
             : (await _stamina.GetAsync(userId, ct)).Stamina;
 
-        if (stageRow.reward_group_id > 0)
+        var existingProgress = await _db.UserStageProgress.FindAsync(userId, stageId, ct);
+        bool isFirstClear = existingProgress == null || !existingProgress.FirstClearedAt.HasValue;
+
+        if (stageRow.reward_group_id > 0 && isFirstClear)
         {
             var (items, cur) = await _rewards.GrantRewardGroupAsync(userId, stageRow.reward_group_id, 1, correlationId, ct);
             granted = items;

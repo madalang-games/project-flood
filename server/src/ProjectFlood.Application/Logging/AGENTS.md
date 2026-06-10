@@ -11,6 +11,9 @@
 | `EventLogFactory.StageAttemptReplaced` | method | Logs `replaced_by_new_attempt` |
 | `EventLogFactory.AdRewardClaimed` | method | Logs common ad reward transaction result |
 
+## Note
+Currency mutations are NOT logged via EventLogFactory. They write directly to `currency_logs` table via `CurrencyService`.
+
 ## Rules
 - Keep params aligned with `server/db/event_log_definitions.json`.
 
