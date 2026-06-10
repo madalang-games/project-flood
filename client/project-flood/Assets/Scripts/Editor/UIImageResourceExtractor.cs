@@ -6,7 +6,7 @@ using UnityEngine;
 
 public sealed class UIImageResourceExtractor : EditorWindow
 {
-    const string DefaultOutputFolder = "Assets/RawAssets/UI";
+    const string DefaultOutputFolder = "Assets/Sprites/Extracted";
     const int PreviewSize = 96;
 
     readonly List<SourceImage> sourceImages = new();

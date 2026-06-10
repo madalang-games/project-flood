@@ -17,7 +17,7 @@ Namespace: `Game.OutGame.Boot`
 | `ReLoginView.Init(onReLogin,onContinueAsGuest)` | method | Wires button callbacks |
 
 ## Rules
-- Boot scene hosts UIManager, SceneTransition, StageDataService, PlayerProgressService, AuthService, StaminaApiService, CurrencyApiService GameObjects (DDOL)
+- Boot scene hosts UIManager, SceneTransition, StageDataService, PlayerProgressService, AuthService, StaminaApiService, CurrencyApiService, TutorialManager, TutorialApiService GameObjects (DDOL)
 - Auth failure (ReLoginRequired) shows ReLoginView — NEVER auto-fallback to guest
 
 ## Cross-refs

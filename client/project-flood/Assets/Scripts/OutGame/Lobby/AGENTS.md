@@ -28,10 +28,11 @@ Namespace: `Game.OutGame.Lobby`
 | `BottomNavBarView.OnTabChanged` | event | `Action<LobbyTab>` |
 | `BottomNavBarView.SelectTab(LobbyTab)` | method | Public; sets highlight |
 | `RankingTabView.Refresh` | method | Fetches page + my rank via `RankingApiService` |
+| `RankingTabView._myRankPin` | SerializeField | Pinned player ranking panel at the bottom |
 | `HomeTabView` | component | OnEnable refreshes pool; OnDisable saves scroll position |
 | `StageNodeView.Bind(id,stars,unlocked,isCurrent)` | method | Updates all visual states |
 | `StageNodeView.OnTapped` | event | `Action<int>` stageId |
-| `StageInfoPopupView.Init(stageId,bestStars,bestMoves,onPlay)` | method | Required before showing |
+| `StageInfoPopupView.Init(stageId,bestStars,bestMoves,onPlay)` | method | Required before showing; _bestStarFills stores Fill child GOs (show/hide per bestStars); _extraTurnsToggle only (bomb/hrocket removed — in-game items only) |
 | `ScrollStateCache.HomeScrollPosition` | prop | Float 0..1; save on leave, restore on enter |
 | `ScrollStateCache.LastPlayedStageId` | prop | Set before entering InGame scene |
 | `HeaderView._staminaButton` | SerializeField | Button on StaminaPanel; tapped → StaminaPopupView |

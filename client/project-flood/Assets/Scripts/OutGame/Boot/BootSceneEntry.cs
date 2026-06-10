@@ -1,4 +1,5 @@
 using Game.Core;
+using Game.Core.UI;
 using Game.Services;
 using UnityEngine;
 
@@ -6,13 +7,15 @@ namespace Game.OutGame.Boot
 {
     public class BootSceneEntry : MonoBehaviour
     {
-        [SerializeField] private BootView _bootView;
+        [SerializeField] private BootView            _bootView;
+        [SerializeField] private SceneBackgroundView _sceneBackground;
 
         private const string LobbyScene = "Lobby";
 
         private void Awake()
         {
             Screen.orientation = ScreenOrientation.Portrait;
+            _sceneBackground?.Bind(0, BackgroundMode.Default);
         }
 
         private void Start()

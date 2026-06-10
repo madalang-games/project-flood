@@ -9,6 +9,7 @@ namespace Game.OutGame.Lobby
     public class HeaderView : MonoBehaviour
     {
         [SerializeField] private Button   _avatarButton;
+        [SerializeField] private Button   _settingsButton;
         [SerializeField] private TMP_Text _goldText;
         [SerializeField] private TMP_Text _staminaText;
         [SerializeField] private TMP_Text _staminaTimerText;
@@ -18,6 +19,7 @@ namespace Game.OutGame.Lobby
         {
             _avatarButton.onClick.AddListener(OnAvatarTapped);
             _staminaButton?.onClick.AddListener(OnStaminaTapped);
+            _settingsButton?.onClick.AddListener(OnSettingsTapped);
 
             // Defensive check: auto-bind if null by searching children
             if (_staminaText == null)
@@ -29,6 +31,48 @@ namespace Game.OutGame.Lobby
             {
                 var trans = transform.Find("StaminaPanel/Txt_StaminaTimer") ?? transform.Find("Txt_StaminaTimer") ?? transform.Find("Stamina/Timer");
                 if (trans != null) _staminaTimerText = trans.GetComponent<TMP_Text>();
+            }
+        }
+
+        private void Start()
+        {
+            if (AuthService.Instance != null)
+            {
+                AuthService.Instance.OnProfileChanged += UpdateAvatarUI;
+            }
+            UpdateAvatarUI();
+        }
+
+        private void OnDestroy()
+        {
+            if (AuthService.Instance != null)
+            {
+                AuthService.Instance.OnProfileChanged -= UpdateAvatarUI;
+            }
+        }
+
+        private void UpdateAvatarUI()
+        {
+            if (AuthService.Instance == null) return;
+
+            var avatarIconImg = _avatarButton.transform.Find("Visual/Icon")?.GetComponent<Image>();
+            if (avatarIconImg == null) return;
+
+            Sprite avatarSprite = null;
+            var popupPrefab = Resources.Load<GameObject>("Prefabs/UI/AccountPopupView");
+            if (popupPrefab != null)
+            {
+                var popupView = popupPrefab.GetComponent<Settings.AccountPopupView>();
+                if (popupView != null)
+                {
+                    avatarSprite = popupView.GetAvatarSprite(AuthService.Instance.AvatarId);
+                }
+            }
+
+            if (avatarSprite != null)
+            {
+                avatarIconImg.sprite = avatarSprite;
+                avatarIconImg.preserveAspect = true;
             }
         }
 
@@ -52,7 +96,7 @@ namespace Game.OutGame.Lobby
             var staminaApi = StaminaApiService.Instance;
             if (staminaApi == null || staminaApi.LatestStamina == null)
             {
-                if (_staminaText != null) _staminaText.text = "5/5";
+                if (_staminaText != null) _staminaText.text = "5";
                 if (_staminaTimerText != null) _staminaTimerText.text = "";
                 return;
             }
@@ -77,7 +121,7 @@ namespace Game.OutGame.Lobby
 
             var estimatedLife = staminaApi.GetEstimatedLife();
             if (_staminaText != null)
-                _staminaText.text = $"{estimatedLife}/{latest.Max}";
+                _staminaText.text = estimatedLife.ToString();
 
             if (estimatedLife >= latest.Max)
             {
@@ -102,6 +146,11 @@ namespace Game.OutGame.Lobby
         private void OnStaminaTapped()
         {
             Game.Core.UIManager.Instance?.ShowPopup<StaminaPopupView>();
+        }
+
+        private void OnSettingsTapped()
+        {
+            Game.Core.UIManager.Instance?.ShowPopup<Game.OutGame.Settings.SettingsPanelView>();
         }
     }
 }

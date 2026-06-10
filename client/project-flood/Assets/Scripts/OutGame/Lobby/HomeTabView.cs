@@ -18,9 +18,12 @@ namespace Game.OutGame.Lobby
         [SerializeField] private float         _connectorTurnGap = 375f; // Y gap: row-end→connector and connector→next-row
         [SerializeField] private Color         _pathColor    = new Color(0.5f, 0.7f, 1f, 0.5f);
         [SerializeField] private float         _pathWidth    = 12f;
+        [SerializeField] private Sprite        _guideOrbSprite;
 
-        private readonly List<StageNodeView> _pool = new List<StageNodeView>();
-        private UILineStrip _pathStrip;
+                private readonly List<StageNodeView> _pool = new List<StageNodeView>();
+        private readonly List<UILineStrip>  _pathStrips = new List<UILineStrip>();
+        private Coroutine                    _guideOrbCoroutine;
+        private Image                        _guideOrb;
         private Stage[] _stages;
         private int     _currentStageId;
 
@@ -40,6 +43,9 @@ namespace Game.OutGame.Lobby
         {
             if (_contentRoot == null && _scrollRect != null)
                 _contentRoot = _scrollRect.content;
+
+            if (_chestPrefab == null)
+                _chestPrefab = Resources.Load<GameObject>("Prefabs/UI/ChapterChest");
 
             var viewport = _scrollRect != null ? _scrollRect.viewport : null;
             if (viewport != null && viewport.GetComponent<Image>() == null)
@@ -82,6 +88,12 @@ namespace Game.OutGame.Lobby
         {
             ScrollStateCache.HomeScrollPosition = _scrollRect != null
                 ? _scrollRect.verticalNormalizedPosition : 0f;
+
+            if (_guideOrbCoroutine != null)
+            {
+                StopCoroutine(_guideOrbCoroutine);
+                _guideOrbCoroutine = null;
+            }
         }
 
         private int FindCurrentStage()
@@ -100,7 +112,11 @@ namespace Game.OutGame.Lobby
         {
             if (_stages == null) return;
 
-            if (_pathStrip != null) { Destroy(_pathStrip.gameObject); _pathStrip = null; }
+            foreach (var ps in _pathStrips)
+            {
+                if (ps != null) Destroy(ps.gameObject);
+            }
+            _pathStrips.Clear();
 
             // Clean up editor dummy placeholder nodes so they don't overlap at runtime
             for (int i = _contentRoot.childCount - 1; i >= 0; i--)
@@ -191,15 +207,21 @@ namespace Game.OutGame.Lobby
             }
             _chestNodes.Clear();
 
-            CreateChestNode(1, 2, positions[2], totalHeight);
-            CreateChestNode(2, 5, positions[5], totalHeight);
-            CreateChestNode(3, 8, positions[8], totalHeight);
+            var chapterLastIdx = new Dictionary<int, int>();
+            for (int i = 0; i < count; i++)
+                chapterLastIdx[_stages[i].chapter_id] = i;
+
+            var sortedChapters = new List<int>(chapterLastIdx.Keys);
+            sortedChapters.Sort();
+            foreach (int cid in sortedChapters)
+                CreateChestNode(cid, positions[chapterLastIdx[cid]], totalHeight);
 
             BuildPath(positions, count, totalHeight);
+            StartGuideOrb(positions, count);
             BuildChapterBackgrounds(positions, count, totalHeight);
         }
 
-        private void CreateChestNode(int chapterNum, int stageIndex, Vector2 stagePos, float totalHeight)
+        private void CreateChestNode(int chapterNum, Vector2 stagePos, float totalHeight)
         {
             if (_chestPrefab == null) return;
 
@@ -212,8 +234,9 @@ namespace Game.OutGame.Lobby
             nodeRt.anchorMin = nodeRt.anchorMax = new Vector2(0.5f, 1f);
             nodeRt.pivot = new Vector2(0.5f, 0.5f);
 
-            float xOffset = stagePos.x >= 0 ? -130f : 130f;
-            nodeRt.anchoredPosition = new Vector2(stagePos.x + xOffset, stagePos.y);
+            // Reposition chest to chapter clear top margins, away from stage nodes
+            float targetX = stagePos.x >= 0 ? 260f : -260f;
+            nodeRt.anchoredPosition = new Vector2(targetX, stagePos.y + 110f);
 
             var button = chestView.GetComponentInChildren<Button>();
             if (button != null)
@@ -403,29 +426,231 @@ namespace Game.OutGame.Lobby
 
         private void BuildPath(Vector2[] nodePositions, int count, float totalHeight)
         {
-            var go = new GameObject("PathStrip");
-            go.transform.SetParent(_contentRoot, false);
-            go.transform.SetAsFirstSibling();
+            foreach (var ps in _pathStrips)
+            {
+                if (ps != null) Destroy(ps.gameObject);
+            }
+            _pathStrips.Clear();
 
-            _pathStrip              = go.AddComponent<UILineStrip>();
-            _pathStrip.lineWidth    = _pathWidth;
-            _pathStrip.color        = _pathColor;
-            _pathStrip.raycastTarget = false;
+            var chapters = new Dictionary<int, (int first, int last)>();
+            for (int i = 0; i < count; i++)
+            {
+                int cid = _stages[i].chapter_id;
+                if (!chapters.TryGetValue(cid, out var range))
+                    chapters[cid] = (i, i);
+                else
+                    chapters[cid] = (range.first, i);
+            }
 
-            // RT: anchor (0.5,1), pivot center, centered vertically over content
-            var rt              = go.GetComponent<RectTransform>();
-            rt.anchorMin        = rt.anchorMax = new Vector2(0.5f, 1f);
-            rt.pivot            = new Vector2(0.5f, 0.5f);
-            rt.anchoredPosition = new Vector2(0f, -totalHeight * 0.5f);
-            rt.sizeDelta        = new Vector2(_contentRoot.sizeDelta.x, totalHeight);
+            var sortedIds = new List<int>(chapters.Keys);
+            sortedIds.Sort();
 
-            // Node positions are in anchor(0.5,1) space; strip local space needs +totalHeight/2 on Y
             float yOffset = totalHeight * 0.5f;
-            var   curve   = SampleCatmullRom(nodePositions, count, 12);
-            for (int i = 0; i < curve.Count; i++)
-                curve[i] = new Vector2(curve[i].x, curve[i].y + yOffset);
+            var progress = PlayerProgressService.Instance;
 
-            _pathStrip.SetPoints(curve);
+            foreach (int cid in sortedIds)
+            {
+                var range = chapters[cid];
+                int startIdx = range.first;
+                
+                // Connect to next chapter's first node for continuous lines
+                int endIdx = range.last;
+                if (endIdx < count - 1)
+                {
+                    endIdx++;
+                }
+
+                int segCount = endIdx - startIdx + 1;
+                if (segCount < 2) continue;
+
+                var chapterPts = new Vector2[segCount];
+                for (int s = 0; s < segCount; s++)
+                {
+                    chapterPts[s] = nodePositions[startIdx + s];
+                }
+
+                var curve = SampleCatmullRom(chapterPts, segCount, 12);
+                for (int s = 0; s < curve.Count; s++)
+                {
+                    curve[s] = new Vector2(curve[s].x, curve[s].y + yOffset);
+                }
+
+                var go = new GameObject($"PathStrip_Chapter_{cid}");
+                go.transform.SetParent(_contentRoot, false);
+                go.transform.SetAsFirstSibling();
+
+                var pathStrip = go.AddComponent<UILineStrip>();
+                var theme = ChapterBgTheme.Get(cid);
+
+                pathStrip.lineWidth = theme.PathWidth;
+                pathStrip.scrollSpeed = theme.PathScrollSpeed;
+                pathStrip.useOutline = true;
+                pathStrip.outlineWidth = 4f;
+                pathStrip.outlineColor = new Color(0f, 0.05f, 0.15f, 0.65f);
+                pathStrip.raycastTarget = false;
+
+                Texture2D customTex = null;
+                if (!string.IsNullOrEmpty(theme.PathResourceKey))
+                {
+                    string resourcePath = $"Sprites/Path/{theme.PathResourceKey}";
+                    customTex = Resources.Load<Texture2D>(resourcePath);
+                    if (customTex != null)
+                        Debug.Log($"[HomeTabView] Loaded path texture for chapter {cid} from Resources/{resourcePath}");
+                    else
+                        Debug.LogWarning($"[HomeTabView] Failed to load path texture for chapter {cid} at Resources/{resourcePath}. Fallback to procedural dash.");
+                }
+
+                if (customTex != null)
+                {
+                    pathStrip.SetTexture(customTex);
+                    pathStrip.color = Color.white;
+                    pathStrip.textureTiling = totalHeight / (theme.PathWidth * 8f);
+                }
+                else
+                {
+                    // Fallback procedural dashed path style
+                    pathStrip.color = theme.PathColor;
+                    pathStrip.useProceduralDashes = true;
+                    pathStrip.dashLength = 40f;
+                    pathStrip.gapLength = 20f;
+                    pathStrip.textureTiling = 10f;
+                    pathStrip.scrollSpeed = theme.PathScrollSpeed * 10f; // Scale speed for procedural dash animation
+                }
+
+                var rt = go.GetComponent<RectTransform>();
+                rt.anchorMin = rt.anchorMax = new Vector2(0.5f, 1f);
+                rt.pivot = new Vector2(0.5f, 0.5f);
+                rt.anchoredPosition = new Vector2(0f, -totalHeight * 0.5f);
+                rt.sizeDelta = new Vector2(_contentRoot.sizeDelta.x, totalHeight);
+
+                pathStrip.SetPoints(curve);
+                _pathStrips.Add(pathStrip);
+
+                ApplyChapterPathStyle(pathStrip, cid, startIdx, endIdx, progress);
+            }
+        }
+
+        private void ApplyChapterPathStyle(UILineStrip pathStrip, int chapterId, int startIdx, int endIdx, PlayerProgressService progress)
+        {
+            if (progress == null) return;
+
+            bool isChapterLocked = true;
+            bool isChapterFullyCleared = true;
+
+            for (int idx = startIdx; idx <= endIdx; idx++)
+            {
+                if (idx >= _stages.Length) break;
+                var stageId = _stages[idx].stage_id;
+                
+                if (progress.IsStageUnlocked(stageId))
+                {
+                    isChapterLocked = false;
+                }
+                
+                if (progress.GetBestStars(stageId) == 0)
+                {
+                    isChapterFullyCleared = false;
+                }
+            }
+
+            if (isChapterLocked)
+            {
+                pathStrip.color = new Color(0.4f, 0.4f, 0.4f, 0.15f);
+                pathStrip.scrollSpeed = 0f;
+            }
+            else if (isChapterFullyCleared)
+            {
+                var theme = ChapterBgTheme.Get(chapterId);
+                pathStrip.color = new Color(theme.PathColor.r, theme.PathColor.g, theme.PathColor.b, 0.55f);
+                pathStrip.scrollSpeed = theme.PathScrollSpeed * 0.5f;
+            }
+            else
+            {
+                var theme = ChapterBgTheme.Get(chapterId);
+                pathStrip.color = theme.PathColor;
+                pathStrip.scrollSpeed = theme.PathScrollSpeed;
+            }
+        }
+
+        private void StartGuideOrb(Vector2[] positions, int count)
+        {
+            if (_guideOrbCoroutine != null) { StopCoroutine(_guideOrbCoroutine); _guideOrbCoroutine = null; }
+            if (_guideOrb != null) { Destroy(_guideOrb.gameObject); _guideOrb = null; }
+
+            int currentIdx = _currentStageId - 1;
+            if (currentIdx < 0 || currentIdx >= count) return;
+
+            var go = new GameObject("GuideOrb", typeof(Image));
+            go.transform.SetParent(_contentRoot, false);
+            _guideOrb = go.GetComponent<Image>();
+            _guideOrb.raycastTarget = false;
+
+            if (_guideOrbSprite != null)
+            {
+                _guideOrb.sprite = _guideOrbSprite;
+            }
+
+            var cid = _stages[currentIdx].chapter_id;
+            var theme = ChapterBgTheme.Get(cid);
+            _guideOrb.color = theme.PathColor;
+
+            var rt = _guideOrb.GetComponent<RectTransform>();
+            rt.anchorMin = rt.anchorMax = new Vector2(0.5f, 1f);
+            rt.pivot = new Vector2(0.5f, 0.5f);
+            rt.sizeDelta = new Vector2(24f, 24f);
+
+            if (currentIdx == 0)
+            {
+                rt.anchoredPosition = positions[0];
+                _guideOrbCoroutine = StartCoroutine(OrbPulseRoutine(rt));
+            }
+            else
+            {
+                Vector2 startPos = positions[currentIdx - 1];
+                Vector2 endPos = positions[currentIdx];
+                _guideOrbCoroutine = StartCoroutine(OrbTravelRoutine(rt, startPos, endPos));
+            }
+        }
+
+        private IEnumerator OrbPulseRoutine(RectTransform rt)
+        {
+            while (true)
+            {
+                float s = 1.0f + Mathf.PingPong(Time.time * 2f, 0.4f);
+                rt.localScale = new Vector3(s, s, 1f);
+                
+                float alpha = 0.5f + 0.5f * Mathf.PingPong(Time.time * 2f, 0.5f);
+                _guideOrb.color = new Color(_guideOrb.color.r, _guideOrb.color.g, _guideOrb.color.b, alpha);
+                yield return null;
+            }
+        }
+
+        private IEnumerator OrbTravelRoutine(RectTransform rt, Vector2 start, Vector2 end)
+        {
+            Vector2 mid = Vector2.Lerp(start, end, 0.5f);
+            Vector2 dir = (end - start).normalized;
+            Vector2 perp = new Vector2(-dir.y, dir.x) * 35f;
+            Vector2 curveControl = mid + perp;
+
+            while (true)
+            {
+                float t = 0f;
+                while (t < 1.0f)
+                {
+                    t += Time.deltaTime * 0.7f;
+                    float tc = Mathf.Clamp01(t);
+
+                    Vector2 m1 = Vector2.Lerp(start, curveControl, tc);
+                    Vector2 m2 = Vector2.Lerp(curveControl, end, tc);
+                    rt.anchoredPosition = Vector2.Lerp(m1, m2, tc);
+
+                    float s = 1.0f + 0.35f * Mathf.Sin(tc * Mathf.PI);
+                    rt.localScale = new Vector3(s, s, 1f);
+
+                    yield return null;
+                }
+                yield return new WaitForSeconds(0.4f);
+            }
         }
 
         private List<Vector2> SampleCatmullRom(Vector2[] pts, int count, int steps)

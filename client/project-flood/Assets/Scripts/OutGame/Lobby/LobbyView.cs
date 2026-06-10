@@ -1,16 +1,20 @@
+using Game.Core.UI;
 using Game.Services;
+using Game.Utils;
+using ProjectFlood.Data.Generated;
 using UnityEngine;
 
 namespace Game.OutGame.Lobby
 {
     public class LobbyView : MonoBehaviour
     {
-        [SerializeField] private HeaderView      _header;
-        [SerializeField] private BottomNavBarView _navBar;
-        [SerializeField] private GameObject      _homeTabRoot;
-        [SerializeField] private GameObject      _shopTabRoot;
-        [SerializeField] private GameObject      _rankingTabRoot;
-        [SerializeField] private RankingTabView  _rankingTabView;
+        [SerializeField] private HeaderView           _header;
+        [SerializeField] private BottomNavBarView     _navBar;
+        [SerializeField] private GameObject           _homeTabRoot;
+        [SerializeField] private GameObject           _shopTabRoot;
+        [SerializeField] private GameObject           _rankingTabRoot;
+        [SerializeField] private RankingTabView       _rankingTabView;
+        [SerializeField] private SceneBackgroundView  _sceneBackground;
 
         private void Awake()
         {
@@ -22,6 +26,7 @@ namespace Game.OutGame.Lobby
             RefreshGold();
             ShowTab(LobbyTab.Home);
             FetchServerState();
+            _sceneBackground?.Bind(GetCurrentBgThemeId(), BackgroundMode.Lobby);
             if (Services.Tutorial.TutorialManager.Instance != null)
             {
                 Services.Tutorial.TutorialManager.Instance.CheckLobbyTriggers();
@@ -48,6 +53,18 @@ namespace Game.OutGame.Lobby
             _rankingTabRoot?.SetActive(tab == LobbyTab.Ranking);
             if (tab == LobbyTab.Ranking)
                 _rankingTabView?.Refresh();
+            _sceneBackground?.PanTo((int)tab);
+        }
+
+        private static int GetCurrentBgThemeId()
+        {
+            int stageId = ScrollStateCache.LastPlayedStageId;
+            if (stageId <= 0) stageId = 1;
+            var stage     = StageDataService.Instance?.GetStage(stageId);
+            int chapterId = stage?.chapter_id ?? 1;
+            var chapters  = CsvLoader.Load<Chapter>(Chapter.ResourcePath);
+            var chapter   = System.Array.Find(chapters, c => c.chapter_id == chapterId);
+            return chapter != null ? (int)chapter.bg_theme_id : 1;
         }
     }
 }

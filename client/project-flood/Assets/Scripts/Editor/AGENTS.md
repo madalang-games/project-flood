@@ -23,6 +23,11 @@
 | `PlayerPrefsResetMenu.ResetPrefs()` | method | [MenuItem "Tools/Reset PlayerPrefs"] deletes all PlayerPrefs |
 | `IconAutomator.ShowWindow()` | method | [MenuItem "Tools/Icon Automator"] opens icon automation window |
 | `UIEditorSetup.CreateAllPrefabs()` | method | [MenuItem "Tools/UI Setup/1"] creates all popup/overlay prefabs |
+| `UIEditorSetup.TryMapImageSprite()` | method | Helper to map sprite directly onto Image component target |
+| `UIEditorSetup.BtnNavTab()` | method | Nav bar tab button — icon (color-tinted) above label; `_homeHighlight` etc. wire to `Visual/Icon` Image |
+| `UIEditorSetup.ItemToggleRow()` | method | Toggle row with item icon on left; Label TMP is a child of Toggle GO (GetComponentInChildren finds it) |
+| `UIEditorSetup.MapStarAndIconSprites()` | method | Re-maps star_empty/star_filled/lock/ExtraTurns icon on Common prefabs without recreating them |
+| `UIEditorSetup.MapHierarchyImageSprite()` | method | Maps a sprite key from resMap to an Image at `childPath` inside a loaded prefab |
 | `FontLocalizationConfigGenerator.Generate()` | method | [MenuItem "Tools/Localization/Generate Font Config"] creates FontLocalizationConfig.asset from config.json |
 | `StringIds` | class | All client_string.csv key constants; import with `using static Game.Editor.StringIds` |
 | `UnityStageFileWatcher` | class | Active file system watcher for local hot-reloads |

@@ -63,6 +63,17 @@ namespace Game.Editor
         public const string PopupStaminaTitle = "popup.stamina.title";
         public const string PopupStaminaWatchAd = "popup.stamina.watch_ad";
         public const string PopupStaminaUnlimited = "popup.stamina.unlimited";
+        public const string PopupAccountBtnSave = "popup.account.btn_save";
+        public const string PopupAccountLabelNickname = "popup.account.label_nickname";
+        public const string PopupAccountLabelSelectAvatar = "popup.account.label_select_avatar";
+        public const string PopupAccountTabAvatars = "popup.account.tab_avatars";
+        public const string PopupAccountTabBoardSkins = "popup.account.tab_board_skins";
+        public const string PopupAccountPlaceholderNickname = "popup.account.placeholder_nickname";
+        public const string PopupFailWatchAd = "popup.fail.watch_ad";
+        public const string PopupSettingsHaptic = "popup.settings.haptic";
+        public const string PopupSettingsLanguage = "popup.settings.language";
+        public const string PopupSettingsLangKO = "popup.settings.lang.KO";
+        public const string PopupSettingsLangEN = "popup.settings.lang.EN";
 
         // lobby
         public const string LobbyRankingStarsTitle = "lobby.ranking.stars_title";
@@ -78,6 +89,7 @@ namespace Game.Editor
 
         // ingame
         public const string IngameTurnsLabel = "ingame.turns_label";
+        public const string IngameCellsLabel = "ingame.cells_label";
 
         // nav
         public const string NavHome = "nav.home";
@@ -118,6 +130,7 @@ namespace Game.Editor
 
         // chapter
         public const string ChapterNameFmt = "chapter.name_fmt";
+        public const string ChapterLocked = "chapter.locked";
     }
 }
 #endif
