@@ -46,7 +46,11 @@
 - Stage end triggers when `result == Star3` OR `turns == 0`
 - Ignore new input while `_isAnimating=true` to keep visual state deterministic
 
+## Rules
+- Gold is awarded only on first-time stage clear (`GetBestStars == 0` before `RecordClear`); retries earn no gold.
+- Gold amount comes from `RewardItem` CSV via `stage.reward_group_id` (SOFT_CURRENCY entry); hardcoded formula removed.
+
 ## Cross-refs
 - Depends on: `Game.InGame.Board.*`, `Game.InGame.Rules.*`, `Game.InGame.View.BoardView`
-- Depends on: `ProjectFlood.Data.Generated.Stage`, `Game.Services.StageDataService`, `Game.Services.PlayerProgressService`
+- Depends on: `ProjectFlood.Data.Generated.Stage`, `ProjectFlood.Data.Generated.RewardItem`, `Game.Services.StageDataService`, `Game.Services.PlayerProgressService`
 - Consumed by: `Game.InGame.Controller.InGameSceneEntry` (wires events to UIManager)

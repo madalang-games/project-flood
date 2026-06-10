@@ -12,8 +12,10 @@ namespace Game.InGame.View
         [SerializeField] private CanvasGroup _canvasGroup;
         [SerializeField] private GameObject _goldBadge;
         [SerializeField] private TextMeshProUGUI _goldBadgeText;
+        [SerializeField] private Image _icon;
 
         public Button Button => _button;
+        public Image Icon => _icon;
 
         public void Refresh(int count, bool isDevMode, bool canUse, bool selected, int goldCost = 100)
         {

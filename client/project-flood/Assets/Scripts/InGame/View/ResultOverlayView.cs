@@ -50,21 +50,12 @@ namespace Game.InGame.View
             if (_rankText != null)
                 _rankText.text = "";
 
-            if (_goldRow != null) _goldRow.SetActive(!fail);
-            if (_goldText != null && !fail)
+            bool showGold = !fail && goldEarned > 0;
+            if (_goldRow != null) _goldRow.SetActive(showGold);
+            if (_goldText != null && showGold)
                 _goldText.text = $"+{goldEarned}";
 
             if (_nextButton != null) _nextButton.gameObject.SetActive(!nextLocked && !fail);
-
-            // Hide all stars initially; UIStarPop animates them
-            for (int i = 0; i < _starObjects.Length; i++)
-            {
-                if (_starObjects[i] == null) continue;
-                var rt = _starObjects[i].GetComponent<RectTransform>();
-                if (rt != null && i < stars)
-                    rt.localScale = Vector3.zero;
-                _starObjects[i].SetActive(true);
-            }
 
             StartCoroutine(PlayStarSequence(stars));
         }

@@ -6,6 +6,7 @@
 | `BoardView.cs` | `BoardView` | instantiates/positions CellView grid; Refresh on board change; tap/removal/gravity/rotation visual sequences; ScreenToCell hit-test; drives BoardBackground |
 | `CellView.cs` | `CellView` | renders single cell: color, type sprite, protector overlay, core indicator, target highlight; code-driven interaction/removal/drop effects |
 | `BoardBackground.cs` | `BoardBackground` | procedural dynamic neon pixel-art board panel + per-cell socket sprites + scene-visible Void cutouts |
+| `InGameSceneBackgroundView.cs` | `InGameSceneBackgroundView` | World Space SR background for InGame; Night palette; sparkle particles at ~8 FPS; Bind(bgThemeId) |
 | `DevRotateButton.cs` | `DevRotateButton` | UNITY_EDITOR or DEVELOPMENT_BUILD only; wires an existing UI Button or creates a fallback button for InGameController.TriggerRotateBoard |
 | `ItemSlotView.cs` | `ItemSlotView` | single item slot — count badge (TMP), Button, selected highlight; Refresh(count,devMode,canUse,selected) |
 | `ItemTrayView.cs` | `ItemTrayView` | HorizontalLayoutGroup container for 3 ItemSlotViews; fires OnSlotTapped event; SetLocked for animation lock |
@@ -55,6 +56,7 @@
 | `CellView.PlayDrop(from,to,delay,duration)` | coroutine | gravity fall with overshoot easing and landing squash |
 | `CellView._protectorOverlay` | SerializeField | SpriteRenderer for strength-1 or strength-2 shield |
 | `CellView._coreIndicator` | SerializeField | GameObject shown when is_core=true |
+| `InGameSceneBackgroundView.Bind(bgThemeId)` | method | resolves Night palette, builds 1×16 gradient SR at sortOrder -100, builds sparkle SRs at -99 |
 | `BoardBackground.Build(width,height,cellSize,cellPositions)` | method | generates dynamic panel + socket sprites using BoardView's exact cell positions |
 | `BoardBackground.Refresh(width,height,showSocket,showHole)` | method | enables sockets and stores Void map for transparent panel cutouts |
 | `BoardBackground.Update()` | method | refreshes neon pixel-art panel texture, Void-adjacent rim, and socket tint at low FPS |

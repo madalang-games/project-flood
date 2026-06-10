@@ -14,9 +14,10 @@ namespace Game.InGame.Controller
 {
     public class InGameSceneEntry : MonoBehaviour
     {
-        [SerializeField] private InGameController _controller;
-        [SerializeField] private HUDView          _hudView;
-        [SerializeField] private int              _debugStageId = 1;
+        [SerializeField] private InGameController           _controller;
+        [SerializeField] private HUDView                    _hudView;
+        [SerializeField] private InGameSceneBackgroundView  _sceneBg;
+        [SerializeField] private int                        _debugStageId = 1;
 
         private Stage _stage;
         private int   _goldEarned;
@@ -75,6 +76,10 @@ namespace Game.InGame.Controller
             }
 
             _goldEarned = 0;
+
+            var chapters  = CsvLoader.Load<Chapter>(Chapter.ResourcePath);
+            var chapterRow = System.Array.Find(chapters, c => c.chapter_id == _stage.chapter_id);
+            _sceneBg?.Bind(chapterRow != null ? (int)chapterRow.bg_theme_id : 1);
 
             int extraTurns = 0;
             if (ScrollStateCache.UseExtraTurnsItem)
@@ -167,8 +172,12 @@ namespace Game.InGame.Controller
 
             if (!fail)
             {
-                _goldEarned = CalculateGold((int)result, remainingTurns);
-                PlayerProgressService.Instance?.AddGold(_goldEarned);
+                bool isFirstClear = (PlayerProgressService.Instance?.GetBestStars(_stage.stage_id) ?? 0) == 0;
+                if (isFirstClear)
+                {
+                    _goldEarned = CalculateGold(_stage);
+                    PlayerProgressService.Instance?.AddGold(_goldEarned);
+                }
                 PlayerProgressService.Instance?.RecordClear(_stage.stage_id, (int)result);
                 PlayerPrefs.DeleteKey("stage_fail_count_" + _stage.stage_id);
                 PlayerPrefs.Save();
@@ -245,10 +254,15 @@ namespace Game.InGame.Controller
             else SceneManager.LoadScene(LobbyScene);
         }
 
-        private static int CalculateGold(int stars, int remainingTurns)
+        private static int CalculateGold(Stage stage)
         {
-            int base_ = stars switch { 3 => 150, 2 => 100, 1 => 70, _ => 0 };
-            return base_ + remainingTurns * 5;
+            var items = CsvLoader.Load<ProjectFlood.Data.Generated.RewardItem>(
+                ProjectFlood.Data.Generated.RewardItem.ResourcePath);
+            if (items == null) return 0;
+            foreach (var item in items)
+                if (item.reward_group_id == stage.reward_group_id && item.reward_type == "SOFT_CURRENCY")
+                    return item.amount;
+            return 0;
         }
     }
 }

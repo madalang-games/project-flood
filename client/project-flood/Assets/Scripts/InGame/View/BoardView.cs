@@ -64,7 +64,23 @@ namespace Game.InGame.View
             }
 
             if (_background != null)
-                _background.Build(board.Width, board.Height, _cellSize, _cellPositions);
+            {
+                int equippedThemeId = 1;
+                if (Game.Services.PlayerProgressService.Instance != null)
+                {
+                    equippedThemeId = Game.Services.PlayerProgressService.Instance.EquippedBoardThemeId;
+                }
+                _background.SetTheme(equippedThemeId);
+
+                int[,] initialColorIds = new int[board.Height, board.Width];
+                for (int r = 0; r < board.Height; r++)
+                for (int c = 0; c < board.Width; c++)
+                {
+                    var cell = board.Grid[r, c];
+                    initialColorIds[r, c] = cell != null ? cell.Value.color_id : -1;
+                }
+                _background.Build(board.Width, board.Height, _cellSize, _cellPositions, initialColorIds);
+            }
 
             Refresh(board);
         }
@@ -85,7 +101,7 @@ namespace Game.InGame.View
                 _cellViews[r, c].SetData(cell, color);
 
                 if (showSocket != null)
-                    showSocket[r, c] = cell == null;
+                    showSocket[r, c] = !IsVoidCell(cell);
                 if (showHole != null)
                     showHole[r, c] = IsVoidCell(cell);
             }

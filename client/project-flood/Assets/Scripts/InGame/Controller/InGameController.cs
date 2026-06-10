@@ -178,7 +178,7 @@ namespace Game.InGame.Controller
 
             if (row < 0 || col < 0) return;
             var tapped = _board.Grid[row, col];
-            if (tapped == null || tapped.Value.cell_type == CellType.Void) return;
+            if (tapped == null || tapped.Value.cell_type == CellType.Void || tapped.Value.cell_type == CellType.Obstacle) return;
 
             if (tapped.Value.cell_type == CellType.Bomb || tapped.Value.cell_type == CellType.HRocket || tapped.Value.cell_type == CellType.ColorSweep)
             {
@@ -329,7 +329,8 @@ namespace Game.InGame.Controller
             }
             else
             {
-                RemovalSystem.Remove(_board, cells);
+                bool allowObstacle = (itemType == ItemType.Bomb || itemType == ItemType.HRocket);
+                RemovalSystem.Remove(_board, cells, allowObstacle);
                 yield return _boardView.PlayRemovalEffects(_board, cells, originRow, originCol);
 
                 ShiftConveyors();
@@ -726,7 +727,8 @@ namespace Game.InGame.Controller
 
             if (_itemTrayView != null) _itemTrayView.SetLocked(true);
 
-            RemovalSystem.Remove(_board, cells);
+            bool allowObstacle = (itemType == ItemType.Bomb || itemType == ItemType.HRocket);
+            RemovalSystem.Remove(_board, cells, allowObstacle);
             yield return _boardView.PlayRemovalEffects(_board, cells, originRow, originCol);
 
             ShiftConveyors();

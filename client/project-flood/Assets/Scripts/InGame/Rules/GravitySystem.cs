@@ -18,7 +18,6 @@ namespace Game.InGame.Rules
                 {
                     var cell = board.Grid[r, c];
                     if (cell.HasValue && cell.Value.cell_type == CellType.Void) continue;
-                    if (cell.HasValue && cell.Value.cell_type == CellType.Obstacle) continue;
 
                     if (cell == null)
                     {
@@ -60,10 +59,6 @@ namespace Game.InGame.Rules
                 if (cell.HasValue)
                 {
                     if (cell.Value.cell_type == CellType.Void)
-                    {
-                        return null;
-                    }
-                    if (cell.Value.cell_type == CellType.Obstacle)
                     {
                         return null;
                     }

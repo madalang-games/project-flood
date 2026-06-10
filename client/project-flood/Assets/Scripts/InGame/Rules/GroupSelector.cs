@@ -12,7 +12,7 @@ namespace Game.InGame.Rules
         {
             var result = new List<(int, int)>();
             var cell = board.Grid[row, col];
-            if (cell == null || cell.Value.cell_type == CellType.Void) return result;
+            if (cell == null || cell.Value.cell_type == CellType.Void || cell.Value.cell_type == CellType.Obstacle) return result;
 
             int targetColor = cell.Value.color_id;
             var visited = new bool[board.Height, board.Width];
@@ -30,7 +30,7 @@ namespace Game.InGame.Rules
                     if (nr < 0 || nr >= board.Height || nc < 0 || nc >= board.Width) continue;
                     if (visited[nr, nc]) continue;
                     var neighbor = board.Grid[nr, nc];
-                    if (neighbor == null || neighbor.Value.cell_type == CellType.Void) continue;
+                    if (neighbor == null || neighbor.Value.cell_type == CellType.Void || neighbor.Value.cell_type == CellType.Obstacle) continue;
                     if (neighbor.Value.color_id != targetColor) continue;
                     visited[nr, nc] = true;
                     queue.Enqueue((nr, nc));

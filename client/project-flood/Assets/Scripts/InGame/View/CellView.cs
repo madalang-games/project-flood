@@ -19,9 +19,11 @@ namespace Game.InGame.View
         [SerializeField] private Sprite _bombSprite;
         [SerializeField] private Sprite _hRocketSprite;
         [SerializeField] private Sprite _colorSweepSprite;
+        [SerializeField] private Sprite[] _colorSprites;
 
         private const float ColorBoost = 1.25f;
 
+        private float _cellSize;
         private Vector3 _baseScale;
         private Color _baseColor;
 
@@ -32,18 +34,25 @@ namespace Game.InGame.View
 
         public void Init(float cellSize)
         {
-            var reference = _basicSprite != null ? _basicSprite : (_baseRenderer != null ? _baseRenderer.sprite : null);
+            _cellSize = cellSize;
+            UpdateScale(null);
+            transform.localScale = _baseScale;
+        }
+
+        private void UpdateScale(Sprite sprite)
+        {
+            var reference = sprite != null ? sprite : (_basicSprite != null ? _basicSprite : (_baseRenderer != null ? _baseRenderer.sprite : null));
             if (reference != null)
             {
                 Vector2 spriteSize = reference.bounds.size;
-                float s = cellSize / Mathf.Max(spriteSize.x, spriteSize.y);
-                _baseScale = new Vector3(s, s, 1f);
+                float sx = spriteSize.x > 0f ? _cellSize / spriteSize.x : _cellSize;
+                float sy = spriteSize.y > 0f ? _cellSize / spriteSize.y : _cellSize;
+                _baseScale = new Vector3(sx, sy, 1f);
             }
             else
             {
-                _baseScale = Vector3.one * cellSize;
+                _baseScale = Vector3.one * _cellSize;
             }
-            transform.localScale = _baseScale;
         }
 
         public void SetTargetHighlight(bool active)
@@ -101,10 +110,21 @@ namespace Game.InGame.View
             else if (cell.cell_type == CellType.HRocket && _hRocketSprite != null) targetSprite = _hRocketSprite;
             else if (cell.cell_type == CellType.ColorSweep && _colorSweepSprite != null) targetSprite = _colorSweepSprite;
 
-            _baseRenderer.sprite = targetSprite;
-
             bool isColorless = cell.cell_type == CellType.Obstacle || cell.cell_type == CellType.Bomb || cell.cell_type == CellType.HRocket;
-            _baseRenderer.color = isColorless ? Color.white : cellColor;
+
+            if (cell.cell_type == CellType.Basic && _colorSprites != null && cell.color_id >= 0 && cell.color_id < _colorSprites.Length && _colorSprites[cell.color_id] != null)
+            {
+                _baseRenderer.sprite = _colorSprites[cell.color_id];
+                _baseRenderer.color = Color.white;
+            }
+            else
+            {
+                _baseRenderer.sprite = targetSprite;
+                _baseRenderer.color = isColorless ? Color.white : cellColor;
+            }
+
+            UpdateScale(_baseRenderer.sprite);
+
             _baseColor = _baseRenderer.color;
             transform.localScale = _baseScale;
             SetRenderersAlpha(1f);
@@ -114,7 +134,24 @@ namespace Game.InGame.View
                 bool hasProtector = cell.protector_strength > 0;
                 _protectorOverlay.gameObject.SetActive(hasProtector);
                 if (hasProtector)
-                    _protectorOverlay.sprite = cell.protector_strength == 2 ? _protectorSprite2 : _protectorSprite1;
+                {
+                    var protectorSprite = cell.protector_strength == 2 ? _protectorSprite2 : _protectorSprite1;
+                    _protectorOverlay.sprite = protectorSprite;
+
+                    // Scale protector to fit within cell bounds (96% of cell size)
+                    if (protectorSprite != null && _baseRenderer.sprite != null)
+                    {
+                        Vector2 baseSpriteSize = _baseRenderer.sprite.bounds.size;
+                        Vector2 protSpriteSize = protectorSprite.bounds.size;
+                        float sx = (protSpriteSize.x > 0f) ? 0.96f * (baseSpriteSize.x / protSpriteSize.x) : 0.96f;
+                        float sy = (protSpriteSize.y > 0f) ? 0.96f * (baseSpriteSize.y / protSpriteSize.y) : 0.96f;
+                        _protectorOverlay.transform.localScale = new Vector3(sx, sy, 1f);
+                    }
+                    else
+                    {
+                        _protectorOverlay.transform.localScale = Vector3.one * 0.96f;
+                    }
+                }
             }
 
             if (_coreIndicator != null)
