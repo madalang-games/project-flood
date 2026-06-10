@@ -93,7 +93,7 @@ namespace Game.InGame.Controller
             _controller.OnStageEnd          += OnStageEnd;
 
             _controller.Init(_stage, extraTurns);
-            _hudView?.Init(_stage.turn_limit + extraTurns, _controller.RemainingCells);
+            _hudView?.Init(_stage.turn_limit + extraTurns, _controller.RemainingCells, _controller.Star1Ratio, _controller.Star2Ratio);
             if (_hudView != null) _hudView.OnPausePressed += OnPausePressed;
             
             StageApiService.Instance?.StartAttempt(_stage.stage_id, response =>
@@ -109,7 +109,7 @@ namespace Game.InGame.Controller
                 }
                 else if (error == "STAGE_LOCKED")
                 {
-                    UIManager.Instance?.ShowToast("Stage is locked!", ToastType.Warning);
+                    UIManager.Instance?.ShowToast(LocalizationService.Instance.Get("toast.stage_locked"), ToastType.Warning);
                     GoToLobby();
                 }
                 else
@@ -153,7 +153,7 @@ namespace Game.InGame.Controller
             var progress = PlayerProgressService.Instance;
             if (progress != null && !progress.CanAfford(GameConfig.ContinueCost))
             {
-                UIManager.Instance?.ShowToast("골드 부족", ToastType.Warning);
+                UIManager.Instance?.ShowToast(LocalizationService.Instance.Get("toast.insufficient_gold"), ToastType.Warning);
                 return;
             }
             progress?.SpendGold(GameConfig.ContinueCost);

@@ -6,6 +6,7 @@ using Game.InGame.Items;
 using Game.InGame.Rules;
 using Game.InGame.View;
 using Game.OutGame.Lobby;
+using Game.Services;
 using ProjectFlood.Contracts.GameTypes;
 using ProjectFlood.Contracts.Stage;
 using ProjectFlood.Data.Generated;
@@ -411,7 +412,7 @@ namespace Game.InGame.Controller
                 var cost = 100;
                 if (Services.PlayerProgressService.Instance != null && !Services.PlayerProgressService.Instance.CanAfford(cost))
                 {
-                    Core.UIManager.Instance?.ShowToast("Insufficient Gold!", Core.UI.ToastType.Warning);
+                    Core.UIManager.Instance?.ShowToast(LocalizationService.Instance.Get("toast.insufficient_gold"), Core.UI.ToastType.Warning);
                     return;
                 }
 
@@ -432,7 +433,7 @@ namespace Game.InGame.Controller
                         onSuccess: response =>
                         {
                             Core.UIManager.Instance?.HideLoading();
-                            Core.UIManager.Instance?.ShowToast("Purchased booster!", Core.UI.ToastType.Success);
+                            Core.UIManager.Instance?.ShowToast(LocalizationService.Instance.Get("toast.booster_purchased"), Core.UI.ToastType.Success);
                             if (_itemTrayView != null)
                             {
                                 _itemTrayView.Refresh(_itemManager);

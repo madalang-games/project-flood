@@ -88,7 +88,7 @@ namespace Game.Core.UI
             {
                 elapsed += Time.deltaTime;
                 float t = UIEasing.EaseOut(Mathf.Clamp01(elapsed / AppearDuration));
-                _rt.anchoredPosition = new Vector2(_rt.anchoredPosition.x, Mathf.Lerp(baseY - SlideDistance, baseY, t));
+                _rt.anchoredPosition = new Vector2(_rt.anchoredPosition.x, Mathf.Lerp(baseY + SlideDistance, baseY, t));
                 _cg.alpha = t;
                 yield return null;
             }

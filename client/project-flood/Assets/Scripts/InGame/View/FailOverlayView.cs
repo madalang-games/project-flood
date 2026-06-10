@@ -90,7 +90,7 @@ namespace Game.InGame.View
             int remaining = attempt.RemainingRevives;
             
             if (_reviveLimitText != null)
-                _reviveLimitText.text = $"Remaining Revives: {remaining}";
+                _reviveLimitText.text = string.Format(LocalizationService.Instance.Get("popup.fail.remaining_revives_fmt"), remaining);
 
             if (_watchAdButton != null)
             {
@@ -136,7 +136,7 @@ namespace Game.InGame.View
                         onSuccess: response =>
                         {
                             UIManager.Instance?.HideLoading();
-                            UIManager.Instance?.ShowToast("Revived! Turns granted.", ToastType.Success);
+                            UIManager.Instance?.ShowToast(LocalizationService.Instance.Get("toast.revived"), ToastType.Success);
                             _onReviveSuccess?.Invoke(response.TurnsGranted);
                             Destroy(gameObject);
                         },
@@ -153,7 +153,7 @@ namespace Game.InGame.View
                 else
                 {
                     UIManager.Instance?.HideLoading();
-                    UIManager.Instance?.ShowToast("Ad failed or was cancelled.", ToastType.Warning);
+                    UIManager.Instance?.ShowToast(LocalizationService.Instance.Get("toast.ad_cancelled"), ToastType.Warning);
 
                     _cooldownTimer = 0f;
                     if (_watchAdButtonText != null) _watchAdButtonText.text = _originalWatchAdButtonText;

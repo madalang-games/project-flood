@@ -1,4 +1,5 @@
 using System;
+using Game.Core.UI;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -88,7 +89,9 @@ namespace Game.OutGame.Lobby
 
         public void SetGold(int amount)
         {
-            if (_goldText != null) _goldText.text = amount.ToString("N0");
+            var anim = _goldText?.GetComponent<UINumberChange>();
+            if (anim != null) anim.Set(amount);
+            else if (_goldText != null) _goldText.text = amount.ToString("N0");
         }
 
         private void UpdateStaminaUI()
@@ -107,7 +110,12 @@ namespace Game.OutGame.Lobby
                 var remaining = staminaApi.GetSecondsOfUnlimitedRemaining();
                 if (remaining > 0)
                 {
-                    if (_staminaText != null) _staminaText.text = "∞";
+                    if (_staminaText != null)
+                {
+                    var anim = _staminaText.GetComponent<UINumberChange>();
+                    if (anim != null) anim.SetRaw("∞");
+                    else _staminaText.text = "∞";
+                }
                     if (_staminaTimerText != null)
                     {
                         var ts = TimeSpan.FromSeconds(remaining);
@@ -121,11 +129,15 @@ namespace Game.OutGame.Lobby
 
             var estimatedLife = staminaApi.GetEstimatedLife();
             if (_staminaText != null)
-                _staminaText.text = estimatedLife.ToString();
+            {
+                var anim = _staminaText.GetComponent<UINumberChange>();
+                if (anim != null) anim.Set(estimatedLife);
+                else _staminaText.text = estimatedLife.ToString();
+            }
 
             if (estimatedLife >= latest.Max)
             {
-                if (_staminaTimerText != null) _staminaTimerText.text = "MAX";
+                if (_staminaTimerText != null) _staminaTimerText.text = LocalizationService.Instance.Get("stamina.max");
             }
             else
             {

@@ -23,8 +23,9 @@ namespace Game.OutGame.Lobby
         [SerializeField] private Sprite _claimedSprite;
 
         [Header("Effects")]
-        [SerializeField] private GameObject _glowEffect; // Activated when ChestState.Active
-        [SerializeField] private CanvasGroup _canvasGroup; // Dims chest when Inactive
+        [SerializeField] private GameObject _glowEffect;
+        [SerializeField] private ParticleSystem _sparkleParticles;
+        [SerializeField] private CanvasGroup _canvasGroup;
 
         private ChestState _state;
         public ChestState State => _state;
@@ -56,15 +57,20 @@ namespace Game.OutGame.Lobby
             }
 
             if (_button != null)
-            {
-                // Always interactable to show information toast or claim reward.
-                // It is disabled only when already Claimed.
                 _button.interactable = (state != ChestState.Claimed);
-            }
 
             if (_glowEffect != null)
-            {
                 _glowEffect.SetActive(state == ChestState.Active);
+
+            if (_sparkleParticles != null)
+            {
+                if (state == ChestState.Active)
+                    _sparkleParticles.Play();
+                else
+                {
+                    _sparkleParticles.Stop();
+                    _sparkleParticles.Clear();
+                }
             }
 
             if (_canvasGroup != null)

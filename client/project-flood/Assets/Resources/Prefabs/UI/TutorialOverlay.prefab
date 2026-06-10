@@ -88,6 +88,42 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1573066667976038844, guid: 0aef4904c32897b42accd06cacebb9a8, type: 3}
+      propertyPath: m_Color.b
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1573066667976038844, guid: 0aef4904c32897b42accd06cacebb9a8, type: 3}
+      propertyPath: m_Color.g
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1573066667976038844, guid: 0aef4904c32897b42accd06cacebb9a8, type: 3}
+      propertyPath: m_Color.r
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1789615049745116462, guid: 0aef4904c32897b42accd06cacebb9a8, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 33905a0a57b9ebb4c938e69af095b0e0, type: 3}
+    - target: {fileID: 1789615049745116462, guid: 0aef4904c32897b42accd06cacebb9a8, type: 3}
+      propertyPath: m_Color.b
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1789615049745116462, guid: 0aef4904c32897b42accd06cacebb9a8, type: 3}
+      propertyPath: m_Color.g
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1789615049745116462, guid: 0aef4904c32897b42accd06cacebb9a8, type: 3}
+      propertyPath: m_Color.r
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1789615049745116462, guid: 0aef4904c32897b42accd06cacebb9a8, type: 3}
+      propertyPath: m_PreserveAspect
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5422158511291582435, guid: 0aef4904c32897b42accd06cacebb9a8, type: 3}
+      propertyPath: m_TextStyleHashCode
+      value: -1183493901
+      objectReference: {fileID: 0}
     - target: {fileID: 6244745803060594260, guid: 0aef4904c32897b42accd06cacebb9a8, type: 3}
       propertyPath: m_Name
       value: TutorialOverlay

@@ -100,19 +100,31 @@ namespace Game.OutGame.Boot
         private void ShowReLoginScreen()
         {
             UIManager.Instance?.ShowPopup<ReLoginView>(v => v.Init(
-                onReLogin:         () => AuthService.Instance.Initialize(OnAuthResult),
+                onReLogin: () =>
+                {
+                    UIManager.Instance?.CloseTopPopup();
+                    UIManager.Instance?.ShowLoading();
+                    AuthService.Instance.Initialize(OnAuthResult);
+                },
                 onContinueAsGuest: OnContinueAsGuest));
         }
 
         private void OnContinueAsGuest()
         {
             UIManager.Instance?.ShowPopup<Core.UI.ConfirmDialogView>(v => v.Init(
-                title:        "Continue as Guest?",
-                body:         "Progress linked to your account will not be accessible.",
-                confirmLabel: "Continue",
-                onConfirm:    GoToLobby,
-                cancelLabel:  "Cancel",
+                title:        LocalizationService.Instance.Get("popup.boot.continue_as_guest_title"),
+                body:         LocalizationService.Instance.Get("popup.boot.continue_as_guest_body"),
+                confirmLabel: LocalizationService.Instance.Get("popup.fail.btn_continue"),
+                onConfirm:    OnContinueAsGuestConfirmed,
+                cancelLabel:  LocalizationService.Instance.Get("common.btn_cancel"),
                 danger:       false));
+        }
+
+        private void OnContinueAsGuestConfirmed()
+        {
+            UIManager.Instance?.CloseAllPopups();
+            UIManager.Instance?.ShowLoading();
+            AuthService.Instance.Initialize(OnAuthResult);
         }
     }
 }

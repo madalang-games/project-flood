@@ -13,7 +13,8 @@ Namespace: `Game.Core.UI`
 | `UIScalePulse.cs` | `UIScalePulse` | Breathing scale loop; minScale/maxScale/period |
 | `UIPanelAppear.cs` | `UIPanelAppear` | Standard appear (scale 0.85→1 + alpha) / Disappear coroutines |
 | `UICountUp.cs` | `UICountUp` | Animates TMP_Text number from 0 → target with ease-out |
-| `UIStarPop.cs` | `UIStarPop` | Sequence-pops star GameObjects with EaseOutBack; unfilled stars instant |
+| `UINumberChange.cs` | `UINumberChange` | Attach to any integer TMP_Text; Set(int) plays punch-scale + color flash (red=decrease, green=increase); silent on first call; SetRaw(string) for non-integer display (∞, etc.) |
+| `UIStarPop.cs` | `UIStarPop` | Sequence-pops star GameObjects with EaseOutBack + PunchScale bell-curve; unfilled stars instant; stagger=0.25s |
 | `UIScreenShake.cs` | `UIScreenShake` | RectTransform sine shake: Medium (6dp/200ms) or Heavy (10dp/350ms) |
 | `ConfirmDialogView.cs` | `ConfirmDialogView` | Generic binary confirm: title, body, cancel/confirm callbacks; danger variant |
 | `ToastView.cs` | `ToastView` | Slide-up snackbar; 2.5s display; Warning/Success/Error icons |
@@ -44,7 +45,10 @@ Namespace: `Game.Core.UI`
 | `UIButtonAnimator.SetInteractable(bool)` | method | Dims opacity 40% + stops idle anim when false |
 | `UIPanelAppear.Disappear(Action)` | method | Triggers disappear coroutine; calls onComplete when done |
 | `UICountUp.Play(int,int,Action)` | method | Animates from→to; optional completion callback |
-| `UIStarPop.PlayStarSequence(GameObject[],int)` | coroutine | All stars shown (empty); earned Fill children pop left-to-right independently with EaseOutBack stagger (StarDelay=0.2s) |
+| `UINumberChange.Set(int)` | method | Sets text + punch+flash anim; silent on first call; debounced (no-op if same value) |
+| `UINumberChange.SetRaw(string)` | method | Non-integer display (∞ etc.); resets tracking so next Set() animates |
+| `UINumberChange._formatString` | SerializeField | Printf-style format; default `"{0}"`; set `"{0:N0}"` for gold |
+| `UIStarPop.PlayStarSequence(GameObject[],int)` | coroutine | All stars shown (empty); earned Fill children pop left-to-right independently; EaseOutBack fill + bell-curve PunchScale on star GO; stagger=0.25s |
 | `UIScreenShake.Shake(ShakeLevel)` | method | Medium or Heavy; resets to origin on complete |
 | `ConfirmDialogView.Init(title,body,confirmLabel,onConfirm,onCancel,cancelLabel,danger)` | method | Required before showing |
 | `ToastView.Show(string,ToastType)` | method | Replaces existing toast |

@@ -63,7 +63,7 @@ namespace Game.Services
                 {
                     if (av.avatar_id == avatarId)
                     {
-                        if (av.unlock_type == "free") return true;
+                        if (av.unlock_type == "free" || av.unlock_type == "common") return true;
                         break;
                     }
                 }

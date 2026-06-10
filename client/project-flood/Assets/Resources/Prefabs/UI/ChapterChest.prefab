@@ -12,6 +12,30 @@ PrefabInstance:
       propertyPath: m_Name
       value: ChapterChest
       objectReference: {fileID: 0}
+    - target: {fileID: 1540365911825917399, guid: 71d059bcec328554bbb60b646453fb7d, type: 3}
+      propertyPath: m_fontSize
+      value: 36
+      objectReference: {fileID: 0}
+    - target: {fileID: 1540365911825917399, guid: 71d059bcec328554bbb60b646453fb7d, type: 3}
+      propertyPath: m_fontSizeMax
+      value: 36
+      objectReference: {fileID: 0}
+    - target: {fileID: 1540365911825917399, guid: 71d059bcec328554bbb60b646453fb7d, type: 3}
+      propertyPath: m_fontSizeMin
+      value: 28
+      objectReference: {fileID: 0}
+    - target: {fileID: 1540365911825917399, guid: 71d059bcec328554bbb60b646453fb7d, type: 3}
+      propertyPath: m_enableAutoSizing
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1540365911825917399, guid: 71d059bcec328554bbb60b646453fb7d, type: 3}
+      propertyPath: m_fontColor32.rgba
+      value: 4278512639
+      objectReference: {fileID: 0}
+    - target: {fileID: 1540365911825917399, guid: 71d059bcec328554bbb60b646453fb7d, type: 3}
+      propertyPath: m_TextStyleHashCode
+      value: -1183493901
+      objectReference: {fileID: 0}
     - target: {fileID: 1762716507230607919, guid: 71d059bcec328554bbb60b646453fb7d, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -91,6 +115,18 @@ PrefabInstance:
     - target: {fileID: 1762716507230607919, guid: 71d059bcec328554bbb60b646453fb7d, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5597439582942534249, guid: 71d059bcec328554bbb60b646453fb7d, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6718580379755491270, guid: 71d059bcec328554bbb60b646453fb7d, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 200
+      objectReference: {fileID: 0}
+    - target: {fileID: 6718580379755491270, guid: 71d059bcec328554bbb60b646453fb7d, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 60
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

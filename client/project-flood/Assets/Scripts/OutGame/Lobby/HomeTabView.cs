@@ -248,34 +248,35 @@ namespace Game.OutGame.Lobby
             _chestNodes.Add(chestView);
         }
 
-        private void RefreshChestNodes()
+        private bool IsChapterAllThreeStars(int chapterNum)
         {
             var progress = PlayerProgressService.Instance;
-            if (progress == null) return;
+            if (progress == null || _stages == null) return false;
+            bool hasStages = false;
+            foreach (var s in _stages)
+            {
+                if (s.chapter_id != chapterNum) continue;
+                hasStages = true;
+                if (progress.GetBestStars(s.stage_id) < 3) return false;
+            }
+            return hasStages;
+        }
 
+        private void RefreshChestNodes()
+        {
             for (int i = 0; i < _chestNodes.Count; i++)
             {
                 int chapterNum = i + 1;
                 var chestView = _chestNodes[i];
                 string sourceId = $"chapter{chapterNum}_chest";
-                
-                bool claimed = false;
-                _chestClaimed.TryGetValue(sourceId, out claimed);
 
-                int startStage = (chapterNum - 1) * 3 + 1;
-                bool isCompleted = progress.GetBestStars(startStage) == 3 &&
-                                   progress.GetBestStars(startStage + 1) == 3 &&
-                                   progress.GetBestStars(startStage + 2) == 3;
+                _chestClaimed.TryGetValue(sourceId, out bool claimed);
 
                 ChapterChestView.ChestState state = ChapterChestView.ChestState.Inactive;
                 if (claimed)
-                {
                     state = ChapterChestView.ChestState.Claimed;
-                }
-                else if (isCompleted)
-                {
+                else if (IsChapterAllThreeStars(chapterNum))
                     state = ChapterChestView.ChestState.Active;
-                }
 
                 chestView.SetState(state);
                 chestView.gameObject.SetActive(true);
@@ -290,17 +291,11 @@ namespace Game.OutGame.Lobby
             _chestClaimed.TryGetValue(sourceId, out claimed);
             if (claimed) return;
 
-            var progress = PlayerProgressService.Instance;
-            if (progress == null) return;
+            if (PlayerProgressService.Instance == null) return;
 
-            int startStage = (chapterNum - 1) * 3 + 1;
-            bool isCompleted = progress.GetBestStars(startStage) == 3 &&
-                               progress.GetBestStars(startStage + 1) == 3 &&
-                               progress.GetBestStars(startStage + 2) == 3;
-
-            if (!isCompleted)
+            if (!IsChapterAllThreeStars(chapterNum))
             {
-                Game.Core.UIManager.Instance?.ShowToast("3-star clear all chapter stages to unlock!", Game.Core.UI.ToastType.Warning);
+                Game.Core.UIManager.Instance?.ShowToast(LocalizationService.Instance.Get("toast.chapter_unlock_requirement"), Game.Core.UI.ToastType.Warning);
                 return;
             }
 
@@ -312,24 +307,25 @@ namespace Game.OutGame.Lobby
                     _chestClaimed[sourceId] = true;
                     RefreshChestNodes();
 
-                    System.Text.StringBuilder sb = new System.Text.StringBuilder("Chest Claimed!\n");
+                    var loc = LocalizationService.Instance;
+                    System.Text.StringBuilder sb = new System.Text.StringBuilder(loc.Get("toast.chest_claimed") + "\n");
                     foreach (var r in response.GrantedRewards)
                     {
                         if (r.RewardType == "SOFT_CURRENCY")
                         {
-                            sb.AppendLine($"+{r.Amount} Gold");
+                            sb.AppendLine($"+{r.Amount} {loc.Get("common.gold")}");
                             PlayerProgressService.Instance?.AddGold(r.Amount);
                         }
                         else if (r.RewardType == "ITEM")
                         {
                             string itemName = r.TargetId switch
                             {
-                                1 => "Add Turns",
-                                2 => "Bomb",
-                                3 => "H Rocket",
-                                4 => "Color Sweep",
-                                5 => "Row Shift",
-                                6 => "Cell Swap",
+                                1 => loc.Get("item.name.add_turn"),
+                                2 => loc.Get("item.name.bomb"),
+                                3 => loc.Get("item.name.h_rocket"),
+                                4 => loc.Get("item.name.color_sweep"),
+                                5 => loc.Get("item.name.row_shift"),
+                                6 => loc.Get("item.name.cell_swap"),
                                 _ => $"Item {r.TargetId}"
                             };
                             sb.AppendLine($"+{r.Amount} {itemName}");
@@ -340,7 +336,7 @@ namespace Game.OutGame.Lobby
                 onError: error =>
                 {
                     Game.Core.UIManager.Instance?.HideLoading();
-                    Game.Core.UIManager.Instance?.ShowToast($"Failed to claim chest: {error}", Game.Core.UI.ToastType.Warning);
+                    Game.Core.UIManager.Instance?.ShowToast(LocalizationService.Instance.Get("toast.chest_claim_failed"), Game.Core.UI.ToastType.Warning);
                 }
             );
         }
@@ -762,9 +758,9 @@ namespace Game.OutGame.Lobby
         private void ShowStaminaAdPopup()
         {
             Game.Core.UIManager.Instance?.ShowPopup<Game.Core.UI.ConfirmDialogView>(v => v.Init(
-                title: "Out of Lives",
-                body: "Watch an advertisement to gain 1 Life immediately?",
-                confirmLabel: "Watch Ad",
+                title: LocalizationService.Instance.Get("popup.stamina.out_of_lives"),
+                body: LocalizationService.Instance.Get("popup.stamina.watch_ad_body"),
+                confirmLabel: LocalizationService.Instance.Get("popup.fail.watch_ad"),
                 onConfirm: () =>
                 {
                     Game.Core.UIManager.Instance?.ShowLoading();
@@ -772,17 +768,17 @@ namespace Game.OutGame.Lobby
                         onSuccess: resp =>
                         {
                             Game.Core.UIManager.Instance?.HideLoading();
-                            Game.Core.UIManager.Instance?.ShowToast("Life gained!", Game.Core.UI.ToastType.Success);
+                            Game.Core.UIManager.Instance?.ShowToast(LocalizationService.Instance.Get("toast.life_gained"), Game.Core.UI.ToastType.Success);
                         },
                         onError: err =>
                         {
                             Game.Core.UIManager.Instance?.HideLoading();
-                            Game.Core.UIManager.Instance?.ShowToast($"Ad failed: {err}", Game.Core.UI.ToastType.Warning);
+                            Game.Core.UIManager.Instance?.ShowToast(LocalizationService.Instance.Get("error.ad_failed"), Game.Core.UI.ToastType.Warning);
                         }
                     );
                 },
                 onCancel: null,
-                cancelLabel: "Cancel"
+                cancelLabel: LocalizationService.Instance.Get("common.btn_cancel")
             ));
         }
     }

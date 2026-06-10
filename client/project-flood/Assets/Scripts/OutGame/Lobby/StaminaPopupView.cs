@@ -165,7 +165,7 @@ namespace Game.OutGame.Lobby
                     onSuccess: _ =>
                     {
                         Game.Core.UIManager.Instance?.HideLoading();
-                        Game.Core.UIManager.Instance?.ShowToast("+1 Life!", Core.UI.ToastType.Success);
+                        Game.Core.UIManager.Instance?.ShowToast(LocalizationService.Instance.Get("toast.life_gained"), Core.UI.ToastType.Success);
                         Refresh();
                     },
                     onError: err =>

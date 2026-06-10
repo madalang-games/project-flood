@@ -86,7 +86,7 @@ namespace Game.OutGame.Settings
             bool isGuest = auth == null || auth.IsGuest;
 
             if (_userIdText != null)
-                _userIdText.text = isGuest ? "Guest" : auth.UserId;
+                _userIdText.text = isGuest ? (LocalizationService.Instance?.Get("common.guest") ?? "Guest") : auth.UserId;
 
             if (_linkAccountButton   != null) _linkAccountButton.gameObject.SetActive(isGuest);
             if (_switchAccountButton != null) _switchAccountButton.gameObject.SetActive(!isGuest);
@@ -118,7 +118,7 @@ namespace Game.OutGame.Settings
             if (tab == Tab.Avatars)
             {
                 if (_nicknameArea != null) _nicknameArea.SetActive(true);
-                if (_gridLabelText != null) _gridLabelText.text = "Choose Avatar";
+                if (_gridLabelText != null) _gridLabelText.text = LocalizationService.Instance.Get("popup.account.choose_avatar");
 
                 SetTabVisuals(true);
                 PopulateAvatars();
@@ -126,7 +126,7 @@ namespace Game.OutGame.Settings
             else
             {
                 if (_nicknameArea != null) _nicknameArea.SetActive(false);
-                if (_gridLabelText != null) _gridLabelText.text = "Choose Board Theme";
+                if (_gridLabelText != null) _gridLabelText.text = LocalizationService.Instance.Get("popup.account.choose_board_theme");
 
                 SetTabVisuals(false);
                 PopulateBoardThemes();
@@ -154,19 +154,19 @@ namespace Game.OutGame.Settings
 
             if (nickname.Length < 2 || nickname.Length > 24)
             {
-                Game.Core.UIManager.Instance?.ShowToast("Nickname must be between 2 and 24 characters.", Core.UI.ToastType.Error);
+                Game.Core.UIManager.Instance?.ShowToast(LocalizationService.Instance.Get("toast.nickname_length_error"), Core.UI.ToastType.Error);
                 return;
             }
 
             // ASCII validation: alphanumeric, space, underscore, hyphen
             foreach (char c in nickname)
             {
-                if (!((c >= 'a' && c <= 'z') || 
-                      (c >= 'A' && c <= 'Z') || 
-                      (c >= '0' && c <= '9') || 
+                if (!((c >= 'a' && c <= 'z') ||
+                      (c >= 'A' && c <= 'Z') ||
+                      (c >= '0' && c <= '9') ||
                       c == ' ' || c == '_' || c == '-'))
                 {
-                    Game.Core.UIManager.Instance?.ShowToast("Only letters, numbers, spaces, underscores, and hyphens are allowed.", Core.UI.ToastType.Error);
+                    Game.Core.UIManager.Instance?.ShowToast(LocalizationService.Instance.Get("toast.nickname_char_error"), Core.UI.ToastType.Error);
                     return;
                 }
             }
@@ -177,11 +177,11 @@ namespace Game.OutGame.Settings
                 UIManager.Instance?.HideLoading();
                 if (ok && res != null)
                 {
-                    Game.Core.UIManager.Instance?.ShowToast("Nickname updated successfully!", Core.UI.ToastType.Success);
+                    Game.Core.UIManager.Instance?.ShowToast(LocalizationService.Instance.Get("toast.nickname_updated"), Core.UI.ToastType.Success);
                 }
                 else
                 {
-                    string errorMsg = "Failed to update nickname.";
+                    string errorMsg = LocalizationService.Instance.Get("toast.nickname_update_failed");
                     if (!string.IsNullOrEmpty(err))
                     {
                         errorMsg = LocalizationService.Instance != null 
@@ -333,14 +333,14 @@ namespace Game.OutGame.Settings
             {
                 if (PlayerProgressService.Instance != null && !PlayerProgressService.Instance.CanAfford(theme.unlock_cost))
                 {
-                    Game.Core.UIManager.Instance?.ShowToast("Not enough gold to unlock this theme.", Core.UI.ToastType.Error);
+                    Game.Core.UIManager.Instance?.ShowToast(LocalizationService.Instance.Get("toast.theme_not_enough_gold"), Core.UI.ToastType.Error);
                     return;
                 }
 
                 Game.Core.UIManager.Instance?.ShowPopup<Core.UI.ConfirmDialogView>(v => v.Init(
-                    title:        "Unlock Theme",
-                    body:         $"Unlock this board theme for {theme.unlock_cost} Gold?",
-                    confirmLabel: "Unlock",
+                    title:        LocalizationService.Instance.Get("popup.account.confirm_unlock_theme_title"),
+                    body:         string.Format(LocalizationService.Instance.Get("popup.account.confirm_unlock_theme_body_fmt"), theme.unlock_cost),
+                    confirmLabel: LocalizationService.Instance.Get("common.btn_unlock"),
                     onConfirm:    () => BuyAndEquipBoardTheme(theme.theme_id, theme.unlock_cost),
                     danger:       false));
             }
@@ -355,11 +355,11 @@ namespace Game.OutGame.Settings
                 if (ok && res != null)
                 {
                     PopulateBoardThemes(); // Refresh grid
-                    Game.Core.UIManager.Instance?.ShowToast("Board theme equipped successfully!", Core.UI.ToastType.Success);
+                    Game.Core.UIManager.Instance?.ShowToast(LocalizationService.Instance.Get("toast.theme_equipped"), Core.UI.ToastType.Success);
                 }
                 else
                 {
-                    Game.Core.UIManager.Instance?.ShowToast("Failed to equip board theme.", Core.UI.ToastType.Error);
+                    Game.Core.UIManager.Instance?.ShowToast(LocalizationService.Instance.Get("toast.theme_equip_failed"), Core.UI.ToastType.Error);
                 }
             });
         }
@@ -378,11 +378,11 @@ namespace Game.OutGame.Settings
                         PlayerProgressService.Instance.UnlockThemeLocally(themeId);
                     }
                     PopulateBoardThemes(); // Refresh grid
-                    Game.Core.UIManager.Instance?.ShowToast("Board theme unlocked and equipped!", Core.UI.ToastType.Success);
+                    Game.Core.UIManager.Instance?.ShowToast(LocalizationService.Instance.Get("toast.theme_unlocked"), Core.UI.ToastType.Success);
                 }
                 else
                 {
-                    string errorMsg = "Failed to unlock board theme.";
+                    string errorMsg = LocalizationService.Instance.Get("popup.account.confirm_failed_unlock_theme");
                     if (!string.IsNullOrEmpty(err))
                     {
                         errorMsg = LocalizationService.Instance != null 
@@ -404,14 +404,14 @@ namespace Game.OutGame.Settings
             {
                 if (PlayerProgressService.Instance != null && !PlayerProgressService.Instance.CanAfford(avatar.unlock_cost))
                 {
-                    Game.Core.UIManager.Instance?.ShowToast("Not enough gold to unlock this avatar.", Core.UI.ToastType.Error);
+                    Game.Core.UIManager.Instance?.ShowToast(LocalizationService.Instance.Get("toast.avatar_not_enough_gold"), Core.UI.ToastType.Error);
                     return;
                 }
 
                 Game.Core.UIManager.Instance?.ShowPopup<Core.UI.ConfirmDialogView>(v => v.Init(
-                    title:        "Unlock Avatar",
-                    body:         $"Unlock this avatar for {avatar.unlock_cost} Gold?",
-                    confirmLabel: "Unlock",
+                    title:        LocalizationService.Instance.Get("popup.account.confirm_unlock_avatar_title"),
+                    body:         string.Format(LocalizationService.Instance.Get("popup.account.confirm_unlock_avatar_body_fmt"), avatar.unlock_cost),
+                    confirmLabel: LocalizationService.Instance.Get("common.btn_unlock"),
                     onConfirm:    () => BuyAndEquipAvatar(avatar.avatar_id, avatar.unlock_cost),
                     danger:       false));
             }
@@ -426,11 +426,11 @@ namespace Game.OutGame.Settings
                 if (ok && res != null)
                 {
                     PopulateAvatars(); // Refresh grid
-                    Game.Core.UIManager.Instance?.ShowToast("Avatar equipped successfully!", Core.UI.ToastType.Success);
+                    Game.Core.UIManager.Instance?.ShowToast(LocalizationService.Instance.Get("toast.avatar_equipped"), Core.UI.ToastType.Success);
                 }
                 else
                 {
-                    Game.Core.UIManager.Instance?.ShowToast("Failed to equip avatar.", Core.UI.ToastType.Error);
+                    Game.Core.UIManager.Instance?.ShowToast(LocalizationService.Instance.Get("toast.avatar_equip_failed"), Core.UI.ToastType.Error);
                 }
             });
         }
@@ -449,11 +449,11 @@ namespace Game.OutGame.Settings
                         PlayerProgressService.Instance.UnlockAvatarLocally(avatarId);
                     }
                     PopulateAvatars(); // Refresh grid
-                    Game.Core.UIManager.Instance?.ShowToast("Avatar unlocked and equipped!", Core.UI.ToastType.Success);
+                    Game.Core.UIManager.Instance?.ShowToast(LocalizationService.Instance.Get("toast.avatar_unlocked"), Core.UI.ToastType.Success);
                 }
                 else
                 {
-                    string errorMsg = "Failed to unlock avatar.";
+                    string errorMsg = LocalizationService.Instance.Get("popup.account.confirm_failed_unlock_avatar");
                     if (!string.IsNullOrEmpty(err))
                     {
                         errorMsg = LocalizationService.Instance != null 
@@ -470,7 +470,7 @@ namespace Game.OutGame.Settings
             var webClientId = Game.Core.AppConfig.GoogleWebClientId;
             if (string.IsNullOrEmpty(webClientId))
             {
-                Game.Core.UIManager.Instance?.ShowToast("Google Sign-In is not configured.", Core.UI.ToastType.Error);
+                Game.Core.UIManager.Instance?.ShowToast(LocalizationService.Instance.Get("toast.google_signin_not_configured"), Core.UI.ToastType.Error);
                 return;
             }
 
@@ -478,7 +478,7 @@ namespace Game.OutGame.Settings
             var bridge = Game.Core.GoogleSignInBridge.Instance;
             if (bridge == null)
             {
-                Game.Core.UIManager.Instance?.ShowToast("Google Sign-In unavailable.", Core.UI.ToastType.Error);
+                Game.Core.UIManager.Instance?.ShowToast(LocalizationService.Instance.Get("toast.google_signin_unavailable"), Core.UI.ToastType.Error);
                 return;
             }
 
@@ -501,7 +501,7 @@ namespace Game.OutGame.Settings
                     Game.Core.UIManager.Instance?.HideLoading();
                     if (ok)
                     {
-                        Game.Core.UIManager.Instance?.ShowToast("Account linked successfully!", Core.UI.ToastType.Success);
+                        Game.Core.UIManager.Instance?.ShowToast(LocalizationService.Instance.Get("toast.account_linked"), Core.UI.ToastType.Success);
                         Close();
                     }
                     else
@@ -512,16 +512,16 @@ namespace Game.OutGame.Settings
                 });
             });
 #else
-            Game.Core.UIManager.Instance?.ShowToast("Google Sign-In is only supported on Android.", Core.UI.ToastType.Error);
+            Game.Core.UIManager.Instance?.ShowToast(LocalizationService.Instance.Get("toast.google_signin_android_only"), Core.UI.ToastType.Error);
 #endif
         }
 
         private void OnSwitchAccount()
         {
             Game.Core.UIManager.Instance?.ShowPopup<Core.UI.ConfirmDialogView>(v => v.Init(
-                title:        "Switch Account",
-                body:         "Switching accounts will replace local data with the new account's data. Your current account data is preserved on the server.",
-                confirmLabel: "Switch",
+                title:        LocalizationService.Instance.Get("popup.account.confirm_switch_title"),
+                body:         LocalizationService.Instance.Get("popup.account.confirm_switch_body"),
+                confirmLabel: LocalizationService.Instance.Get("common.btn_switch"),
                 onConfirm:    DoSwitchAccount,
                 danger:       false));
         }
@@ -531,7 +531,7 @@ namespace Game.OutGame.Settings
             var webClientId = Game.Core.AppConfig.GoogleWebClientId;
             if (string.IsNullOrEmpty(webClientId))
             {
-                Game.Core.UIManager.Instance?.ShowToast("Google Sign-In is not configured.", Core.UI.ToastType.Error);
+                Game.Core.UIManager.Instance?.ShowToast(LocalizationService.Instance.Get("toast.google_signin_not_configured"), Core.UI.ToastType.Error);
                 return;
             }
 
@@ -539,7 +539,7 @@ namespace Game.OutGame.Settings
             var bridge = Game.Core.GoogleSignInBridge.Instance;
             if (bridge == null)
             {
-                Game.Core.UIManager.Instance?.ShowToast("Google Sign-In unavailable.", Core.UI.ToastType.Error);
+                Game.Core.UIManager.Instance?.ShowToast(LocalizationService.Instance.Get("toast.google_signin_unavailable"), Core.UI.ToastType.Error);
                 return;
             }
 
@@ -562,7 +562,7 @@ namespace Game.OutGame.Settings
                     Game.Core.UIManager.Instance?.HideLoading();
                     if (ok)
                     {
-                        Game.Core.UIManager.Instance?.ShowToast("Account switched successfully!", Core.UI.ToastType.Success);
+                        Game.Core.UIManager.Instance?.ShowToast(LocalizationService.Instance.Get("toast.account_switched"), Core.UI.ToastType.Success);
                         Close();
                     }
                     else
@@ -573,7 +573,7 @@ namespace Game.OutGame.Settings
                 });
             });
 #else
-            Game.Core.UIManager.Instance?.ShowToast("Google Sign-In is only supported on Android.", Core.UI.ToastType.Error);
+            Game.Core.UIManager.Instance?.ShowToast(LocalizationService.Instance.Get("toast.google_signin_android_only"), Core.UI.ToastType.Error);
 #endif
         }
 

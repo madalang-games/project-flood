@@ -1,4 +1,5 @@
 using System;
+using Game.Services;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -11,8 +12,11 @@ namespace Game.OutGame.Lobby
         [SerializeField] private TMP_Text   _bestRecord;
         [SerializeField] private Button     _playButton;
         [SerializeField] private Button     _backdropButton;
-        [SerializeField] private GameObject[] _bestStarFills; // 3 star fill children
+        [SerializeField] private GameObject[] _bestStarFills;
         [SerializeField] private Toggle     _extraTurnsToggle;
+        [SerializeField] private Image      _extraTurnsStateIcon;
+        [SerializeField] private Sprite     _toggleOnSprite;
+        [SerializeField] private Sprite     _toggleOffSprite;
 
         private int    _stageId;
         private Action _onPlay;
@@ -46,9 +50,9 @@ namespace Game.OutGame.Lobby
             {
                 _extraTurnsToggle.interactable = addTurnsCount > 0;
                 _extraTurnsToggle.isOn = false;
-                var toggleText = _extraTurnsToggle.GetComponentInChildren<TMPro.TMP_Text>();
-                if (toggleText != null)
-                    toggleText.text = $"+3 Turns ({addTurnsCount})";
+                _extraTurnsToggle.onValueChanged.RemoveAllListeners();
+                _extraTurnsToggle.onValueChanged.AddListener(OnExtraTurnsToggled);
+                OnExtraTurnsToggled(false);
             }
         }
 
@@ -56,18 +60,64 @@ namespace Game.OutGame.Lobby
         {
             bool useBooster = _extraTurnsToggle != null && _extraTurnsToggle.isOn;
 
-            ScrollStateCache.UseExtraTurnsItem  = useBooster;
+            if (useBooster)
+            {
+                int current = Game.Services.PlayerProgressService.Instance?.GetItemCount(1) ?? 0;
+                if (current <= 0)
+                {
+                    if (_extraTurnsToggle != null) _extraTurnsToggle.isOn = false;
+                    useBooster = false;
+                }
+                else
+                {
+                    var inventoryApi = Game.Services.InventoryApiService.Instance;
+                    if (inventoryApi == null)
+                    {
+                        Game.Core.UIManager.Instance?.ShowToast(
+                            LocalizationService.Instance.Get("toast.item_spend_failed"),
+                            Game.Core.UI.ToastType.Warning);
+                        return;
+                    }
+
+                    Game.Core.UIManager.Instance?.ShowLoading();
+                    inventoryApi.SpendItem(1, 1, "use_pre_game",
+                        onSuccess: _ =>
+                        {
+                            Game.Core.UIManager.Instance?.HideLoading();
+                            ScrollStateCache.UseExtraTurnsItem  = true;
+                            ScrollStateCache.UseStartingBomb    = false;
+                            ScrollStateCache.UseStartingHRocket = false;
+                            ScrollStateCache.LastPlayedStageId  = _stageId;
+                            ProceedToPlay();
+                        },
+                        onError: err =>
+                        {
+                            Game.Core.UIManager.Instance?.HideLoading();
+                            Game.Core.UIManager.Instance?.ShowToast(
+                                LocalizationService.Instance.Get("toast.item_spend_failed"),
+                                Game.Core.UI.ToastType.Warning);
+                        });
+                    return;
+                }
+            }
+
+            ScrollStateCache.UseExtraTurnsItem  = false;
             ScrollStateCache.UseStartingBomb    = false;
             ScrollStateCache.UseStartingHRocket = false;
             ScrollStateCache.LastPlayedStageId  = _stageId;
+            ProceedToPlay();
+        }
 
-            if (useBooster && Game.Services.InventoryApiService.Instance != null)
-            {
-                Game.Services.InventoryApiService.Instance.SpendItem(1, 1, "use_pre_game",
-                    onSuccess: snap => Debug.Log("[StageInfoPopup] spent AddTurns booster on server"),
-                    onError: err => Debug.LogWarning($"[StageInfoPopup] failed to spend booster: {err}"));
-            }
+        private void OnExtraTurnsToggled(bool isOn)
+        {
+            if (_extraTurnsStateIcon == null) return;
+            var spr = isOn ? _toggleOnSprite : _toggleOffSprite;
+            _extraTurnsStateIcon.sprite  = spr;
+            _extraTurnsStateIcon.enabled = spr != null;
+        }
 
+        private void ProceedToPlay()
+        {
             var staminaApi = Game.Services.StaminaApiService.Instance;
             bool canPlay = false;
             if (staminaApi != null)
@@ -95,9 +145,9 @@ namespace Game.OutGame.Lobby
         private void ShowStaminaAdPopup()
         {
             Game.Core.UIManager.Instance?.ShowPopup<Game.Core.UI.ConfirmDialogView>(v => v.Init(
-                title: "Out of Lives",
-                body: "Watch an advertisement to gain 1 Life immediately?",
-                confirmLabel: "Watch Ad",
+                title: LocalizationService.Instance.Get("popup.stamina.out_of_lives"),
+                body: LocalizationService.Instance.Get("popup.stamina.watch_ad_body"),
+                confirmLabel: LocalizationService.Instance.Get("popup.fail.watch_ad"),
                 onConfirm: () =>
                 {
                     Game.Core.UIManager.Instance?.ShowLoading();
@@ -105,17 +155,17 @@ namespace Game.OutGame.Lobby
                         onSuccess: resp =>
                         {
                             Game.Core.UIManager.Instance?.HideLoading();
-                            Game.Core.UIManager.Instance?.ShowToast("Life gained!", Game.Core.UI.ToastType.Success);
+                            Game.Core.UIManager.Instance?.ShowToast(LocalizationService.Instance.Get("toast.life_gained"), Game.Core.UI.ToastType.Success);
                         },
                         onError: err =>
                         {
                             Game.Core.UIManager.Instance?.HideLoading();
-                            Game.Core.UIManager.Instance?.ShowToast($"Ad failed: {err}", Game.Core.UI.ToastType.Warning);
+                            Game.Core.UIManager.Instance?.ShowToast(LocalizationService.Instance.Get("error.ad_failed"), Game.Core.UI.ToastType.Warning);
                         }
                     );
                 },
                 onCancel: null,
-                cancelLabel: "Cancel"
+                cancelLabel: LocalizationService.Instance.Get("common.btn_cancel")
             ));
         }
 
