@@ -50,13 +50,31 @@ toast_warning,Assets/Sprites/UI/Toast/toast_warning.png,Toast,Toast warning icon
 toast_success,Assets/Sprites/UI/Toast/toast_success.png,Toast,Toast success icon
 toast_error,Assets/Sprites/UI/Toast/toast_error.png,Toast,Toast error icon
 item_add_turn,Assets/Sprites/UI/Items/Item_add_turn.png,Item,AddTurn item icon
-avatar_free_01,Assets/Sprites/UI/Avatar/avatar_free_01.png,Avatar,Free Avatar 1
-avatar_free_02,Assets/Sprites/UI/Avatar/avatar_free_02.png,Avatar,Free Avatar 2
-avatar_gold_01,Assets/Sprites/UI/Avatar/avatar_gold_01.png,Avatar,Gold Avatar 1
-avatar_gold_02,Assets/Sprites/UI/Avatar/avatar_gold_02.png,Avatar,Gold Avatar 2
-avatar_gold_03,Assets/Sprites/UI/Avatar/avatar_gold_03.png,Avatar,Gold Avatar 3
-avatar_silver_01,Assets/Sprites/UI/Avatar/avatar_silver_01.png,Avatar,Silver Avatar 1
-avatar_silver_02,Assets/Sprites/UI/Avatar/avatar_silver_02.png,Avatar,Silver Avatar 2
+avatar_1,Assets/Sprites/UI/Avatar/avatar_1.png,Avatar,Common Avatar Portait 1
+avatar_2,Assets/Sprites/UI/Avatar/avatar_2.png,Avatar,Common Avatar Portait 2
+avatar_3,Assets/Sprites/UI/Avatar/avatar_3.png,Avatar,Common Avatar Portait 3
+avatar_4,Assets/Sprites/UI/Avatar/avatar_4.png,Avatar,Common Avatar Portait 4
+avatar_5,Assets/Sprites/UI/Avatar/avatar_5.png,Avatar,Common Avatar Portait 5
+avatar_6,Assets/Sprites/UI/Avatar/avatar_6.png,Avatar,Uncommon Avatar Portait 1
+avatar_7,Assets/Sprites/UI/Avatar/avatar_7.png,Avatar,Uncommon Avatar Portait 2
+avatar_8,Assets/Sprites/UI/Avatar/avatar_8.png,Avatar,Uncommon Avatar Portait 3
+avatar_9,Assets/Sprites/UI/Avatar/avatar_9.png,Avatar,Uncommon Avatar Portait 4
+avatar_10,Assets/Sprites/UI/Avatar/avatar_10.png,Avatar,Uncommon Avatar Portait 5
+avatar_11,Assets/Sprites/UI/Avatar/avatar_11.png,Avatar,Rare Avatar Portait 1
+avatar_12,Assets/Sprites/UI/Avatar/avatar_12.png,Avatar,Rare Avatar Portait 2
+avatar_13,Assets/Sprites/UI/Avatar/avatar_13.png,Avatar,Rare Avatar Portait 3
+avatar_14,Assets/Sprites/UI/Avatar/avatar_14.png,Avatar,Rare Avatar Portait 4
+avatar_15,Assets/Sprites/UI/Avatar/avatar_15.png,Avatar,Rare Avatar Portait 5
+avatar_16,Assets/Sprites/UI/Avatar/avatar_16.png,Avatar,Epic Avatar Portait 1
+avatar_17,Assets/Sprites/UI/Avatar/avatar_17.png,Avatar,Epic Avatar Portait 2
+avatar_18,Assets/Sprites/UI/Avatar/avatar_18.png,Avatar,Epic Avatar Portait 3
+avatar_19,Assets/Sprites/UI/Avatar/avatar_19.png,Avatar,Epic Avatar Portait 4
+avatar_20,Assets/Sprites/UI/Avatar/avatar_20.png,Avatar,Epic Avatar Portait 5
+avatar_21,Assets/Sprites/UI/Avatar/avatar_21.png,Avatar,Legendary Avatar Portait 1
+avatar_22,Assets/Sprites/UI/Avatar/avatar_22.png,Avatar,Legendary Avatar Portait 2
+avatar_23,Assets/Sprites/UI/Avatar/avatar_23.png,Avatar,Legendary Avatar Portait 3
+avatar_24,Assets/Sprites/UI/Avatar/avatar_24.png,Avatar,Legendary Avatar Portait 4
+avatar_25,Assets/Sprites/UI/Avatar/avatar_25.png,Avatar,Legendary Avatar Portait 5
 ui_drag_pointer,Assets/Sprites/UI/Tutorial/ui_drag_pointer.png,UI,Drag line and pointer sprite
 guide_avatar,Assets/Sprites/UI/Tutorial/Guide_avatar.png,UI,Tutorial Guide Avatar (Floodie)
 star_filled,Assets/Sprites/UI/Stars/star_filled.png,Star,Star filled sprite
@@ -74,3 +92,4 @@ ui_avatar_default,Assets/Sprites/UI/Avatar/avatar_free_01.png,UI,Default avatar 
 ui_settings_icon,Assets/Sprites/UI/Icons/ui_settings_icon.png,UI,Settings icon
 path_chapter_1,Assets/Resources/Sprites/Path/path_chapter_1.png,UI,Chapter 1 Grassland path texture
 path_chapter_2,Assets/Resources/Sprites/Path/path_chapter_2.png,UI,Chapter 2 Ocean path texture
+ui_toggle_on,Assets/Sprites/UI/Icons/ui_toggle_on.png,UI,Toggle switch on sprite
