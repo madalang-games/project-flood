@@ -1,0 +1,5 @@
+theme_id,resource_name,unlock_cost,unlock_type,display_name
+1,theme_classic,0,free,Classic
+2,theme_neon,0,free,Neon
+3,theme_wood,500,gold,Wood
+4,theme_cyberpunk,1000,gold,Cyberpunk

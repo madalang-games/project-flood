@@ -23,6 +23,7 @@ namespace ProjectFlood.Data.Generated
         public string cells;
         public string verified_solution;
         public sbyte ruleset_version;
+        public int reward_group_id;
         public sbyte rotation_interval;
         public string portal_data;
         public string conveyor_data;

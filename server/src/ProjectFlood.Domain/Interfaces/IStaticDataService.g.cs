@@ -10,8 +10,12 @@ public partial interface IStaticDataService
     IReadOnlyList<AdPlacementData> GetAllAdPlacements();
     AvatarData? GetAvatar(int avatar_id);
     IReadOnlyList<AvatarData> GetAllAvatars();
+    BoardThemeData? GetBoardTheme(int theme_id);
+    IReadOnlyList<BoardThemeData> GetAllBoardThemes();
     ColorPaletteData? GetColorPalette(byte color_id);
     IReadOnlyList<ColorPaletteData> GetAllColorPalettes();
+    DynamicResourceData? GetDynamicResource(string resource_key);
+    IReadOnlyList<DynamicResourceData> GetAllDynamicResources();
     ItemData? GetItem(int item_id);
     IReadOnlyList<ItemData> GetAllItems();
     RewardGroupData? GetRewardGroup(int reward_group_id);

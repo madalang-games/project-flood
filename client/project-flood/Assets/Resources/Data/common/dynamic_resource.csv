@@ -1,0 +1,73 @@
+resource_key,sprite_path,category,comment
+item_bomb,Assets/Sprites/UI/Items/Item_bomb.png,Item,Bomb item icon
+item_h_rocket,Assets/Sprites/UI/Items/Item_h_rocket.png,Item,HRocket item icon
+item_color_sweep,Assets/Sprites/UI/Items/Item_color_sweep.png,Item,ColorSweep item icon
+item_row_shift,Assets/Sprites/UI/Items/Item_row_shift.png,Item,RowShift item icon
+item_cell_swap,Assets/Sprites/UI/Items/Item_cell_swap.png,Item,CellSwap item icon
+cell_0,Assets/Sprites/Gameplay/Cells/cell_0.png,Cell,Red Cell Sprite
+cell_1,Assets/Sprites/Gameplay/Cells/cell_1.png,Cell,Blue Cell Sprite
+cell_2,Assets/Sprites/Gameplay/Cells/cell_2.png,Cell,Green Cell Sprite
+cell_3,Assets/Sprites/Gameplay/Cells/cell_3.png,Cell,Yellow Cell Sprite
+cell_4,Assets/Sprites/Gameplay/Cells/cell_4.png,Cell,Purple Cell Sprite
+cell_5,Assets/Sprites/Gameplay/Cells/cell_5.png,Cell,Orange Cell Sprite
+cell_6,Assets/Sprites/Gameplay/Cells/cell_6.png,Cell,Cyan Cell Sprite
+cell_7,Assets/Sprites/Gameplay/Cells/cell_7.png,Cell,Pink Cell Sprite
+cell_8,Assets/Sprites/Gameplay/Cells/cell_8.png,Cell,Brown Cell Sprite
+cell_9,Assets/Sprites/Gameplay/Cells/cell_9.png,Cell,Gray Cell Sprite
+cell_10,Assets/Sprites/Gameplay/Cells/cell_10.png,Cell,White Cell Sprite
+cell_11,Assets/Sprites/Gameplay/Cells/cell_11.png,Cell,Dark Cell Sprite
+cell_12,Assets/Sprites/Gameplay/Cells/cell_12.png,Cell,Teal Cell Sprite
+cell_13,Assets/Sprites/Gameplay/Cells/cell_13.png,Cell,Gold Cell Sprite
+cell_14,Assets/Sprites/Gameplay/Cells/cell_14.png,Cell,Indigo Cell Sprite
+cell_15,Assets/Sprites/Gameplay/Cells/cell_15.png,Cell,Crimson Cell Sprite
+socket_0,Assets/Sprites/Gameplay/Sockets/socket_0.png,Socket,Red Socket Sprite
+socket_1,Assets/Sprites/Gameplay/Sockets/socket_1.png,Socket,Blue Socket Sprite
+socket_2,Assets/Sprites/Gameplay/Sockets/socket_2.png,Socket,Green Socket Sprite
+socket_3,Assets/Sprites/Gameplay/Sockets/socket_3.png,Socket,Yellow Socket Sprite
+socket_4,Assets/Sprites/Gameplay/Sockets/socket_4.png,Socket,Purple Socket Sprite
+socket_5,Assets/Sprites/Gameplay/Sockets/socket_5.png,Socket,Orange Socket Sprite
+socket_6,Assets/Sprites/Gameplay/Sockets/socket_6.png,Socket,Cyan Socket Sprite
+socket_7,Assets/Sprites/Gameplay/Sockets/socket_7.png,Socket,Pink Socket Sprite
+socket_8,Assets/Sprites/Gameplay/Sockets/socket_8.png,Socket,Brown Socket Sprite
+socket_9,Assets/Sprites/Gameplay/Sockets/socket_9.png,Socket,Gray Socket Sprite
+socket_10,Assets/Sprites/Gameplay/Sockets/socket_10.png,Socket,White Socket Sprite
+socket_11,Assets/Sprites/Gameplay/Sockets/socket_11.png,Socket,Dark Socket Sprite
+socket_12,Assets/Sprites/Gameplay/Sockets/socket_12.png,Socket,Teal Socket Sprite
+socket_13,Assets/Sprites/Gameplay/Sockets/socket_13.png,Socket,Gold Socket Sprite
+socket_14,Assets/Sprites/Gameplay/Sockets/socket_14.png,Socket,Indigo Socket Sprite
+socket_15,Assets/Sprites/Gameplay/Sockets/socket_15.png,Socket,Crimson Socket Sprite
+cell_obstacle,Assets/Sprites/Gameplay/Cells/cell_obstacle.png,Cell,Obstacle Cell Sprite
+cell_protector_1,Assets/Sprites/Gameplay/Cells/cell_protector_1.png,Cell,Protector strength 1 overlay
+cell_protector_2,Assets/Sprites/Gameplay/Cells/cell_protector_2.png,Cell,Protector strength 2 overlay
+socket_default,Assets/Sprites/Gameplay/Sockets/socket_default.png,Socket,Default Socket Sprite
+chest_inactive,Assets/Sprites/UI/Chest/chest_inactive.png,Chest,Inactive chest icon
+chest_active,Assets/Sprites/UI/Chest/chest_active.png,Chest,Active chest icon
+chest_claimed,Assets/Sprites/UI/Chest/chest_claimed.png,Chest,Claimed chest icon
+toast_warning,Assets/Sprites/UI/Toast/toast_warning.png,Toast,Toast warning icon
+toast_success,Assets/Sprites/UI/Toast/toast_success.png,Toast,Toast success icon
+toast_error,Assets/Sprites/UI/Toast/toast_error.png,Toast,Toast error icon
+item_add_turn,Assets/Sprites/UI/Items/Item_add_turn.png,Item,AddTurn item icon
+avatar_free_01,Assets/Sprites/UI/Avatar/avatar_free_01.png,Avatar,Free Avatar 1
+avatar_free_02,Assets/Sprites/UI/Avatar/avatar_free_02.png,Avatar,Free Avatar 2
+avatar_gold_01,Assets/Sprites/UI/Avatar/avatar_gold_01.png,Avatar,Gold Avatar 1
+avatar_gold_02,Assets/Sprites/UI/Avatar/avatar_gold_02.png,Avatar,Gold Avatar 2
+avatar_gold_03,Assets/Sprites/UI/Avatar/avatar_gold_03.png,Avatar,Gold Avatar 3
+avatar_silver_01,Assets/Sprites/UI/Avatar/avatar_silver_01.png,Avatar,Silver Avatar 1
+avatar_silver_02,Assets/Sprites/UI/Avatar/avatar_silver_02.png,Avatar,Silver Avatar 2
+ui_drag_pointer,Assets/Sprites/UI/Tutorial/ui_drag_pointer.png,UI,Drag line and pointer sprite
+guide_avatar,Assets/Sprites/UI/Tutorial/Guide_avatar.png,UI,Tutorial Guide Avatar (Floodie)
+star_filled,Assets/Sprites/UI/Stars/star_filled.png,Star,Star filled sprite
+star_empty,Assets/Sprites/UI/Stars/star_empty.png,Star,Star empty (outline) sprite
+stamina_heart,Assets/Sprites/UI/Icons/stamina_heart.png,UI,Heart icon for stamina display
+nav_home,Assets/Sprites/UI/Nav/nav_home.png,Nav,Home tab icon
+nav_shop,Assets/Sprites/UI/Nav/nav_shop.png,Nav,Shop tab icon
+nav_ranking,Assets/Sprites/UI/Nav/nav_ranking.png,Nav,Ranking tab icon
+ui_pause_icon,Assets/Sprites/UI/Icons/ui_pause_icon.png,UI,Pause button icon
+ui_cell_icon,Assets/Sprites/Gameplay/Cells/cell_0.png,UI,Cell count icon for HUD
+ui_gold_icon,Assets/Sprites/UI/Icons/ui_gold_icon.png,UI,Gold coin icon
+ui_lock_icon,Assets/Sprites/UI/Icons/ui_lock_icon.png,UI,Lock icon for locked stage nodes
+ui_flag_icon,Assets/Sprites/UI/Icons/ui_flag_icon.png,UI,Flag icon
+ui_avatar_default,Assets/Sprites/UI/Avatar/avatar_free_01.png,UI,Default avatar placeholder
+ui_settings_icon,Assets/Sprites/UI/Icons/ui_settings_icon.png,UI,Settings icon
+path_chapter_1,Assets/Resources/Sprites/Path/path_chapter_1.png,UI,Chapter 1 Grassland path texture
+path_chapter_2,Assets/Resources/Sprites/Path/path_chapter_2.png,UI,Chapter 2 Ocean path texture

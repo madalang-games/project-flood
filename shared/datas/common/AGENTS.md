@@ -4,6 +4,7 @@
 | file | role |
 |------|------|
 | `color_palette.csv` | Master color palette — 16 predefined colors (color_id 0–15) |
+| `dynamic_resource.csv` | Dynamic sprite resources (Items, Cells, Sockets, Chests, Toasts, Avatars, UI assets) |
 
 ## Rules
 - `color_palette.csv` has exactly 16 rows (color_id 0–15); do not reorder or delete rows

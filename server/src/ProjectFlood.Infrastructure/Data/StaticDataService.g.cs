@@ -9,7 +9,9 @@ public partial class StaticDataService
 {
     private IReadOnlyDictionary<string, AdPlacementData> _adPlacements = new Dictionary<string, AdPlacementData>();
     private IReadOnlyDictionary<int, AvatarData> _avatars = new Dictionary<int, AvatarData>();
+    private IReadOnlyDictionary<int, BoardThemeData> _boardThemes = new Dictionary<int, BoardThemeData>();
     private IReadOnlyDictionary<byte, ColorPaletteData> _colorPalettes = new Dictionary<byte, ColorPaletteData>();
+    private IReadOnlyDictionary<string, DynamicResourceData> _dynamicResources = new Dictionary<string, DynamicResourceData>();
     private IReadOnlyDictionary<int, ItemData> _items = new Dictionary<int, ItemData>();
     private IReadOnlyDictionary<int, RewardGroupData> _rewardGroups = new Dictionary<int, RewardGroupData>();
     private IReadOnlyDictionary<string, RewardSourceData> _rewardSources = new Dictionary<string, RewardSourceData>();
@@ -21,6 +23,7 @@ public partial class StaticDataService
     {
         var adPath = System.IO.Path.Combine(dataRoot, "ad");
         var avatarPath = System.IO.Path.Combine(dataRoot, "avatar");
+        var boardThemePath = System.IO.Path.Combine(dataRoot, "board_theme");
         var commonPath = System.IO.Path.Combine(dataRoot, "common");
         var itemPath = System.IO.Path.Combine(dataRoot, "item");
         var rewardPath = System.IO.Path.Combine(dataRoot, "reward");
@@ -46,10 +49,27 @@ public partial class StaticDataService
                 UnlockCost = r.unlock_cost,
                 UnlockType = r.unlock_type,
             });
+        _boardThemes = BoardThemeLoader.LoadAll(System.IO.Path.Combine(boardThemePath, "board_theme.csv"))
+            .ToDictionary(r => r.theme_id, r => new BoardThemeData
+            {
+                ThemeId = r.theme_id,
+                ResourceName = r.resource_name,
+                UnlockCost = r.unlock_cost,
+                UnlockType = r.unlock_type,
+                DisplayName = r.display_name,
+            });
         _colorPalettes = ColorPaletteLoader.LoadAll(System.IO.Path.Combine(commonPath, "color_palette.csv"))
             .ToDictionary(r => r.color_id, r => new ColorPaletteData
             {
                 ColorId = r.color_id,
+            });
+        _dynamicResources = DynamicResourceLoader.LoadAll(System.IO.Path.Combine(commonPath, "dynamic_resource.csv"))
+            .ToDictionary(r => r.resource_key, r => new DynamicResourceData
+            {
+                ResourceKey = r.resource_key,
+                SpritePath = r.sprite_path,
+                Category = r.category,
+                Comment = r.comment,
             });
         _items = ItemLoader.LoadAll(System.IO.Path.Combine(itemPath, "item.csv"))
             .ToDictionary(r => r.item_id, r => new ItemData
@@ -130,8 +150,12 @@ public partial class StaticDataService
     public IReadOnlyList<AdPlacementData> GetAllAdPlacements() => _adPlacements.Values.ToList();
     public AvatarData? GetAvatar(int avatar_id) => _avatars.GetValueOrDefault(avatar_id);
     public IReadOnlyList<AvatarData> GetAllAvatars() => _avatars.Values.ToList();
+    public BoardThemeData? GetBoardTheme(int theme_id) => _boardThemes.GetValueOrDefault(theme_id);
+    public IReadOnlyList<BoardThemeData> GetAllBoardThemes() => _boardThemes.Values.ToList();
     public ColorPaletteData? GetColorPalette(byte color_id) => _colorPalettes.GetValueOrDefault(color_id);
     public IReadOnlyList<ColorPaletteData> GetAllColorPalettes() => _colorPalettes.Values.ToList();
+    public DynamicResourceData? GetDynamicResource(string resource_key) => _dynamicResources.GetValueOrDefault(resource_key);
+    public IReadOnlyList<DynamicResourceData> GetAllDynamicResources() => _dynamicResources.Values.ToList();
     public ItemData? GetItem(int item_id) => _items.GetValueOrDefault(item_id);
     public IReadOnlyList<ItemData> GetAllItems() => _items.Values.ToList();
     public RewardGroupData? GetRewardGroup(int reward_group_id) => _rewardGroups.GetValueOrDefault(reward_group_id);
