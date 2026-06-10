@@ -14,6 +14,7 @@
 | `GameConfig.cs` | `GameConfig` | Static constants: ContinueCost, ContinueExtraTurns, LoadingTimeoutSec, StageNodePoolSize |
 | `AppEnvironment.cs` | `AppEnvironment`, `AppConfig` | Env enum (Dev/Prod) + static config: server URLs, GoogleWebClientId |
 | `Language.cs` | `Language` | Shared enum for all 15 supported locales (EN KO ZH_CN ZH_TW JA RU ES PT FR DE TH AR IT TR ID) |
+| `GoogleSignInBridge.cs` | `GoogleSignInBridge` | DDOL singleton; Android JNI bridge to `GoogleSignInPlugin.java`; SignIn/SignOut; UnitySendMessage callbacks |
 
 ## Symbols
 | symbol | kind | note |
@@ -37,7 +38,10 @@
 | `AppEnvironment` | enum | Dev / Prod |
 | `AppConfig.DevGameServerUrl` | const | Dev server base URL |
 | `AppConfig.ProdGameServerUrl` | const | Prod server base URL |
-| `AppConfig.GoogleWebClientId` | const | Google OAuth2 web client ID |
+| `AppConfig.GoogleWebClientId` | const | Google OAuth2 web client ID — fill in before release |
+| `GoogleSignInBridge.Instance` | prop | DDOL singleton; auto-created at BeforeSceneLoad on Android |
+| `GoogleSignInBridge.SignIn(webClientId,cb)` | method | Starts Google Sign-In flow; cb(idToken, errorCode) |
+| `GoogleSignInBridge.SignOut(webClientId)` | method | Clears Google account session |
 
 ## Rules
 - UIManager canvases: Sort Order 10/20/30/100. Scene canvases always Sort 0.

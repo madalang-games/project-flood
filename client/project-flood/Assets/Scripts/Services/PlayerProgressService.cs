@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using ProjectFlood.Contracts.Player;
 using UnityEngine;
+using Game.Utils;
 
 namespace Game.Services
 {
@@ -16,6 +17,9 @@ namespace Game.Services
         private readonly Dictionary<int, int> _bestStars     = new Dictionary<int, int>();
         private readonly Dictionary<int, bool> _unlocked     = new Dictionary<int, bool>();
         private readonly Dictionary<int, int> _inventory    = new Dictionary<int, int>();
+        private readonly HashSet<int>          _unlockedAvatarIds = new HashSet<int>();
+        private int _equippedBoardThemeId = 1;
+        private readonly HashSet<int>          _unlockedBoardThemeIds = new HashSet<int>();
 
         private void Awake()
         {
@@ -47,6 +51,61 @@ namespace Game.Services
         {
             _gold = amount;
             PlayerPrefs.SetInt(KeyGold, _gold);
+        }
+
+        // --- Avatars ---
+        public bool IsAvatarUnlocked(int avatarId)
+        {
+            var list = CsvLoader.Load<ProjectFlood.Data.Generated.Avatar>(ProjectFlood.Data.Generated.Avatar.ResourcePath);
+            if (list != null)
+            {
+                foreach (var av in list)
+                {
+                    if (av.avatar_id == avatarId)
+                    {
+                        if (av.unlock_type == "free") return true;
+                        break;
+                    }
+                }
+            }
+            return _unlockedAvatarIds.Contains(avatarId);
+        }
+
+        public void UnlockAvatarLocally(int avatarId)
+        {
+            _unlockedAvatarIds.Add(avatarId);
+        }
+
+        // --- Board Themes ---
+        public int EquippedBoardThemeId => _equippedBoardThemeId;
+
+        public void SetEquippedBoardTheme(int themeId)
+        {
+            _equippedBoardThemeId = themeId;
+            PlayerPrefs.SetInt("equipped_board_theme_id", themeId);
+            PlayerPrefs.Save();
+        }
+
+        public bool IsThemeUnlocked(int themeId)
+        {
+            var list = CsvLoader.Load<ProjectFlood.Data.Generated.BoardTheme>(ProjectFlood.Data.Generated.BoardTheme.ResourcePath);
+            if (list != null)
+            {
+                foreach (var theme in list)
+                {
+                    if (theme.theme_id == themeId)
+                    {
+                        if (theme.unlock_type == "free") return true;
+                        break;
+                    }
+                }
+            }
+            return _unlockedBoardThemeIds.Contains(themeId);
+        }
+
+        public void UnlockThemeLocally(int themeId)
+        {
+            _unlockedBoardThemeIds.Add(themeId);
         }
 
         // --- Stage stars / unlock ---
@@ -109,6 +168,22 @@ namespace Game.Services
         {
             if (response == null) return;
 
+            _unlockedAvatarIds.Clear();
+            if (response.UnlockedAvatarIds != null)
+            {
+                foreach (var id in response.UnlockedAvatarIds)
+                    _unlockedAvatarIds.Add(id);
+            }
+
+            _unlockedBoardThemeIds.Clear();
+            if (response.UnlockedBoardThemeIds != null)
+            {
+                foreach (var id in response.UnlockedBoardThemeIds)
+                    _unlockedBoardThemeIds.Add(id);
+            }
+            _equippedBoardThemeId = response.EquippedBoardThemeId;
+            PlayerPrefs.SetInt("equipped_board_theme_id", _equippedBoardThemeId);
+
             // Clear PlayerPrefs stage keys before rebuilding from server state
             if (StageDataService.Instance != null)
                 foreach (var s in StageDataService.Instance.GetAll())
@@ -147,6 +222,9 @@ namespace Game.Services
             _unlocked.Clear();
             _unlocked[1] = true;
             _inventory.Clear();
+            _unlockedAvatarIds.Clear();
+            _equippedBoardThemeId = 1;
+            _unlockedBoardThemeIds.Clear();
             Debug.Log("[PlayerProgressService] Memory cache cleared.");
         }
 
@@ -154,6 +232,7 @@ namespace Game.Services
         {
             _gold = PlayerPrefs.GetInt(KeyGold, 500);
             _unlocked[1] = true; // stage 1 always unlocked
+            _equippedBoardThemeId = PlayerPrefs.GetInt("equipped_board_theme_id", 1);
         }
     }
 }

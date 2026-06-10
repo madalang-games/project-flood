@@ -5,6 +5,8 @@ Namespace: `Game.Core.UI`
 ## Files
 | file | class | role |
 |------|-------|------|
+| `SceneBgPalette.cs` | `SceneBgPalette`, `BackgroundMode` | Palette config per bg_theme_id × BackgroundMode (Default/Lobby/Night); static Get(themeId,mode) |
+| `SceneBackgroundView.cs` | `SceneBackgroundView` | Full-screen UI Canvas background for Boot/Lobby; Bind(themeId,mode); PanTo(tabIndex) for parallax tab switch |
 | `UIEasing.cs` | `UIEasing` | Static easing functions: EaseOut, EaseIn, EaseInOut, EaseOutBack, Sine |
 | `UIButtonAnimator.cs` | `UIButtonAnimator` | Press/release/CTA-idle scale animation; SetInteractable(bool) |
 | `UIFloatAnimation.cs` | `UIFloatAnimation` | Gentle sine float loop; amplitude, period, random phase offset |
@@ -21,10 +23,19 @@ Namespace: `Game.Core.UI`
 | `PerfectClearEffectView.cs` | `PerfectClearEffectView` | 3-star only; "Perfect!" text pop + confetti + wobble (2s) |
 | `ChapterUnlockOverlayView.cs` | `ChapterUnlockOverlayView` | Full-screen 2.7s chapter unlock animation; blocks interaction |
 | `LocalizedText.cs` | `LocalizedText` | Attach to TMP_Text; with stringId → text+font switch on language change; without stringId → font-only (dynamic text) |
+| `UITextStyle.cs` | `UITextStyle` | Component; dynamically applies bold face dilate and drop shadows (underlays) to TMPro text based on parent background color |
 | `TutorialOverlay.cs` | `TutorialOverlay` | Canvas-based full-screen tutorial spotlight/tooltip overlay |
 | `TutorialTarget.cs` | `TutorialTarget` | Attach to any scene/UI GameObject; registers itself by `_targetId` so TutorialOverlay resolves targets without name coupling |
 | `UIPulseGlowEffect.cs` | `UIPulseGlowEffect` | Visual micro-animation component handling scale pulsing and rotational glow |
 | `UIVerticalGradient.cs` | `UIVerticalGradient` | MaskableGraphic 2-color vertical gradient via vertex colors; `SetColors(top,bottom)` |
+
+## Scene Background Symbols
+| symbol | kind | note |
+|--------|------|------|
+| `BackgroundMode` | enum | Default (Boot sunset) / Lobby (chapter theme) / Night (InGame dark variant) |
+| `SceneBgPalette.Get(themeId,mode)` | method | Returns palette for given theme × mode; Default overrides themeId |
+| `SceneBackgroundView.Bind(bgThemeId,mode)` | method | Creates gradient + decorations; starts anim coroutine |
+| `SceneBackgroundView.PanTo(tabIndex,duration)` | method | Smooth parallax pan; tabIndex 0=Home 1=Shop 2=Ranking; default duration 0.65s |
 
 ## Symbols
 | symbol | kind | note |
@@ -33,7 +44,7 @@ Namespace: `Game.Core.UI`
 | `UIButtonAnimator.SetInteractable(bool)` | method | Dims opacity 40% + stops idle anim when false |
 | `UIPanelAppear.Disappear(Action)` | method | Triggers disappear coroutine; calls onComplete when done |
 | `UICountUp.Play(int,int,Action)` | method | Animates from→to; optional completion callback |
-| `UIStarPop.PlayStarSequence(GameObject[],int)` | coroutine | Stars[0..filledCount-1] pop with EaseOutBack; rest scale=1 instantly |
+| `UIStarPop.PlayStarSequence(GameObject[],int)` | coroutine | All stars shown (empty); earned Fill children pop left-to-right independently with EaseOutBack stagger (StarDelay=0.2s) |
 | `UIScreenShake.Shake(ShakeLevel)` | method | Medium or Heavy; resets to origin on complete |
 | `ConfirmDialogView.Init(title,body,confirmLabel,onConfirm,onCancel,cancelLabel,danger)` | method | Required before showing |
 | `ToastView.Show(string,ToastType)` | method | Replaces existing toast |
@@ -45,6 +56,7 @@ Namespace: `Game.Core.UI`
 | `ToastType` | enum | Warning / Success / Error |
 | `LocalizedText._stringId` | SerializeField | Key from client_string.csv; empty = font-only mode |
 | `LocalizedText.RefreshAllInEditor()` | static method | Editor-only; reads CSV, updates all LocalizedText TMP text to EN preview |
+| `UITextStyle.ApplyStyle()` | method | Applies face dilate and underlay drop shadow parameters (dynamic or local edit-mode material) |
 | `TutorialOverlay.Init(TutorialStepSequencer)` | method | Hooks up sequencer events and displays the first/current tutorial step |
 | `TutorialTarget._targetIds` | SerializeField | String array; each entry must match a `target_ui_id` in tutorial_step.csv — one component, multiple ids |
 | `TutorialTarget.Find(string)` | static method | Returns registered TutorialTarget for given id; null if not registered |

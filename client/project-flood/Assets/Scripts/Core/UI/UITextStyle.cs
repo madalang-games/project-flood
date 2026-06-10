@@ -74,50 +74,49 @@ namespace Game.Core.UI
 
             Color shadowColor;
 
-            // Hand-curated high-contrast complementary mapping for designated UI colors
+            // Hand-curated high-contrast dark drop-shadow mapping for designated UI colors
             switch (hex)
             {
                 case "4D1259": // UI_BG_DEEP (Old)
-                case "2A1635": // UI_BG_DEEP (New cozy deep grape-purple) -> Contrast with yellow/gold
-                    shadowColor = HexColor("FFC700");
+                case "2A1635": // UI_BG_DEEP (New cozy deep grape-purple)
+                    shadowColor = HexColor("120216"); // Deepest dark purple shadow
                     break;
                 case "7C238C": // UI_BG_MID (Old)
-                case "4D235D": // UI_BG_MID (New warm plum-purple) -> Contrast with orange/gold
-                    shadowColor = HexColor("FF9F00");
+                case "4D235D": // UI_BG_MID (New warm plum-purple)
+                    shadowColor = HexColor("2B003B"); // Rich dark purple shadow
                     break;
                 case "FF5E7E": // UI_PRIMARY (Old)
-                case "FF4D79": // UI_PRIMARY (New vibrant strawberry pink) -> Contrast with lime-green mint
-                    shadowColor = HexColor("2ED573");
+                case "FF4D79": // UI_PRIMARY (New vibrant strawberry pink)
+                    shadowColor = HexColor("5B0D21"); // Deep dark wine red/pink shadow
                     break;
                 case "FFD124": // UI_CTA (Old)
-                case "FFC700": // UI_CTA (New sunny yellow) -> Contrast with deep grape-purple
-                    shadowColor = HexColor("2A1635");
+                case "FFC700": // UI_CTA (New sunny yellow)
+                    shadowColor = HexColor("2A1635"); // Deep grape-purple shadow for contrast
                     break;
                 case "24D878": // UI_SUCCESS (Old)
-                case "2ED573": // UI_SUCCESS (New lime-green mint) -> Contrast with warm plum-purple
-                    shadowColor = HexColor("4D235D");
+                case "2ED573": // UI_SUCCESS (New lime-green mint)
+                    shadowColor = HexColor("0A3C1C"); // Deep forest green shadow
                     break;
                 case "FF3B30": // UI_DANGER (Old)
-                case "FF4757": // UI_DANGER (New coral red) -> Contrast with vibrant cyan
-                    shadowColor = HexColor("00E5FF");
+                case "FF4757": // UI_DANGER (New coral red)
+                    shadowColor = HexColor("4A0A12"); // Deep dark crimson shadow
                     break;
                 case "FFAA00": // UI_BORDER (Old)
-                case "FF9F00": // UI_BORDER (New orange-yellow highlights) -> Contrast with deep grape-purple
-                    shadowColor = HexColor("2A1635");
+                case "FF9F00": // UI_BORDER (New orange-yellow highlights)
+                    shadowColor = HexColor("2A1635"); // Deep grape-purple shadow
                     break;
-                case "2B003B": // Dark button shadow underlay -> Contrast with sunny yellow
-                    shadowColor = HexColor("FFC700");
+                case "2B003B": // Dark button shadow underlay
+                    shadowColor = HexColor("120216"); // Deepest dark purple shadow
                     break;
                 default:
-                    // Mathematical complementary fallback (invert Hue by 180 degrees)
+                    // Mathematical dark complementary/harmonious shadow fallback
                     float h, s, v;
                     Color.RGBToHSV(bgCol, out h, out s, out v);
                     
-                    float compH = (h + 0.5f) % 1.0f;
-                    float compS = Mathf.Max(s, 0.8f); // High saturation for casual punch
-                    float compV = v < 0.5f ? 0.9f : 0.3f; // Bright shadow for dark backgrounds, dark shadow for bright backgrounds
-                    
-                    shadowColor = Color.HSVToRGB(compH, compS, compV);
+                    // Keep the hue, increase saturation, and significantly lower the value for a dark shadow
+                    float shadowS = Mathf.Min(s + 0.2f, 1.0f);
+                    float shadowV = Mathf.Max(v * 0.25f, 0.08f);
+                    shadowColor = Color.HSVToRGB(h, shadowS, shadowV);
                     break;
             }
 

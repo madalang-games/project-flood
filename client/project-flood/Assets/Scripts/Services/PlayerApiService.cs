@@ -34,11 +34,65 @@ namespace Game.Services
             });
         }
 
+        public void UpdateProfile(string displayName, int? avatarId, int? boardThemeId, Action<bool, UserProfileUpdateResponse, string> onComplete)
+        {
+            var parts = new List<string>();
+            if (displayName != null)
+            {
+                parts.Add($"\"displayName\":\"{displayName}\"");
+            }
+            if (avatarId.HasValue)
+            {
+                parts.Add($"\"avatarId\":{avatarId.Value}");
+            }
+            if (boardThemeId.HasValue)
+            {
+                parts.Add($"\"boardThemeId\":{boardThemeId.Value}");
+            }
+            string json = "{" + string.Join(",", parts) + "}";
+
+            NetworkService.Instance.Post("/api/player/profile", json, NetworkRetryOptions.LobbyAndSave, (ok, text) =>
+            {
+                if (!ok) { onComplete?.Invoke(false, null, text); return; }
+                try
+                {
+                    var res = JsonUtility.FromJson<UserProfileUpdateResponseJson>(text);
+                    var response = new UserProfileUpdateResponse
+                    {
+                        DisplayName = res.displayName,
+                        AvatarId = res.avatarId,
+                        BoardThemeId = res.boardThemeId
+                    };
+                    AuthService.Instance.UpdateCachedProfile(response.DisplayName, response.AvatarId);
+                    if (PlayerProgressService.Instance != null)
+                    {
+                        PlayerProgressService.Instance.SetEquippedBoardTheme(response.BoardThemeId);
+                    }
+                    onComplete?.Invoke(true, response, null);
+                }
+                catch (Exception ex)
+                {
+                    onComplete?.Invoke(false, null, ex.Message);
+                }
+            });
+        }
+
+        [Serializable]
+        private class UserProfileUpdateResponseJson
+        {
+            public string displayName;
+            public int avatarId;
+            public int boardThemeId;
+        }
+
         [Serializable]
         private class PlayerProgressJson
         {
             public int maxClearedStageId;
             public StageProgressEntryJson[] stages;
+            public List<int> unlockedAvatarIds;
+            public int equippedBoardThemeId;
+            public List<int> unlockedBoardThemeIds;
 
             public PlayerProgressResponse ToContract()
             {
@@ -46,6 +100,9 @@ namespace Game.Services
                 {
                     MaxClearedStageId = maxClearedStageId,
                     Stages = new List<StageProgressEntry>(),
+                    UnlockedAvatarIds = unlockedAvatarIds ?? new List<int>(),
+                    EquippedBoardThemeId = equippedBoardThemeId == 0 ? 1 : equippedBoardThemeId,
+                    UnlockedBoardThemeIds = unlockedBoardThemeIds ?? new List<int>()
                 };
                 if (stages != null)
                     foreach (var s in stages)

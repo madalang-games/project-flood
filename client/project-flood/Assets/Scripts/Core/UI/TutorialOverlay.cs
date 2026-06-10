@@ -5,6 +5,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using Game.Services.Tutorial;
+using Game.OutGame.Settings;
 using ProjectFlood.Contracts.GameTypes;
 using ProjectFlood.Data.Generated;
 using Game.InGame.View;
@@ -106,6 +107,24 @@ namespace Game.Core.UI
                 _tooltipText.text = Services.LocalizationService.Instance != null
                     ? Services.LocalizationService.Instance.Get(step.text_key)
                     : step.text_key;
+            }
+
+            // Set user selected avatar if available
+            Sprite userAvatar = null;
+            var popupPrefab = Resources.Load<GameObject>("Prefabs/UI/AccountPopupView");
+            if (popupPrefab != null)
+            {
+                var popupView = popupPrefab.GetComponent<AccountPopupView>();
+                if (popupView != null && Services.AuthService.Instance != null)
+                {
+                    userAvatar = popupView.GetAvatarSprite(Services.AuthService.Instance.AvatarId);
+                }
+            }
+
+            if (_characterAvatar != null && userAvatar != null)
+            {
+                _characterAvatar.sprite = userAvatar;
+                _characterAvatar.preserveAspect = true;
             }
 
             // Locate target

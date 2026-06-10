@@ -5,35 +5,49 @@ namespace Game.Core.UI
 {
     public class UIStarPop : MonoBehaviour
     {
-        private const float PopDuration  = 0.35f;
-        private const float StarDelay    = 0.4f;
+        private const float PopDuration = 0.35f;
+        private const float StarDelay   = 0.2f;
 
+        // All stars show empty state immediately; earned fills pop in left-to-right, independently.
         public IEnumerator PlayStarSequence(GameObject[] stars, int filledCount)
         {
             for (int i = 0; i < stars.Length; i++)
             {
                 if (stars[i] == null) continue;
-                if (i < filledCount)
-                    yield return PopStar(stars[i]);
-                else
-                    stars[i].transform.localScale = Vector3.one;
-
-                if (i < stars.Length - 1)
-                    yield return new WaitForSeconds(StarDelay);
+                stars[i].SetActive(true);
+                stars[i].transform.localScale = Vector3.one;
+                var fill = stars[i].transform.Find("Fill");
+                if (fill != null) fill.gameObject.SetActive(false);
             }
+
+            for (int i = 0; i < filledCount && i < stars.Length; i++)
+            {
+                if (stars[i] != null)
+                    StartCoroutine(PopFill(stars[i], i * StarDelay));
+            }
+
+            float total = filledCount > 0 ? (filledCount - 1) * StarDelay + PopDuration : 0f;
+            yield return new WaitForSeconds(total);
         }
 
-        private IEnumerator PopStar(GameObject star)
+        private IEnumerator PopFill(GameObject star, float delay)
         {
-            var rt = star.GetComponent<RectTransform>();
+            if (delay > 0f) yield return new WaitForSeconds(delay);
+
+            var fill = star.transform.Find("Fill");
+            if (fill == null) yield break;
+
+            fill.gameObject.SetActive(true);
+            var rt = fill.GetComponent<RectTransform>();
             if (rt == null) yield break;
 
+            rt.localScale = Vector3.zero;
             float elapsed = 0f;
             while (elapsed < PopDuration)
             {
                 elapsed += Time.deltaTime;
                 float t = UIEasing.EaseOutBack(Mathf.Clamp01(elapsed / PopDuration));
-                rt.localScale = Vector3.one * Mathf.Lerp(0f, 1f, t);
+                rt.localScale = Vector3.one * t;
                 yield return null;
             }
             rt.localScale = Vector3.one;

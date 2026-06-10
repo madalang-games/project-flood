@@ -56,7 +56,7 @@ namespace Game.Services.Tutorial
 
         public void LoadProgress()
         {
-            if (TutorialApiService.Instance != null && AuthService.Instance != null && !AuthService.Instance.IsGuest)
+            if (TutorialApiService.Instance != null && AuthService.Instance != null && AuthService.Instance.IsAuthenticated)
             {
                 TutorialApiService.Instance.FetchProgress(
                     onSuccess: response =>
@@ -247,7 +247,7 @@ namespace Game.Services.Tutorial
             PlayerPrefs.SetInt("tut_done_" + groupId, 1);
             PlayerPrefs.Save();
 
-            if (TutorialApiService.Instance != null && AuthService.Instance != null && !AuthService.Instance.IsGuest)
+            if (TutorialApiService.Instance != null && AuthService.Instance != null && AuthService.Instance.IsAuthenticated)
             {
                 TutorialApiService.Instance.CompleteTutorial(groupId,
                     onSuccess: response => Debug.Log($"[TutorialManager] Saved progress for group {groupId} on server"),

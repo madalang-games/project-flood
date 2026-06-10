@@ -11,7 +11,7 @@ namespace Game.Services
     {
         public static AuthService Instance { get; private set; }
 
-        public event Action<bool, string> OnAuthStateChanged; // (isAuthenticated, provider)
+        // Removed event duplicate here
 
         private const string AccessTokenKey = "Auth.AccessToken";
         private const string RefreshTokenKey = "Auth.RefreshToken";
@@ -29,10 +29,18 @@ namespace Game.Services
         private List<Action<bool, string>> _refreshWaiters;
         private bool _accountSwitched;
 
+        private string _displayName = string.Empty;
+        private int _avatarId = 1;
+
         public bool IsAuthenticated => !string.IsNullOrEmpty(_accessToken);
         public bool IsGuest => _provider == "guest";
         public string UserId => _storage?.Get(ClientIdKey) ?? string.Empty;
         public string AccessToken => _accessToken;
+        public string DisplayName => _displayName;
+        public int AvatarId => _avatarId;
+
+        public event Action OnProfileChanged;
+        public event Action<bool, string> OnAuthStateChanged; // (isAuthenticated, provider)
 
         private void Awake()
         {
@@ -223,6 +231,8 @@ namespace Game.Services
             _accessToken = auth.accessToken;
             _refreshToken = auth.refreshToken;
             _provider = provider;
+            _displayName = auth.profile?.displayName ?? string.Empty;
+            _avatarId = auth.profile?.avatarId ?? 1;
 
             if (DateTimeOffset.TryParse(auth.expiresAt, out var expires))
                 _accessExpiresAt = expires;
@@ -251,6 +261,8 @@ namespace Game.Services
             _accessToken = "offline_access_token";
             _refreshToken = "offline_refresh_token";
             _accessExpiresAt = DateTimeOffset.UtcNow.AddDays(30);
+            _displayName = "Guest";
+            _avatarId = 1;
 
             _storage.Set(AccessTokenKey, _accessToken);
             _storage.Set(RefreshTokenKey, _refreshToken);
@@ -258,8 +270,19 @@ namespace Game.Services
             _storage.Set(AccessExpiresAtKey, _accessExpiresAt.ToString("O"));
             _storage.Save();
 
+            _displayName = "Guest";
+            _avatarId = 1;
+
             SyncServiceTokens();
             OnAuthStateChanged?.Invoke(true, _provider);
+            OnProfileChanged?.Invoke();
+        }
+
+        public void UpdateCachedProfile(string displayName, int avatarId)
+        {
+            _displayName = displayName;
+            _avatarId = avatarId;
+            OnProfileChanged?.Invoke();
         }
 
         private void ClearToken()
