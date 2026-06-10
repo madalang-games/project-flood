@@ -1,423 +1,102 @@
-# UI/UX — Common Components
+# UI/UX — 공용 컴포넌트 (Common Components)
 
-Reusable components shared across all scenes.
+모든 씬에서 공유하여 사용하는 재사용 가능한 컴포넌트들입니다.
 
 ---
 
-## 1. Generic Confirm Dialog
+## 1. 범용 확인 다이얼로그 (Generic Confirm Dialog)
 
-Used for: quit confirm, account switch warning, restart confirm — any binary decision.
+사용처: 게임 종료 확인, 계정 전환 경고, 재시작 확인 등 모든 이지선다 결정.
 
-```
-[dim overlay]
-┌──────────────────────┐
-│  [Title]              │
-│                      │
-│  [Body message]       │
-│                      │
-│  [Cancel] [Confirm]  │
-└──────────────────────┘
-```
-
-| Property | Value |
+| 속성 | 값 |
 |----------|-------|
-| Title | Injected by caller |
-| Body | Injected by caller (optional; hidden if empty) |
-| Cancel label | Default "Cancel"; caller can override |
-| Confirm label | Injected by caller |
-| Confirm button color | Default `UI_PRIMARY`; destructive actions use `UI_DANGER` |
-| Tap outside | Dismiss = Cancel behavior |
-| Animation | Panel scale 0.85→1.0 + alpha 0→1 (200ms ease-out) |
+| 타이틀 (Title) | 호출부에서 주입 |
+| 본문 (Body) | 호출부에서 주입 (비어있으면 숨김) |
+| 확인 버튼 색상 | 기본 `UI_PRIMARY`; 파괴적인 동작은 `UI_DANGER` 사용 |
+| 영역 밖 터치 | 닫기 = 취소 동작과 동일 |
+| 애니메이션 | 패널 스케일 0.85→1.0 + 알파 0→1 (200ms ease-out) |
 
 ---
 
-## 2. Toast / Snackbar
+## 2. 토스트 / 스낵바 (Toast / Snackbar)
 
-Used for: insufficient gold, network error, lightweight feedback. Auto-dismiss.
+사용처: 골드 부족, 네트워크 에러 등 가벼운 피드백. 자동 사라짐.
 
-```
-┌───────────────────────────┐
-│  ⚠  Insufficient gold      │
-└───────────────────────────┘
-```
-
-| Property | Value |
+| 속성 | 값 |
 |----------|-------|
-| Position | Bottom of screen, above bottom nav bar, within safe area |
-| Display duration | 2.5s |
-| Appear | Slide up + alpha 0→1 (150ms) |
-| Dismiss | Alpha 1→0 (200ms) |
-| Icon | By type: ⚠ warning / ✓ success / ✕ error |
-| Stacking | Replaces existing toast (no queue) |
-| Tap | Instant dismiss |
+| 위치 | 화면 하단, 네비게이션 바 위쪽, 세이프 에어리어 내 |
+| 표시 시간 | 2.5초 |
+| 애니메이션 | 위로 슬라이드 + 알파 0→1 (150ms) |
+| 아이콘 | 유형별: ⚠ 주의 / ✓ 성공 / ✕ 에러 |
+| 중첩 | 기존 토스트를 즉시 대체 (큐 없음) |
 
 ---
 
-## 3. Loading Overlay
+## 3. 로딩 오버레이 (Loading Overlay)
 
-Used for: server response wait, scene transition, account link in progress.
+사용처: 서버 응답 대기, 씬 전환, 계정 연동 진행 중.
 
-```
-[full-screen dim 0.6 opacity]
-        [pixel-art spinner]
-      [optional message text]
-```
-
-| Property | Value |
+| 속성 | 값 |
 |----------|-------|
-| Background | `UI_BG_DEEP` 60% opacity |
-| Spinner | Pixel-art 8-frame rotation, 48×48dp |
-| Message | Optional; hidden by default |
-| Touch block | Full-screen Raycast Block |
-| Appear / dismiss | Alpha fade 150ms |
-| Timeout | 10s → auto-dismiss + show NetworkError |
+| 배경 | `UI_BG_DEEP` 60% 불투명도 |
+| 스피너 | 픽셀 아트 8프레임 회전, 48×48dp |
+| 터치 차단 | 전체 화면 레이캐스트 차단 |
+| 타임아웃 | 10초 → 자동 종료 및 네트워크 에러 표시 |
 
 ---
 
-## 4. Reward Popup
+## 4. 보상 팝업 (Reward Popup)
 
-Used for: chapter chest claim, special reward grants.
+사용처: 챕터 상자 수령, 특수 보상 지급 시.
 
-```
-[dim overlay]
-┌──────────────────────┐
-│    Reward!            │
-│                      │
-│  [item icons]        │  ← icon + quantity per reward
-│  🪙 × 500            │
-│  💣 × 3              │
-│                      │
-│       [OK]           │
-└──────────────────────┘
-```
-
-| Property | Value |
+| 속성 | 값 |
 |----------|-------|
-| Reward items | Dynamic binding, max 4 items displayed |
-| Icon appear | Sequential pop: scale 0→1.2→1.0, 0.15s gap between items |
-| Gold | Count-up animation (600ms ease-out) |
-| [OK] | Close popup |
-| Tap outside | Ignored (prevents accidental close) |
+| 보상 아이템 | 동적 바인딩, 최대 4개 노출 |
+| 아이콘 연출 | 순차적 팝업: 스케일 0→1.2→1.0, 아이템 간 0.15초 간격 |
+| 골드 | 카운트업 애니메이션 (600ms ease-out) |
+| 영역 밖 터치 | 무시 (실수 방지) |
 
 ---
 
-## 5. Network Error UI
-
-Used for: LoadingOverlay timeout, API failure.
-
-```
-[dim overlay]
-┌──────────────────────┐
-│  Unable to connect    │
-│                      │
-│  Check your network  │
-│  connection.         │
-│                      │
-│      [Retry]         │
-└──────────────────────┘
-```
-
-| Property | Value |
-|----------|-------|
-| [Retry] | Re-attempt failed request |
-| Tap outside | Ignored |
-| Consecutive failures | 3+ → replace message with "Please try again later." |
-
----
-
-## 6. UI Animation Components
+## 5. UI 애니메이션 컴포넌트
 
 ### UIButtonAnimator
-
-Attach to every button. Handles Press / Release / Idle states.
-
-| Event | Effect | Duration | Easing |
-|-------|--------|----------|--------|
-| Press down | scale × 0.92 | 80ms | ease-in |
-| Release | scale × 1.05 → 1.0 | 60ms + 80ms | ease-out → ease-in-out |
-| Idle (CTA only) | scale 1.0 → 1.04 → 1.0 loop | 2.5s period | sine |
-| Disabled | opacity 40%, animation stopped | — | — |
-
-CTA idle breathing: only on `UI_CTA`-colored buttons. Standard buttons have no idle animation.
-
----
+모든 버튼에 부착하여 누름/뗌/대기 상태를 관리합니다.
+- 눌렀을 때: 스케일 × 0.92 (80ms)
+- 뗐을 때: 스케일 × 1.05 → 1.0 (140ms)
+- 대기(CTA 전용): 부드럽게 커졌다 작아졌다 하는 루프 (2.5초 주기)
 
 ### UIFloatAnimation
-
-Attach to icons / objects. Gentle vertical float loop.
-
-| Parameter | Default | Notes |
-|-----------|---------|-------|
-| amplitude | 4dp | Vertical travel distance |
-| period | 3.0s | One full cycle |
-| easing | sine | Natural float feel |
-| randomOffset | true | Randomizes phase so multiple icons don't move in sync |
-
-Used on: gold coin icon, claimable chapter chest, unlocked stage node.
-
----
-
-### UIScalePulse
-
-Attach to elements requiring visual attention. Breathing scale loop.
-
-| Parameter | Default |
-|-----------|---------|
-| minScale | 1.0 |
-| maxScale | 1.12 |
-| period | 1.2s |
-| easing | ease-in-out |
-
-Used on: current playable stage node ring, claimable chest.
-
----
+아이콘이나 오브젝트에 부착하여 부드럽게 위아래로 떠 있는 효과를 줍니다.
+- 진폭(amplitude): 4dp
+- 주기(period): 3.0초
 
 ### UIPanelAppear / Disappear
-
-Standard appear/dismiss animation. Apply to all popups and overlays.
-
-| Direction | Scale | Alpha | Duration | Easing |
-|-----------|-------|-------|----------|--------|
-| Appear | 0.85 → 1.0 | 0 → 1 | 200ms | ease-out |
-| Disappear | 1.0 → 0.9 | 1 → 0 | 150ms | ease-in |
+모든 팝업과 오버레이에 적용되는 표준 등장/퇴장 애니메이션입니다.
+- 등장: 0.85 → 1.0 스케일, 0 → 1 알파 (200ms ease-out)
+- 퇴장: 1.0 → 0.9 스케일, 1 → 0 알파 (150ms ease-in)
 
 ---
 
-### UICountUp
+## 6. 설정 패널 (Settings Panel)
 
-Animates a number from 0 to target value.
+로비 헤더의 설정 버튼이나 인게임 일시정지 팝업을 통해 진입합니다. 바텀 시트(Bottom sheet) 형태의 슬라이드 업 패널로 구현됩니다.
 
-| Parameter | Default |
-|-----------|---------|
-| duration | 600ms |
-| easing | ease-out |
-| formatString | `{0:N0}` (thousands separator) |
-
-Used on: gold earned display, result screen clearance ratio.
-
----
-
-### UIStarPop
-
-Dedicated to result screen star appearance.
-
-```
-scale 0 → 1.3 → 1.0  +  particle burst
-```
-
-| Parameter | Value |
-|-----------|-------|
-| duration | 350ms |
-| easing | ease-out-back |
-| particle | 8-direction sparkle burst, `UI_CTA` color |
-| delay per star | 400ms after previous star completes |
-
-Unfilled (grey) stars: appear instantly, no animation.
-
----
-
-## 7. Prefab Folder Structure
-
-```
-Assets/
-└── UI/
-    ├── Prefabs/
-    │   ├── Base/           ← Generator output only. Never edit manually.
-    │   │   ├── Base_Button.prefab
-    │   │   ├── Base_Panel.prefab
-    │   │   └── Base_Text.prefab
-    │   ├── Final/          ← Prefab Variants. Manual customization here.
-    │   │   ├── Btn_Play.prefab
-    │   │   ├── Btn_Retry.prefab
-    │   │   ├── Panel_Result.prefab
-    │   │   ├── Panel_StageInfo.prefab
-    │   │   └── ...
-    │   └── Common/         ← Hand-crafted. Generator does not touch.
-    │       ├── ConfirmDialog.prefab
-    │       ├── Toast.prefab
-    │       ├── LoadingOverlay.prefab
-    │       ├── RewardPopup.prefab
-    │       └── NetworkError.prefab
-    └── Scenes/
-        ├── Boot.unity
-        ├── Lobby.unity
-        └── InGame.unity
-```
-
-`Common/` does not need Variant structure — generator never writes here.
-
----
-
-## 8. LocalizedText / TMPro Material Policy
-
-| Operation | Method | Variant safe? |
-|-----------|--------|--------------|
-| Apply TMP material globally | Change Material property on BasePrefab TMP component | ✓ Safe |
-| Add LocalizedText | Add as companion MonoBehaviour alongside TMP (do NOT remove TMP) | ✓ Safe |
-| Replace TMP with LocalizedText (TMP removed) | Forbidden — breaks Variant TMP references | ✗ Unsafe |
-
-`LocalizedText.cs` finds `TMP_Text` via GetComponent and sets `.text`. The TMP component itself stays on the BasePrefab permanently.
-
----
-
-## 9. Settings Panel
-
-Entry points: Lobby Header ⚙ button / InGame Pause popup [Settings] button.
-Display: bottom sheet slide-up panel. No scene transition → Canvas_Popup layer.
-
-```
-[dim overlay]
-┌──────────────────────┐  ← slide up from bottom (250ms ease-out)
-│  Settings             │
-│  ─────────────────   │
-│  BGM          [● ○]  │
-│  SFX          [● ○]  │
-│  Screen Shake [● ○]  │
-│                      │
-│  [Account          →]│  → opens Account Popup
-│                      │
-│  v1.0.0              │
-└──────────────────────┘
-```
-
-| Property | Value |
+| 제어 항목 | 내용 |
 |----------|-------|
-| Appear | Slide up + alpha 0→1 (250ms ease-out) |
-| Dismiss | Slide down + alpha 1→0 (200ms ease-in) |
-| Tap outside | Dismiss |
-| Toggle state | Stored in PlayerPrefs, restored on app restart |
-
-Pause popup updated button order: [Resume] [Restart] [Settings] [Stage Select]
+| BGM / SFX | 온/오프 토글 및 볼륨 조절 슬라이더 |
+| 화면 흔들림 | 온/오프 토글 (멀미 방지용) |
+| 계정 설정 | 클릭 시 계정 팝업으로 연결 |
+| 버전 정보 | 하단에 `v1.0.0` 표시 |
 
 ---
 
-## 10. UIScreenShake
+## 7. 튜토리얼 / 온보딩 시스템
 
-Device vibration replaced with Camera/Canvas shake for impact feedback.
-Apply to Canvas_InGame root RectTransform or Camera.
+### 노출 동작
+- **손가락 오버레이(finger_overlay)**: 타겟 UI 위에서 탭하는 손 모양 애니메이션 루프.
+- **말풍선(tooltip)**: 타겟 UI 옆에 텍스트와 함께 표시.
+- **하이라이트 전용(highlight_only)**: 타겟만 밝게 표시하고 나머지는 어둡게 처리.
 
-| Level | Amplitude | Duration | Oscillations | Triggers |
-|-------|-----------|----------|-------------|---------|
-| Medium | 6dp | 200ms | 3 | Bomb/Rocket explosion, Core Cell destroyed |
-| Heavy | 10dp | 350ms | 4 | Stage fail |
-
-Button tap: no shake — UIButtonAnimator scale bounce is sufficient.
-Implementation: sine curve oscillation on X/Y offset; guaranteed return to origin on complete.
-
----
-
-## 11. PerfectClear Effect (3-star only)
-
-Plays on Canvas_Overlay after ResultOverlay appears and all 3 star pops complete.
-
-```
-Above Result Overlay content (higher sibling order within Canvas_Overlay):
-  1. "Perfect!" text
-     scale 0 → 1.3 → 1.0  (400ms ease-out-back)
-  2. Confetti particles around text
-     8-direction radial burst, rotate while falling, duration 2.0s
-  3. Text idle wobble
-     ±3° rotation loop, period 1.0s (sustains during particles)
-```
-
-| Property | Value |
-|----------|-------|
-| Trigger | star_count == 3 (early clear) |
-| Particle colors | `UI_CTA` + `UI_SUCCESS` mix |
-| Interaction | Result buttons remain active; tap skips effect |
-
----
-
-## 12. ChapterUnlock Animation
-
-Full-screen exclusive sequence on new chapter unlock. Interaction blocked until complete.
-
-```
-Timeline (~2.7s total):
-  0.0s  Dim fade-in (200ms)
-  0.2s  Chapter card fly-in from bottom (400ms ease-out)
-  0.6s  "Chapter N Unlocked!" text pop (300ms ease-out-back)
-  0.9s  Fanfare particles (1.0s)
-  1.9s  Hold (500ms)
-  2.4s  Fade-out (300ms)
-  2.7s  Overlay removed → interaction restored
-```
-
-| Property | Value |
-|----------|-------|
-| Canvas layer | Canvas_Overlay (Sort: 20) |
-| Interaction block | Full Raycast Block + GraphicRaycaster disabled |
-| Skip | Not allowed — forced playback to completion |
-| Trigger | Stage clear causes first stage of next chapter to unlock |
-
----
-
-## 13. Tutorial / Onboarding System
-
-### Data Structure
-
-**tutorial_step table (CSV → info_generator)**
-
-| Column | Type | Notes |
-|--------|------|-------|
-| id | INT PK | |
-| trigger_type | ENUM | `first_launch` / `stage_clear` / `gimmick_appear` / `chapter_clear` |
-| trigger_value | VARCHAR | Value per trigger_type (stage_id, gimmick type, etc.). NULL for first_launch. |
-| step_index | INT | Order within same trigger group (0-based) |
-| content_type | ENUM | `finger_overlay` / `tooltip` / `highlight_only` |
-| target_ui_id | VARCHAR | UI element ID to highlight. Empty = full-screen dim. |
-| text_key | VARCHAR | Localization key for display text |
-
-**Server: user_tutorial_progress**
-
-| Column | Type |
-|--------|------|
-| user_id | INT FK |
-| tutorial_id | INT FK → tutorial_step.id |
-| viewed_at | DATETIME |
-
-### Display Behavior
-
-| content_type | Visual |
-|-------------|--------|
-| finger_overlay | Animated hand tap loops over target_ui_id element |
-| tooltip | Speech bubble next to target_ui_id + text |
-| highlight_only | target_ui_id brightened, rest dimmed |
-
-Interaction rule: only target_ui_id element is tappable; all others Raycast-blocked.
-Progression: advances by step_index order. Records viewed_at on server after final step.
-No repeat: if tutorial_id exists in user_tutorial_progress, skip.
-
-### Minimum Tutorial Set (MVP)
-
-| Trigger | Content |
-|---------|---------|
-| first_launch | Stage 1 entry → first tap guide (finger_overlay on board) |
-| gimmick_appear(protector) | First stage with Protector cell → tooltip explanation |
-| gimmick_appear(core) | First stage with Core cell → tooltip explanation |
-
----
-
-## 14. App Background / Resume Behavior
-
-| Situation | Behavior |
-|-----------|----------|
-| Home button / app switch during InGame | No pause. Board state kept in memory. |
-| App returns to foreground | Resume immediately. No popup. |
-| App fully killed, relaunch | Start from Lobby (scene reload). Board not restored. |
-| Board state recovery needed? | No — player retries the stage. |
-
-Detected via `OnApplicationPause(bool)` Unity callback. No need to distinguish full kill (Lobby restart is the default).
-
----
-
-## 15. Scroll Position Restore
-
-Auto-restore scroll to last played stage node on InGame → Lobby return.
-
-| Item | Detail |
-|------|--------|
-| Save timing | Before InGame scene loads (on stage tap) |
-| Storage | `ScrollStateCache` (session memory — no PlayerPrefs needed) |
-| Restore timing | Lobby Home tab OnEnable |
-| Restore method | Set `ScrollRect.verticalNormalizedPosition`, or compute node Y from last stage_id and jump immediately (no animation) |
+상호작용 규칙: 오직 타겟 UI 요소만 탭할 수 있으며 나머지는 레이캐스트가 차단됩니다.
+중복 방지: 서버의 `user_tutorial_progress`에 기록된 튜토리얼은 건너뜁니다.

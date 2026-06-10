@@ -1,129 +1,127 @@
-# InGame Core Design
+# 인게임 코어 디자인 (InGame Core Design)
 
-## Architecture
+## 아키텍처
 
-Pure C# rule engine + MonoBehaviour view layer. See ADR-006 for rationale.
+순수 C# 규칙 엔진 + MonoBehaviour 뷰 레이어. 근거는 ADR-006을 참조하세요.
 
 ```
-Input (New Input System)
+입력 (New Input System)
   → InGameController (MonoBehaviour)
-      ├── StageLoader        reads CSV → BoardState
-      ├── GroupSelector      BFS same-color group
-      ├── RemovalSystem      remove group + protector handling
-      ├── GravitySystem      downward column packing
-      ├── TurnManager        turn tracking
-      └── ClearEvaluator     ratio + core + star result
+      ├── StageLoader        CSV 읽기 → BoardState 생성
+      ├── GroupSelector      BFS를 이용한 동일 색상 그룹 선택
+      ├── RemovalSystem      그룹 제거 및 프로텍터 처리
+      ├── GravitySystem      하향 열 패킹(Packing)
+      ├── TurnManager        턴 추적
+      └── ClearEvaluator     비율 + 코어 + 별 결과 평가
             ↓
-      BoardView / CellView (MonoBehaviour, read-only from board state)
+      BoardView / CellView (MonoBehaviour, 보드 상태로부터 읽기 전용으로 동작)
 ```
 
-Rule engine classes have **zero UnityEngine dependency**.
+규칙 엔진 클래스들은 **UnityEngine 의존성이 전혀 없습니다.**
 
 ---
 
-## Module Breakdown
+## 모듈 상세 분석
 
-### Board/ (pure C# data)
+### Board/ (순수 C# 데이터)
 
-| class | role |
+| 클래스 | 역할 |
 |-------|------|
-| `CellType` | enum — Basic=0, Obstacle=1 (mirrors `GameEnums.cs`) |
-| `CellData` | struct — color_id, CellType, protector_strength (0–2), is_core |
-| `BoardState` | 2D `CellData?[,]` grid + `initial_valid_cells` count |
+| `CellType` | 열거형 — Basic=0, Obstacle=1 (`GameEnums.cs`와 미러링) |
+| `CellData` | 구조체 — color_id, CellType, protector_strength (0–2), is_core 포함 |
+| `BoardState` | 2D `CellData?[,]` 그리드 + `initial_valid_cells` 개수 관리 |
 
-`null` cell = empty slot (post-removal before gravity, or out-of-bounds).
+`null` 셀 = 빈 슬롯 (제거 후 중력 적용 전, 또는 경계 밖).
 
-### Rules/ (pure C# algorithms)
+### Rules/ (순수 C# 알고리즘)
 
-| class | role |
+| 클래스 | 역할 |
 |-------|------|
-| `GroupSelector` | BFS from tap position; returns `List<(int row, int col)>`. Size ≥ 1 always valid (ADR-004). |
-| `RemovalSystem` | Iterates group; calls ProtectorSystem per cell; removes cells with protector_strength=0 |
-| `ProtectorSystem` | Direct-hit logic: decrement protector_strength; expose underlying cell if 0 (ADR-002) |
-| `GravitySystem` | Per-column: compact non-null cells downward; fill top with null |
-| `ClearEvaluator` | Computes clearance_ratio; checks core cleared; returns `StarResult` |
+| `GroupSelector` | 탭 위치로부터 BFS 수행; `List<(int row, int col)>` 반환. 크기 1 이상이면 항상 유효. |
+| `RemovalSystem` | 그룹을 순회하며 각 셀에 대해 ProtectorSystem 호출; protector_strength가 0인 셀 제거 |
+| `ProtectorSystem` | 직접 타격 로직: protector_strength 감소; 0이 되면 밑바닥 셀 노출 |
+| `GravitySystem` | 열 단위: null이 아닌 셀들을 아래로 압축; 위쪽은 null로 채움 |
+| `ClearEvaluator` | 클리어 비율 계산; 코어 제거 확인; `StarResult` 반환 |
 
-### Controller/ (MonoBehaviour layer)
+### Controller/ (MonoBehaviour 레이어)
 
-| class | role |
+| 클래스 | 역할 |
 |-------|------|
-| `StageLoader` | Parses CTM hex `cells` string → `BoardState`; parses `color_ids` |
-| `TurnManager` | Tracks `remaining_turns`; `Consume()` returns bool (turns left?) |
-| `InGameController` | MonoBehaviour orchestrator; owns rule engine instances; drives tap → result flow |
+| `StageLoader` | CTM 헥사 문자열 파싱 → `BoardState` 생성; `color_ids` 파싱 |
+| `TurnManager` | `remaining_turns` 추적; `Consume()`은 남은 턴 여부 반환 |
+| `InGameController` | MonoBehaviour 오케스트레이터; 규칙 엔진 인스턴스 소유; 탭 → 결과 흐름 구동 |
 
-### View/ (MonoBehaviour, rendering only)
+### View/ (MonoBehaviour, 렌더링 전용)
 
-| class | role |
+| 클래스 | 역할 |
 |-------|------|
-| `BoardView` | Instantiates/positions `CellView` grid; updates on board change |
-| `CellView` | Renders single cell: color, type sprite, protector overlay, core indicator |
+| `BoardView` | `CellView` 그리드 생성 및 배치; 보드 변경 시 업데이트 |
+| `CellView` | 단일 셀 렌더링: 색상, 유형 스프라이트, 프로텍터 오버레이, 코어 표시기 |
 
 ---
 
-## Tap Flow
+## 탭 흐름 (Tap Flow)
 
 ```
-1. Player taps screen position
-2. InGameController → hit test → (row, col)
+1. 플레이어가 화면 위치 탭
+2. InGameController → 히트 테스트 → (행, 열) 도출
 3. GroupSelector.FindGroup(board, row, col)
-   → BFS 4-directional same-color adjacent cells
-   → returns List<(row,col)>, size ≥ 1
+   → 4방향 인접 동일 색상 BFS 수행
+   → List<(row,col)> 반환 (크기 ≥ 1)
 4. RemovalSystem.Remove(board, group)
-   → for each cell in group:
+   → 그룹 내 각 셀에 대해:
        ProtectorSystem.DirectHit(cell)
-         protector_strength > 0 → strength--   (cell stays)
-         protector_strength = 0 → board[r,c] = null  (cell removed)
+         protector_strength > 0 → 강도 감소 (셀 유지)
+         protector_strength = 0 → board[r,c] = null (셀 제거)
 5. GravitySystem.Apply(board)
-   → each column: non-null cells pack downward
+   → 각 열별로 null이 아닌 셀들을 아래로 채움
 6. TurnManager.Consume()
-   → remaining_turns--
+   → 남은 턴 감소
 7. ClearEvaluator.Evaluate(board, initialValidCells, hasCoreFlag)
-   → clearance_ratio = (initialValidCells - remaining_valid) / initialValidCells
-   → core_cleared = no is_core cell in remaining cells
-   → StarResult: Fail / Star1 / Star2 / Star3
-8. InGameController handles StarResult
-   → Star3 or turns=0 → stage end
-   → else → await next tap
+   → 클리어 비율 = (초기 유효 셀 - 남은 유효 셀) / 초기 유효 셀
+   → 코어 클리어 여부 = 남은 셀 중 is_core가 없는지 확인
+   → StarResult 반환: 실패 / 별1 / 별2 / 별3
+8. InGameController에서 StarResult 처리
+   → 별3개 획득 또는 턴 0 → 스테이지 종료
+   → 그 외 → 다음 탭 대기
 ```
 
 ---
 
-## Clear Conditions
+## 클리어 조건
 
 ```
-initial_valid_cells = total board cells − Obstacle cells   (computed at stage load)
-remaining_valid     = non-null, non-Obstacle cells on board at evaluation
+initial_valid_cells = 전체 보드 셀 - 장애물(Obstacle) 셀 (스테이지 로드 시 계산)
+remaining_valid     = 평가 시점에 보드에 남은 null이 아니고 장애물이 아닌 셀들
 
-clearance_ratio = (initial_valid_cells − remaining_valid) / initial_valid_cells
+클리어 비율 = (initial_valid_cells - remaining_valid) / initial_valid_cells
 
-WIN  = clearance_ratio ≥ star1_ratio AND core_cleared
-FAIL = clearance_ratio < star1_ratio OR NOT core_cleared
+승리(WIN)  = 클리어 비율 ≥ star1_ratio AND 코어 클리어됨
+실패(FAIL) = 클리어 비율 < star1_ratio OR 코어 미제거
 
-Stars:
-  3 = all valid cells removed (remaining_valid = 0)  ← early termination
-  2 = clearance_ratio ≥ star2_ratio
-  1 = clearance_ratio ≥ star1_ratio
+별(Stars):
+  3 = 모든 유효 셀 제거 (remaining_valid = 0) ← 조기 종료
+  2 = 클리어 비율 ≥ star2_ratio
+  1 = 클리어 비율 ≥ star1_ratio
 ```
 
 ---
 
-## Stage Loading
+## 스테이지 로딩
 
-`StageLoader` input: `StageRow` (generated C# model from `stage.csv`).
+`StageLoader` 입력: `StageRow` (`stage.csv`에서 생성된 C# 모델).
 
 ```
-cells string  → split into 3-char chunks (CTM hex)
-chunk index i → row = i / board_width, col = i % board_width
-C hex char    → color_id (0–15)
-T hex char    → CellType (0=Basic, 1=Obstacle)
-M hex char    → protector_strength = M & 0x3, is_core = (M & 0x4) != 0
+cells 문자열  → 3자리의 CTM 헥사 청크로 분할
+청크 인덱스 i → 행 = i / 너비, 열 = i % 너비
+C 헥사 문자   → 컬러 ID (0–15)
+T 헥사 문자   → 셀 유형 (0=기본, 1=장애물)
+M 헥사 문자   → 프로텍터 강도 = M & 0x3, 코어 여부 = (M & 0x4) != 0
 ```
-
-`color_ids` string → parsed as comma-separated ints → available color set for UI highlight.
 
 ---
 
-## Namespace Convention
+## 네임스페이스 컨벤션
 
 ```
 Game.InGame.Board      → CellData, BoardState
@@ -131,24 +129,3 @@ Game.InGame.Rules      → GroupSelector, RemovalSystem, ProtectorSystem, Gravit
 Game.InGame.Controller → InGameController, TurnManager, StageLoader
 Game.InGame.View       → BoardView, CellView
 ```
-
----
-
-## Portal & Conveyor Mechanics
-
-### Portal (Teleport Cell) Gravity Resolution
-- When resolving gravity, `GravitySystem` first builds column chains.
-- For column columns containing Portals (Inlet and Outlet):
-  - The Inlet cell acts as the top of its column segment, and the Outlet cell acts as the bottom of the column segment receiving from it.
-  - Vacancy at or below the Outlet pulls cells from above the Inlet:
-    `board[outletRow, outletCol] = board[inletRow - 1, inletCol]`
-  - Falling animation is tracked by `BoardView.PlayGravity` using a multi-phase translation pathway instead of a simple linear vertical path.
-
-### Conveyor Belt Shift Resolution
-- Happens inside `InGameController.HandleTapSequence` (and after items) **before** `GravitySystem.Apply()`.
-- Runs conveyor paths:
-  - Collects all cells lying on a conveyor path in order.
-  - Shifts cell data arrays by 1 step in the path direction.
-  - The tail of the conveyor is filled by the cell sliding off the adjacent slot, and the head slides onto the next.
-  - Overhangs created by conveyor shifts are subsequently resolved by `GravitySystem.Apply()`.
-

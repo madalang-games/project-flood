@@ -1,129 +1,88 @@
-# UI/UX — Auth Flow
+# UI/UX — 인증 흐름 (Auth Flow)
 
-## Boot Auth Sequence
-
-```
-Boot
-  ├── access token valid
-  │     → Lobby (authenticated)
-  ├── access token expired + refresh token valid
-  │     → silent refresh → Lobby
-  ├── refresh expired + OAuth credential cached
-  │     → silent re-auth → new tokens → Lobby
-  ├── no token (first launch / reinstall)
-  │     → clientLogin (device UUID) → Lobby (guest)
-  └── all failed (OAuth account exists, all tokens expired, re-auth failed)
-        → Re-login Required screen  (NEVER auto-fallback to guest)
-```
-
-## Re-login Required Screen
-
-Shown only when OAuth account exists but all tokens are expired.
+## 부트(Boot) 인증 시퀀스
 
 ```
-┌──────────────────────────┐
-│  Session expired          │
-│                          │
-│  [Re-login]              │  → OAuth flow
-│  [Continue as Guest]     │  → explicit choice only
-└──────────────────────────┘
+Boot (시작)
+  ├── 액세스 토큰 유효함
+  │     → 로비 (인증 완료 상태)
+  ├── 액세스 토큰 만료 + 리프레시 토큰 유효함
+  │     → silent 리프레시 → 로비
+  ├── 리프레시 만료 + OAuth 인증 정보 캐싱됨
+  │     → silent 재인증 → 새 토큰 발급 → 로비
+  ├── 토큰 없음 (최초 실행 / 재설치)
+  │     → clientLogin (기기 UUID 사용) → 로비 (게스트 상태)
+  └── 모두 실패 (OAuth 계정은 존재하나 토큰 만료 및 재인증 실패)
+        → 재로그인 필요 화면 노출 (절대로 자동으로 게스트로 전환하지 않음)
 ```
 
-[Continue as Guest]: must display warning — "Progress linked to your account will not be accessible."
+## 재로그인 필요 화면 (Re-login Required Screen)
 
----
-
-## Guest Mode
-
-- No guest indicator shown in Lobby UI.
-- Visible only in Account popup: "Guest mode — link an account to keep progress across devices."
-
-### OAuth Link Prompt (once after Chapter 1 clear)
+OAuth 계정이 존재하지만 모든 토큰이 만료되었을 때만 표시됩니다.
 
 ```
 ┌──────────────────────────┐
-│  Save your progress       │
+│  세션이 만료되었습니다     │
 │                          │
-│  Link an account to keep  │
-│  data after reinstall or  │
-│  device change.           │
-│                          │
-│  [Link with Google]       │
-│  [Later]                 │
+│  [재로그인]               │  → OAuth 흐름 시작
+│  [게스트로 계속하기]       │  → 명시적인 선택 시에만 진행
 └──────────────────────────┘
 ```
 
-- [Later]: no repeat. Manual link via Settings > Account.
-- Trigger: Chapter 1 clear event, fires once.
+[게스트로 계속하기]: "기존 계정에 저장된 진행도는 불러올 수 없습니다."라는 경고를 반드시 표시해야 합니다.
 
 ---
 
-## Account Popup (Lobby Header avatar tap)
+## 게스트 모드 (Guest Mode)
+
+- 로비 UI에서는 게스트 표시를 하지 않습니다.
+- 계정 팝업에서만 표시: "게스트 모드 — 계정을 연동하여 기기 변경 시에도 데이터를 유지하세요."
+
+### OAuth 연동 유도 (챕터 1 클리어 후 1회 노출)
+
+```
+┌──────────────────────────┐
+│  진행도 저장하기          │
+│                          │
+│  계정을 연동하면 앱 재설치  │
+│  후에도 데이터를 유지합니다. │
+│                          │
+│  [Google로 연동]          │
+│  [나중에]                 │
+└──────────────────────────┘
+```
+
+- 트리거: 챕터 1 클리어 이벤트 발생 시 1회만 호출됩니다.
+
+---
+
+## 계정 팝업 (로비 헤더 아바타 탭 시)
 
 ```
 ┌──────────────────────┐
-│  [Avatar]             │
-│  Guest  (or user ID) │
+│  [아바타]             │
+│  게스트 (또는 유저 ID) │
 │                      │
-│  [Link Account]      │  ← guest only
-│  [Switch Account]    │  ← authenticated only
-│  [Logout]            │
+│  [계정 연동하기]      │  ← 게스트일 때만 노출
+│  [계정 전환하기]      │  ← 인증 완료 상태일 때만 노출
+│  [로그아웃]           │
 └──────────────────────┘
 ```
 
 ---
 
-## Account Switching
+## 계정 충돌 해결 (Guest → OAuth 연동 시)
 
-1. Tap [Switch Account]
-2. Confirm dialog: "Switching accounts will replace local data with the new account's data. Your current account data is preserved on the server."
-3. OAuth flow
-4. On complete → clear all local cache → load new account data from server
+게스트 계정을 이미 서버에 진행 데이터가 있는 소셜 계정(Google/Apple)에 연동하려고 할 때, 클라이언트는 두 데이터를 비교하여 사용자가 보존할 데이터를 직접 선택할 수 있도록 해야 합니다.
 
----
-
-## Guest → OAuth Link Conflict Resolution (Royal Match Style)
-
-When linking a guest account to a social account (Google/Apple) that already has progress on the server, the client must present a comparison card to let the user explicitly choose which progress to keep.
-
-```
-┌────────────────────────────────────────────────────────┐
-│               Resolve Account Conflict                 │
-│                                                        │
-│  We found progress on your social account.             │
-│  Please select the save file you wish to keep:         │
-│                                                        │
-│  [ Local (Guest) Save ]     [ Cloud (Social) Save ]    │
-│  - Max Stage: Stage 5       - Max Stage: Stage 48      │
-│  - Gold: 350                - Gold: 1,420              │
-│  - Stars: 12                - Stars: 115               │
-│  - Items: 2                 - Items: 15                │
-│                                                        │
-│  [ Keep Local Save ]        [ Keep Cloud Save ]        │
-└────────────────────────────────────────────────────────┘
-```
-
-- **Conflict Screen**: Visual panel showing side-by-side comparison of local vs cloud data.
-- **Confirmation**: Selecting a save deletes the unselected progress from the server (or marks it as inactive/archived) and updates the active account reference.
+- **충돌 화면**: 로컬(게스트) 데이터와 클라우드(소셜) 데이터를 나란히 보여주는 비교 패널을 노출합니다.
+- **확인**: 데이터를 선택하면 선택되지 않은 진행도는 서버에서 삭제(또는 아카이브)되고 활성 계정 참조가 업데이트됩니다.
 
 ---
 
-## API Transactional Rate Limiting
+## API 트랜잭션 요청 제한 (Rate Limiting)
 
-To prevent 어뷰징 (abuse) via cheat scripts calling game endpoints repeatedly:
-- **Rate Limit Scope**: Applies to transactional endpoints (Stage Attempt Start, Stage Attempt Clear, Reward Claim, Ad SSV Reward Claim).
-- **Rule Policy**: Standard sliding window rate limit of **5 requests per minute** per user ID on transactional endpoints.
-- **Handling**: Over-limit requests return `429 Too Many Requests` status with error code `RATE_LIMITED`. Client shows confirm/retry dialog and blocks clicking.
-
----
-
-## clientLogin
-
-| Case | Behavior |
-|------|----------|
-| First launch | Generate device UUID → store locally → server clientLogin |
-| Re-launch (UUID intact) | clientLogin with same UUID → existing guest data retained |
-| Reinstall | New UUID generated → new guest account → previous guest data lost |
-| After OAuth link | clientLogin unused → OAuth auth only |
-
-Guest data loss on reinstall: no warning shown (no recovery path without OAuth link).
+부정 행위 방지를 위해 다음과 같은 제한을 적용합니다:
+- **대상**: 스테이지 시작/클리어, 보상 수령, 광고 보상 수령 등 트랜잭션 엔드포인트.
+- **정책**: 유저당 **분당 5회**의 슬라이딩 윈도우 요청 제한 적용.
+- **처리**: 제한 초과 시 `RATE_LIMITED` 에러와 함께 429 응답을 반환하며, 클라이언트는 확인/재시도 다이얼로그를 띄우고 클릭을 차단합니다.

@@ -1,8 +1,8 @@
-# UI/UX — Canvas Architecture
+# UI/UX — 캔버스 아키텍처 (Canvas Architecture)
 
-## Overview
+## 개요
 
-Hybrid model: DDOL UIManager (persistent) + per-scene Canvas (scene-specific UI).
+하이브리드 모델: persistent 상태인 DDOL UIManager + 씬별 전용 Canvas (Scene-specific UI).
 
 ```
 [UIManager — DontDestroyOnLoad]
@@ -23,37 +23,37 @@ Hybrid model: DDOL UIManager (persistent) + per-scene Canvas (scene-specific UI)
 
 ---
 
-## DDOL UIManager Canvas Layers
+## DDOL UIManager 캔버스 레이어
 
-| Canvas | Sort Order | Contents | Instance Method |
+| 캔버스 | 정렬 순서(Sort) | 주요 내용 | 인스턴스화 방식 |
 |--------|-----------|----------|----------------|
-| Canvas_Popup | 10 | ConfirmDialog, StageInfo, AccountPopup, SettingsPanel, RewardPopup | Dynamic Instantiate/Destroy |
-| Canvas_Overlay | 20 | ResultOverlay, FailOverlay, PausePopup, ChapterUnlockOverlay, TutorialOverlay | Dynamic Instantiate/Destroy |
-| Canvas_Toast | 30 | Toast | Static instance, Show/Hide |
-| Canvas_Loading | 100 | LoadingOverlay, NetworkError | Static instance, Show/Hide |
+| Canvas_Popup | 10 | 확인 다이얼로그, 스테이지 정보, 계정 팝업, 설정 패널, 보상 팝업 | 동적 생성/파괴 |
+| Canvas_Overlay | 20 | 결과 오버레이, 실패 오버레이, 일시정지 팝업, 챕터 해금 오버레이, 튜토리얼 오버레이 | 동적 생성/파괴 |
+| Canvas_Toast | 30 | 토스트(Toast) 알림 | 정적 인스턴스, 표시/숨기기 |
+| Canvas_Loading | 100 | 로딩 오버레이, 네트워크 에러 | 정적 인스턴스, 표시/숨기기 |
 
-**Stacking rules:**
-- Overlay: one at a time. New overlay request closes existing one first.
-- Popup: stackable. ConfirmDialog can stack on top of SettingsPanel.
-- Back gesture: dismisses top-most Popup. Overlays close via buttons only.
+**중첩 규칙:**
+- 오버레이(Overlay): 한 번에 하나만 표시. 새 오버레이 요청 시 기존 오버레이를 먼저 닫음.
+- 팝업(Popup): 중첩 가능. 확인 다이얼로그는 설정 패널 위에 뜰 수 있음.
+- 백(Back) 제스처: 가장 위에 있는 팝업을 닫음. 오버레이는 버튼을 통해서만 닫힘.
 
 ---
 
-## Per-Scene Canvas Contents
+## 씬별 캔버스 내용
 
-| Scene | Canvas_Scene contents |
+| 씬(Scene) | Canvas_Scene 주요 내용 |
 |-------|----------------------|
-| Boot | Logo image, loading spinner |
-| Lobby | Header (Avatar, Gold), BottomNavBar, TabContent (Home/Shop/Ranking) |
-| InGame | HUD (Pause button, TurnCounter, RatioBar), BoardContainer anchor |
+| Boot | 로고 이미지, 로딩 스피너 |
+| Lobby | 헤더 (아바타, 골드), 하단 네비게이션 바, 탭 콘텐츠 (홈/상점/랭킹) |
+| InGame | HUD (일시정지 버튼, 턴 카운터, 비율 바), 보드 컨테이너 앵커 |
 
-Scene UI always renders at Sort Order 0 — always behind UIManager canvases (10–100).
+씬 UI는 항상 정렬 순서 0으로 렌더링되어 UIManager 캔버스(10~100)보다 항상 뒤에 위치합니다.
 
 ---
 
-## Canvas Scaler — Identical Settings on ALL Canvases (required)
+## Canvas Scaler — 모든 캔버스에 동일 설정 적용 (필수)
 
-| Property | Value |
+| 속성 | 값 |
 |----------|-------|
 | UI Scale Mode | Scale With Screen Size |
 | Reference Resolution | 1080 × 1920 |
@@ -61,84 +61,44 @@ Scene UI always renders at Sort Order 0 — always behind UIManager canvases (10
 | Match | 0.5 |
 | Reference Pixels Per Unit | 100 |
 
-Mismatch between any canvases causes cross-layer size inconsistency.
+캔버스 간 설정이 다를 경우 레이어 간 크기 불일치가 발생합니다.
 
 ---
 
-## SafeAreaHandler Component
+## SafeAreaHandler 컴포넌트
 
-Handles notch / Dynamic Island / home bar (iPhone X+). Attach to edge-adjacent UI containers.
+노치 / 다이내믹 아일랜드 / 홈 바(iPhone X 이상)에 대응합니다. 화면 가장자리에 인접한 UI 컨테이너에 부착합니다.
 
-**Attach targets:**
+**부착 대상:**
+- 로비 헤더 컨테이너
+- 하단 네비게이션 바 컨테이너
+- 인게임 HUD 컨테이너
+- DDOL Canvas_Loading 패널
 
-| Element | Reason |
-|---------|--------|
-| Lobby Header container | Respect top safe area |
-| BottomNavBar container | Respect bottom safe area |
-| InGame HUD container | Respect top safe area |
-| DDOL Canvas_Loading panel | Full-screen overlay needs top + bottom |
+배경 이미지: 화면 끝까지 채워지는 것(bleed)을 허용하며 SafeAreaHandler가 필요하지 않습니다.
 
-Background images: edge-to-edge bleed is allowed (non-interactive). No SafeAreaHandler needed.
+---
 
-**Implementation:**
-```csharp
-void ApplySafeArea() {
-    Rect safe = Screen.safeArea;
-    Vector2 screenSize = new Vector2(Screen.width, Screen.height);
-    rt.anchorMin = safe.position / screenSize;
-    rt.anchorMax = (safe.position + safe.size) / screenSize;
-}
-// Call on both OnEnable and OnRectTransformDimensionsChange
+## UIManager API (동작 명세)
+
+```
+UIManager.ShowPopup<T>(params)      → Canvas_Popup에 T 생성, 인스턴스 반환
+UIManager.ShowOverlay<T>(params)    → Canvas_Overlay에 T 생성 (기존 오버레이 먼저 닫음)
+UIManager.ShowToast(msg, type)      → Canvas_Toast의 토스트 활성화
+UIManager.ShowLoading()             → Canvas_Loading의 로딩 오버레이 활성화
+UIManager.HideLoading()             → 로딩 오버레이 비활성화
+UIManager.ShowNetworkError(onRetry) → 네트워크 에러 활성화, 재시도 콜백 바인딩
+UIManager.CloseTopPopup()           → Canvas_Popup의 최상단 아이템 제거
 ```
 
 ---
 
-## UIManager API (behavioral spec)
+## 반응형 내부 요소
 
-```
-UIManager.ShowPopup<T>(params)      → instantiate T on Canvas_Popup, return instance
-UIManager.ShowOverlay<T>(params)    → instantiate T on Canvas_Overlay (closes existing overlay first)
-UIManager.ShowToast(msg, type)      → activate Toast on Canvas_Toast
-UIManager.ShowLoading()             → activate LoadingOverlay on Canvas_Loading
-UIManager.HideLoading()             → deactivate LoadingOverlay
-UIManager.ShowNetworkError(onRetry) → activate NetworkError, bind retry callback
-UIManager.CloseTopPopup()           → destroy top-most item on Canvas_Popup
-```
+### TMP 폰트 크기 정책
+- 고정된 헤더, 버튼 라벨, 숫자는 **고정 크기**를 사용하며 Canvas Scaler가 기기별 스케일링을 담당합니다.
+- 플레이어 이름, 아이템 설명 등 동적 콘텐츠는 **TMP Auto Sizing**을 사용합니다 (최소 12dp).
 
----
-
-## Responsive Inner Elements
-
-### TMP FontSize Policy
-
-| Case | Setting |
-|------|---------|
-| Fixed headers, button labels, numbers | **Fixed size.** Canvas Scaler handles device scaling. |
-| Dynamic content (player names, item descriptions) | TMP Enable Auto Sizing: min 12dp, max = designed size |
-
-Never apply Auto Sizing to text that drives layout (parent has ContentSizeFitter) — causes layout instability.
-
-### RectTransform Sizing Policy
-
-| Pattern | Unity Component | Use Case |
-|---------|----------------|---------|
-| Width driven by text length | ContentSizeFitter (Horizontal Fit) | Dynamic labels, tags |
-| Height driven by line count | ContentSizeFitter (Vertical Fit) | Tooltips, description boxes |
-| List / grid items | VerticalLayoutGroup / GridLayoutGroup | Stage nodes, reward item list |
-| Fill remaining space | LayoutElement (flexibleWidth/Height = 1) | Spacers, stretch containers |
-| Maintain square aspect | AspectRatioFitter | Cell icons, avatars |
-
-Fixed-size panels (popups, HUD): do not apply ContentSizeFitter. Overflow content → handle with ScrollRect.
-
-### Supported Aspect Ratios
-
-Canvas Scaler Match 0.5 coverage:
-
-| Ratio | Example devices | Supported |
-|-------|----------------|-----------|
-| 16:9 | Older Android | ✓ baseline |
-| 18:9 – 20:9 | Most modern phones | ✓ automatic |
-| 19.5:9 (Dynamic Island) | iPhone 14+ | ✓ requires SafeAreaHandler |
-| 4:3 (tablet) | iPad | Layout drift possible — not supported in MVP |
-
-Tablet support: Phase 2, separate LayoutProfile branch.
+### 지원 종횡비
+- 16:9 (구형 안드로이드), 18:9~20:9 (최신 폰), 19.5:9 (다이내믹 아일랜드)를 기본적으로 지원합니다.
+- 태블릿(4:3)은 레이아웃 틀어짐이 발생할 수 있어 MVP에서는 지원하지 않으며, 2단계에서 별도 레이아웃 프로필로 지원할 예정입니다.

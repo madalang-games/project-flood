@@ -1,433 +1,153 @@
-# Item System Design — project-flood
+# 아이템 시스템 기획서 — project-flood
 
-Date: 2026-06-04  
-Status: draft (decisions confirmed)  
-Author: (AI – Senior System/Content/UI/UX Design role)  
-Relates to: game-design.md §8, ingame-core-design.md §Tap Flow
-
----
-
-## 1. Overview
-
-Items are player-activated boosters that modify board state outside of the normal tap-group flow. MVP provides five items: **Bomb**, **H-Rocket**, **ColorSweep**, **RowShift**, **CellSwap**. Dev mode provides unlimited inventory via Inspector toggle; Phase 2 introduces earn/purchase mechanics.
-
-Items do not consume a turn. Game ends when turns reach 0; item use is not possible at turns = 0.
+날짜: 2026-06-04  
+상태: 초안 (결정 사항 확정)  
+작성자: (AI – 시니어 시스템/콘텐츠/UI/UX 디자인 역할)  
+관련 문서: game-design.md §8, ingame-core-design.md §탭 흐름
 
 ---
 
-## 2. Item Definitions
+## 1. 개요
 
-| Item | Effect | Affected Area |
+아이템은 플레이어가 활성화하여 일반적인 탭-그룹 흐름 외에 보드 상태를 수정할 수 있는 부스터입니다. MVP에서는 **폭탄(Bomb)**, **H-로켓(H-Rocket)**, **컬러 스윕(ColorSweep)**, **로우 시프트(RowShift)**, **셀 스왑(CellSwap)**의 5종을 제공합니다. 개발 모드에서는 인스펙터 토글을 통해 무제한 인벤토리를 제공하며, 2단계에서는 획득/구매 메커니즘이 도입됩니다.
+
+아이템 사용은 턴을 소비하지 않습니다. 게임은 턴수가 0이 되면 종료되며, 턴수가 0인 상태에서는 아이템 사용이 불가능합니다.
+
+---
+
+## 2. 아이템 정의
+
+| 아이템 | 효과 | 영향 범위 |
 |------|--------|---------------|
-| Bomb | Removes all cells in 3×3 centered on target, including center | 9 cells (3×3) |
-| H-Rocket | Sweeps target row left → right; stops after first Obstacle destroyed | Entire row until Obstacle or end |
-| ColorSweep | Removes all cells on the board matching the color of the tapped cell | All cells of matching color |
-| RowShift | Packs all cells in each row toward the swipe direction; swipe gesture with minimum distance threshold | Entire board (per-row compaction) |
-| CellSwap | Swaps the positions of two tapped cells | 2 cells |
+| 폭탄 (Bomb) | 타겟을 중심으로 3×3 영역의 모든 셀 제거 | 9개 셀 (3×3) |
+| H-로켓 | 타겟 행을 왼쪽에서 오른쪽으로 휩쓸며 제거; 첫 장애물(Obstacle) 파괴 후 정지 | 장애물 충돌 전 또는 끝까지의 전체 행 |
+| 컬러 스윕 | 보드 내에서 탭한 셀과 동일한 색상의 모든 셀 제거 | 일치하는 색상의 모든 셀 |
+| 로우 시프트 | 각 행의 모든 셀을 스와이프 방향으로 압축; 최소 거리 임계값이 있는 스와이프 제스처 사용 | 보드 전체 (행 단위 압축) |
+| 셀 스왑 | 탭한 두 셀의 위치를 서로 교체 | 2개 셀 |
 
 ---
 
-## 3. Target Validity
+## 3. 타겟 유효성 (Target Validity)
 
-Valid tap = any non-null, non-Void cell.
+유효한 탭 대상 = null이 아니며 보이드(Void)가 아닌 모든 셀.
 
-| Tap target | Valid? | Reason |
+| 탭 타겟 | 유효 여부 | 사유 |
 |------------|--------|--------|
-| Basic / Protector / Core | Yes | Primary target |
-| Obstacle | Yes | Valid position; destroyed by item |
-| Void | **No** | Non-existent position; nothing to reference |
-| Empty slot (null) | **No** | Nothing to target |
+| 기본 / 프로텍터 / 코어 | 예 | 주요 타겟 |
+| 장애물 | 예 | 유효한 위치; 아이템으로 파괴 가능 |
+| 보이드 (Void) | **아니오** | 존재하지 않는 위치; 참조할 대상 없음 |
+| 빈 슬롯 (null) | **아니오** | 타겟팅할 대상 없음 |
 
-**Invalid tap behavior:** Silently ignored. Player remains in Use Phase and can re-tap.
+**유효하지 않은 탭 동작:** 자동 무시됨. 플레이어는 사용 단계(Use Phase)를 유지하며 다시 탭할 수 있습니다.
 
-*RowShift exception: uses swipe gesture, not tap. Target validity does not apply; swipe is captured at board level.*
+*로우 시프트 예외: 탭이 아닌 스와이프 제스처를 사용합니다. 타겟 유효성은 적용되지 않으며 보드 레벨에서 스와이프를 캡처합니다.*
 
 ---
 
-## 4. Void & Obstacle Policy
+## 4. 보이드(Void) 및 장애물(Obstacle) 정책
 
-### 4.1 Bomb (3×3, fixed radius — no travel)
+### 4.1 폭탄 (3×3, 고정 반경 — 이동 없음)
 
-No travel direction. All 9 cells in the 3×3 grid resolve simultaneously.
+이동 방향이 없습니다. 3×3 그리드 내의 모든 9개 위치가 동시에 해결됩니다.
 
-| Cell in 3×3 radius | Result |
+| 3×3 반경 내 셀 | 결과 |
 |--------------------|--------|
-| Basic / Core (no protector) | Removed |
-| Protector cell | One layer stripped (DirectHit) |
-| Obstacle | **Removed** |
-| Void position | Skipped (non-existent) |
-| Empty (null) | Skipped |
+| 기본 / 코어 (프로텍터 없음) | 제거됨 |
+| 프로텍터 셀 | 레이어 1개 제거 (DirectHit) |
+| 장애물 | **제거됨** |
+| 보이드 위치 | 건너뜀 (존재하지 않음) |
+| 빈 공간 (null) | 건너뜀 |
 
-### 4.2 H-Rocket (linear sweep)
+### 4.2 H-로켓 (선형 스윕)
 
-Rocket travels cell-by-cell in sweep direction.
+로켓은 스윕 방향으로 셀 단위로 이동합니다.
 
-| Cell encountered | Result | Continues? |
+| 조우한 셀 | 결과 | 계속 이동 여부 |
 |------------------|--------|------------|
-| Basic / Core (no protector) | Removed | Yes |
-| Protector cell | One layer stripped (DirectHit) | Yes |
-| Void position | Skipped (non-existent, position has no cell) | **Yes** |
-| Obstacle | **Removed** | **No — stops here** |
-| Empty (null) | Skipped | Yes |
-| Board edge | — | Terminates |
+| 기본 / 코어 (프로텍터 없음) | 제거됨 | 예 |
+| 프로텍터 셀 | 레이어 1개 제거 (DirectHit) | 예 |
+| 보이드 위치 | 건너뜀 (존재하지 않는 위치) | **예** |
+| 장애물 | **제거됨** | **아니오 — 여기서 정지** |
+| 빈 공간 (null) | 건너뜀 | 예 |
+| 보드 가장자리 | — | 종료 |
 
-**Void = skip-continue.** Void is a board shape boundary (invisible, non-existent cell). The rocket skips the position and continues to the next cell. Non-rectangular boards would otherwise make rockets unpredictably short.
+**보이드 = 건너뛰고 계속.** 보이드는 보드 모양 경계(보이지 않으며 존재하지 않는 셀)입니다. 로켓은 해당 위치를 건너뛰고 다음 셀로 이동합니다.
 
-**Obstacle = destroy-and-stop.** The Obstacle is removed, then the rocket halts. Cells beyond the Obstacle in that row are untouched. This makes Obstacles a meaningful strategic blocker against rockets — level designers can use Obstacle placement to limit rocket reach.
+**장애물 = 파괴 후 정지.** 장애물을 제거한 후 로켓이 멈춥니다. 해당 행의 장애물 너머에 있는 셀들은 영향을 받지 않습니다.
 
-### 4.3 ColorSweep (board-wide color removal)
+### 4.3 컬러 스윕 (보드 전체 색상 제거)
 
-All cells on the board sharing the color ID of the tapped cell are targeted simultaneously.
+탭한 셀의 컬러 ID와 일치하는 보드상의 모든 셀을 동시에 타격합니다.
 
-| Cell type | Result |
+| 셀 유형 | 결과 |
 |-----------|--------|
-| Basic / Core (matching color, no protector) | Removed |
-| Protector cell (matching color) | One layer stripped (DirectHit) |
-| Obstacle | Not affected (Obstacles have no color ID) |
-| Void position | Skipped |
-| Empty (null) | Skipped |
-| Any cell with different color ID | Not affected |
-
-**Protector rule:** ColorSweep applies DirectHit to each matching cell individually. A cell with protector strength > 0 loses one layer but is not removed. Player may ColorSweep again after gravity to remove the now-unprotected cell.
-
-### 4.4 RowShift (horizontal compaction)
-
-RowShift is triggered by a horizontal swipe gesture on the board. In each row, valid (non-Void) cells slide to eliminate empty (null) slots, compacting toward the swipe direction. Void positions act as hard boundaries; each contiguous valid segment of a row shifts independently within its valid range.
-
-| Cell | Behavior |
-|------|----------|
-| Basic / Protector / Core / Obstacle | Slides with the compaction |
-| Void position | Immovable boundary; segments on each side shift independently |
-| Empty slot (null) | Filled in by sliding cells; becomes empty on the trailing edge |
-
-After compaction, `GravitySystem.Apply()` runs to re-settle any cells displaced vertically.
-
-**Swipe gesture:** Minimum swipe distance threshold required to register direction (left or right). Short or ambiguous swipes are ignored; player remains in Use Phase.
-
-### 4.5 CellSwap (two-cell position swap)
-
-Two valid cells are tapped sequentially. Their positions are exchanged on the board, then `GravitySystem.Apply()` runs.
-
-| Cell pair | Valid? | Result |
-|-----------|--------|--------|
-| Any two valid cells (non-null, non-Void) | Yes | Positions swapped |
-| First or second cell is Void or null | No | Invalid tap; stay in selection state |
+| 기본 / 코어 (색상 일치, 프로텍터 없음) | 제거됨 |
+| 프로텍터 셀 (색상 일치) | 레이어 1개 제거 (DirectHit) |
+| 장애물 | 영향 없음 (장애물은 컬러 ID가 없음) |
+| 보이드 위치 | 건너뜀 |
+| 빈 공간 (null) | 건너뜀 |
+| 다른 컬러 ID의 모든 셀 | 영향 없음 |
 
 ---
 
-## 5. Effect Resolution (Integration with Existing Rules)
+## 5. 효과 해결 (기존 규칙과의 통합)
 
-Turn check → if `remaining_turns == 0`, item use is blocked (game already ended).
+턴 체크 → `remaining_turns == 0`이면 아이템 사용이 차단됩니다 (게임 이미 종료).
 
-Order of operations after item fires:
+아이템 발동 후 연산 순서:
 
 ```
-1. IItemEffect.GetAffectedCells(board, row, col)         ← Bomb, H-Rocket, ColorSweep, CellSwap
-   IRowShiftEffect.Apply(board, direction)                ← RowShift (no target cell)
-   → respects Void/Obstacle rules per §4
-2. For each cell in affected list:
+1. IItemEffect.GetAffectedCells(board, row, col) 실행
+   → §4의 보이드/장애물 규칙 준수
+2. 영향받는 리스트의 각 셀에 대해:
      ProtectorSystem.DirectHit(cell)
-       → strength > 0: strip one layer (cell stays, update sprite)
-       → strength == 0: board[r,c] = null (removed)
+       → 강도 > 0: 레이어 1개 제거 (셀 유지, 스프라이트 업데이트)
+       → 강도 == 0: board[r,c] = null (제거)
 3. GravitySystem.Apply(board)
-4. ItemInventory.Consume(type)           ← skipped in Dev mode
+4. ItemInventory.Consume(type) 실행 (개발 모드에서는 생략)
 5. ClearEvaluator.Evaluate(board, ...)
-6. InGameController handles StarResult
-```
-
-Items do NOT auto-chain. Player may use multiple items manually in sequence before spending a turn.
-
----
-
-## 6. Turn & Game End Policy
-
-- Item use does **not** consume a turn.
-- When `remaining_turns == 0`: stage ends immediately with current board state → `ClearEvaluator` runs → result shown. No item use possible after turns reach 0.
-- Turn 0 is reached only via normal tap-group (`TurnManager.Consume()`). Item use cannot drive turns to 0.
-
----
-
-## 7. UI Design
-
-### 7.1 Item Tray Layout
-
-**Position:** Fixed at screen bottom, above safe area inset.  
-**Component:** `HorizontalLayoutGroup`, centered alignment, equal spacing.  
-**Rendered:** All 5 item types always shown (empty state when count = 0).
-
-```
-┌─────────────────────────────────────────────────────────────┐
-│                        BOARD AREA                           │
-│                                                             │
-├─────────────────────────────────────────────────────────────┤
-│  [Bomb] [H-Rocket] [ColorSweep] [RowShift] [CellSwap]       │  ← ItemTrayView
-│   (3)     (∞)         (1)          (2)        (5)           │
-└─────────────────────────────────────────────────────────────┘
-```
-
-### 7.2 Item Slot States
-
-| State | Visual | Condition |
-|-------|--------|-----------|
-| Normal | Icon + count badge | count > 0 or Dev mode |
-| Empty | Greyed icon, no badge | count = 0, not Dev mode |
-| Selected | Highlight ring / glow | This item's Use Phase active |
-| Locked | Dimmed, non-interactive | During VFX, board rotation, or clear/fail overlay |
-
-**Dev mode badge:** Shows "∞". No other difference.
-
-### 7.3 Item Use Phase — Interaction Flow
-
-**Bomb / H-Rocket / ColorSweep (tap-to-target):**
-
-States: `Idle → ItemSelected → (TargetTapped | Cancelled) → Idle`
-
-**Idle → ItemSelected:**
-- Player taps slot with count > 0 (or Dev mode)
-- Slot enters Selected state (glow animation)
-- Board enters targeting mode: valid cells (non-null, non-Void) get subtle pulse/outline
-- HUD: item name + one-line description appears
-- Tap same slot again → cancel
-
-**ItemSelected → TargetTapped:**
-- Player taps board cell
-- Hit test → (row, col)
-- Invalid (Void or null): no-op, stay in Use Phase
-- Valid: execute item immediately (single-tap, no confirm step)
-  - Item VFX plays (explosion for Bomb; directional streak for Rocket; color-wave for ColorSweep)
-  - Effect resolves (§5 flow)
-  - Count decrements / ∞ stays
-  - Return to Idle
-
-**ItemSelected → Cancelled:**
-- Tap same slot again
-- Tap outside board area (any non-board UI)
-- No item consumed
-
----
-
-**RowShift (swipe-to-shift):**
-
-States: `Idle → ItemSelected → (SwipeDetected | Cancelled) → Idle`
-
-**Idle → ItemSelected:** Same as tap-to-target flow above.
-
-**ItemSelected → SwipeDetected:**
-- Player performs horizontal swipe on the board
-- Swipe distance ≥ threshold: detect direction (left / right) → execute RowShift
-  - VFX: all cells animate sliding in swipe direction
-  - Effect resolves (§5 flow — RowShift path)
-  - Count decrements / ∞ stays
-  - Return to Idle
-- Swipe distance < threshold or vertical swipe: no-op, stay in Use Phase
-- Tap on board (no swipe): no-op, stay in Use Phase
-
-**ItemSelected → Cancelled:** Same as tap-to-target flow above.
-
----
-
-**CellSwap (two-tap):**
-
-States: `Idle → ItemSelected → FirstCellSelected → (SecondCellTapped | Cancelled) → Idle`
-
-**Idle → ItemSelected:** Same as tap-to-target flow above.
-
-**ItemSelected → FirstCellSelected:**
-- Player taps a valid board cell
-- Cell enters Selected highlight
-- HUD updates: "tap second cell"
-
-**FirstCellSelected → SecondCellTapped:**
-- Player taps a second valid board cell (different from first)
-- Swap executes immediately
-  - VFX: two cells animate to each other's positions
-  - Effect resolves (§5 flow)
-  - Count decrements / ∞ stays
-  - Return to Idle
-- Tap on first cell again → deselect first cell, return to ItemSelected state
-- Tap on invalid cell (Void / null): no-op, stay in FirstCellSelected
-
-**FirstCellSelected → Cancelled:**
-- Tap same slot again
-- Tap outside board area
-- No item consumed
-
-**Locks during:** VFX playback, board rotation animation, clear/fail overlay.
-
-### 7.4 Range Indicator
-
-No per-cell hover on mobile. Range is indicated on the **slot button** itself:
-- Bomb slot: 3×3 dot-grid icon
-- H-Rocket slot: horizontal arrow icon
-- ColorSweep slot: color-wave / palette icon
-- RowShift slot: double horizontal arrow icon (←→)
-- CellSwap slot: swap/exchange arrows icon
-
-No dynamic board preview on tap (single-tap executes immediately for tap-to-target items).
-
----
-
-## 8. Dev Mode
-
-`IsDevMode` is a Unity Inspector bool field on `ItemInventory` (or its owning MonoBehaviour).
-
-| Behavior | Normal | Dev mode |
-|----------|--------|----------|
-| Count decrements on use | Yes | No |
-| Badge text | Number | ∞ |
-| Items available when count = 0 | No | Yes (always available) |
-| UI / UX | Same | Same |
-| Separate dev panel | — | None needed |
-
-Flip `IsDevMode = true` in Inspector → all items immediately usable from the standard in-game tray. No additional UI or tooling required.
-
----
-
-## 9. Data Model
-
-### ItemInventory (pure C#, no UnityEngine)
-
-```csharp
-// Game.InGame.Items
-public enum ItemType { Bomb, HRocket, ColorSweep, RowShift, CellSwap }
-
-public class ItemInventory
-{
-    public bool IsDevMode;
-    private readonly Dictionary<ItemType, int> _counts;
-
-    public bool CanUse(ItemType type) => IsDevMode || _counts.GetValueOrDefault(type) > 0;
-    public void Consume(ItemType type) { if (!IsDevMode) _counts[type]--; }
-    public int GetCount(ItemType type) => _counts.GetValueOrDefault(type);
-}
-```
-
-### Item Effect Interface (pure C#)
-
-```csharp
-// Game.InGame.Items
-public interface IItemEffect
-{
-    // Returns ordered list of (row, col) to attempt removal.
-    // Callee must still check board state per §4 (Void skip, Obstacle stop-after).
-    List<(int row, int col)> GetAffectedCells(BoardState board, int targetRow, int targetCol);
-}
-
-// RowShift uses a separate interface (no target cell; direction-based)
-public interface IRowShiftEffect
-{
-    void Apply(BoardState board, ShiftDirection direction);
-}
-
-public enum ShiftDirection { Left, Right }
-
-public class BombEffect : IItemEffect
-{
-    // 3×3 centered on target, all 9 positions
-    // Void positions filtered by checking board bounds + CellType
-}
-
-public class HRocketEffect : IItemEffect
-{
-    // Sweep targetRow left→right; stop list building after first Obstacle
-}
-
-public class ColorSweepEffect : IItemEffect
-{
-    // Collect all cells on board where cell.ColorId == board[targetRow, targetCol].ColorId
-    // Obstacles excluded (no color ID)
-}
-
-public class RowShiftEffect : IRowShiftEffect
-{
-    // For each row: collect valid (non-Void) cells in order
-    // Pack them toward Left or Right edge of the valid segment
-    // Fill trailing empty slots with null
-}
-
-public class CellSwapEffect : IItemEffect
-{
-    // Returns both cell positions; caller performs the swap
-    // GetAffectedCells used for validation; actual swap logic in ItemManager
-}
+6. InGameController에서 StarResult 처리
 ```
 
 ---
 
-## 10. Architecture Integration
+## 6. UI/UX 디자인
 
-New namespace: `Game.InGame.Items`
+### 6.1 아이템 사용 단계 — 상호작용 흐름
 
-```
-InGameController
-  ├── (existing) GroupSelector, RemovalSystem, GravitySystem, TurnManager, ClearEvaluator
-  ├── (new) ItemManager       — pure C#; owns ItemInventory + IItemEffect instances; tracks UsePhase state
-  └── (new) ItemTrayView      — MonoBehaviour; renders slots; fires slot-tap events to InGameController
-```
+**폭탄 / H-로켓 / 컬러 스윕 (탭 타겟팅):**
 
-**InGameController additions:**
-- Owns `ItemManager`
-- On slot tap from `ItemTrayView` → `ItemManager.SelectItem(type)` (if `remaining_turns > 0`)
-- On board cell tap → if `ItemManager.IsInUsePhase`: dispatch to `ItemManager.UseItem(row, col)` instead of normal GroupSelector flow
-- On board swipe → if `ItemManager.IsInUsePhase && selectedItem == RowShift`: dispatch to `ItemManager.UseRowShift(direction)`
-- After `UseItem()` / `UseRowShift()`: drives `GravitySystem` → `ClearEvaluator` (same pipeline as normal tap)
+상태: `Idle → ItemSelected → (TargetTapped | Cancelled) → Idle`
 
-No changes to `GroupSelector`, `RemovalSystem`, `ProtectorSystem`, `GravitySystem`, `ClearEvaluator`, `BoardView`, `CellView`.
+- 슬롯 선택 시 글로우 애니메이션 활성화.
+- 보드가 타겟팅 모드로 진입하며 유효한 셀들이 미세하게 깜빡임/강조됨.
+- 보드 셀 탭 시 즉시 아이템 실행 (확인 단계 없는 단일 탭).
 
----
+**로우 시프트 (스와이프):**
 
-## 11. Clearance Ratio Impact
+상태: `Idle → ItemSelected → (SwipeDetected | Cancelled) → Idle`
 
-Obstacle destroyed by item does **not** change `initial_valid_cells`. The ratio denominator is fixed at stage load (Obstacles are already excluded from it). Destroying an Obstacle has no direct ratio effect — it only opens paths, removes blockers, or (for rockets) limits how far the rocket reaches.
+- 보드 위에서 수평 스와이프 수행.
+- 임계값 이상의 스와이프 거리 감지 시 방향(좌/우)을 판별하여 실행.
 
----
+**셀 스왑 (2단계 탭):**
 
-## 12. Phased Scope & Advanced Mechanics
+상태: `Idle → ItemSelected → FirstCellSelected → (SecondCellTapped | Cancelled) → Idle`
 
-### 12.1 Server-Backed Item Inventory & Sync
-- **Authentication Handshake**: Upon successful login, the client fetches the player's booster inventory snapshot from the server using the `/api/inventory` endpoint.
-- **Transactional Spend**: When a booster is consumed in a stage attempt, the client sends a `POST /api/inventory/spend` request to verify and decrement the server count.
-
-### 12.2 In-Game Booster Tray Instant Purchase (Royal Match Style)
-- **Zero Inventory State**: When a player selects a booster slot with 0 count, the slot does not disable. Instead, it displays a Gold coin cost badge (e.g., "100 Gold" for Bomb).
-- **Execution Flow**: Tapping the slot triggers a `/api/inventory/buy` transaction. Upon success, the booster count increments by 1, and the game enters the Use Phase for that booster.
-
-### 12.3 Pre-Game Boosters Selection
-- **Stage Entrance Popup**: The `StageInfoPopupView` lists starting boosters (e.g., Starting Bomb, Starting H-Rocket, +3 turns).
-- **Consume Rules**: Selecting a booster consumes 1 count from the player's inventory immediately when entering the stage. If the player forfeits, the booster remains spent.
-- **Board Placement**: Pre-selected starting boosters are pre-spawned at random valid coordinates on the board during stage load.
-
-### 12.4 Win Streak Boosters (Royal Match Style)
-- **Progression Rule**: Winning consecutive stages increases the player's active Win Streak (Tier 1: 1 win, Tier 2: 2 wins, Tier 3: 3+ wins).
-- **Streak Buffs**:
-  - *Tier 1*: Starts stage with 1 pre-placed H-Rocket.
-  - *Tier 2*: Starts stage with 1 H-Rocket + 1 Bomb.
-  - *Tier 3*: Starts stage with 1 H-Rocket + 1 Bomb + 1 ColorSweep.
-- **Spawning**: Streak boosters are spawned at random valid coordinates on the board at stage start. If the player fails or forfeits, the streak resets to 0.
-
-### 12.5 Phased Scope
-
-### MVP (Phase 1 / Active Development)
-- 5 items: Bomb, H-Rocket, ColorSweep, RowShift, CellSwap.
-- Server-backed inventory sync and transactional spend.
-- In-game tray instant purchase with Gold.
-- Pre-game booster selection and immediate consumption on stage load.
-- Win Streak boosters (1-3 tiers) pre-placed on board.
-- Dev mode: Inspector toggle, ∞ badge.
-
-### Phase 2 (Future)
-- New item types (ColorChange, Shield).
-- Dedicated booster package bundles.
+- 두 개의 유효한 셀을 순차적으로 탭하여 위치 교체.
 
 ---
 
-## 13. Risks
+## 7. 개발 모드 (Dev Mode)
 
-| Risk | Severity | Mitigation |
+`ItemInventory`에 있는 `IsDevMode` 불리언 필드를 사용합니다. 활성화 시 아이템 개수가 줄어들지 않으며 개수 표시가 "∞"로 변경됩니다.
+
+---
+
+## 8. 리스크
+
+| 리스크 | 심각도 | 완화 방안 |
 |------|----------|------------|
-| Rocket + Obstacle stop creates unintuitive edge cases (Void gap before Obstacle) | Medium | Clear VFX: rocket visually travels and stops; Obstacle destruction animation |
-| Bomb trivializes dense Core+Protector clusters | Medium | Stage design: limit accessible Core clusters; Core usually deeper in board |
-| RowShift swipe threshold: too low → accidental activations, too high → unresponsive | Medium | Tune swipe threshold in playtest; expose as configurable constant |
-| CellSwap misuse on Protector cells (strips layer, wastes item) | Low | One-line HUD hint when CellSwap selected: shows swap, not removal |
-| ColorSweep on dominant color clears too many cells (trivializes stage) | Low | Stage design: avoid single dominant-color boards in early stages |
-| Dev mode accidentally shipped to production | Low | `IsDevMode` is Inspector-only; add `#if UNITY_EDITOR` guard or build check |
+| 로켓 + 장애물 정지 규칙이 직관적이지 않을 수 있음 | 중간 | 명확한 VFX: 로켓이 이동하다 멈추고 장애물이 파괴되는 애니메이션 강조 |
+| 폭탄이 밀집된 코어+프로텍터 클러스터를 너무 쉽게 해결함 | 중간 | 스테이지 디자인: 접근 가능한 코어 클러스터를 제한하거나 보드 깊숙이 배치 |
+| 스와이프 임계값 설정의 어려움 (오작동 vs 미반응) | 중간 | 플레이테스트를 통해 임계값 튜닝; 설정 가능한 상수로 노출 |

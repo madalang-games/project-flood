@@ -1,45 +1,45 @@
-# UI/UX — Scene Structure
+# UI/UX — 씬 구조 (Scene Structure)
 
-## Scene Graph
+## 씬 그래프 (Scene Graph)
 
 ```
-Boot
-  └─(auth resolved)──► Lobby
-                            └─(tap Play)──► InGame
-                                               └─(overlays stay in InGame scene)
+Boot (부트)
+  └─(인증 완료)──► Lobby (로비)
+                     └─(플레이 탭)──► InGame (인게임)
+                                        └─(오버레이는 인게임 씬 내에 유지)
 ```
 
-## Scenes
+## 씬 목록
 
-| Scene | Role | Entry | Exit |
+| 씬 | 역할 | 진입 시점 | 퇴장 시점 |
 |-------|------|-------|------|
-| Boot | Auth check, asset load | App launch | Auto → Lobby |
-| Lobby | Home/Shop/Ranking tabs | Boot | — (root) |
-| InGame | Board gameplay + result/fail overlays | Lobby (Play tap) | Lobby (Result buttons) |
+| Boot | 인증 체크, 애셋 로드 | 앱 실행 시 | 자동 → 로비 이동 |
+| Lobby | 홈/상점/랭킹 탭 관리 | 부트 완료 후 | — (루트 씬) |
+| InGame | 보드 게임플레이 + 결과/실패 오버레이 | 로비에서 스테이지 선택 시 | 로비로 복귀 시 |
 
-## Transitions
+## 화면 전환 (Transitions)
 
-| From | To | Type | Trigger |
+| 출발지 | 도착지 | 유형 | 트리거 |
 |------|----|------|---------|
-| Boot | Lobby | Fade | Auth resolved (guest or authenticated) |
-| Lobby | InGame | Slide up | [PLAY] in StageInfo popup |
-| InGame | Lobby | Slide down | [Map] in Result / [스테이지 선택] in Pause |
-| InGame | InGame | Board reload | [Retry] in Result or Pause |
+| Boot | Lobby | 페이드 (Fade) | 인증 해결 (게스트 또는 정식 계정) |
+| Lobby | InGame | 위로 슬라이드 | 스테이지 정보 팝업의 [플레이] 버튼 |
+| InGame | Lobby | 아래로 슬라이드 | 결과창의 [지도] 또는 일시정지의 [스테이지 선택] |
+| InGame | InGame | 보드 재로드 | 결과창 또는 일시정지의 [재도전] |
 
-## InGame Overlays (no scene transition)
+## 인게임 오버레이 (씬 전환 없음)
 
-| Overlay | Trigger | Dismiss |
+| 오버레이 | 트리거 | 닫기 방법 |
 |---------|---------|---------|
-| ResultOverlay | Stage end (any outcome) | Button tap |
-| FailOverlay (Continue) | turns=0 AND ratio < star1 (1회/attempt) | [계속하기] / [포기] |
-| PausePopup | Pause button | [재개] / [처음부터] / [스테이지 선택] |
+| ResultOverlay (결과) | 스테이지 종료 (성공/실패) | 버튼 탭 |
+| FailOverlay (이어하기) | 턴 소진 시 (시도당 1회) | [계속하기] / [포기] 버튼 |
+| PausePopup (일시정지) | 일시정지 버튼 탭 | [재개] / [처음부터] / [스테이지 선택] |
 
-## Lobby Tab Structure
+## 로비 탭 구조
 
-Bottom navigation bar. Icon + label per tab.
+하단 네비게이션 바를 통해 전환합니다.
 
-| Tab | MVP | Phase 2 |
+| 탭 | MVP 범위 | 2단계 계획 |
 |-----|-----|---------|
-| Home | Chapter/Stage scroll | same + event banners |
-| Shop | Item list placeholder | Full economy UI |
-| Ranking | Disabled (greyed) | Global star leaderboard |
+| 홈 (Home) | 챕터/스테이지 스크롤 | 이벤트 배너 추가 |
+| 상점 (Shop) | 아이템 목록 플레이스홀더 | 전체 경제 UI 및 구매 기능 |
+| 랭킹 (Ranking) | 글로벌 별점 랭킹 | 친구 랭킹 추가 |

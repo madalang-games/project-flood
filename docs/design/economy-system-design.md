@@ -1,38 +1,38 @@
-# Economy System Design
+# 경제 시스템 기획서 (Economy System Design)
 
-## 1. Overview
-The Economy System manages the flow of the primary soft currency, item acquisition, and consumption sinks to ensure balanced gameplay and long-term retention.
+## 1. 개요
+경제 시스템은 주요 소프트 커런시(Soft Currency)의 흐름, 아이템 획득 및 소비처를 관리하여 게임 플레이의 밸런스를 유지하고 장기적인 리텐션을 확보하는 것을 목적으로 합니다.
 
 ---
 
-## 2. Currency Type (Soft Currency)
-To maintain simplicity and focus on the Star system, the game uses a single primary soft currency.
+## 2. 재화 종류 (소프트 커런시)
+단순성을 유지하고 별(Star) 시스템에 집중하기 위해 게임은 단일 주요 소프트 커런시를 사용합니다.
 
-| Currency | Thematic Name | Role | Acquisition |
+| 재화 | 테마 명칭 | 역할 | 획득처 |
 |:---:|:---:|---|---|
-| **Primary** | **Gold (or Coins)** | General utility. Used for shop, boosters, continues. | Stage Clear, Milestones, Events. |
+| **기본 재화** | **골드 (또는 코인)** | 일반적인 유틸리티. 상점, 부스터, 이어하기에 사용. | 스테이지 클리어, 마일스톤, 이벤트. |
 
 ---
 
-## 3. Reward Formula (Stage Clear)
-When a stage is cleared (>= 1 Star), Gold is awarded based on performance.
+## 3. 보상 공식 (스테이지 클리어)
+스테이지를 클리어했을 때(별 1개 이상 획득 시), 성적에 따라 골드가 지급됩니다.
 
 **`TotalReward = BaseReward(StageID) + (RemainingTurns * TurnBonusValue)`**
 
-- **BaseReward:** Fixed amount per stage difficulty.
-- **TurnBonusValue:** Encourages efficient play.
+- **BaseReward (기본 보상):** 스테이지 난이도에 따른 고정 금액.
+- **TurnBonusValue (남은 턴 보너스):** 효율적인 플레이를 장려하기 위한 가산치.
 
 ---
 
-## 4. Economy Sinks (Consumption)
-Players spend their accumulated Gold on:
-1. **Pre-game Boosters:** e.g., "Start with +5 Turns".
-2. **In-game Items:** Buying Bombs or Rockets when out of stock.
-3. **Continue:** On failure (Turns == 0), spend Gold to get +3 additional turns (once per stage attempt).
+## 4. 경제 소비처 (Consumption Sinks)
+플레이어는 축적한 골드를 다음과 같은 곳에 소비합니다:
+1. **게임 전 부스터 (Pre-game Boosters):** 예: "+5턴 추가로 시작".
+2. **인게임 아이템:** 보유한 폭탄(Bomb)이나 로켓(Rocket) 아이템이 소진되었을 때 구매.
+3. **이어하기 (Continue):** 실패 시(턴수 == 0), 골드를 소비하여 추가 턴(+3턴) 획득 (스테이지당 1회 제한).
 
 ---
 
-## 5. Data Integration
-- **`reward/` domain:** All Gold rewards are defined in `reward_group.csv`.
-- **`shop/` domain:** Item prices and booster costs are defined in `shop_item.csv`.
-- **`player_currencies` table:** Stores the current balance per `user_id` and `currency_id` (Gold ID: 1001).
+## 5. 데이터 통합 (Data Integration)
+- **`reward/` 도메인:** 모든 골드 보상은 `reward_group.csv`에 정의됩니다.
+- **`shop/` 도메인:** 아이템 가격 및 부스터 비용은 `shop_item.csv`에 정의됩니다.
+- **`player_currencies` 테이블:** `user_id` 및 `currency_id`(골드 ID: 1001)별 현재 잔액을 저장합니다.

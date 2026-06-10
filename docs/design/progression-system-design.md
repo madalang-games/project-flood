@@ -1,50 +1,50 @@
-# Progression System Design
+# 진행 시스템 기획서 (Progression System Design)
 
-## 1. Overview
-The Progression System defines how a player moves through the game, measures success via Stars, and achieves long-term goals through Chapter milestones.
+## 1. 개요
+진행 시스템은 플레이어가 게임을 진행하는 방식, 별(Star)을 통한 성공 측정, 그리고 챕터(Chapter) 마일스톤을 통한 장기 목표 달성을 정의합니다.
 
 ---
 
-## 2. Star System (Performance Metrics)
-Every stage has 3 performance tiers (Stars).
+## 2. 별 시스템 (성적 지표)
+모든 스테이지에는 3단계의 성적 티어(별)가 있습니다.
 
-### Star Criteria
-| Tier | Condition | Definition |
+### 별 획득 기준
+| 티어 | 조건 | 정의 |
 |:---:|---|---|
-| **1★** | `Clearance Ratio >= Star1_Ratio` | **Minimum Clear.** Required to unlock the next stage. |
-| **2★** | `Clearance Ratio >= Star2_Ratio` | **Intermediate Achievement.** Mastery over the board. |
-| **3★** | `Clearance Ratio == 1.0 (100%)` | **Perfect Clear.** All removable cells cleared. |
+| **별 1개** | `Clearance Ratio >= Star1_Ratio` | **최소 클리어.** 다음 스테이지를 잠금 해제하는 데 필요함. |
+| **별 2개** | `Clearance Ratio >= Star2_Ratio` | **중급 달성.** 보드 숙련도 증명. |
+| **별 3개** | `Clearance Ratio == 1.0 (100%)` | **완벽 클리어.** 제거 가능한 모든 셀을 제거함. |
 
-### Mandatory Failure Condition
-Regardless of the clearance ratio, if a stage has an `is_core` cell and it is **not removed** before the turns run out, the result is always **FAIL (0 Stars)**.
-
----
-
-## 3. Chapter Structure
-Stages are organized into Chapters to provide thematic pacing.
-
-### Chapter Properties
-- **Chapter ID:** Sequential grouping ID.
-- **Thematic Visuals:** Each chapter has a unique `theme_key` (Background, Cell skins, Color palette).
-- **Stage Range:** e.g., Chapter 1 contains Stages 1-20.
+### 강제 실패 조건
+클리어 비율에 상관없이, 스테이지에 `is_core` 셀이 존재하고 턴이 종료될 때까지 해당 셀이 **제거되지 않았다면**, 결과는 항상 **실패 (별 0개)**입니다.
 
 ---
 
-## 4. Milestone Rewards (Chapter Completion)
-To encourage replayability and perfectionism, the system rewards 100% completion per chapter.
+## 3. 챕터 구조
+스테이지는 테마별 템포 조절을 위해 챕터 단위로 구성됩니다.
 
-### Chapter Completion Chest
-- **Condition:** All stages within the current chapter must have **3 Stars**.
-- **Interaction:** A "Golden Chest" appears on the Chapter Selection UI when the condition is met.
-- **Reward:** High-tier items (e.g., 5x Bombs, 1x Unlimited Stamina for 30m).
-- **Reward Source Binding**: The chest maps to a unique `reward_source` (e.g. `chapter1_chest` in CSV) which resolves to a `reward_group_id` on the server.
-- **Server Verification**: The server verifies that all stages in the chapter have indeed achieved 3 stars in the `user_stage_progress` table before granting the reward.
+### 챕터 속성
+- **챕터 ID:** 순차적인 그룹화 ID.
+- **테마 비주얼:** 각 챕터는 고유한 `theme_key`(배경, 셀 스킨, 컬러 팔레트)를 가집니다.
+- **스테이지 범위:** 예: 챕터 1은 스테이지 1~20번을 포함합니다.
 
 ---
 
-## 5. Visual Theme Progression (Shader-Based)
+## 4. 마일스톤 보상 (챕터 완료)
+재플레이 가치와 완벽주의를 장려하기 위해 챕터별 100% 완료 시 보상을 제공합니다.
 
-Visual themes are implemented via a custom shader (`UIPulseGlow.shader` or theme-based shaders) and material instances.
-- **Theme Materials**: Each Chapter maps to a distinct Material that swaps visual elements and tint attributes.
-- **Shader Variables**: The shader reads `_ThemeColor1`, `_ThemeColor2`, and texture masks to dynamically color background panels, grid tiles, and glow effects, avoiding asset duplication.
-- **Resolution**: Loaded dynamically at runtime by `VisualService` matching the active `chapter.bg_theme_id`.
+### 챕터 완료 상자
+- **조건:** 현재 챕터 내의 모든 스테이지에서 **별 3개**를 획득해야 합니다.
+- **상호작용:** 조건이 충족되면 챕터 선택 UI에 "황금 상자"가 나타납니다.
+- **보상:** 높은 등급의 아이템 (예: 폭탄 5개, 30분간 무제한 스태미나 등).
+- **보상 소스 바인딩:** 상자는 CSV의 고유한 `reward_source`(예: `chapter1_chest`)에 매핑되며, 이는 서버의 `reward_group_id`로 해석됩니다.
+- **서버 검증:** 서버는 보상을 지급하기 전에 `user_stage_progress` 테이블을 조회하여 챕터의 모든 스테이지가 실제로 별 3개를 획득했는지 검증합니다.
+
+---
+
+## 5. 비주얼 테마 진행 (쉐이더 기반)
+
+비주얼 테마는 커스텀 쉐이더(`UIPulseGlow.shader` 또는 테마 기반 쉐이더)와 머티리얼 인스턴스를 통해 구현됩니다.
+- **테마 머티리얼**: 각 챕터는 시각적 요소와 색조(Tint) 속성을 교체하는 별도의 머티리얼에 매핑됩니다.
+- **쉐이더 변수**: 쉐이더는 `_ThemeColor1`, `_ThemeColor2` 및 텍스처 마스크를 읽어 배경 패널, 그리드 타일, 글로우 효과의 색상을 동적으로 변경하여 애셋 중복을 방지합니다.
+- **해결**: 활성 `chapter.bg_theme_id`와 일치하는 `VisualService`에 의해 런타임에 동적으로 로드됩니다.

@@ -1,118 +1,72 @@
-# Social & Ranking System Design
+# 소셜 및 랭킹 시스템 기획서 (Social & Ranking System Design)
 
-## 1. Authority
-- DB is the source of truth for player progress and ranking aggregates.
-- Redis is a rebuildable ranking cache/index. Redis writes happen after DB commit and may be dirty-read by clear responses.
-- Redis loss is recovered from DB during server init, lazy rebuild on cache miss, or admin-triggered rebuild.
-- Stage clear validation uses server-side static data fields marked `CS` in `shared/datas/stage/stage.csv`.
+## 1. 권한 (Authority)
+- DB는 플레이어 진행도 및 랭킹 합계에 대한 원천 데이터(Source of Truth)입니다.
+- Redis는 재구축 가능한 랭킹 캐시/인덱스로 사용됩니다. Redis 쓰기는 DB 커밋 후에 발생하며, 클리어 응답 시 더티 리드(Dirty-read)가 발생할 수 있습니다.
+- Redis 데이터 손실 시 서버 초기화 중에 DB에서 복구하거나, 캐시 미스 시 지연 재구축(Lazy rebuild), 또는 관리자 트리거 재구축을 통해 복구합니다.
 
-## 2. Stage Clear Validation
-Client sends summary inputs in `StageAttemptClearRequest`:
+## 2. 스테이지 클리어 검증
+클라이언트는 `StageAttemptClearRequest`를 통해 요약된 입력을 보냅니다:
 - `ruleset_version`
-- `turns_used`
-- `remaining_basic_cells`
-- `core_remaining`
+- `turns_used` (사용된 턴)
+- `remaining_basic_cells` (남은 기본 셀 수)
+- `core_remaining` (코어 잔존 여부)
 
-Server validates:
-- active Redis attempt exists and matches user/stage/attempt id
-- attempt is not expired
-- request ruleset matches static stage ruleset
-- `turns_used` is within `0..turn_limit`
-- `remaining_basic_cells` is within `0..total_basic_cells`
-- `core_remaining == false`
+서버 검증 항목:
+- 활성화된 Redis 어테스트(attempt)가 존재하고 유저/스테이지/시도 ID와 일치하는지 확인
+- 시도가 만료되지 않았는지 확인
+- 요청된 규칙 버전이 정적 스테이지 규칙 버전과 일치하는지 확인
+- `turns_used`가 `0..turn_limit` 범위 내에 있는지 확인
+- `core_remaining == false` 인지 확인
 
-Server computes stars from static stage data:
-- `total_basic_cells` is parsed from stage `cells`, excluding obstacle and void cells
-- cleared ratio = `(total_basic_cells - remaining_basic_cells) / total_basic_cells`
-- 3 stars if all basic cells were cleared
-- 2 stars if ratio is at least `star2_ratio`
-- 1 star if ratio is at least `star1_ratio`
-- otherwise the clear request is invalid
+서버는 정적 스테이지 데이터를 사용하여 별(Star) 개수를 계산합니다.
 
-## 3. DB Model
+## 3. DB 모델
 `players`
-- Stores player accounts.
-- `display_name` (string(64)): Player's custom public name.
-- `avatar_id` (int32): Reference to static metadata avatar image (default to 1). Users do not upload custom images; avatars are selected from pre-defined IDs.
+- 플레이어 계정을 저장합니다. `display_name` 및 `avatar_id`를 포함합니다.
 
 `user_stage_progress`
-- One row per user/stage.
-- Stores `best_star`, `best_turns_used`, first clear time, best update times.
-- Used to rebuild stage ranking Redis keys.
-
-`stage_clear_records`
-- Append-only clear audit.
-- Stores the validation inputs, computed total basic cells, stars, and `is_new_best`.
+- 유저/스테이지별 한 행씩 존재합니다.
+- `best_star`, `best_turns_used`, 최초 클리어 시간 등을 저장합니다.
 
 `user_ranking_totals`
-- One row per user.
-- Stores `total_earned_stars`, timestamp when the current total was achieved, `max_cleared_stage_id`, and timestamp when that max was achieved.
-- Stores `win_streak`: Current consecutive stage clears. Resets to 0 upon stage failure or abandonment.
-- Stores `max_win_streak`: All-time highest consecutive stage clears. Does not decrease when a streak is broken. Updated only when `win_streak` exceeds `max_win_streak` on clear.
-- Used to rebuild global ranking Redis keys.
+- 유저별 한 행씩 존재합니다.
+- `total_earned_stars`(총 획득 별점), `max_cleared_stage_id`(최대 클리어 스테이지), `win_streak`(연승 기록) 등을 저장합니다.
 
-## 4. Stage Ranking
-- Ranking unit: per-stage best `turns_used`.
-- Only each player's best score is indexed; duplicate lower-quality clears do not create extra ranking entries.
-- Ranking style: competition ranking.
-- My stage rank = number of players with strictly lower best turns + 1.
-- Stage ranking API only exposes my rank and my best turns for the requested stage.
+## 4. 스테이지 랭킹
+- 랭킹 단위: 스테이지별 최고 기록인 `turns_used`(사용 턴수가 적을수록 상위).
+- 각 플레이어의 최고 기록만 인덱싱됩니다.
+- 내 스테이지 순위 = 나보다 적은 턴수로 클리어한 플레이어 수 + 1.
 
-Redis key:
-- `ranking:stage:{stageId}:turns`
-- member: `user_id`
-- score: `best_turns_used`
+Redis 키: `ranking:stage:{stageId}:turns`
 
-## 5. Global Ranking
-Ranking tab exposes two paged tabs.
+## 5. 글로벌 랭킹
+랭킹 탭은 두 가지 페이지를 노출합니다.
 
-Stars tab:
-- score: `total_earned_stars`
-- higher is better
-- tie-breaker: earlier `total_stars_achieved_at`
+별점(Stars) 탭:
+- 점수: `total_earned_stars`
+- 높을수록 상위, 동점 시 `total_stars_achieved_at`이 빠를수록 상위.
 
-Max stage tab:
-- score: `max_cleared_stage_id`
-- higher is better
-- tie-breaker: earlier `max_stage_achieved_at`
+최대 스테이지(Max stage) 탭:
+- 점수: `max_cleared_stage_id`
+- 높을수록 상위, 동점 시 `max_stage_achieved_at`이 빠를수록 상위.
 
-Redis keys use an ascending numeric composite score:
-- `ranking:global:stars`
-- `ranking:global:max_stage`
-- score = `-primaryScore * 1_000_000_000 + achievedUnixSeconds`
-
-Because the tie-breaker is deterministic, global list ranks are dense by sorted position. A separate `my rank` endpoint returns the current user's card for the ranking tab footer.
-
-## 6. API Contract
-Stage clear response adds:
+## 6. API 규약
+스테이지 클리어 응답에는 다음이 추가됩니다:
 - `stars`
 - `turns_used`
 - `stage_rank`
-- `is_new_best`
+- `is_new_best` (최고 기록 갱신 여부)
 
-`is_new_best` is true only when `turns_used` improves the player's per-stage best turns.
-
-Ranking API:
+랭킹 API:
 - `GET /api/rankings/global/stars?offset=&limit=`
-- `GET /api/rankings/global/stars/me`
 - `GET /api/rankings/global/max-stage?offset=&limit=`
-- `GET /api/rankings/global/max-stage/me`
 - `GET /api/rankings/stages/{stageId}/me`
-- `POST /api/rankings/admin/rebuild`
 
-Profile API:
-- `POST /api/player/profile`
-  - Request: `display_name` (optional), `avatar_id` (optional)
-  - Validates avatar unlock conditions using `avatar.csv`.
-  - Response: Updated `user_id`, `display_name`, `avatar_id`.
+프로필 API:
+- `POST /api/player/profile` (이름 및 아바타 설정)
 
-Page size is clamped server-side. Clients should use paging instead of requesting the full leaderboard.
-
-## 7. Avatar Metadata (`avatar.csv`)
-Avatars are defined in `shared/datas/avatar/avatar.csv` static metadata. Players cannot upload custom images, they must select from predefined options.
-
-Fields:
-- `avatar_id`: Unique integer key.
-- `resource_name`: Unity sprite reference name.
-- `unlock_cost`: Soft currency (gold) required to unlock (0 if free).
-- `unlock_type`: Condition category (`free`, `gold`, `achievement`).
+## 7. 아바타 메타데이터 (`avatar.csv`)
+아바타는 정적 메타데이터에 정의됩니다. 플레이어는 커스텀 이미지를 업로드할 수 없으며 미리 정의된 옵션 중에서 선택해야 합니다.
+- `unlock_cost`: 잠금 해제에 필요한 골드 비용 (0이면 무료).
+- `unlock_type`: 조건 카테고리 (무료, 골드, 업적).

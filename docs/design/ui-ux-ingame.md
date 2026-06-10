@@ -1,86 +1,80 @@
-# UI/UX — InGame
+# UI/UX — 인게임 (InGame)
 
-## HUD Layout
+## HUD 레이아웃
 
 ```
-┌──[⏸]────[Turns: 18]────[████████░░ 2★]──┐
+┌──[⏸]────[턴수: 18]────[████████░░ 2★]──┐
 │                                           │
-│                [Board]                    │
+│                [보드 영역]                 │
 │                                           │
 └───────────────────────────────────────────┘
 ```
 
-| Element | Position | Notes |
+| 요소 | 위치 | 비고 |
 |---------|----------|-------|
-| Pause button | Top-left | → PausePopup |
-| Remaining turns | Top-center | Large pixel font, counts down |
-| Clearance ratio bar | Top-right | 1★ marker at 80%, 2★ at 90%; fill: `UI_SUCCESS` above star1, `UI_DANGER` below |
+| 일시정지 버튼 | 좌측 상단 | → 일시정지 팝업 호출 |
+| 남은 턴수 | 중앙 상단 | 큰 픽셀 폰트, 카운트다운 |
+| 클리어 비율 바 | 우측 상단 | 별 1개(80%), 별 2개(90%) 지점에 마커 표시 |
 
-Gold balance: **NOT shown in InGame HUD.** Shown only in FailOverlay.
+골드 잔액: **인게임 HUD에서는 표시하지 않습니다.** 실패 오버레이에서만 노출됩니다.
 
 ---
 
-## Result Overlay
+## 결과 오버레이 (Result Overlay)
 
-Trigger: stage end (turn exhausted OR all valid cells cleared).
+트리거: 스테이지 종료 (턴 소진 또는 모든 유효 셀 제거).
 
 ```
-[dim background]
+[어두운 배경]
 ┌──────────────────────┐
-│     Stage 7 Clear     │
+│    스테이지 7 클리어   │
 │                      │
-│    ★    ★    ☆        │  ← sequential pop: 0.3s per star
+│    ★    ★    ☆        │  ← 별 순차 등장: 개당 0.3초
 │                      │
-│  Cleared: 91%        │
-│  Turns used: 18/25   │
-│  Gold earned: +120   │
+│  제거율: 91%         │
+│  사용 턴: 18/25      │
+│  획득 골드: +120     │
 │                      │
-│  [Retry] [Next] [Map] │
+│  [재도전] [다음] [지도] │
 └──────────────────────┘
 ```
 
-- Stars animate in sequence (left→right, 0.3s each)
-- [Next] hidden when next stage is locked
-- [Map] → Lobby (slide down)
-- Phase 2 addition: "You cleared faster than **X%** of players!" below stats
+- 별은 왼쪽에서 오른쪽으로 순차적으로 애니메이션되며 나타납니다.
+- [다음] 버튼은 다음 스테이지가 잠겨 있을 경우 숨겨집니다.
+- [지도] → 로비로 이동 (아래로 슬라이드).
 
-### Fail Result (ratio < star1, no continue used or declined)
+### 실패 결과 (비율 < 별 1개 기준)
 
-Same overlay, 0 stars filled, no Gold earned line.
+동일한 오버레이 형식을 사용하되, 채워진 별이 0개이며 획득 골드 라인이 표시되지 않습니다.
 
 ---
 
-## Fail Overlay (Continue Popup)
+## 실패 오버레이 (이어하기 팝업)
 
-Trigger: `turns == 0 AND clearance_ratio < star1_ratio`
-Limit: 1회/stage attempt. If already used → skip directly to Result Overlay.
+트리거: `턴수 == 0 AND 클리어 비율 < 별 1개 임계값`
+제한: 스테이지 시도당 1회. 이미 사용한 경우 결과 오버레이로 바로 진행합니다.
 
 ```
-[dim background]
+[어두운 배경]
 ┌──────────────────────┐
 │      조금만 더!        │
 │                      │
-│     +3 Turns         │
-│  Cost:  🪙 150        │
-│  Owned: 🪙 320        │  ← 보유 골드, Fail Overlay에서만 노출
+│     +3 턴 추가        │
+│  비용:  🪙 150        │
+│  보유:  🪙 320        │
 │                      │
 │  [계속하기]  [포기]    │
 └──────────────────────┘
 ```
 
-| State | [계속하기] button |
-|-------|----------------|
-| Gold ≥ cost | Active |
-| Gold < cost | Disabled + "골드 부족" label |
-
-- [계속하기] → deduct Gold, add 3 turns, resume board
-- [포기] → Result Overlay (fail, 0 stars)
+- [계속하기] → 골드 차감, 3턴 추가, 보드 재개
+- [포기] → 결과 오버레이로 이동 (실패, 별 0개)
 
 ---
 
-## Pause Popup
+## 일시정지 팝업 (Pause Popup)
 
-Trigger: Pause button (top-left HUD).
+트리거: HUD 좌측 상단의 일시정지 버튼.
 
 ```
 ┌────────────────┐
@@ -91,5 +85,5 @@ Trigger: Pause button (top-left HUD).
 └────────────────┘
 ```
 
-- [처음부터] → board reload (same scene, same stage)
-- [스테이지 선택] → Lobby (slide down)
+- [처음부터] → 보드 재로드 (동일 씬, 동일 스테이지)
+- [스테이지 선택] → 로비로 이동 (아래로 슬라이드)

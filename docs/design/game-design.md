@@ -1,46 +1,46 @@
-# Game Design Document — project-flood
+# 게임 디자인 문서 (Game Design Document) — project-flood
 
-## 1. Concept
+## 1. 컨셉
 
-Mobile puzzle game. Player taps same-color cell groups to remove them from a board within a turn limit. Core loop: remove cells → gravity collapses board → clear ratio determines stars → retry for higher stars.
+모바일 퍼즐 게임. 플레이어는 제한된 턴 내에 보드에서 같은 색상의 셀 그룹을 탭하여 제거합니다. 코어 루프: 셀 제거 → 중력에 의한 보드 붕괴 → 클리어 비율에 따른 별(Star) 획득 → 더 높은 별을 얻기 위한 재도전.
 
-Differentiators vs SameGame/Collapse:
-- Ratio-based star system with hard core-cell gate
-- Pixel art board aesthetic
-- Gimmick cells (Bomb, Rocket, Protector, Core)
-- Image-based stages (Phase 2)
-- Board rotation (Phase 2)
+SameGame/Collapse 장르와의 차별점:
+- 하드 코어 셀 게이트가 포함된 비율 기반 별 시스템
+- 픽셀 아트 스타일의 보드 미학
+- 기믹 셀 (폭탄, 로켓, 프로텍터, 코어)
+- 이미지 기반 스테이지 (2단계)
+- 보드 회전 (2단계)
 
 ---
 
-## 2. Board
+## 2. 보드 (Board)
 
-| Stage Type | Board Size |
+| 스테이지 유형 | 보드 크기 |
 |------------|------------|
-| Normal (early) | 8×8 – 10×10 |
-| Normal (mid-late) | 8×10 – 9×11 (portrait-optimized non-square) |
-| Challenge / Image / Boss | up to 12×12; Void cells reduce effective cell count |
+| 일반 (초반) | 8×8 – 10×10 |
+| 일반 (중후반) | 8×10 – 9×11 (세로 모드에 최적화된 비정방형) |
+| 챌린지 / 이미지 / 보스 | 최대 12×12; 보이드(Void) 셀로 유효 셀 수 조정 |
 
-- Size defined per stage in editor. Square and non-square both supported.
-- Portrait orientation preferred: Height > Width (e.g., 8×10, 9×11).
-- Non-rectangular shapes use Void cells as boundary markers.
-- 180° rotation supported; board aspect ratio preserved after rotation.
-- Rotation gimmick (N-turn interval): configurable per stage (`rotation_interval` field).
+- 에디터에서 스테이지별로 정의. 정방형 및 비정방형 모두 지원.
+- 세로 방향(Portrait) 선호: 높이 > 너비 (예: 8×10, 9×11).
+- 비직사각형 모양은 보이드(Void) 셀을 경계 마커로 사용.
+- 180도 회전 지원; 회전 후에도 보드 종횡비 유지.
+- 회전 기믹 (N턴 간격): 스테이지별 설정 가능 (`rotation_interval` 필드).
 
 ---
 
-## 3. Color System
+## 3. 컬러 시스템 (Color System)
 
-- **Master palette**: 16 pre-defined colors (`color_palette` table).
-- **Per-stage colors**: up to 8 color IDs selected from palette.
-- **Image-to-board mapping**: LAB color space nearest-color mapping (perceptually accurate).
-- Palette is expandable (add rows) without schema change.
+- **마스터 팔레트**: 16개의 미리 정의된 색상 (`color_palette` 테이블).
+- **스테이지별 색상**: 팔레트에서 선택된 최대 8개의 컬러 ID.
+- **이미지-보드 매핑**: LAB 색 공간 최단 거리 매핑 (지각적으로 정확함).
+- 팔레트는 스키마 변경 없이 행 추가를 통해 확장 가능.
 
-### color_palette table
+### color_palette 테이블
 
-Colors 0–7 are primary (used in normal stages, up to 8 active per stage). Colors 8–15 are supplementary (challenge/image stages).
+0~7번 색상은 기본 색상(일반 스테이지에서 사용, 스테이지당 최대 8개 활성). 8~15번 색상은 보조 색상(챌린지/이미지 스테이지용).
 
-| color_id | r | g | b | hex | name |
+| color_id | r | g | b | hex | 이름 |
 |----------|---|---|---|-----|------|
 | 0 | 220 | 60 | 60 | `#DC3C3C` | Red |
 | 1 | 60 | 120 | 220 | `#3C78DC` | Blue |
@@ -61,290 +61,149 @@ Colors 0–7 are primary (used in normal stages, up to 8 active per stage). Colo
 
 ---
 
-## 4. Core Gameplay Rules
+## 4. 코어 게임플레이 규칙
 
-### 4.1 Cell Selection
-- Tap a cell → BFS finds all 4-directionally adjacent cells of same color.
-- Diagonal adjacency is NOT same group.
-- All taps are valid; turn consumed regardless of group size.
-- BFS returns the same-color connected group from the tapped cell (minimum size 1).
-- Isolated cells (size=1) are removed normally — no permanent stuck state. (ADR-004)
-- Turn consumed only on valid removal.
+### 4.1 셀 선택
+- 셀 탭 → BFS(너비 우선 탐색)를 통해 인접한 4방향의 같은 색상 셀 그룹을 찾음.
+- 대각선 인접은 동일 그룹으로 간주하지 않음.
+- 모든 탭은 유효하며, 그룹 크기에 상관없이 턴이 소진됨.
+- 고립된 셀(크기=1)도 정상적으로 제거됨 — 영구적인 막힘 상태 방지 (ADR-004).
 
-### 4.2 Gravity
-- After removal: floating cells fall downward.
-- No horizontal compression (empty columns stay empty).
-- Applied immediately after each removal resolves.
-- Void cells act as gravity barriers — cells fall within each column segment bounded by Void.
+### 4.2 중력 (Gravity)
+- 제거 후: 떠 있는 셀들이 아래로 떨어짐.
+- 수평 압축 없음 (빈 열은 빈 상태로 유지).
+- 각 제거가 해결된 직후 즉시 적용됨.
+- 보이드(Void) 셀은 중력 차단벽 역할을 함 — 보이드로 구분된 각 열 세그먼트 내에서 셀이 떨어짐.
 
-### 4.3 Board Rotation (180°)
-- Board rotates 180° around center (visual Transform animation).
-- After animation: logical grid is rotated (`grid[r,c] ↔ grid[H-1-r,W-1-c]`), then gravity applies.
-- 90°/270° rotation not supported — non-square boards would require layout recalculation.
-- Turn not consumed on rotation (rotation is a gimmick mechanic, not a player move).
-- Future: rotation triggered by N-turn interval (N defined per stage in `rotation_interval` field).
+### 4.3 보드 회전 (180도)
+- 보드가 중심을 기준으로 180도 회전 (시각적 트랜스폼 애니메이션).
+- 애니메이션 후: 논리적 그리드가 회전(`grid[r,c] ↔ grid[H-1-r,W-1-c]`)된 후 중력이 적용됨.
+- 90도/270도 회전은 미지원 — 비정방형 보드에서 레이아웃 재계산이 필요하기 때문.
+- 회전 시 턴은 소진되지 않음 (회전은 플레이어의 이동이 아닌 기믹 메커니즘임).
 
 ---
 
-## 5. Cell Types
+## 5. 셀 유형 (Cell Types)
 
-### 5.1 Basic Cell
-Normal colored cell. Removed when part of a valid group tap.
+### 5.1 기본 셀 (Basic Cell)
+일반적인 컬러 셀. 유효한 그룹 탭 시 제거됨.
 
-### 5.2 Gimmick Cells
+### 5.2 기믹 셀 (Gimmick Cells)
 
-Gimmick cells are introduced progressively as the player advances through stages.
+플레이어가 스테이지를 진행함에 따라 점진적으로 도입됨.
 
-#### Protector Cell
-- Only on Basic cells; inherits the same color as the underlying Basic cell.
-- Strength: 1 or 2 layers (editor-defined per cell).
-- Reaction: **direct hit only** — a protector layer is stripped by same-color group tap (this cell is in the matched group) or item applied directly to this cell.
-- Adjacent cell removal does NOT strip protector.
-- After all protector layers removed: underlying Basic cell is exposed.
-- Protector cell participates in same-color BFS (can be part of a valid group).
+#### 프로텍터 셀 (Protector Cell)
+- 기본 셀 위에 생성되며, 바탕이 되는 기본 셀과 동일한 색상을 상속받음.
+- 강도: 1개 또는 2개의 레이어 (에디터에서 설정).
+- 반응: **직접 타격만 허용** — 동일 색상 그룹 탭(이 셀이 포함된 경우) 또는 아이템이 직접 적용될 때 레이어가 하나씩 벗겨짐.
+- 인접 셀 제거로는 프로텍터가 벗겨지지 않음.
+- 모든 레이어 제거 시 밑바닥의 기본 셀이 노출됨.
 
-#### Core Cell
-- A hard win-condition gate; introduced in later stages.
-- If any core cell is NOT removed when the stage ends → **FAIL**, regardless of ratio.
-- Core cells count toward the clearance ratio denominator and numerator.
-- May have Protector stacked on top (editor-defined).
+#### 코어 셀 (Core Cell)
+- 하드 승리 조건 게이트; 후반 스테이지에서 도입됨.
+- 스테이지 종료 시 코어 셀이 하나라도 남아 있으면 비율에 상관없이 **실패(FAIL)**.
+- 제거 비율 계산 시 분모와 분자에 모두 포함됨.
 
-#### Obstacle Cell (Non-interactive)
-- Cannot be selected or removed by group tap or board gimmick.
-- **Can be removed by player items** (Bomb blast, Rocket sweep). Rocket stops immediately after destroying an Obstacle — cells beyond it in that row/column are unaffected.
-- **Excluded from `initial_valid_cells`** in clearance ratio. If destroyed by item, does not change `initial_valid_cells` (ratio denominator is fixed at stage load).
-- Visually distinct from normal cells.
+#### 장애물 셀 (Obstacle Cell - 상호작용 불가)
+- 그룹 탭이나 보드 기믹으로 선택하거나 제거할 수 없음.
+- **플레이어 아이템(폭탄, 로켓)으로만 제거 가능**. 로켓은 장애물을 파괴한 직후 멈춤.
+- 클리어 비율의 **`initial_valid_cells`에서 제외됨**. 아이템으로 파괴되어도 분모는 변하지 않음.
 
-#### Void Cell (Board Shape Boundary)
-- Defines non-rectangular board shapes (L-shape, T-shape, etc.).
-- Invisible — renders as board background; no sprite, no interaction.
-- **Excluded from `initial_valid_cells`** in clearance ratio.
-- Gravity cannot pass through Void cells — each column is partitioned into independent gravity segments by Void boundaries.
-- CTM encoding: T=2 (`CellType.Void = 0x2`).
+#### 보이드 셀 (Void Cell - 보드 모양 경계)
+- 비직사각형 보드 모양(L자형, T자형 등)을 정의함.
+- 투명함 — 보드 배경으로 렌더링되며 스프라이트나 상호작용이 없음.
+- 클리어 비율의 **`initial_valid_cells`에서 제외됨**.
+- 중력이 보이드 셀을 통과할 수 없음 — 각 열은 보이드 경계에 의해 독립적인 중력 세그먼트로 분할됨.
 
-#### Teleport Cell (Portal Gate)
-- Connects two coordinates on the board (Inlet/Outlet).
-- When a cell falls into the Inlet (which has a Void or empty below it in its local column, and behaves as a portal), it spawns/re-appears at the corresponding Outlet.
-- Gravity operates seamlessly through the portal: when a vacancy occurs below the Outlet, cells above the Inlet fall through, transitioning positions in-place.
-- Excluded from `initial_valid_cells` and does not count toward ratios.
+#### 텔레포트 셀 (Teleport Cell - 포탈 게이트)
+- 보드상의 두 좌표(입구/출구)를 연결함.
+- 셀이 입구로 떨어지면 대응하는 출구에서 다시 나타남.
+- 중력은 포탈을 통해 매끄럽게 작동함.
 
-#### Conveyor Belt Cell
-- Specific paths on the board that shift all cells resting on them by 1 step in a designated direction (Left, Right, Up, Down) at the end of each player turn.
-- Shift resolves before gravity compaction: cells shift positions on the conveyor belt, and any resulting overhangs are then compacted downwards via `GravitySystem`.
-- Conveyor cells themselves are static background panels; the blocks resting on them are what shift.
-
-### 5.3 Protector Strip Rules
-
-| Event | Strips Protector Layer? |
-|-------|------------------------|
-| Cell's own same-color group tapped (cell is in the matched group) | Yes |
-| Item applied directly to this cell | Yes |
-| Adjacent cell removed (any cause) | **No** |
+#### 컨베이어 벨트 셀 (Conveyor Belt Cell)
+- 플레이어의 매 턴 종료 시 지정된 방향(좌, 우, 상, 하)으로 위에 놓인 모든 셀을 1단계 이동시킴.
 
 ---
 
-## 6. Clear Conditions
+## 6. 클리어 조건
 
-### 6.1 Stage End Triggers
-1. **Turn exhausted**: auto-end → ratio calculated on final board state.
-2. **All valid cells cleared**: early termination → 3-star awarded immediately.
+### 6.1 스테이지 종료 트리거
+1. **턴 소진**: 자동 종료 → 최종 보드 상태에서 비율 계산.
+2. **모든 유효 셀 제거**: 조기 종료 → 즉시 별 3개 획득.
 
-### 6.2 Win / Fail Logic
+### 6.2 승리 / 실패 로직
 ```
-initial_valid_cells = total_board_cells - obstacle_cells
-remaining_cells     = valid cells still on board at stage end
-clearance_ratio     = (initial_valid_cells - remaining_cells) / initial_valid_cells
+승리(WIN)  = 클리어 비율 >= star1_ratio 
+             AND 모든 코어 셀 제거됨
 
-WIN  = clearance_ratio >= star1_ratio
-       AND all core cells removed (if stage has core cells)
-
-FAIL = clearance_ratio < star1_ratio
-       OR any core cell not removed
+실패(FAIL) = 클리어 비율 < star1_ratio 
+             OR 코어 셀이 남아 있음
 ```
 
-### 6.3 Star System
+### 6.3 별 시스템 (Star System)
 
-| Stars | Condition |
+| 별 | 조건 |
 |-------|-----------|
-| 3 | All valid cells cleared (early termination) |
-| 2 | clearance_ratio >= star2_ratio |
-| 1 | clearance_ratio >= star1_ratio |
-| Fail | Below star1_ratio OR core cell not removed |
+| 3 | 모든 유효 셀 제거 (조기 종료) |
+| 2 | 클리어 비율 >= star2_ratio |
+| 1 | 클리어 비율 >= star1_ratio |
+| 실패 | star1_ratio 미만 또는 코어 셀 미제거 |
 
-Default thresholds (overridable per stage):
+기본 임계값 (스테이지별 오버라이드 가능):
 ```
 star1_ratio = 0.80
 star2_ratio = 0.90
 star3_ratio = 1.00
 ```
 
-### 6.4 star_threshold_config table
-```
-config_id | stage_id (NULL = global default) | star1_ratio | star2_ratio | star3_ratio
-```
-Referenced by both client and server.
+---
+
+## 7. 스테이지 진행 (Stage Progression)
+
+- 스테이지는 순차적으로 잠금 해제됨: 스테이지 N 승리 → 스테이지 N+1 해제.
+- 승리 = 별 1개 이상 획득.
+- 이전에 클리어한 스테이지는 언제든지 다시 플레이 가능.
 
 ---
 
-## 7. Stage Progression
+## 8. 아이템 (부스터)
 
-- Stages unlock sequentially: WIN on stage N → stage N+1 unlocked.
-- WIN = any star result (≥ 1 star).
-- All previously cleared stages are replayable at any time.
-- Per-stage persistence: `best_star`, `best_move_count`.
-
----
-
-## 8. Items (Boosters)
-
-- One-time use; persist in inventory until consumed.
-- Player manually applies to a specific cell during gameplay.
-- Item effect can trigger board gimmick chain reactions (follows §5.3 rules).
-- Items do NOT auto-chain with other inventory items.
-- MVP item effects: Bomb (3×3 area), H-Rocket (clears row), ColorSweep (removes all same-color cells), RowShift (horizontal compaction, swipe gesture), CellSwap (swaps two cells).
-- Item effects trigger board state changes identically to §4 rules (gravity applies after).
-- **MVP**: Dev-only, controlled via Unity Inspector. No in-game UI.
-- Streak reward system and IAP integration: **Phase 2**.
+- 1회용이며 사용 전까지 인벤토리에 유지됨.
+- 플레이어가 게임 플레이 중 특정 셀에 직접 적용함.
+- MVP 아이템 효과: 폭탄 (3×3 영역), H-로켓 (가로행 제거), 컬러 스윕 (동일 색상 전체 제거), 로우 시프트 (가로 방향 압축), 셀 스왑 (두 셀의 위치 교체).
 
 ---
 
-## 9. Stage Data Pipeline
+## 9. 스테이지 데이터 파이프라인
 
 ```
-Editor → shared/datas/stage/*.csv → info_generator → client/generated/data/
+에디터 → shared/datas/stage/*.csv → info_generator → client/generated/data/
 ```
 
-- All stage data includes `rulesetVersion` to lock replay fidelity of `verifiedSolution`.
-- Stage data format: `stageId`, `boardWidth`, `boardHeight`, `turnLimit`, `difficulty`, `colorIds`, `star1Ratio`, `star2Ratio`, `cells`, `verifiedSolution`, `rulesetVersion`.
-- Cell encoding: CTM hex (3 hex chars per cell, flat row-major string). `C`=color_id (0–F), `T`=CellType (0=Basic,1=Obstacle), `M`=modifier bitmask (bits[1:0]=protector_strength, bit[2]=is_core). See ADR-003.
+- 셀 인코딩: CTM 헥사값 (셀당 3자리의 16진수). `C`=컬러 ID, `T`=셀 유형, `M`=수정자 비트마스크(프로텍터 강도, 코어 여부).
 
 ---
 
-## 10. Image Stage System (Phase 2 Draft)
+## 10. MVP 범위
 
-Pipeline:
-1. Import source image.
-2. Pixelate to target board size.
-3. Map to 16-color palette (LAB nearest-color).
-4. Correct isolated single cells.
-5. Designate core cells manually in editor.
-6. Editor play-test + manual review.
-7. Export as stage CSV.
+### 포함 사항
+- 동적 보드 크기 (에디터 정의)
+- 컬러 그룹 선택 및 제거
+- 하향 중력, 수평 압축 없음
+- 턴 제한
+- 비율 기반 별 시스템 (80 / 90 / 100%)
+- 코어 셀 기믹
+- 프로텍터 셀 (1~2 레이어, 직접 타격 규칙)
+- 폭탄, H-로켓, 컬러 스윕, 로우 시프트, 셀 스왑 (에디터 전용 아이템)
+- 장애물 셀 및 보이드 셀
+- 180도 보드 회전 (로직 및 애니메이션)
+- 스테이지 선택 UI 및 클리어 데이터 저장
+- 30개의 수작업 스테이지
 
-Design principle: **auto-draft + manual edit + validate** (not full auto-generation).
-
-Retention hooks: album collection, 3-star frame rewards, daily image puzzles (Phase 2).
-
----
-
-## 11. Stage Editor
-
-Core development risk. Editor is required before content production begins.
-
-### MVP Required Features
-| Feature | Notes |
-|---------|-------|
-| Board size config | |
-| Cell color placement | palette color picker |
-| Core cell designation | |
-| Protector application | stackable on any cell |
-| Obstacle cell placement | |
-| Turn limit setting | |
-| Star threshold config | per-stage override |
-| Play-test mode | in-editor simulation |
-| verifiedSolution recording | records editor's clear sequence |
-| Stage data export | outputs to `shared/datas/stage/` |
-
-### Phase 2 Editor Features
-- Board rotation rule config
-- Color hide rule config
-- Image-to-board conversion
-- Auto validation (Solver integration)
-- Difficulty tag auto-suggestion
-- Seed-based stage generation
-
----
-
-## 12. Solver & Validation
-
-MVP approach: **verifiedSolution replay**, not full solver.
-
-1. Editor operator clears the stage manually.
-2. Clear sequence saved as `verifiedSolution`.
-3. Rule engine replays the sequence and confirms stage is clearable.
-
-This guarantees clearability without requiring exhaustive search.
-
-Heuristic checks (MVP):
-- Obvious impossible state detection (e.g., core cell surrounded only by obstacle cells).
-- Isolated single-cell count detection.
-- Rough difficulty estimation.
-
-Full solver: Phase 2+.
-
----
-
-## 13. MVP Scope
-
-### Included
-- Dynamic board size (editor-defined)
-- Color group selection + removal
-- Downward gravity, no horizontal compression
-- Turn limit
-- Ratio-based star system (80 / 90 / 100%)
-- Core cell gimmick (late stages)
-- Protector cells (Basic cells only, 1–2 layers, direct-hit strip rule)
-- Bomb, H-Rocket, ColorSweep, RowShift, CellSwap as dev-only items (Inspector)
-- Obstacle cells (data + ratio exclusion)
-- Void cells (board shape boundary; gravity segment partition; ratio exclusion)
-- Board background panel + socket sprite (procedural pixel-art hyper-casual style)
-- 180° board rotation — logic + animation + post-rotation gravity; dev trigger via UI button
-- Stage select UI + replay cleared stages
-- Best star / best move count saved per stage
-- Per-stage `star1_ratio` / `star2_ratio` inline in stage data (star3 = full clear, no ratio needed)
-- `color_palette` table (16 colors, IDs 0–15)
-- Dev-only item system via Inspector
-- 30 handcrafted stages
-- verifiedSolution replay validation
-
-### Excluded (Phase 2+)
-- Full solver
-- Server-based stage delivery
-- User image upload
-- N-turn automatic board rotation gimmick (rotation_interval per stage)
-- Color hide gimmick
-- Album / collection system
-- Daily challenge
-- Streak reward UI / system
-- Season system
-- In-game item UI / shop
-- Infinite auto-generation
-
----
-
-## 14. Risks
-
-| Risk | Severity | Mitigation |
-|------|----------|------------|
-| SameGame similarity | Medium | Core cell gate, pixel art, image stages, rotation (P2) |
-| Content production bottleneck | High | Editor is P0; verifiedSolution validates each stage |
-| Solver complexity growth | Medium | Heuristic only in MVP; rulesetVersion locks replay fidelity |
-| Last-cell frustration | Low | Ratio-based: no single isolated cell blocks base clear |
-| Retention drop-off | Medium | Star retry loop; image stages + album (P2) |
-| Item balance (3-star access) | Low | Items = player strategy; 3-star via item is valid |
-
----
-
-## 15. Validation Goals (MVP)
-
-Core questions to answer before Phase 2 investment:
-
-- Do players understand the rules immediately?
-- Is one session length appropriate (not too long / short)?
-- Does failure generate "retry" intent?
-- Does the 3-star condition create replayability?
-- Do Bomb / Rocket effects feel satisfying?
-- Is the core cell gate clear and fair?
-- Does the pixel art style provide emotional reward?
-
-Threshold: players voluntarily play for 10+ minutes on first session.
+### 제외 사항 (2단계)
+- 유저 이미지 업로드 및 자동 변환
+- N턴 자동 보드 회전 기믹
+- 도감 / 컬렉션 시스템
+- 시즌제 및 랭킹 시스템
+- 인게임 아이템 상점
+- 무한 자동 생성 시스템

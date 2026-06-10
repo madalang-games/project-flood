@@ -1,77 +1,77 @@
-# FTUE & Tutorial System Design — project-flood
+# FTUE 및 튜토리얼 시스템 기획서 — project-flood
 
-Date: 2026-06-08
-Status: accepted
-Relates to: [game-design.md](file:///c:/Users/SangHyeok/Desktop/git/madalang-games/project-flood/docs/design/game-design.md), [ingame-core-design.md](file:///c:/Users/SangHyeok/Desktop/git/madalang-games/project-flood/docs/design/ingame-core-design.md), [ui-ux-common-components.md](file:///c:/Users/SangHyeok/Desktop/git/madalang-games/project-flood/docs/design/ui-ux-common-components.md), [ui-ux-canvas-architecture.md](file:///c:/Users/SangHyeok/Desktop/git/madalang-games/project-flood/docs/design/ui-ux-canvas-architecture.md), [economy-system-design.md](file:///c:/Users/SangHyeok/Desktop/git/madalang-games/project-flood/docs/design/economy-system-design.md)
-
----
-
-## 1. Goals & Principles
-
-**Goals**
-- Prevent D1 churn: guarantee first-session rule comprehension and first clear
-- Progressive disclosure: Core Loop → Gimmick → Item, one concept per step
-- Minimize friction: forced guidance limited to Stage 1 only; all later steps are contextual
-
-**Design Rules**
-1. One line of text maximum — teach through visual cues, not descriptions
-2. One concept per step — never explain Protector and Core simultaneously
-3. Reward before teaching — Stage 1 guarantees a win before player understands why
-4. No repeat — each tutorial group is recorded on server after its final step; never replayed
-5. No emojis in client-facing strings — icons are separate UI assets, not inline text
+날짜: 2026-06-08
+상태: 승인됨 (accepted)
+관련 문서: [game-design.md](docs/design/game-design.md), [ingame-core-design.md](docs/design/ingame-core-design.md), [ui-ux-common-components.md](docs/design/ui-ux-common-components.md), [ui-ux-canvas-architecture.md](docs/design/ui-ux-canvas-architecture.md), [economy-system-design.md](docs/design/economy-system-design.md)
 
 ---
 
-## 2. Tutorial Phases
+## 1. 목표 및 원칙
+
+**목표**
+- D1 이탈 방지: 첫 세션에서 규칙 이해 및 첫 클리어 보장
+- 점진적 노출 (Progressive Disclosure): 코어 루프 → 기믹 → 아이템 순으로 단계별 개념 학습
+- 마찰 최소화: 강제 가이드는 스테이지 1로 제한하며, 이후 단계는 상황에 맞게 노출 (Contextual)
+
+**디자인 규칙**
+1. 텍스트는 최대 한 줄로 제한 — 설명이 아닌 시각적 단서를 통해 학습 유도
+2. 한 단계당 하나의 개념만 학습 — 프로텍터와 코어 셀을 동시에 설명하지 않음
+3. 학습 전 보상 제공 — 스테이지 1은 플레이어가 이유를 이해하기 전에 승리를 보장함
+4. 반복 없음 — 각 튜토리얼 그룹은 마지막 단계 완료 후 서버에 기록되며 다시 재생되지 않음
+5. 클라이언트 텍스트에 이모지 사용 금지 — 아이콘은 텍스트 내 삽입이 아닌 별도의 UI 애셋으로 처리
+
+---
+
+## 2. 튜토리얼 단계
 
 ```
-Phase A (Forced)       Stage 1~3    Core Loop acquisition
-Phase B (Contextual)   Stage 4+     Gimmick explanation on first encounter
-Phase C (Fail-based)   Any stage    Item hint after 3 consecutive failures
+단계 A (강제형)       스테이지 1~3    코어 루프 습득
+단계 B (상황형)       스테이지 4+     처음 만나는 기믹에 대한 설명
+단계 C (실패 기반)     모든 스테이지    3회 연속 실패 시 아이템 힌트 제공
 ```
 
 ---
 
-## 3. Architecture
+## 3. 아키텍처
 
-### 3.1 Canvas Layer
+### 3.1 캔버스 레이어 (Canvas Layer)
 
-`TutorialOverlay` lives on `Canvas_Overlay (Sort: 20)` per `ui-ux-canvas-architecture.md`.
+`TutorialOverlay`는 `ui-ux-canvas-architecture.md`에 따라 `Canvas_Overlay (Sort: 20)`에 위치합니다.
 
 ```
 [UIManager — DontDestroyOnLoad]
   └── Canvas_Overlay (Sort: 20)
-        └── TutorialOverlay          ← instantiated/destroyed via UIManager.ShowOverlay<TutorialOverlay>
-              ├── DimLayer           full-screen dim, RaycastBlock (alpha 0.7)
-              ├── SpotlightCutout    punches a hole in DimLayer revealing target
-              ├── FingerOverlay      animated tap hand above target
-              └── TooltipBubble      speech bubble anchored to target
+        └── TutorialOverlay          ← UIManager.ShowOverlay<TutorialOverlay>를 통해 생성/파괴
+              ├── DimLayer           전체 화면 딤(Dim), 레이캐스트 차단 (alpha 0.7)
+              ├── SpotlightCutout    DimLayer에 구멍을 뚫어 대상을 노출
+              ├── FingerOverlay      대상 위에 애니메이션되는 손가락 아이콘
+              └── TooltipBubble      대상에 고정된 말풍선
 ```
 
-Toast (Sort: 30) does not appear while TutorialOverlay is active — no z-order conflict.
+TutorialOverlay가 활성화된 동안 토스트(Toast, Sort: 30)는 나타나지 않아 Z-order 충돌을 방지합니다.
 
-### 3.2 New Components
+### 3.2 주요 컴포넌트
 
-| Component | Type | Role |
+| 컴포넌트 | 타입 | 역할 |
 |-----------|------|------|
-| `TutorialManager` | MonoBehaviour (DDOL) | Owns step sequencer; evaluates triggers on scene events |
-| `TutorialStepSequencer` | Pure C# | Advances steps; reads tutorial_step data; fires display commands |
-| `TutorialOverlay` | MonoBehaviour (Overlay prefab) | Renders DimLayer + SpotlightCutout + FingerOverlay + TooltipBubble |
-| `SpotlightTarget` | Pure C# (data) | Carries targeting mode (UI / World) and target reference |
+| `TutorialManager` | MonoBehaviour (DDOL) | 단계 시퀀서 소유, 씬 이벤트 발생 시 트리거 평가 |
+| `TutorialStepSequencer` | Pure C# | 단계 진행, tutorial_step 데이터 로드, 표시 명령 실행 |
+| `TutorialOverlay` | MonoBehaviour (Overlay prefab) | DimLayer + SpotlightCutout + FingerOverlay + TooltipBubble 렌더링 |
+| `SpotlightTarget` | Pure C# (data) | 타겟팅 모드(UI / World) 및 대상 참조 정보 보유 |
 
-### 3.3 InGameController Integration
+### 3.3 InGameController 연동
 
-Minimal surface — no existing classes modified beyond two call sites:
+기존 클래스 수정을 최소화하며 두 곳에서 호출됩니다:
 
 ```csharp
 // InGameController.HandleTap()
-if (TutorialManager.Instance.IsBlocking) return;   // Phase A forced tap guard
+if (TutorialManager.Instance.IsBlocking) return;   // 단계 A 강제 탭 가드
 
 // InGameController.OnBoardReady()
-TutorialManager.Instance.OnBoardReady(stageId, board);   // triggers Phase A/B evaluation
+TutorialManager.Instance.OnBoardReady(stageId, board);   // 단계 A/B 평가 트리거
 ```
 
-### 3.4 Lobby Integration
+### 3.4 로비(Lobby) 연동
 
 ```csharp
 // LobbyController.OnSceneEnter()
@@ -80,16 +80,16 @@ TutorialManager.Instance.CheckLobbyTriggers();
 
 ---
 
-## 4. SpotlightOverlay — Targeting System
+## 4. SpotlightOverlay — 타겟팅 시스템
 
-Two targeting modes. The mode is determined per step by the `target_space` field.
+두 가지 타겟팅 모드를 지원하며, `target_space` 필드에 의해 결정됩니다.
 
-### 4.1 UI Mode (`target_space = UI`)
+### 4.1 UI 모드 (`target_space = UI`)
 
-Used when `target_ui_id` refers to a UI element with a `RectTransform` (HUD, item tray, result screen).
+`target_ui_id`가 `RectTransform`(HUD, 아이템 트레이, 결과 화면 등)을 가진 UI 요소를 참조할 때 사용됩니다.
 
 ```csharp
-// Convert RectTransform to Canvas_Overlay local position
+// RectTransform을 Canvas_Overlay 로컬 좌표로 변환
 RectTransformUtility.ScreenPointToLocalPointInRectangle(
     overlayCanvas.GetComponent<RectTransform>(),
     RectTransformUtility.WorldToScreenPoint(null, targetRt.position),
@@ -100,14 +100,14 @@ spotlightCutout.anchoredPosition = localPoint;
 spotlightCutout.sizeDelta = targetRt.rect.size * targetRt.lossyScale / overlayCanvas.scaleFactor;
 ```
 
-Re-evaluate on `OnRectTransformDimensionsChange` (handles orientation change, safe area shift).
+`OnRectTransformDimensionsChange`(화면 방향 전환, 세이프 에어리어 변경 등) 발생 시 재계산합니다.
 
-### 4.2 World Mode (`target_space = World`)
+### 4.2 월드 모드 (`target_space = World`)
 
-Used when `target_ui_id` refers to a board cell or other scene-space GameObject (e.g., `board_cell_[r][c]`).
+`target_ui_id`가 보드 셀이나 다른 씬 공간의 GameObject(예: `board_cell_[r][c]`)를 참조할 때 사용됩니다.
 
 ```csharp
-// Convert world position to Canvas_Overlay local position
+// 월드 좌표를 Canvas_Overlay 로컬 좌표로 변환
 Vector3 screenPos = Camera.main.WorldToScreenPoint(targetWorldPos);
 RectTransformUtility.ScreenPointToLocalPointInRectangle(
     overlayCanvas.GetComponent<RectTransform>(),
@@ -116,141 +116,120 @@ RectTransformUtility.ScreenPointToLocalPointInRectangle(
     out Vector2 localPoint
 );
 spotlightCutout.anchoredPosition = localPoint;
-// Size derived from world-space bounds projected to screen at runtime
+// 크기는 런타임에 화면에 투영된 월드 공간 경계(bounds)로부터 도출
 ```
 
-`CellView` exposes `GetWorldCenter()` and `GetScreenBounds()` — `SpotlightCutout` reads these.
-Re-evaluate on every frame during board animation (board scales/repositions on load).
+`CellView`는 `GetWorldCenter()` 및 `GetScreenBounds()`를 노출하며, `SpotlightCutout`이 이를 읽습니다.
+보드 애니메이션 중에는 매 프레임 재계산합니다.
 
-### 4.3 Responsive Recalculation
+### 4.3 반응형 재계산 (Responsive Recalculation)
 
-| Event | Action |
+| 이벤트 | 동작 |
 |-------|--------|
-| `OnRectTransformDimensionsChange` | Recalculate spotlight position + size |
-| Board animation frame | Recalculate (World mode only, during load sequence) |
-| `Screen.safeArea` change | `TutorialManager` re-triggers `OnBoardReady` positioning |
+| `OnRectTransformDimensionsChange` | 스포트라이트 위치 및 크기 재계산 |
+| 보드 애니메이션 프레임 | 재계산 (월드 모드 전용, 로딩 시퀀스 중) |
+| `Screen.safeArea` 변경 | `TutorialManager`가 `OnBoardReady` 위치 지정을 다시 트리거 |
 
-### 4.4 Client-side Service & View Logic
-*   Added [TutorialApiService.cs](file:///c:/Users/SangHyeok/Desktop/git/madalang-games/project-flood/client/project-flood/Assets/Scripts/Services/TutorialApiService.cs): Handles networking for fetching/posting tutorial progress with local cache and PlayerPrefs fallbacks.
-*   Added [TutorialStepSequencer.cs](file:///c:/Users/SangHyeok/Desktop/git/madalang-games/project-flood/client/project-flood/Assets/Scripts/Services/Tutorial/TutorialStepSequencer.cs): Handles step progression and completion event firing.
-*   Added [TutorialManager.cs](file:///c:/Users/SangHyeok/Desktop/git/madalang-games/project-flood/client/project-flood/Assets/Scripts/Services/Tutorial/TutorialManager.cs): Core singleton evaluating triggers for Stage 1 & 2 forced onboarding, gimmick appearance, and item failure hints.
-*   Added [TutorialOverlay.cs](file:///c:/Users/SangHyeok/Desktop/git/madalang-games/project-flood/client/project-flood/Assets/Scripts/Core/UI/TutorialOverlay.cs): Instantiates the overlay prefab, handles responsive coordinate calculation in UI and World coordinates, and draws the guide character (Floodie).
-*   Modified [CellView.cs](file:///c:/Users/SangHyeok/Desktop/git/madalang-games/project-flood/client/project-flood/Assets/Scripts/InGame/View/CellView.cs) & [BoardView.cs](file:///c:/Users/SangHyeok/Desktop/git/madalang-games/project-flood/client/project-flood/Assets/Scripts/InGame/View/BoardView.cs): Added `GetWorldCenter()`, `GetScreenBounds()`, and `GetCellView()` for world cell positioning.
-*   Modified [InGameController.cs](file:///c:/Users/SangHyeok/Desktop/git/madalang-games/project-flood/client/project-flood/Assets/Scripts/InGame/Controller/InGameController.cs): Blocked wrong clicks during blocking steps, routing input only to the spotlighted cell group. Fixed `CS0136` local variable naming conflict by renaming nested variables `row` and `col` to `tutRow` and `tutCol`.
-*   Modified [InGameSceneEntry.cs](file:///c:/Users/SangHyeok/Desktop/git/madalang-games/project-flood/client/project-flood/Assets/Scripts/InGame/Controller/InGameSceneEntry.cs): Tracked stage fail count in PlayerPrefs and triggered fail hints.
-*   Modified [LobbyView.cs](file:///c:/Users/SangHyeok/Desktop/git/madalang-games/project-flood/client/project-flood/Assets/Scripts/OutGame/Lobby/LobbyView.cs): Evaluated lobby triggers on start.
-*   Modified [HomeTabView.cs](file:///c:/Users/SangHyeok/Desktop/git/madalang-games/project-flood/client/project-flood/Assets/Scripts/OutGame/Lobby/HomeTabView.cs): Refactored to instantiate and state-bind a separate, high-fidelity chest prefab instead of hacking stage node views.
-*   Added [ChapterChestView.cs](file:///c:/Users/SangHyeok/Desktop/git/madalang-games/project-flood/client/project-flood/Assets/Scripts/OutGame/Lobby/ChapterChestView.cs): Manages LOCKED (inactive), CLAIM! (active), and CLEARED (claimed) visual states and interactions.
-*   Added [UIPulseGlowEffect.cs](file:///c:/Users/SangHyeok/Desktop/git/madalang-games/project-flood/client/project-flood/Assets/Scripts/Core/UI/UIPulseGlowEffect.cs): Adds pulsing and rotating micro-animations to active chests.
-*   Added [UIPulseGlow.shader](file:///c:/Users/SangHyeok/Desktop/git/madalang-games/project-flood/client/project-flood/Assets/Shaders/UIPulseGlow.shader): High-fidelity procedural glow outline shader supporting UI Mask stencil buffer checks.
-*   Added [PrefabSetupUtility.cs](file:///c:/Users/SangHyeok/Desktop/git/madalang-games/project-flood/client/project-flood/Assets/Scripts/Editor/PrefabSetupUtility.cs): Unity Editor tool adding a menu option under `Tools/Project Flood/Generate UI Prefabs` to procedurally build `TutorialOverlay.prefab` and `ChapterChest.prefab` hierarchies and serializing them in Resources folder.
-
-### 4.5 Documentation & Metadata Sets
-*   Updated [client/project-flood/Assets/Scripts/Core/UI/AGENTS.md](file:///c:/Users/SangHyeok/Desktop/git/madalang-games/project-flood/client/project-flood/Assets/Scripts/Core/UI/AGENTS.md) to document `TutorialOverlay.cs` and `UIPulseGlowEffect.cs`.
-*   Updated [client/project-flood/Assets/Scripts/OutGame/Lobby/AGENTS.md](file:///c:/Users/SangHyeok/Desktop/git/madalang-games/project-flood/client/project-flood/Assets/Scripts/OutGame/Lobby/AGENTS.md) to document `ChapterChestView.cs`.
-*   Created documentation set for `shared/contracts/Tutorial/` ([AGENTS.md](file:///c:/Users/SangHyeok/Desktop/git/madalang-games/project-flood/shared/contracts/Tutorial/AGENTS.md), `CLAUDE.md`, `GEMINI.md`).
-*   Created documentation set for `shared/datas/tutorial/` ([AGENTS.md](file:///c:/Users/SangHyeok/Desktop/git/madalang-games/project-flood/shared/datas/tutorial/AGENTS.md), `CLAUDE.md`, `GEMINI.md`).
-*   Updated navigation table in [shared/contracts/AGENTS.md](file:///c:/Users/SangHyeok/Desktop/git/madalang-games/project-flood/shared/contracts/AGENTS.md).
+### 4.4 클라이언트 서비스 및 뷰 로직
+*   [TutorialApiService.cs](client/project-flood/Assets/Scripts/Services/TutorialApiService.cs) 추가: 로컬 캐시 및 PlayerPrefs 폴백을 포함한 튜토리얼 진행도 조회/저장 네트워크 처리.
+*   [TutorialStepSequencer.cs](client/project-flood/Assets/Scripts/Services/Tutorial/TutorialStepSequencer.cs) 추가: 단계 진행 및 완료 이벤트 처리.
+*   [TutorialManager.cs](client/project-flood/Assets/Scripts/Services/Tutorial/TutorialManager.cs) 추가: 스테이지 1&2 강제 온보딩, 기믹 등장, 아이템 실패 힌트 등의 트리거를 평가하는 코어 싱글톤.
+*   [TutorialOverlay.cs](client/project-flood/Assets/Scripts/Core/UI/TutorialOverlay.cs) 추가: 오버레이 프리팹 생성, UI 및 월드 좌표계의 반응형 좌표 계산, 가이드 캐릭터(Floodie) 렌더링.
+*   [CellView.cs](client/project-flood/Assets/Scripts/InGame/View/CellView.cs) 및 [BoardView.cs](client/project-flood/Assets/Scripts/InGame/View/BoardView.cs) 수정: 월드 셀 위치 지정을 위한 `GetWorldCenter()`, `GetScreenBounds()`, `GetCellView()` 추가.
+*   [InGameController.cs](client/project-flood/Assets/Scripts/InGame/Controller/InGameController.cs) 수정: 블로킹 단계에서 잘못된 클릭을 차단하고 스포트라이트된 셀 그룹으로만 입력을 라우팅. `CS0136` 변수 명명 충돌 수정.
+*   [InGameSceneEntry.cs](client/project-flood/Assets/Scripts/InGame/Controller/InGameSceneEntry.cs) 수정: PlayerPrefs에 스테이지 실패 횟수를 추적하고 실패 힌트 트리거.
+*   [LobbyView.cs](client/project-flood/Assets/Scripts/OutGame/Lobby/LobbyView.cs) 수정: 시작 시 로비 트리거 평가.
+*   [HomeTabView.cs](client/project-flood/Assets/Scripts/OutGame/Lobby/HomeTabView.cs) 수정: 스테이지 노드 뷰 수정 대신 별도의 보물상자 프리팹을 생성하고 상태를 바인딩하도록 리팩토링.
+*   [ChapterChestView.cs](client/project-flood/Assets/Scripts/OutGame/Lobby/ChapterChestView.cs) 추가: 잠금(LOCKED), 보상 가능(CLAIM!), 획득 완료(CLEARED) 시각적 상태 및 상호작용 관리.
+*   [UIPulseGlowEffect.cs](client/project-flood/Assets/Scripts/Core/UI/UIPulseGlowEffect.cs) 추가: 활성화된 상자에 펄스 및 회전 애니메이션 추가.
+*   [UIPulseGlow.shader](client/project-flood/Assets/Shaders/UIPulseGlow.shader) 추가: UI 마스크 스텐실 버퍼 체크를 지원하는 고품질 절차적 글로우 외곽선 쉐이더.
+*   [PrefabSetupUtility.cs](client/project-flood/Assets/Scripts/Editor/PrefabSetupUtility.cs) 추가: `Tools/Project Flood/Generate UI Prefabs` 메뉴를 통해 `TutorialOverlay.prefab` 및 `ChapterChest.prefab` 계층 구조를 자동으로 구축하고 Resources 폴더에 저장하는 에디터 툴.
 
 ---
 
-## 5. Phase A — Core Loop Onboarding (Stages 1–3)
+## 5. 단계 A — 코어 루프 온보딩 (스테이지 1~3)
 
-### 5.1 Stage 1 — Forced Guidance
+### 5.1 스테이지 1 — 강제 가이드
 
-**Board Requirements (Stage 1 dedicated):**
+**보드 요구 사양 (스테이지 1 전용):**
 
-| Field | Value | Rationale |
+| 필드 | 값 | 근거 |
 |-------|-------|-----------|
-| board_width | 6 | Small — reduces cognitive load |
-| board_height | 6 | Small |
-| turn_limit | 20 | Generous — player cannot run out |
-| color_count | 3 | Minimum color variety |
-| star1_ratio | 0.70 | Below default 0.80 — guarantees pass even with suboptimal play |
-| star2_ratio | 0.85 | |
+| board_width | 6 | 작게 구성 — 인지 부하 감소 |
+| board_height | 6 | 작게 구성 |
+| turn_limit | 20 | 넉넉하게 부여 — 실패 불가능 |
+| color_count | 3 | 최소 색상 수 |
+| star1_ratio | 0.70 | 기본 0.80보다 낮게 설정 — 비효율적으로 플레이해도 클리어 보장 |
 | difficulty | tutorial | |
-| gimmicks | none | No Core / Protector / Obstacle |
+| gimmicks | none | 코어 / 프로텍터 / 장애물 없음 |
 
-**3-Touch Clear Guarantee (board layout contract):**
+**3회 터치 클리어 보장 (보드 레이아웃 계약):**
 
-Stage 1 must be designed so that 3 taps on the 3 largest groups clears >= 70% of the board.
-The Stage Editor operator must verify this with `verifiedSolution` before export.
-Suggested layout: three large monochrome clusters (8+ cells each), no isolated singles.
+스테이지 1은 가장 큰 3개 그룹을 탭하면 보드의 70% 이상이 제거되도록 설계되어야 합니다.
+에디터 조작자는 수출(Export) 전에 `verifiedSolution`으로 이를 검증해야 합니다.
 
-**Step Sequence:**
+**단계 시퀀스:**
 
 | step_index | content_type | target_ui_id | target_space | text_key | auto_advance_sec | is_blocking |
 |-----------|-------------|-------------|-------------|---------|-----------------|------------|
-| 0 | `finger_overlay` | `board_cell_[r][c]` (largest group representative cell) | World | `tut.tap_group` | 0 | true |
+| 0 | `finger_overlay` | `board_cell_[r][c]` (가장 큰 그룹의 대표 셀) | World | `tut.tap_group` | 0 | true |
 | 1 | `tooltip` | `board_area` | World | `tut.gravity_explain` | 2.0 | false |
 | 2 | `highlight_only` | `hud_turn_count` | UI | `tut.turn_explain` | 2.0 | false |
 | 3 | `highlight_only` | `hud_ratio_bar` | UI | `tut.ratio_explain` | 2.0 | false |
 | 4 | `tooltip` | `result_star_area` | UI | `tut.star_explain` | 0 | false |
 
-Step 4 advances on any Result button tap.
+**강제 탭 동작 (단계 0):**
+- `DimLayer` 활성화 (alpha 0.7, 전체 레이캐스트 차단)
+- `SpotlightCutout`이 가장 큰 색상 클러스터 전체를 노출
+- `FingerOverlay`가 그룹의 중심(대표 셀)에 위치
+- 다른 모든 보드 셀 및 HUD는 레이캐스트 차단
+- 스포트라이트 영역 외의 탭은 무시됨
 
-**Forced tap behavior (step 0):**
-- `DimLayer` active (alpha 0.7, full RaycastBlock)
-- `SpotlightCutout` reveals the entire connected group of the largest color cluster (all cells in the group, not just the representative)
-- `FingerOverlay` positioned over the representative cell (group centroid)
-- All other board cells and HUD are RaycastBlocked
-- Player tap on any non-spotlight cell → silently ignored
-
-### 5.2 Stage 2 — Semi-guided
+### 5.2 스테이지 2 — 반강제 가이드
 
 | step_index | content_type | target_ui_id | target_space | text_key | auto_advance_sec | is_blocking |
 |-----------|-------------|-------------|-------------|---------|-----------------|------------|
 | 0 | `highlight_only` | `board_area` | World | `tut.free_tap` | 0 | false |
 
-Step advances on first player tap. No forced direction.
+플레이어의 첫 탭 시 단계가 진행됩니다. 강제 방향은 없습니다.
 
-### 5.3 Stage 3 — Free Play
+### 5.3 스테이지 3 — 자유 플레이
 
-No tutorial steps. Phase A completion flag set after Stage 3 entry.
+튜토리얼 단계가 없습니다. 스테이지 3 진입 후 단계 A 완료 플래그가 설정됩니다.
 
 ---
 
-## 6. Phase B — Contextual Gimmick Introduction
+## 6. 단계 B — 상황별 기믹 소개
 
-Triggers on first encounter of each gimmick type. `trigger_type = gimmick_appear`.
-Evaluated in `OnBoardReady()` — checks current BoardState for gimmick types not yet recorded in `user_tutorial_progress`.
+각 기믹 유형을 처음 만날 때 트리거됩니다. (`trigger_type = gimmick_appear`)
+`OnBoardReady()`에서 평가하며, `user_tutorial_progress`에 기록되지 않은 기믹이 보드 상태에 있는지 확인합니다.
 
-### 6.1 Protector Cell
+### 6.1 프로텍터 셀 (Protector Cell)
 
 | step_index | content_type | target_ui_id | target_space | text_key | auto_advance_sec | is_blocking |
 |-----------|-------------|-------------|-------------|---------|-----------------|------------|
-| 0 | `highlight_only` | `board_protector_cell` (first protector cell) | World | `tut.protector_what` | 2.0 | false |
+| 0 | `highlight_only` | `board_protector_cell` (첫 프로텍터 셀) | World | `tut.protector_what` | 2.0 | false |
 | 1 | `finger_overlay` | `board_protector_cell` | World | `tut.protector_how` | 2.0 | false |
 
-Step 1 auto-advances at 2s or when the protector cell is tapped (whichever is first).
-
-### 6.2 Core Cell
+### 6.2 코어 셀 (Core Cell)
 
 | step_index | content_type | target_ui_id | target_space | text_key | auto_advance_sec | is_blocking |
 |-----------|-------------|-------------|-------------|---------|-----------------|------------|
-| 0 | `tooltip` | `board_core_cell` (first core cell) | World | `tut.core_warning` | 3.0 | false |
+| 0 | `tooltip` | `board_core_cell` (첫 코어 셀) | World | `tut.core_warning` | 3.0 | false |
 
-Warning icon rendered as a separate UI asset positioned adjacent to TooltipBubble — not embedded in text.
+경고 아이콘은 텍스트 내 삽입이 아닌 TooltipBubble 옆에 위치하는 별도의 UI 애셋으로 렌더링됩니다.
 
-### 6.3 Obstacle Cell
-
-| step_index | content_type | target_ui_id | target_space | text_key | auto_advance_sec | is_blocking |
-|-----------|-------------|-------------|-------------|---------|-----------------|------------|
-| 0 | `tooltip` | `board_obstacle_cell` (first obstacle cell) | World | `tut.obstacle_what` | 3.0 | false |
-
-### 6.4 Board Rotation — Phase 2 (spec only)
+### 6.3 장애물 셀 (Obstacle Cell)
 
 | step_index | content_type | target_ui_id | target_space | text_key | auto_advance_sec | is_blocking |
 |-----------|-------------|-------------|-------------|---------|-----------------|------------|
-| 0 | `tooltip` | `board_area` | World | `tut.rotation_explain` | 0 | false |
-
-Shown before rotation animation plays. Auto-advances when rotation animation completes.
+| 0 | `tooltip` | `board_obstacle_cell` (첫 장애물 셀) | World | `tut.obstacle_what` | 3.0 | false |
 
 ---
 
-## 7. Phase C — Fail-triggered Item Hint
+## 7. 단계 C — 실패 트리거 아이템 힌트
 
-### 7.1 Trigger Condition
+### 7.1 트리거 조건
 
 ```
 fail_count[stage_id] >= 3
@@ -258,141 +237,82 @@ AND ItemInventory.CanUse(any type) == true
 AND PlayerPrefs.GetInt("item_hint_shown_" + stage_id) == 0
 ```
 
-`item_hint_shown` stored in `PlayerPrefs` (per stage_id). Server record not required.
-
-### 7.2 Step Sequence
+### 7.2 단계 시퀀스
 
 | step_index | content_type | target_ui_id | target_space | text_key | auto_advance_sec | is_blocking |
 |-----------|-------------|-------------|-------------|---------|-----------------|------------|
 | 0 | `finger_overlay` | `item_tray` | UI | `tut.item_hint_prompt` | 3.0 | false |
 | 1 | `tooltip` | `item_slot_bomb` | UI | `tut.item_bomb_effect` | 2.0 | false |
 
-Both steps are non-blocking. Auto-advances on timer if player does not interact.
-Set `item_hint_shown` in PlayerPrefs after step 1 regardless of player action.
-
-### 7.3 No Items Available (Phase 2)
-
-When `ItemInventory.CanUse(any) == false`: hint is suppressed in MVP.
-Phase 2: show rewarded ad CTA instead ("Watch ad to get an item").
-
 ---
 
-## 8. Data Schema
-
-Extends `tutorial_step` table from `ui-ux-common-components.md §13`. Two columns added.
+## 8. 데이터 스키마
 
 ### tutorial_step (CSV → info_generator)
 
-| Column | Type | Notes |
+| 컬럼 | 타입 | 설명 |
 |--------|------|-------|
 | id | INT PK | |
-| trigger_type | ENUM | `first_launch` / `gimmick_appear` / `fail_repeat` / `stage_clear` / `chapter_clear` |
-| trigger_value | VARCHAR | stage_id, gimmick type name, fail threshold. NULL for `first_launch`. |
-| step_index | INT | Order within same trigger group (0-based) |
+| trigger_type | ENUM | `first_launch` / `gimmick_appear` / `fail_repeat` 등 |
+| trigger_value | VARCHAR | stage_id, 기믹 유형 명칭 등 |
+| step_index | INT | 동일 그룹 내 순서 (0부터 시작) |
 | content_type | ENUM | `finger_overlay` / `tooltip` / `highlight_only` |
-| target_ui_id | VARCHAR | Logical ID resolved at runtime to RectTransform or world GameObject |
-| target_space | ENUM | `UI` (RectTransform) / `World` (scene world position) |
-| text_key | VARCHAR | Localization key. No emojis — icons attached via separate UI asset |
-| auto_advance_sec | FLOAT | >0: auto-advance after N seconds. 0: wait for player action |
-| is_blocking | BOOL | true: all input blocked except spotlight target (Phase A forced taps only) |
-
-### user_tutorial_progress (server)
-
-| Column | Type |
-|--------|------|
-| user_id | INT FK |
-| tutorial_id | INT FK → tutorial_step.id (trigger group unit) |
-| viewed_at | DATETIME |
-
-**Record timing:** After the final step of a trigger group completes.
-**Check timing:** In `OnBoardReady()` and `CheckLobbyTriggers()` before any step plays.
-**Guest fallback:** PlayerPrefs key `tut_done_{tutorial_id}`. Migrate to server on account link (Phase 2).
+| target_ui_id | VARCHAR | 런타임에 RectTransform 또는 월드 오브젝트로 해석될 ID |
+| target_space | ENUM | `UI` (RectTransform) / `World` (월드 좌표) |
+| text_key | VARCHAR | 로컬라이제이션 키 |
+| auto_advance_sec | FLOAT | 자동 진행 시간 (0이면 사용자 조작 대기) |
+| is_blocking | BOOL | true이면 대상 외의 모든 입력 차단 |
 
 ---
 
-## 9. UI Components
+## 9. UI 컴포넌트
 
-### TooltipBubble
+### TooltipBubble (말풍선)
+- 말풍선 패널, 아이콘 슬롯(선택), 텍스트(TMP)로 구성.
+- 꼬리(Tail) 스프라이트는 대상 위치에 따라 상/하/좌/우로 자동 회전.
 
-```
-[Speech bubble panel]
-  ├── [Icon slot]    — optional; separate Image asset (no emoji in text)
-  └── [TMP_Text]     — text_key binding; TMP Auto Sizing min 12dp, max designed size
-[Tail sprite]         — auto-rotates to point at target (4 directions: up/down/left/right)
-```
+### FingerOverlay (손가락)
+- 대상 중심으로부터 오프셋 위치에 배치.
+- 누르는 애니메이션 반복.
 
-Appear: scale 0.85→1.0, alpha 0→1 (200ms ease-out).
-Dismiss: scale 1.0→0.9, alpha 1→0 (150ms ease-in) → advance step.
-
-### FingerOverlay
-
-```
-Position: target world/screen center + offset (30dp right, 20dp down)
-Animation: scale 1.0 → 0.85 (80ms ease-in) → 1.0 (60ms ease-out), loop period 0.6s
-```
-
-### SpotlightCutout
-
-```
-DimLayer: full-screen Image (alpha 0.7, color UI_BG_DEEP), RaycastTarget = true
-SpotlightCutout: RectMask2D or custom shader cutout
-  — position/size set by targeting system (§4)
-  — RaycastTarget = false on cutout region only
-Resize animation: DOTween SizeDelta 150ms ease-out when step changes target
-```
+### SpotlightCutout (스포트라이트)
+- 전체 화면 DimLayer와 커스텀 쉐이더 또는 RectMask2D를 이용한 구멍 뚫기.
+- 단계 변경 시 타겟 위치로 DOTween을 이용한 부드러운 이동 및 크기 변경.
 
 ---
 
-## 10. Localization Keys
+## 10. 로컬라이제이션 키 (Localization Keys)
 
-No emojis in any key value. Icons provided by separate UI Image assets.
-
-| key | EN text | KR text |
-|-----|---------|---------|
-| `tut.tap_group` | Tap connected cells of the same color! | 같은 색 셀들을 탭하세요! |
-| `tut.gravity_explain` | Cells fall downward | 셀이 아래로 떨어져요 |
-| `tut.turn_explain` | Use turns wisely to clear more cells | 턴을 아껴서 더 많이 지워보세요 |
-| `tut.ratio_explain` | Fill this bar to earn more stars | 이 바를 채울수록 별을 더 받아요 |
-| `tut.star_explain` | 3 stars means a perfect clear! | 별 3개면 완벽 클리어! |
-| `tut.free_tap` | Now try tapping on your own! | 이제 직접 탭해보세요! |
-| `tut.protector_what` | This cell has a shield | 이 셀에는 보호막이 있어요 |
-| `tut.protector_how` | Tap a same-color group to strip it | 같은 색 그룹을 탭하면 벗겨져요 |
-| `tut.core_warning` | This cell must be removed to clear the stage | 이 셀을 제거해야 스테이지 클리어가 돼요 |
-| `tut.obstacle_what` | This cell cannot be removed by tapping | 이 셀은 탭으로 제거할 수 없어요 |
-| `tut.item_hint_prompt` | Try using an item! | 아이템을 써보세요! |
-| `tut.item_bomb_effect` | Bomb: removes all surrounding cells at once | 폭탄: 주변 셀을 한 번에 제거해요 |
-| `tut.rotation_explain` | The board flipped! Gravity follows the new direction | 보드가 뒤집혔어요! 중력이 새 방향으로 적용돼요 |
+| 키 | 한국어 텍스트 |
+|-----|---------|
+| `tut.tap_group` | 같은 색 셀들을 탭하세요! |
+| `tut.gravity_explain` | 셀이 아래로 떨어져요 |
+| `tut.turn_explain` | 턴을 아껴서 더 많이 지워보세요 |
+| `tut.ratio_explain` | 이 바를 채울수록 별을 더 받아요 |
+| `tut.star_explain` | 별 3개면 완벽 클리어! |
+| `tut.free_tap` | 이제 직접 탭해보세요! |
+| `tut.protector_what` | 이 셀에는 보호막이 있어요 |
+| `tut.protector_how` | 같은 색 그룹을 탭하면 벗겨져요 |
+| `tut.core_warning` | 이 셀을 제거해야 스테이지 클리어가 돼요 |
+| `tut.obstacle_what` | 이 셀은 탭으로 제거할 수 없어요 |
+| `tut.item_hint_prompt` | 아이템을 써보세요! |
+| `tut.item_bomb_effect` | 폭탄: 주변 셀을 한 번에 제거해요 |
+| `tut.rotation_explain` | 보드가 뒤집혔어요! 중력이 새 방향으로 적용돼요 |
 
 ---
 
-## 11. MVP Scope
+## 11. MVP 범위
 
-### Included
-- Phase A: Stage 1 forced guide (5 steps, `is_blocking = true` on step 0)
-- Phase A: Stage 2 semi-guide (1 step)
-- Phase B: Protector first-encounter hint
-- Phase B: Core first-encounter hint
-- Phase B: Obstacle first-encounter hint
-- Phase C: 3-fail item hint (item available guard)
-- `TutorialOverlay` on `Canvas_Overlay (Sort: 20)`
-- `SpotlightCutout` with UI (RectTransform) and World coordinate targeting
-- Responsive recalculation on `OnRectTransformDimensionsChange`
-- `tutorial_step` CSV + `user_tutorial_progress` server record
-- Guest PlayerPrefs fallback
+### 포함 사항
+- 단계 A: 스테이지 1 강제 가이드 (5단계)
+- 단계 A: 스테이지 2 반강제 가이드 (1단계)
+- 단계 B: 프로텍터/코어/장애물 첫 만남 힌트
+- 단계 C: 3회 실패 시 아이템 힌트
+- UI/월드 좌표 대응 스포트라이트 시스템
+- 응답형 좌표 재계산
+- 서버 및 로컬 캐시 기반 진행도 관리
 
-### Excluded (Phase 2)
-- Phase B: Board rotation hint
-- Phase C: Rewarded ad CTA when no items available
-- Guest → server tutorial progress migration on account link
-
----
-
-## 12. Risks
-
-| Risk | Severity | Mitigation |
-|------|----------|------------|
-| Stage 1 3-touch guarantee not met at ship time | Medium | `verifiedSolution` contract: Editor operator records 3-tap clear sequence before export. stage_id=1 requires explicit QA sign-off |
-| SpotlightCutout misaligns on notched devices | Medium | Recalculate on `OnRectTransformDimensionsChange`; QA on iPhone 14+ and Pixel 7 reference devices |
-| World-mode spotlight drifts during board load animation | Low | Recalculate every frame until `BoardView.IsAnimating == false` |
-| `gimmick_appear` trigger fires before player can see the cell | Low | Delay trigger evaluation by one frame after `OnBoardReady()` to ensure board render completes |
-| `user_tutorial_progress` API latency causes duplicate step replay | Low | Client-side cache as source of truth; server response corrects after-the-fact |
+### 제외 사항 (2단계)
+- 보드 회전 힌트
+- 아이템 없을 시 광고 유도 CTA
+- 게스트 → 서버 진행도 마이그레이션 로직

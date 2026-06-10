@@ -1,163 +1,109 @@
-# Stage Editor Design
+# 스테이지 에디터 기획서 (Stage Editor Design)
 
-## Overview
+## 개요
 
-Standalone Next.js web app (`tools/stage_editor/`). Reads and writes `shared/datas/stage/stage.csv` and `shared/datas/common/color_palette.csv` via API routes. Development-only tool.
+단독 실행형 Next.js 웹 앱(`tools/stage_editor/`)입니다. API 라우트를 통해 `shared/datas/stage/stage.csv` 및 `shared/datas/common/color_palette.csv`를 읽고 씁니다. 개발 전용 도구입니다.
 
-See ADR-005 for architecture rationale.
+아키텍처 근거는 ADR-005를 참조하세요.
 
 ---
 
-## API Routes
+## API 라우트
 
-| Method | Route | Description |
+| 메서드 | 경로 | 설명 |
 |--------|-------|-------------|
-| GET | `/api/stages` | All stages (parsed from stage.csv) |
-| GET | `/api/stages/[id]` | Single stage by stage_id |
-| POST | `/api/stages` | Create new stage (appends row) |
-| PUT | `/api/stages/[id]` | Update existing stage |
-| DELETE | `/api/stages/[id]` | Delete stage row |
-| GET | `/api/palette` | All 16 colors from color_palette.csv |
+| GET | `/api/stages` | 모든 스테이지 정보 (stage.csv 파싱) |
+| GET | `/api/stages/[id]` | 특정 ID의 스테이지 상세 정보 |
+| POST | `/api/stages` | 새 스테이지 생성 (행 추가) |
+| PUT | `/api/stages/[id]` | 기존 스테이지 업데이트 |
+| DELETE | `/api/stages/[id]` | 스테이지 행 삭제 |
+| GET | `/api/palette` | color_palette.csv의 모든 16개 색상 정보 |
 
 ---
 
-## UI Layout
+## UI 레이아웃
 
 ```
 ┌─────────────┬──────────────────────────────┬────────────────────┐
-│ Stage List  │        Board Editor          │  Cell Inspector    │
-│             │  (grid canvas, click=paint)  │  (selected cell)   │
-│  [+ New]    │                              │  Type: Basic ▼     │
-│  Stage 1    │   [ ][ ][ ][ ]              │  Color: ■ Red ▼    │
-│  Stage 2    │   [ ][ ][ ][ ]              │  Protector: 0 ▼    │
-│  ...        │   [ ][ ][ ][ ]              │  Core: □           │
+│ 스테이지 목록 │        보드 에디터           │   셀 인스펙터      │
+│             │  (그리드 캔버스, 클릭=그리기)  │   (선택된 셀)      │
+│  [+ 신규]    │                              │  유형: 기본 ▼     │
+│  스테이지 1  │   [ ][ ][ ][ ]              │  색상: ■ Red ▼    │
+│  스테이지 2  │   [ ][ ][ ][ ]              │  프로텍터: 0 ▼    │
+│  ...        │   [ ][ ][ ][ ]              │  코어: □           │
 │             │   [ ][ ][ ][ ]              │                    │
 │             ├──────────────────────────────┤                    │
-│             │  Metadata Panel              │                    │
-│             │  Width:8 Height:8 Turns:20   │                    │
-│             │  Difficulty: Normal ▼        │                    │
-│             │  Star1:0.80  Star2:0.90      │                    │
+│             │  메타데이터 패널              │                    │
+│             │  너비:8 높이:8 턴수:20        │                    │
+│             │  난이도: 보통 ▼               │                    │
+│             │  별1:0.80  별2:0.90          │                    │
 │             ├──────────────────────────────┤                    │
-│             │  [▶ Playtest] [⏺ Record]     │                    │
-│             │  [✓ Validate] [⬇ Export]     │                    │
+│             │  [▶ 테스트] [⏺ 기록]         │                    │
+│             │  [✓ 검증]   [⬇ 내보내기]     │                    │
 └─────────────┴──────────────────────────────┴────────────────────┘
 ```
 
 ---
 
-## Board Editor
+## 보드 에디터
 
-- Grid canvas sized to `board_width × board_height` (up to 16×16).
-- Left-click cell → apply selected cell inspector settings.
-- Right-click cell → reset to empty (Obstacle or clear).
-- Board resizes when width/height changes; cells outside new bounds are dropped.
-- `color_ids` auto-derived from all unique `C` values in non-Obstacle cells.
+- `board_width × board_height` 크기의 그리드 캔버스 (최대 16×16).
+- 왼쪽 클릭 → 선택된 인스펙터 설정 적용.
+- 오른쪽 클릭 → 빈 공간 또는 장애물로 초기화.
+- 너비/높이 변경 시 보드 크기가 조절되며, 범위를 벗어나는 셀은 삭제됨.
+- `color_ids`는 장애물이 아닌 셀들에 사용된 고유한 컬러 ID들로부터 자동 도출됨.
 
-### Cell Inspector Options
+### 셀 인스펙터 옵션
 
-| Field | Values |
+| 필드 | 값 |
 |-------|--------|
-| CellType | Basic, Obstacle |
-| Color | palette picker (16 colors, shown as colored swatches) |
-| Protector | 0 / 1 / 2 |
-| Core | on / off |
-
-Cell is encoded as CTM hex on change (see ADR-003).
+| 셀 유형 | 기본(Basic), 장애물(Obstacle) |
+| 색상 | 팔레트 피커 (16개 색상 견본 노출) |
+| 프로텍터 | 0 / 1 / 2 |
+| 코어 여부 | On / Off |
 
 ---
 
-## Playtest Mode
+## 플레이테스트 모드 (Playtest Mode)
 
-- In-browser simulation using `lib/game-rules.ts` (TypeScript port of C# rule engine).
-- Tap cells as in the real game; turn counter decrements.
-- Gravity and protector stripping apply after each tap.
-- Clear/fail overlay shown on stage end.
-- Exit playtest → board returns to pre-playtest state.
+- C# 규칙 엔진을 TypeScript로 포팅한 `lib/game-rules.ts`를 사용하여 브라우저 내 시뮬레이션 수행.
+- 실제 게임과 동일하게 셀을 탭하며 턴 소진 확인.
+- 중력 및 프로텍터 제거 로직 적용.
+- 종료 시 클리어/실패 오버레이 노출.
+- 테스트 종료 시 보드는 이전 편집 상태로 복구됨.
 
-### Solution Recorder
+### 해법 기록 (Solution Recorder)
 
-- Enable recording before playtest → taps saved as `[row, col]` sequence.
-- On successful clear → sequence written to `verified_solution` field as `"row,col;row,col;..."`.
-- Existing `verified_solution` is replaced; must re-record after any board change.
+- 테스트 전 기록 시작 → 탭 순서(`[row, col]`) 저장.
+- 성공적으로 클리어 시 해당 시퀀스를 `verified_solution` 필드에 `"row,col;row,col;..."` 형식으로 저장.
+- 보드 변경 시 기존 해법은 무효화되며 다시 기록해야 함.
 
 ---
 
-## Export Validation
+## 내보내기 검증 (Export Validation)
 
-Run before writing to CSV. Results shown in UI.
+CSV 쓰기 전 실행되며 UI에 결과가 표시됩니다.
 
-| Check | On Fail |
+| 체크 항목 | 실패 시 |
 |-------|---------|
-| `verified_solution` exists | Block export |
-| `verified_solution` replay succeeds (rule engine replay) | Block export |
-| `star1_ratio` achievable given current board | Warn (not block) |
-| No Core cell entirely surrounded by Obstacle cells | Warn (not block — cell still tappable per ADR-004) |
+| `verified_solution` 존재 여부 | 내보내기 차단 |
+| `verified_solution` 재현 성공 여부 | 내보내기 차단 |
+| 현재 보드에서 `star1_ratio` 달성 가능성 | 경고 (차단 안 함) |
+| 코어 셀이 장애물에 완전히 둘러싸여 있는지 확인 | 경고 (차단 안 함) |
 
 ---
 
-## Advanced Editor Features
+## 고급 에디터 기능
 
-### 1. Image-to-Board Auto-Drafting
-- **Functionality**: Drag and drop any image file (.png, .jpg) directly onto the grid canvas.
-- **Processing**:
-  - The image is downscaled to the current `board_width` and `board_height` grid size using pixelation.
-  - Each pixel's RGB is mapped to the nearest color in `color_palette.csv` using Euclidean distance in LAB color space.
-  - Isolated single-pixel color anomalies are automatically merged with surrounding colors to avoid unsolvable layouts.
+### 1. 이미지-보드 자동 변환 (Auto-Drafting)
+- 이미지 파일(.png, .jpg)을 캔버스 위로 드래그 앤 드롭.
+- 현재 보드 크기에 맞춰 이미지를 픽셀화(Downscaling).
+- 각 픽셀의 RGB를 LAB 색 공간 거리 기반으로 가장 가까운 팔레트 색상으로 매핑.
 
-### 2. Advanced Solver Metrics
-- **Functionality**: The auto-solver runs a state-space search when a playtest begins.
-- **Metrics Logged**:
-  - **Min Moves**: Minimum clicks needed to clear the stage.
-  - **Branching Factor**: Average number of valid moves available per state.
-  - **State Density**: Volume of explored states, providing a proxy difficulty score (easy, medium, hard).
+### 2. 고급 솔버 지표 (Solver Metrics)
+- 테스트 시작 시 오토 솔버가 상태 공간 탐색 실행.
+- **최소 이동 수**, **평균 분기 계수**(선택 가능한 수), **상태 밀도** 등을 기록하여 난이도 추정치 제공.
 
-### 3. Undo / Redo Canvas Actions
-- **Keyboard Shortcuts**: Canvas supports standard `Ctrl+Z` (Undo) and `Ctrl+Y` / `Ctrl+Shift+Z` (Redo) to revert/restore paint actions.
-- **State Buffer**: Maintains a history stack of the board grid up to 50 edits.
-
-### 4. Hot-Reloading in Unity Editor
-- **Functionality**: When the web editor saves to `stage.csv`, a local file-system watcher in the Unity Editor detects the change.
-- **Action**: It automatically triggers the C# static data code generation pipeline (`tools/info_generator.bat`) and reloads stage assets in the running Unity Play mode without requiring a manual restart.
-
----
-
-## File Structure
-
-```
-tools/stage_editor/
-├── src/
-│   ├── app/
-│   │   ├── page.tsx               Main editor page
-│   │   └── api/
-│   │       ├── stages/
-│   │       │   ├── route.ts       GET all, POST new
-│   │       │   └── [id]/
-│   │       │       └── route.ts   GET, PUT, DELETE
-│   │       └── palette/
-│   │           └── route.ts       GET color palette
-│   ├── components/
-│   │   ├── StageList.tsx          Left sidebar CRUD list
-│   │   ├── BoardEditor.tsx        Grid canvas + paint logic
-│   │   ├── CellInspector.tsx      Right panel cell type/color/flags
-│   │   ├── MetadataPanel.tsx      Stage metadata fields
-│   │   └── PlaytestPanel.tsx      Playtest controls + solution recorder
-│   ├── lib/
-│   │   ├── csv.ts                 CSV parse/serialize (4-row header format)
-│   │   ├── ctm.ts                 CTM hex encode/decode per cell
-│   │   ├── game-rules.ts          TS port of BFS, gravity, clear evaluator
-│   │   └── validator.ts           Export validation checks
-│   └── types/
-│       └── stage.ts               StageRow, CellData, CellType, Difficulty TS types
-├── next.config.ts
-└── package.json
-```
-
----
-
-## CSV Sync Rules
-
-- API server resolves CSV paths relative to `project-flood/` root.
-- On write: full file rewritten (4 header rows + all stage rows).
-- On read: rows 1–4 are headers; row 5+ are data.
-- `stage_id` is assigned sequentially; gaps are not auto-filled.
-- NEVER run info_generator during editor session — it overwrites generated output, not source.
+### 3. 유니티 에디터 핫 리로드 (Hot-Reloading)
+- 웹 에디터에서 `stage.csv`를 저장하면 유니티 에디터의 파일 감시자가 변경을 감지.
+- 자동으로 C# 정적 데이터 생성 파이프라인(`info_generator.bat`)을 실행하고 유니티 플레이 모드에서 애셋을 새로 고침.

@@ -21,6 +21,7 @@ UI/UX specs, wireframes, game design documents.
 | `ui-ux-ingame.md` | InGame HUD, Result overlay, Fail overlay, Pause popup |
 | `ui-ux-auth.md` | Boot auth sequence, Guest mode, OAuth link flow, account switching, clientLogin |
 | `ftue-tutorial-design.md` | FTUE and Tutorial system: onboarding, gimmick hints, fail hints, TutorialManager architecture, tutorial_step data schema |
+| `client-settings-system-design.md` | Client settings design spec: localized texts, sound levels, haptics, and local cache policies |
 
 ## Rules
 - One file per major design area.

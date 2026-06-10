@@ -1,131 +1,60 @@
-# Stamina System Design
+# 스태미나 시스템 기획서 (Stamina System Design)
 
-## Goals
-- Hyper-casual friendly soft gate: users may keep playing by watching rewarded ads.
-- Server is the source of truth for life, unlimited time, reward claim limits, and ad reward transactions.
-- Stage attempt validation is fast and volatile: Redis owns active attempt state, DB owns only durable user state and audit logs.
+## 목표
+- 하이퍼캐주얼 친화적인 소프트 게이트: 유저는 보상형 광고를 시청하여 계속 플레이할 수 있습니다.
+- 서버가 하트(Life), 무제한 시간, 보상 수령 제한 및 광고 보상 트랜잭션의 원천 데이터(Source of Truth)입니다.
+- 스테이지 시도 검증은 빠르고 휘발적입니다: Redis가 활성 시도 상태를 소유하고, DB는 영구적인 유저 상태와 감사 로그(audit logs)만을 소유합니다.
 
-## Player Rules
-| rule | value |
+## 플레이어 규칙
+| 규칙 | 값 |
 |------|-------|
-| Max life | 5 |
-| Natural recovery | 1 life per 600 seconds |
-| Life ad reward | Unlimited daily claims, no cooldown, +1 life, blocked at max life |
-| Life spend | Attempt start consumes 1 life unless unlimited is active |
-| Life refund | Clear refunds the spent life, capped by max life |
-| Failure/give-up/timeout | Spent life remains consumed |
-| Early exemption | None |
-| Unlimited time | Real server time, not play time |
-| Daily unlimited reset | KST 00:00 |
-| Daily unlimited source | Reward source `DAILY_STAMINA_UNLIMITED` |
-| Unlimited stack policy | `EXTEND` |
-| Natural recovery during unlimited | Continues |
-| No-ads purchase | Removes forced ads only; rewarded ads remain available |
+| 최대 하트 (Max life) | 5 |
+| 자연 회복 | 600초당 하트 1개 |
+| 하트 광고 보상 | 일일 수령 제한 없음, 쿨타임 없음, 하트 +1개, 최대치일 때 차단됨 |
+| 하트 소비 | 스테이지 시도 시작 시 하트 1개 소비 (무제한 활성 시 제외) |
+| 하트 환급 | 클리어 시 소비한 하트 1개 환급 (최대 하트 수로 제한됨) |
+| 실패/포기/타임아웃 | 소비된 하트가 그대로 차감된 상태 유지 |
+| 무제한 시간 | 플레이 시간이 아닌 실제 서버 시간 기준 |
+| 일일 무제한 초기화 | KST 00:00 |
+| 무제한 중첩 정책 | `EXTEND` (시간 연장) |
+| 광고 제거 구매 | 강제 광고만 제거되며, 보상형 광고는 계속 제공됨 |
 
-## Stage Attempt Rules
-| rule | value |
+## 스테이지 시도 규칙
+| 규칙 | 값 |
 |------|-------|
-| Active attempt limit | 1 per user |
-| Attempt storage | Redis TTL |
-| Attempt ID | Server-generated |
-| Timeout | Config-driven, no hardcoded TTL |
-| New attempt while active | Existing attempt is discarded without refund and logged as `replaced_by_new_attempt` |
-| Redis loss | User loss is accepted; invalid/expired attempt errors are returned |
-| Clear/fail request | Must include `attempt_id` |
-| Final states | Final state is immutable |
+| 활성 시도 제한 | 유저당 1개 |
+| 시도 저장 | Redis TTL 기반 |
+| 시도 ID | 서버에서 생성 |
+| 클리어/실패 요청 | 반드시 `attempt_id`를 포함해야 함 |
 
-## Revive Ads
-| revive count | turns granted |
+## 이어하기 광고 (Revive Ads)
+| 부활 횟수 | 부여되는 턴 수 |
 |--------------|---------------|
-| 1 | 3 |
-| 2 | 2 |
-| 3 | 1 |
+| 1회 | 3턴 |
+| 2회 | 2턴 |
+| 3회 | 1턴 |
 
-- Revive count increments only after successful ad reward verification.
-- Attempts reject revive claims after the configured max revive count.
-- Revive ad rewards are tied to `context_type=stage_attempt` and `context_id=attempt_id`.
+- 부활 횟수는 광고 보상 검증 성공 후에만 증가합니다.
+- 설정된 최대 부활 횟수를 초과하면 부활 요청이 거절됩니다.
 
-## Reward Model
-Stamina unlimited is a generic reward type, not a dedicated daily-stamina endpoint. The HomeTab badge displays a claimable reward source and calls the common reward claim API.
+## 광고 보상 모델 및 검증 흐름
 
-| concept | role |
-|---------|------|
-| Reward group | Bundle of reward items |
-| Reward item | Actual granted thing, e.g. `STAMINA_UNLIMITED` |
-| Reward source | Why/how a user can claim a group, e.g. daily free HomeTab badge |
-| Claim state | Per-user source claim limit state |
+### 1. 광고 검증 UX (SSV 콜백 동기화)
+- **광고 완료**: 플레이어가 광고 시청을 마치면 AdMob SDK가 보상 이벤트를 발생시킵니다.
+- **로딩 블로커 오버레이**: 클라이언트는 즉시 조작 불가능한 로딩 오버레이(`LoadingOverlayView.prefab`)를 띄워 모든 입력을 차단하고 조기 종료를 방지합니다.
+- **검증 및 폴링**: 클라이언트는 서버에 광고 트랜잭션 검증 요청을 보내고, 서버의 `/api/ad-rewards/status/{txId}` 엔드포인트를 1초마다 폴링합니다 (최대 10초).
+- **지급 및 해제**: 서버 응답이 `status = GRANTED`(SSV 콜백 해결 및 보상 지급 완료)가 되면 클라이언트는 UI의 재화/스태미나 상태를 갱신하고 로딩 오버레이를 닫습니다.
 
-## Ad Reward Model & Verification Flow
-Ad reward transactions are shared across stamina and future ad rewards.
+### 2. 광고 제한 및 쿨타임 정책
+- **일일 제한 없음**: 스태미나나 부활을 위해 시청하는 광고 수에 일일 제한을 두지 않습니다.
+- **클라이언트 측 쿨타임**: AdMob의 무효 트래픽 정책 준수를 위해 각 광고 슬롯에 **30초의 쿨타임**을 적용합니다 (광고 버튼이 비활성화되며 타이머 표시).
 
-### 1. Ad Verification UX (SSV Callback Synchronization)
-- **Ad Completion**: When the player finishes watching a rewarded ad, the AdMob SDK fires the rewarded event.
-- **Loading Blocker Overlay**: Client immediately instantiates/shows a non-dismissible loading overlay (`LoadingOverlayView.prefab`) to block all user input, preventing premature dismissal.
-- **Verification Nonce & Polling**: The client sends the ad transaction verification request to the server. The client then polls the server status endpoint `/api/ad-rewards/status/{txId}` every 1 second (up to a maximum of 10 seconds).
-- **Grant & Dismiss**: Once the server responds that the SSV callback has resolved and rewards are granted (`status = GRANTED`), the client updates the UI currencies/stamina state and dismisses the loading overlay. If a timeout occurs, it alerts the user with a retry/network error.
-
-### 2. Ad Capping & Cooldown Policy
-- **No Daily Limit Capping**: There is no daily limit or cap on the number of rewarded ads a player can watch for Stamina or Revives.
-- **Client-Side Cooldown (AdMob Policy Compliance)**: To prevent malicious macro clicks or rapid ad requests that violate AdMob's invalid traffic policies, a strict **30-second cooldown** is enforced on the client side for each ad slot (Watch Ad button is dimmed with a countdown timer).
-
-### 3. Verification Rules
-| behavior | result |
-|----------|--------|
-| First valid claim | Grant reward and return `granted=true`, positive delta |
-| Duplicate same user/context tx | Return `granted=false`, `duplicate=true`, `delta=0`, current snapshot |
-| Duplicate tx with different user/context | Reject with `AD_REWARD_DUPLICATE` |
-| Full life claim | Client dims first; server rejects with `STAMINA_FULL` |
-
-### 4. Rate Limiting Policy
-To prevent abusive requests on high-value endpoints, the server enforces a sliding window rate limit:
-- **Scope**: Applied to transactional endpoints (`Stage Attempt Start/Clear`, `Reward Claims`, `Ad SSV Reward Claim`).
-- **Limit**: `5 requests per minute` per authenticated user ID.
-- **Exception**: To allow rapid progression in early content, the rate limits on `Stage Attempt Start` and `Stage Attempt Clear` are **completely bypassed for stage_id <= 10**.
-- **Response**: Triggers `429 Too Many Requests` with an error code of `RATE_LIMITED`.
-
-### 5. Ad Verification Environments (Dev Mock vs Prod SSV)
-- **Dev Environment**: Rewarded ad callbacks use a mock verification flow. The client generates local dummy tokens, and the server resolves transactions directly without communicating with external AdMob servers.
-- **Prod Environment**: Strict AdMob Server-to-Server Verification (SSV) is enforced. The client submits public AdMob parameters, and the server validates the incoming SSV callback from AdMob's public key list before granting rewards.
-
-## API Surface
-| method | route | purpose |
-|--------|-------|---------|
-| GET | `/api/stamina` | Current stamina snapshot |
-| POST | `/api/stages/{stageId}/attempts/start` | Start attempt and maybe spend life |
-| POST | `/api/stages/{stageId}/attempts/{attemptId}/clear` | Clear attempt and maybe refund life |
-| POST | `/api/stages/{stageId}/attempts/{attemptId}/fail` | Fail/give-up attempt |
-| POST | `/api/stages/{stageId}/attempts/{attemptId}/revive-ad` | Claim revive rewarded ad |
-| GET | `/api/rewards/sources` | List claimable reward sources |
-| POST | `/api/rewards/claim` | Claim non-ad reward source |
-| POST | `/api/ad-rewards/claim` | Claim rewarded-ad reward source |
-
-## Error Codes
-| code | meaning |
+## 에러 코드 (Error Codes)
+| 코드 | 의미 |
 |------|---------|
-| `INSUFFICIENT_STAMINA` | No life and no unlimited time |
-| `STAMINA_FULL` | Life ad reward requested while at max life |
-| `INVALID_STAGE_ATTEMPT` | Attempt is missing, mismatched, or no longer active |
-| `STAGE_ATTEMPT_EXPIRED` | Attempt exceeded configured TTL |
-| `REVIVE_LIMIT_EXCEEDED` | Attempt already used all revives |
-| `REWARD_ALREADY_CLAIMED` | Source claim limit reached for the current period |
-| `AD_REWARD_DUPLICATE` | Provider transaction already belongs to another user/context |
-| `AD_REWARD_VERIFY_FAILED` | Provider verification failed |
-
-## Event Logs
-All modifying actions append to `event_logs` with a request `correlation_id`.
-
-| event | required params |
-|-------|-----------------|
-| `StaminaLifeChanged` | `delta`, `reason`, `current_after` |
-| `StaminaUnlimitedChanged` | `source_id`, `duration_seconds`, `unlimited_until_utc` |
-| `StageAttemptStarted` | `attempt_id`, `stage_id`, `life_spent`, `expires_at_utc` |
-| `StageAttemptCleared` | `attempt_id`, `stage_id`, `life_refunded` |
-| `StageAttemptFailed` | `attempt_id`, `stage_id`, `reason` |
-| `StageAttemptReplaced` | `attempt_id`, `stage_id`, `reason` |
-| `StageAttemptRevivedByAd` | `attempt_id`, `stage_id`, `revive_count`, `turns_granted`, `ad_tx_id` |
-| `RewardClaimed` | `source_id`, `reward_group_id` |
-| `AdRewardClaimed` | `ad_tx_id`, `placement_id`, `reward_type`, `reward_value`, `duplicate` |
-
-## Open Operating Notes
-- Redis active attempt is intentionally not durable. CS can inspect `event_logs` and ad transactions, but cannot reconstruct lost Redis state perfectly.
-- Stamina and reward claim APIs should return full snapshots after mutation so the client can replace local state instead of applying blind deltas.
+| `INSUFFICIENT_STAMINA` | 하트가 없고 무제한 시간도 아님 |
+| `STAMINA_FULL` | 하트가 최대치일 때 광고 보상 요청함 |
+| `INVALID_STAGE_ATTEMPT` | 시도 정보가 없거나 일치하지 않음 |
+| `STAGE_ATTEMPT_EXPIRED` | 시도가 설정된 TTL을 초과함 |
+| `REVIVE_LIMIT_EXCEEDED` | 해당 시도에서 가능한 부활 횟수를 모두 사용함 |
+| `RATE_LIMITED` | 요청 제한(분당 5회) 초과 |

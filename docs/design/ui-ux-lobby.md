@@ -1,141 +1,87 @@
-# UI/UX — Lobby
+# UI/UX — 로비 (Lobby)
 
-## Boot Screen
+## 부트 화면 (Boot Screen)
 
-- Full-screen logo splash, no user interaction
-- Background: `UI_BG_DEEP` solid
-- Center: pixel-art spinner (loading indicator)
-- Target duration: < 3s
-- No skip
+- 전체 화면 로고 스플래시, 사용자 상호작용 없음
+- 배경: `UI_BG_DEEP` 단색
+- 중앙: 픽셀 아트 스피너 (로딩 표시기)
+- 목표 소요 시간: 3초 미만
 
 ---
 
-## Lobby Layout
+## 로비 레이아웃
 
 ```
 ┌──────────────────────────┐
-│  [Avatar]      [🪙 1,240] │  ← Home 탭만 표시
+│  [아바타]      [🪙 1,240] │  ← 홈 탭에서만 표시
 │                           │
-│       [Tab Content]       │
+│       [탭 콘텐츠]         │
 │                           │
 │                           │
 ├───────────────────────────┤
-│  🏠 Home  🛒 Shop  🏆 Rank │  ← bottom nav bar
+│  🏠 홈    🛒 상점  🏆 랭킹 │  ← 하단 네비게이션 바
 └───────────────────────────┘
 ```
 
-- Active tab: `UI_CTA` accent highlight
-- Bottom Tabs: `🏠 Home`, `🛒 Shop` (disabled/placeholder in MVP), `🏆 Rank` (active!)
+- 활성 탭: `UI_CTA` 강조 컬러 적용
+- 하단 탭: `🏠 홈`, `🛒 상점`(MVP에서는 비활성화/플레이스홀더), `🏆 랭킹`(활성화!)
 
 ---
 
-## Ranking Tab (Global & Stage Leaderboard)
+## 홈 탭 — 챕터/스테이지 스크롤
 
-To support leaderboards with thousands of entries without performance degradation:
-- **Dynamic Scroll Virtualization (Object Pooling)**:
-  - The UI ScrollRect only instantiates enough Ranking Entry prefabs to cover the visible viewport (plus 2 padding rows on top and bottom, typically ~10 rows).
-  - As the user scrolls, the view reuse manager shifts the out-of-view row components to the opposite edge and binds the new data index (nickname, avatar, score, rank).
-  - Eliminates garbage collection and draw-call spikes during scrolling.
+### 아키텍처
 
----
+무한 수직 스크롤 방식입니다. 오브젝트 풀링을 사용하여 한 번에 약 15개의 스테이지 노드만 활성화합니다.
 
-## Settings Panel & Sound Integration
-
-Accessed via Settings button. Handles runtime configuration.
-
-### Sound Sliders (BGM & SFX)
-- **Controls**: Includes two Slider UI elements for BGM and SFX volume levels (0% to 100%).
-- **Interaction**: Dragging the slider sends real-time volume updates to the `SoundManager` singleton and persists the values in `PlayerPrefs` (`bgm_volume` and `sfx_volume`).
-- **Mute Toggles**: Checkboxes to quickly mute/unmute BGM or SFX without losing slider settings.
-
----
-
-## Home Tab — Chapter/Stage Scroll
-
-### Architecture
-
-Infinite vertical scroll. Object pool: ~15 stage nodes active at a time.
+### 스테이지 노드 배치 패턴 (단순 지그재그)
 
 ```
-[Background Layer]       ← per-chapter sprite, crossfade at boundary
-[Path Sprite Layer]      ← per-chapter winding path (S-curve/zigzag)
-[Stage Node Pool]        ← pooled objects, repositioned as scroll moves
-[Chapter Boundary Deco]  ← separator decoration at Y boundary
+node_index % 3 값에 따라:
+  0 → 중앙
+  1 → 왼쪽 오프셋  (-80px)
+  2 → 오른쪽 오프셋 (+80px)
 ```
 
-### Stage Node X-Position Pattern (simple zigzag)
+### 챕터 배경 전환
+- 각 챕터는 고유한 배경 스프라이트를 가집니다.
+- 스크롤 위치가 다음 챕터 범위에 진입하면 두 배경 스프라이트 간의 알파 크로스페이드(0.5초)가 발생합니다.
 
-```
-node_index % 3:
-  0 → center
-  1 → left offset  (-80px)
-  2 → right offset (+80px)
+### 스테이지 노드 상태
 
-Arc connector sprite links adjacent nodes (pre-authored per 3-node group).
-```
-Path is casual/simple — no bezier calculation required. Pre-defined X offsets only.
-
-### Chapter Background Transition
-
-- Each chapter owns one background sprite (height covers its scroll range)
-- Chapter sprites stacked vertically in background layer — NOT one long image
-- Scroll Y enters next chapter's Y range → alpha crossfade between two background sprites (0.5s)
-- Chapter boundary deco (decorative divider) placed at exact Y boundary
-
-### Stage Node States
-
-| State | Visual |
+| 상태 | 비주얼 |
 |-------|--------|
-| Locked | Dark overlay + lock icon |
-| Cleared 0★ | Node base, no star fill |
-| Cleared 1★ | 1 star filled |
-| Cleared 2★ | 2 stars filled |
-| Cleared 3★ | 3 stars filled, gold border |
-| Current (unlocked, not cleared) | Pulsing ring highlight |
+| 잠금 (Locked) | 어두운 오버레이 + 자물쇠 아이콘 |
+| 클리어 별 0개 | 노드 기본형, 채워진 별 없음 |
+| 클리어 별 1~2개 | 획득한 개수만큼 별 표시 |
+| 클리어 별 3개 | 별 3개 채워짐, 황금색 테두리 |
+| 현재 (해금되었으나 미클리어) | 펄스 링 하이라이트 애니메이션 |
 
-### Chapter Completion Chest
-
-Placed at chapter boundary deco.
-
-| State | Visual |
-|-------|--------|
-| Locked (not all 3★) | Greyscale chest |
-| Claimable (all 3★) | Animated gold glow, tap to claim |
-| Claimed | Opened chest, static |
-
-Tap claimable → reward popup → item/gold display.
+### 챕터 완료 상자
+챕터 경계 지점에 배치됩니다. 모든 스테이지를 별 3개로 클리어하면 활성화되어 보상을 받을 수 있습니다.
 
 ---
 
-## StageInfo Popup
+## 스테이지 정보 팝업 (StageInfo Popup)
 
-Tap on any non-locked stage node.
+잠기지 않은 스테이지 노드를 탭했을 때 나타납니다.
 
 ```
 ┌──────────────────────┐
-│  Stage 7              │
-│  Best: ★★☆  Moves: 24 │
+│  스테이지 7           │
+│  최고: ★★☆  턴수: 24 │
 │                      │
-│       [PLAY]          │
+│       [플레이]        │
 └──────────────────────┘
 ```
 
-- Tap outside popup → dismiss
-- [PLAY] → Lobby to InGame transition (slide up)
+- [플레이] → 로비에서 인게임으로 전환 (위로 슬라이드)
 
 ---
 
-## Shop Tab
+## 헤더 (홈 탭 전용)
 
-MVP: item list placeholder (Bomb, H-Rocket, V-Rocket).
-Prices sourced from `shop_item.csv`.
-Full economy UI: Phase 2.
-
----
-
-## Header (Home Tab only)
-
-| Element | Position | Action |
-|---------|----------|--------|
-| Player avatar | Top-left | Tap → Account popup |
-| Gold balance (🪙 + amount) | Top-right | Display only |
+| 요소 | 위치 | 액션 |
+|---------|----------|-------|
+| 플레이어 아바타 | 좌측 상단 | 탭 시 계정 팝업 노출 |
+| 골드 잔액 | 우측 상단 | 단순 표시 |
