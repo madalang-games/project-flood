@@ -33,6 +33,8 @@ type PlaytestState = {
   result: StarResult | null;
 };
 
+type HistoryEntry = { grid: CellData[][], width: number, height: number };
+
 function makeDefaultGrid(w: number, h: number): CellData[][] {
   return Array.from({ length: h }, () =>
     Array.from({ length: w }, () => ({ colorId: 0, type: 'Basic' as const, protector: 0 as const, isCore: false }))
@@ -91,8 +93,8 @@ export default function EditorPage() {
   const [playtestState, setPlaytestState] = useState<PlaytestState | null>(null);
   const [validationResult, setValidationResult] = useState<ValidationResult | null>(null);
   const [showGenerator, setShowGenerator] = useState(false);
-  const [history, setHistory] = useState<CellData[][][]>([]);
-  const [redoHistory, setRedoHistory] = useState<CellData[][][]>([]);
+  const [history, setHistory] = useState<HistoryEntry[]>([]);
+  const [redoHistory, setRedoHistory] = useState<HistoryEntry[]>([]);
 
   useEffect(() => {
     fetch('/api/stages').then(r => r.json()).then(setStages).catch(console.error);
@@ -111,9 +113,14 @@ export default function EditorPage() {
           if (prevHistory.length === 0) return prevHistory;
           const prev = prevHistory[prevHistory.length - 1];
           setGrid(currentGrid => {
-            setRedoHistory(prevRedo => [...prevRedo, currentGrid.map(r => r.map(c => ({ ...c })))]);
-            return prev.map(r => r.map(c => ({ ...c })));
+            setRedoHistory(prevRedo => [...prevRedo, {
+              grid: currentGrid.map(r => r.map(c => ({ ...c }))),
+              width: currentGrid[0]?.length ?? 0,
+              height: currentGrid.length,
+            }]);
+            return prev.grid.map(r => r.map(c => ({ ...c })));
           });
+          setMeta(m => m ? { ...m, board_width: prev.width, board_height: prev.height } : m);
           return prevHistory.slice(0, -1);
         });
       } else if (e.ctrlKey && e.key.toLowerCase() === 'y') {
@@ -122,9 +129,14 @@ export default function EditorPage() {
           if (prevRedo.length === 0) return prevRedo;
           const next = prevRedo[prevRedo.length - 1];
           setGrid(currentGrid => {
-            setHistory(prevHistory => [...prevHistory, currentGrid.map(r => r.map(c => ({ ...c })))]);
-            return next.map(r => r.map(c => ({ ...c })));
+            setHistory(prevHistory => [...prevHistory, {
+              grid: currentGrid.map(r => r.map(c => ({ ...c }))),
+              width: currentGrid[0]?.length ?? 0,
+              height: currentGrid.length,
+            }]);
+            return next.grid.map(r => r.map(c => ({ ...c })));
           });
+          setMeta(m => m ? { ...m, board_width: next.width, board_height: next.height } : m);
           return prevRedo.slice(0, -1);
         });
       }
@@ -199,7 +211,11 @@ export default function EditorPage() {
 
   const handleDragStart = useCallback(() => {
     setGrid(currentGrid => {
-      setHistory(prev => [...prev, currentGrid.map(r => r.map(c => ({ ...c })))]);
+      setHistory(prev => [...prev, {
+        grid: currentGrid.map(r => r.map(c => ({ ...c }))),
+        width: currentGrid[0]?.length ?? 0,
+        height: currentGrid.length,
+      }]);
       setRedoHistory([]);
       return currentGrid;
     });
@@ -325,7 +341,11 @@ export default function EditorPage() {
         }
 
         setGrid(currentGrid => {
-          setHistory(prev => [...prev, currentGrid.map(r => r.map(c => ({ ...c })))]);
+          setHistory(prev => [...prev, {
+            grid: currentGrid.map(r => r.map(c => ({ ...c }))),
+            width: currentGrid[0]?.length ?? 0,
+            height: currentGrid.length,
+          }]);
           setRedoHistory([]);
           return finalGrid;
         });
@@ -404,16 +424,17 @@ export default function EditorPage() {
 
   const handleResize = useCallback((w: number, h: number) => {
     setGrid(currentGrid => {
-      setHistory(prev => [...prev, currentGrid.map(r => r.map(c => ({ ...c })))]);
+      setHistory(prev => [...prev, {
+        grid: currentGrid.map(r => r.map(c => ({ ...c }))),
+        width: currentGrid[0]?.length ?? 0,
+        height: currentGrid.length,
+      }]);
       setRedoHistory([]);
-      return currentGrid;
-    });
-    setGrid(prev => {
       const next: CellData[][] = [];
       for (let r = 0; r < h; r++) {
         next[r] = [];
         for (let c = 0; c < w; c++) {
-          next[r][c] = prev[r]?.[c] ?? { colorId: 0, type: 'Basic', protector: 0, isCore: false };
+          next[r][c] = currentGrid[r]?.[c] ?? { colorId: 0, type: 'Basic', protector: 0, isCore: false };
         }
       }
       return next;
@@ -518,7 +539,11 @@ export default function EditorPage() {
     const verifiedSolution = solution ? solution.map(([r, c]) => `${r},${c}`).join(';') : '';
 
     setGrid(currentGrid => {
-      setHistory(prev => [...prev, currentGrid.map(r => r.map(c => ({ ...c })))]);
+      setHistory(prev => [...prev, {
+        grid: currentGrid.map(r => r.map(c => ({ ...c }))),
+        width: currentGrid[0]?.length ?? 0,
+        height: currentGrid.length,
+      }]);
       setRedoHistory([]);
       return newGrid;
     });
