@@ -31,9 +31,9 @@
   - 참조: [InGameController.cs:L148](file:///c:/Users/SangHyeok/Desktop/git/madalang-games/project-flood/client/project-flood/Assets/Scripts/InGame/Controller/InGameController.cs#L148)
 
 ## 4. 인게임 및 기믹 개발 (활성 범위)
-- [ ] **동적 턴 간격 보드 회전**: 플레이어 턴 N회마다 보드가 자동으로 180도 회전합니다(스테이지 데이터의 `rotation_interval` 필드 값 사용).
-  - [ ] Next.js 웹 에디터 플레이테스트 모드(`tools/stage_editor/src/lib/game-rules.ts`)에 자동 회전 시뮬레이션 구현.
-  - [ ] 자동 솔버(Auto-solver) TS 탐색 알고리즘(`tools/stage_editor/src/lib/solver.ts`)에 회전 로직 지원.
+- [x] **동적 턴 간격 보드 회전**: 플레이어 턴 N회마다 보드가 자동으로 180도 회전합니다(스테이지 데이터의 `rotation_interval` 필드 값 사용). (완료)
+  - [x] Next.js 웹 에디터 플레이테스트 모드(`tools/stage_editor/src/lib/game-rules.ts`)에 자동 회전 시뮬레이션 구현.
+  - [x] 자동 솔버(Auto-solver) TS 탐색 알고리즘(`tools/stage_editor/src/lib/solver.ts`)에 회전 로직 지원.
 - [ ] **상호작용형 동적 보드 요소**:
   - [ ] 텔레포트/포탈 셀 구현: 입구 좌표가 떨어지는 셀을 출구 좌표로 재라우팅합니다. C# `GravitySystem` 및 Next.js `game-rules.ts` 수정.
   - [ ] 컨베이어 벨트 구현: 턴 종료 시 중력 적용 전, 벨트 위에 놓인 셀을 경로 방향으로 1칸 이동시킵니다.

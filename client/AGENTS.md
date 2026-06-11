@@ -17,10 +17,12 @@ Unity 6 | URP 2D | C# | New Input System
 | `project-flood/Assets/Scripts/Utils/` | Stateless helpers |
 | `project-flood/Assets/Scripts/Editor/` | Unity Editor-only automation tools |
 | `project-flood/Assets/Prefabs/` | Runtime prefabs |
+| `project-flood/Assets/Sprites/PlayerSettings/` | PlayerSettings splash/background/logo/icon source sprites |
 | `project-flood/Assets/Resources/Data/` | Runtime CSVs — generated, DO NOT EDIT |
 | `project-flood/Assets/Resources/Prefabs/UI/` | Runtime-loaded popup prefabs |
 | `project-flood/Assets/Plugins/` | Platform native plugins |
 | `project-flood/Assets/Scenes/` | Unity scenes |
+| `project-flood/Assets/Audio/SFX/` | SFX WAV files (10 clips from Casual Game Sounds U6 + Free UI Click SFX Pack) |
 
 ## Rules
 - NEVER edit `Assets/Resources/Data/` — source is `shared/datas/`, regenerate with `npm run gen:info`

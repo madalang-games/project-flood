@@ -33,9 +33,10 @@
   - 참조: [RewardsController.cs](file:///c:/Users/SangHyeok/Desktop/git/madalang-games/project-flood/server/src/ProjectFlood.API/Controllers/RewardsController.cs)
 - [x] **수령 제한 기간**: 보상에 대해 일일/시간당 수령 제한을 적용합니다(`user_reward_claim_state` 테이블에 진행 상황 저장).
   - 참조: [StaminaService.cs의 EnsureStateAsync](file:///c:/Users/SangHyeok/Desktop/git/madalang-games/project-flood/server/src/ProjectFlood.Application/Stamina/StaminaService.cs#L156)
-- [ ] **HomeTab 수령 배지 UI**: 일일 무료 아이템(예: 일일 골드 상자 또는 무료 무한 스테미나 배지)을 표시하는 인게임 HUD 또는 로비 팝업.
-  - [ ] 활성 보상 소스 가용성 확인을 위한 클라이언트 체크 `/api/rewards/sources` 구현.
-  - [ ] 홈 탭 일일 무료 버튼에 알림 배지를 렌더링하고, 클릭 시 팝업을 표시합니다.
+- [/] **HomeTab 수령 배지 UI**: 챕터 마일스톤 상자 및 일일 무료 아이템(예: 일일 골드 상자)을 표시하는 인게임 HUD 또는 로비 팝업.
+  - [x] 활성 보상 소스 가용성 확인을 위한 클라이언트 체크 `/api/rewards/sources` 구현 및 `HomeTabView` 연동 완료. (완료)
+  - [x] 챕터 마일스톤 상자 구현: 별 3개 조건 체크 및 서버 보상 수령 연동 완료. (완료)
+  - [ ] 홈 탭 일일 무료 버튼(Daily Free Box)에 알림 배지를 렌더링하고, 클릭 시 팝업을 표시합니다. (진행 예정)
 
 ## 4. 제외 범위 (Phase 2+)
 - [ ] **부스터 상점 UI**: 플레이어가 골드를 사용하여 아이템 번들을 구매할 수 있는 로비 내 UI 패널(폭탄 1개 = 100 골드, 로켓 1개 = 80 골드). (사용자 요청에 따라 제외)

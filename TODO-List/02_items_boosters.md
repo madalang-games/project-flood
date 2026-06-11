@@ -31,8 +31,8 @@
   - 상태: [BoardView.cs](file:///c:/Users/SangHyeok/Desktop/git/madalang-games/project-flood/client/project-flood/Assets/Scripts/InGame/View/BoardView.cs)에 PlayRowShift 및 PlayCellSwap이 존재합니다. 추가적인 비주얼 플래시와 임팩트 있는 파티클 효과가 필요합니다.
 
 ## 3. 부스터 및 인벤토리 확장 (활성 범위)
-- [ ] **서버 기반 아이템 인벤토리**: 플레이어별 아이템 인벤토리 개수를 서버 DB에 유지하고, 클라이언트 로그인 핸드셰이크를 통해 동기화합니다.
-  - [ ] DB 트랜잭션 소모 `/api/inventory/spend` 및 인벤토리 동기화 API `/api/inventory` 구현.
+- [x] **서버 기반 아이템 인벤토리**: 플레이어별 아이템 인벤토리 개수를 서버 DB에 유지하고, 클라이언트 로그인 핸드셰이크를 통해 동기화합니다. (완료)
+  - [x] DB 트랜잭션 소모 `/api/inventory/spend` 및 인벤토리 동기화 API `/api/inventory` 구현.
 - [ ] **인게임 아이템 상점 구매**: 개수가 0일 때 아이템 슬롯에 UI 버튼이나 비용 배지를 추가하여 골드로 즉시 부스터를 구매할 수 있게 합니다(폭탄 1개 = 100 골드).
   - [ ] 골드를 소모하고 아이템을 추가하는 `/api/inventory/buy` 엔드포인트 생성.
   - [ ] 아이템 개수가 0일 때 골드 구매 배지를 렌더링하도록 `ItemSlotView` 및 `ItemTrayView` 업데이트.

@@ -12,6 +12,7 @@
 | `06_auth_infrastructure.md` | Platform auth, Redis state, and Docker infrastructure checklist |
 | `07_ads_monetization.md` | AdMob, Interstitials, and monetization checklist |
 | `08_polish_ux_sfx.md` | UI/UX visual polish, particle VFX, and SFX/BGM checklist |
+| `09_deployment_prod.md` | Production deployment checklist for pixelpop.mooo.com |
 
 ## Rules
 - One file per major feature area

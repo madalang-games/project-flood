@@ -1,7 +1,7 @@
 # 현재 프로젝트 상태 및 로드맵
 
-현재 단계: **MVP 클라이언트-서버 통합**  
-중점 사항: 클라이언트 씬과 실시간 서버 API 연결, 스테미나 게이트 안정화, 실제 인증 핸드셰이크 구현.
+현재 단계: **프로덕션 배포 진행 중**  
+중점 사항: pixelpop.mooo.com 인프라 구성 완료, secrets/.env.prod 준비 → project-flood 컨테이너 배포 → DB 마이그레이션 → 클라이언트 빌드.
 
 ---
 
@@ -16,6 +16,7 @@
 | [06_auth_infrastructure.md](06_auth_infrastructure.md) | 플랫폼 인증 및 DB/Redis 스택 | ✅ MVP 완료 |
 | [07_ads_monetization.md](07_ads_monetization.md) | AdMob 보상형/전면 광고 | ✅ MVP 완료 |
 | [08_polish_ux_sfx.md](08_polish_ux_sfx.md) | 비주얼 폴리싱, VFX, 오디오 | [/] 기본 완료 — 쥬스/SFX 미시작 |
+| [09_deployment_prod.md](09_deployment_prod.md) | 프로덕션 배포 체크리스트 (pixelpop.mooo.com) | [/] Phase 1 완료 — Phase 2~4 진행 필요 |
 
 ---
 
@@ -34,6 +35,7 @@
 ---
 
 ## 3. 진행 중 (활성 스프린트)
+- [/] **프로덕션 배포**: Phase 1 완료 (DNS/SSL/nginx). 다음: secrets/.env.prod → deploy.bat(project-flood) → DB 마이그레이션. 상세: [09_deployment_prod.md](09_deployment_prod.md)
 - [/] **VFX 및 오디오 쥬스(Juice)**: 게임 효과음 추가, SoundManager를 통한 배경음악 처리, 퍼즐 비주얼 폴리싱.
 
 ---
@@ -43,6 +45,9 @@
 - [x] **골드 서버 동기화**: `CurrencyApiService` (GET + POST /spend); 로비 로딩 시 골드 조회; 스테이지 클리어 시 서버 응답으로 정산; 이어하기 시 서버 측 차감.
 - [x] **인증 통합**: `AuthService`가 이미 `/api/auth/guest` + JWT Bearer와 연결됨 — 완료 확인.
 - [x] **5종 아이템 전체 구현**: ColorSweep, RowShift (스와이프 단계), CellSwap (두 번 터치 단계), Bomb, HRocket — 전체 로직 + InGameController 입력 라우팅.
+- [x] **서버 기반 인벤토리**: `InventoryService` (GET /api/inventory, POST /api/inventory/spend, /buy) 및 클라이언트 `InventoryApiService` 연동 완료.
+- [x] **동적 보드 회전**: `rotation_interval`에 따른 자동 180도 회전 로직 구현 완료.
+- [x] **플레이어 프로필**: `AccountPopupView`를 통한 닉네임 변경 및 아바타 선택 기능 구현 완료.
 - [x] **VRocket 제거**: 개편된 아이템 디자인에 따라 ColorSweep/RowShift/CellSwap으로 교체.
 - [x] **StaminaPopupView**: 하트 개수, 카운트다운 타이머, 광고 보기 버튼이 포함된 스테미나 팝업.
 - [x] **StageInfoPopupView 스테미나 체크**: 플레이 허용 전 `StaminaApiService`를 통한 입장 게이트 체크.

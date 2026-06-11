@@ -10,6 +10,7 @@ UI/UX specs, wireframes, game design documents.
 | `ingame-core-design.md` | InGame core architecture: modules, tap flow, clear conditions, stage loading |
 | `item-system-design.md` | Item system spec: Bomb/H-Rocket/ColorSweep/RowShift/CellSwap, Use Phase UX, Void/Obstacle policy, architecture integration |
 | `progression-system-design.md` | Progression system spec: Star logic, Chapter grouping, Milestone rewards |
+| `chapter-theme-design.md` | Chapter theme spec: per-chapter visual/audio identity, shader colors, particle presets, asset naming (Initial Draft) |
 | `economy-system-design.md` | Game economy spec: currency types, reward formulas, sink/source balance |
 | `stamina-system-design.md` | Stamina, rewarded ad, unlimited time, reward source, Redis attempt, and event log spec |
 | `social-ranking-design.md` | Social and ranking spec: Redis-based global ranking, stage performance UX |
