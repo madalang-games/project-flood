@@ -67,7 +67,6 @@ namespace Game.Editor
         public const string PopupAccountConflictItemsFmt = "popup.account_conflict.items_fmt";
         public const string PopupAccountConflictBtnKeepLocal = "popup.account_conflict.btn_keep_local";
         public const string PopupAccountConflictBtnKeepCloud = "popup.account_conflict.btn_keep_cloud";
-        public const string ToastAccountAlreadyActive = "toast.account_already_active";
         public const string PopupStageInfoTitle = "popup.stage_info.title";
         public const string PopupStageInfoBestStars = "popup.stage_info.best_stars";
         public const string PopupStageInfoBestMoves = "popup.stage_info.best_moves";
@@ -108,6 +107,36 @@ namespace Game.Editor
         public const string PopupAccountChooseBoardTheme = "popup.account.choose_board_theme";
         public const string PopupBootContinueAsGuestTitle = "popup.boot.continue_as_guest_title";
         public const string PopupBootContinueAsGuestBody = "popup.boot.continue_as_guest_body";
+
+        // toast
+        public const string ToastAccountAlreadyActive = "toast.account_already_active";
+        public const string ToastInsufficientGold = "toast.insufficient_gold";
+        public const string ToastStageLocked = "toast.stage_locked";
+        public const string ToastBoosterPurchased = "toast.booster_purchased";
+        public const string ToastRevived = "toast.revived";
+        public const string ToastAdCancelled = "toast.ad_cancelled";
+        public const string ToastLifeGained = "toast.life_gained";
+        public const string ToastChapterUnlockRequirement = "toast.chapter_unlock_requirement";
+        public const string ToastChestClaimed = "toast.chest_claimed";
+        public const string ToastNicknameLengthError = "toast.nickname_length_error";
+        public const string ToastNicknameCharError = "toast.nickname_char_error";
+        public const string ToastNicknameUpdated = "toast.nickname_updated";
+        public const string ToastNicknameUpdateFailed = "toast.nickname_update_failed";
+        public const string ToastThemeNotEnoughGold = "toast.theme_not_enough_gold";
+        public const string ToastThemeEquipped = "toast.theme_equipped";
+        public const string ToastThemeEquipFailed = "toast.theme_equip_failed";
+        public const string ToastThemeUnlocked = "toast.theme_unlocked";
+        public const string ToastAvatarNotEnoughGold = "toast.avatar_not_enough_gold";
+        public const string ToastAvatarEquipped = "toast.avatar_equipped";
+        public const string ToastAvatarEquipFailed = "toast.avatar_equip_failed";
+        public const string ToastAvatarUnlocked = "toast.avatar_unlocked";
+        public const string ToastGoogleSigninNotConfigured = "toast.google_signin_not_configured";
+        public const string ToastGoogleSigninUnavailable = "toast.google_signin_unavailable";
+        public const string ToastAccountLinked = "toast.account_linked";
+        public const string ToastAccountSwitched = "toast.account_switched";
+        public const string ToastGoogleSigninAndroidOnly = "toast.google_signin_android_only";
+        public const string ToastItemSpendFailed = "toast.item_spend_failed";
+        public const string ToastChestClaimFailed = "toast.chest_claim_failed";
 
         // lobby
         public const string LobbyRankingStarsTitle = "lobby.ranking.stars_title";
@@ -165,34 +194,6 @@ namespace Game.Editor
         // chapter
         public const string ChapterNameFmt = "chapter.name_fmt";
         public const string ChapterLocked = "chapter.locked";
-
-        // toast
-        public const string ToastInsufficientGold = "toast.insufficient_gold";
-        public const string ToastStageLocked = "toast.stage_locked";
-        public const string ToastBoosterPurchased = "toast.booster_purchased";
-        public const string ToastRevived = "toast.revived";
-        public const string ToastAdCancelled = "toast.ad_cancelled";
-        public const string ToastLifeGained = "toast.life_gained";
-        public const string ToastChapterUnlockRequirement = "toast.chapter_unlock_requirement";
-        public const string ToastChestClaimed = "toast.chest_claimed";
-        public const string ToastNicknameLengthError = "toast.nickname_length_error";
-        public const string ToastNicknameCharError = "toast.nickname_char_error";
-        public const string ToastNicknameUpdated = "toast.nickname_updated";
-        public const string ToastNicknameUpdateFailed = "toast.nickname_update_failed";
-        public const string ToastThemeNotEnoughGold = "toast.theme_not_enough_gold";
-        public const string ToastThemeEquipped = "toast.theme_equipped";
-        public const string ToastThemeEquipFailed = "toast.theme_equip_failed";
-        public const string ToastThemeUnlocked = "toast.theme_unlocked";
-        public const string ToastAvatarNotEnoughGold = "toast.avatar_not_enough_gold";
-        public const string ToastAvatarEquipped = "toast.avatar_equipped";
-        public const string ToastAvatarEquipFailed = "toast.avatar_equip_failed";
-        public const string ToastAvatarUnlocked = "toast.avatar_unlocked";
-        public const string ToastGoogleSigninNotConfigured = "toast.google_signin_not_configured";
-        public const string ToastGoogleSigninUnavailable = "toast.google_signin_unavailable";
-        public const string ToastAccountLinked = "toast.account_linked";
-        public const string ToastAccountSwitched = "toast.account_switched";
-        public const string ToastGoogleSigninAndroidOnly = "toast.google_signin_android_only";
-        public const string ToastChestClaimFailed = "toast.chest_claim_failed";
 
         // shop
         public const string ShopComingSoon = "shop.coming_soon";

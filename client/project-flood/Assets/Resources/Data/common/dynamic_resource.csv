@@ -89,3 +89,15 @@ ui_avatar_default,Assets/Sprites/UI/Avatar/avatar_free_01.png,UI,Default avatar 
 ui_settings_icon,Assets/Sprites/UI/Icons/ui_settings_icon.png,UI,Settings icon
 path_chapter_1,Assets/Resources/Sprites/Path/path_chapter_1.png,UI,Chapter 1 Grassland path texture
 path_chapter_2,Assets/Resources/Sprites/Path/path_chapter_2.png,UI,Chapter 2 Ocean path texture
+ui_toggle_on,Assets/Sprites/UI/Icons/ui_toggle_on.png,UI,Toggle switch on sprite
+stage_node_ch_1,Assets/Resources/Sprites/StageNodes/stage_node_ch_1.png,StageNode,Chapter 1 Grassland stage node background
+stage_node_ch_2,Assets/Resources/Sprites/StageNodes/stage_node_ch_2.png,StageNode,Chapter 2 Ocean stage node background
+stage_node_ch_3,Assets/Resources/Sprites/StageNodes/stage_node_ch_3.png,StageNode,Chapter 3 Forest stage node background
+stage_node_ch_4,Assets/Resources/Sprites/StageNodes/stage_node_ch_4.png,StageNode,Chapter 4 Desert stage node background
+stage_node_ch_5,Assets/Resources/Sprites/StageNodes/stage_node_ch_5.png,StageNode,Chapter 5 Snowfield stage node background
+stage_node_ch_6,Assets/Resources/Sprites/StageNodes/stage_node_ch_6.png,StageNode,Chapter 6 Deep Sea stage node background
+stage_node_ch_7,Assets/Resources/Sprites/StageNodes/stage_node_ch_7.png,StageNode,Chapter 7 Cave stage node background
+stage_node_ch_8,Assets/Resources/Sprites/StageNodes/stage_node_ch_8.png,StageNode,Chapter 8 Volcano stage node background
+stage_node_ch_9,Assets/Resources/Sprites/StageNodes/stage_node_ch_9.png,StageNode,Chapter 9 Sky stage node background
+stage_node_ch_10,Assets/Resources/Sprites/StageNodes/stage_node_ch_10.png,StageNode,Chapter 10 Aurora stage node background
+stage_node_ch_11,Assets/Resources/Sprites/StageNodes/stage_node_ch_11.png,StageNode,Chapter 11 Space stage node background

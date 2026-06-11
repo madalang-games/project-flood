@@ -874,6 +874,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 568431379dae3e744a13ddf39e2f56fa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Game.Services.SoundManager
+  sfxCatalog: {fileID: 0}
+  resourcesCatalogPath: SfxCatalog
   _bgmSource: {fileID: 0}
   _sfxSource: {fileID: 0}
 --- !u!4 &955472464

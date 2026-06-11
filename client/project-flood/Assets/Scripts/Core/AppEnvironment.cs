@@ -9,7 +9,7 @@ namespace Game.Core
     public static class AppConfig
     {
         public const string DevGameServerUrl  = "http://localhost:20201"; // 개발 서버 URL
-        public const string ProdGameServerUrl = "http://localhost:5000"; // TODO: 실제 프로덕션 서버 URL로 교체
+        public const string ProdGameServerUrl = "https://pixelpop.mooo.com"; // TODO: 실제 프로덕션 서버 URL로 교체
 
         // Google OAuth 2.0 web client ID — Google Cloud Console > APIs & Services > Credentials
         public const string GoogleWebClientId = "598353589064-33klnpsljo3sia08kaineica4dfpknsg.apps.googleusercontent.com";
