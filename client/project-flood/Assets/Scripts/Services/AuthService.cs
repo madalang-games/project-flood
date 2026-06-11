@@ -29,6 +29,8 @@ namespace Game.Services
         private List<Action<bool, string>> _refreshWaiters;
         private bool _accountSwitched;
 
+        public static string PendingBootMessage { get; set; } = null;
+
         private string _displayName = string.Empty;
         private int _avatarId = 1;
 
@@ -252,6 +254,14 @@ namespace Game.Services
 
             SyncServiceTokens();
             OnAuthStateChanged?.Invoke(true, _provider);
+
+            if (_accountSwitched)
+            {
+                Game.Core.UIManager.Instance?.HideLoading();
+                ShowAccountRestartPopup(() => Game.Core.SceneTransition.Instance?.FadeToScene("Boot"));
+                return;
+            }
+
             onComplete?.Invoke(true, "");
         }
 
@@ -335,6 +345,48 @@ namespace Game.Services
             return id;
         }
 
+        public void LinkGoogle(string idToken, string nonce, Action<bool, string, LinkAccountResponseJson> onComplete)
+        {
+            var guestRefreshToken = _refreshToken ?? string.Empty;
+            var req = new LinkAccountRequestJson { provider = "google", idToken = idToken, guestRefreshToken = guestRefreshToken };
+            Post("/api/auth/link-oauth", JsonUtility.ToJson(req), (ok, text) =>
+            {
+                if (!ok) { onComplete?.Invoke(false, text, null); return; }
+                var resp = JsonUtility.FromJson<LinkAccountResponseJson>(text);
+                onComplete?.Invoke(true, string.Empty, resp);
+            });
+        }
+
+        public void ResolveConflict(string conflictToken, string selection, Action<bool, string> onComplete)
+        {
+            var req = new ResolveConflictRequestJson { conflictToken = conflictToken, selection = selection };
+            Post("/api/auth/resolve-conflict", JsonUtility.ToJson(req), (ok, text) =>
+            {
+                if (!ok) { onComplete?.Invoke(false, text); return; }
+                var resp = JsonUtility.FromJson<ResolveConflictResponseJson>(text);
+                if (resp?.auth != null && !string.IsNullOrEmpty(resp.auth.accessToken))
+                {
+                    CompleteSession(true, string.Empty, "google", resp.auth, (authOk, authErr) =>
+                        onComplete?.Invoke(authOk, authErr));
+                }
+                else
+                {
+                    onComplete?.Invoke(resp?.success == true, string.Empty);
+                }
+            });
+        }
+
+        private static void ShowAccountRestartPopup(System.Action onConfirm)
+        {
+            Game.Core.UIManager.Instance?.ShowPopup<Game.OutGame.Settings.AccountRestartPopupView>(
+                v => v.Init(onConfirm));
+        }
+
+        private void Post(string path, string jsonPayload, Action<bool, string> onComplete)
+        {
+            NetworkService.Instance.Post(path, jsonPayload, onComplete);
+        }
+
         private void Post(string path, string jsonPayload, Action<string> onSuccess, Action<string> onError)
         {
             NetworkService.Instance.Post(path, jsonPayload, (ok, result) =>
@@ -393,6 +445,47 @@ namespace Game.Services
             public string refreshToken;
             public string expiresAt;
             public ProfileJson profile;
+        }
+
+        [Serializable]
+        public class SaveSnapshotJson
+        {
+            public int maxStageId;
+            public long gold;
+            public int totalStars;
+            public int totalItems;
+        }
+
+        [Serializable]
+        public class LinkAccountResponseJson
+        {
+            public bool success;
+            public bool conflict;
+            public SaveSnapshotJson localSave;
+            public SaveSnapshotJson cloudSave;
+            public string conflictToken;
+        }
+
+        [Serializable]
+        private class LinkAccountRequestJson
+        {
+            public string provider;
+            public string idToken;
+            public string guestRefreshToken;
+        }
+
+        [Serializable]
+        private class ResolveConflictRequestJson
+        {
+            public string conflictToken;
+            public string selection;
+        }
+
+        [Serializable]
+        private class ResolveConflictResponseJson
+        {
+            public bool success;
+            public AuthResponseJson auth;
         }
     }
 }

@@ -68,6 +68,8 @@ namespace Game.Editor
             CreatePausePopup();
             CreateSettingsPanel();
             CreateAccountPopup();
+            CreateAccountRestartPopup();
+            CreateAccountConflictPopup();
             CreateStageNodeView();
             CreateStaminaPopup();
             CreateTutorialOverlay();
@@ -145,6 +147,12 @@ namespace Game.Editor
 
         [MenuItem("Tools/UI Setup/Prefabs/ChapterChest",     false, 128)]
         static void CreateChapterChestSingle()    { EnsureDirs(); CreateChapterChest();    AssetDatabase.Refresh(); }
+
+        [MenuItem("Tools/UI Setup/Prefabs/AccountRestartPopup", false, 135)]
+        static void CreateAccountRestartPopupSingle() { EnsureDirs(); CreateAccountRestartPopup(); AssetDatabase.Refresh(); }
+
+        [MenuItem("Tools/UI Setup/Prefabs/AccountConflictPopup", false, 136)]
+        static void CreateAccountConflictPopupSingle() { EnsureDirs(); CreateAccountConflictPopup(); AssetDatabase.Refresh(); }
 
         [MenuItem("Tools/UI Setup/Prefabs/BootCanvas",       false, 123)]
         static void CreateBootCanvasSingle()     { EnsureDirs(); SetupBoot();            AssetDatabase.Refresh(); }
@@ -1338,8 +1346,7 @@ namespace Game.Editor
             // 3. Platform Account Buttons
             var linkBtn = Btn(panel, "LinkAccountButton",   new Vector2(0, -340), new Vector2(600, 85), UI_PRIMARY, "Link Account",   PopupAccountBtnLink);
             var swBtn   = Btn(panel, "SwitchAccountButton", new Vector2(0, -340), new Vector2(600, 85), UI_PRIMARY, "Switch Account", PopupAccountBtnSwitch);
-            var logBtn  = Btn(panel, "LogoutButton",        new Vector2(0, -450), new Vector2(600, 85), UI_DANGER,  "Logout",         PopupAccountBtnLogout);
-            var clsBtn  = Btn(panel, "CloseButton",         new Vector2(0, -550), new Vector2(260, 75), UI_BG_DEEP, "Close",          CommonBtnClose);
+            var clsBtn  = Btn(panel, "CloseButton",         new Vector2(0, -450), new Vector2(260, 75), UI_BG_DEEP, "Close",          CommonBtnClose);
 
             // 4. Map Avatar Sprites
             var resMap = LoadDynamicResourceMap();
@@ -1431,7 +1438,6 @@ namespace Game.Editor
             so.FindProperty("_userIdText").objectReferenceValue          = uidTxt;
             so.FindProperty("_linkAccountButton").objectReferenceValue   = linkBtn.GetComponent<Button>();
             so.FindProperty("_switchAccountButton").objectReferenceValue = swBtn.GetComponent<Button>();
-            so.FindProperty("_logoutButton").objectReferenceValue        = logBtn.GetComponent<Button>();
             so.FindProperty("_closeButton").objectReferenceValue         = clsBtn.GetComponent<Button>();
 
             so.FindProperty("_displayNameInput").objectReferenceValue    = inputField;
@@ -2843,7 +2849,7 @@ namespace Game.Editor
             var root = new GameObject("RankingItemPrefab");
             var rt = RT(root);
             rt.sizeDelta = new Vector2(820, 90);
-            
+
             // Set anchors and pivot to top-center to align with VirtualizedScrollRect content mapping
             rt.anchorMin = new Vector2(0.5f, 1f);
             rt.anchorMax = new Vector2(0.5f, 1f);
@@ -2855,6 +2861,92 @@ namespace Game.Editor
             BuildRankingItemHierarchy(root, resMap);
 
             Save(root, "RankingItemPrefab");
+        }
+
+        static void CreateAccountRestartPopup()
+        {
+            var root = FullScreen("AccountRestartPopupView");
+            Comp<AccountRestartPopupView>(root); Comp<UIPanelAppear>(root); Comp<CanvasGroup>(root);
+
+            var backdrop = Btn(root, "Backdrop", Vector2.zero, new Vector2(1080, 1920), DIM, "", shadowAlpha: 200f / 255f);
+            Stretch(backdrop);
+
+            var panel = Panel(root, "Panel", new Vector2(700, 500), UI_BG_MID);
+            var title = RibbonTitle(panel, "TitleText", "Game Restart Required", PopupAccountRestartTitle);
+
+            var body = TMP(panel, "BodyText", Center(0, 50, 580, 150), 20, UI_TEXT, "The game will now restart.", PopupAccountRestartBody, TextCategory.Normal);
+            body.enableWordWrapping = true;
+            var bodyCsf = Comp<ContentSizeFitter>(body.gameObject);
+            bodyCsf.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+
+            var confirmBtn = Btn(panel, "ConfirmButton", new Vector2(0, -140), new Vector2(500, 85), UI_PRIMARY, "Restart", PopupAccountRestartConfirm);
+
+            var so = new SerializedObject(root.GetComponent<AccountRestartPopupView>());
+            so.FindProperty("_titleText").objectReferenceValue   = title;
+            so.FindProperty("_bodyText").objectReferenceValue    = body;
+            so.FindProperty("_confirmButton").objectReferenceValue = confirmBtn.GetComponent<Button>();
+            so.ApplyModifiedProperties();
+
+            Save(root, "AccountRestartPopupView");
+        }
+
+        static void CreateAccountConflictPopup()
+        {
+            var root = FullScreen("AccountConflictPopupView");
+            Comp<AccountConflictPopupView>(root); Comp<UIPanelAppear>(root); Comp<CanvasGroup>(root);
+
+            var backdrop = Btn(root, "Backdrop", Vector2.zero, new Vector2(1080, 1920), DIM, "", shadowAlpha: 200f / 255f);
+            Stretch(backdrop);
+
+            var panel = Panel(root, "Panel", new Vector2(900, 1100), UI_BG_MID);
+            var title = RibbonTitle(panel, "TitleText", "Account Data Conflict", PopupAccountConflictTitle);
+
+            var body = TMP(panel, "BodyText", Center(0, 370, 800, 100), 18, UI_TEXT, "Choose which data to keep.", PopupAccountConflictBody, TextCategory.Normal);
+            body.enableWordWrapping = true;
+
+            // Local save panel (left)
+            var localPanel = Panel(panel, "LocalPanel", new Vector2(380, 550), UI_BG_DEEP);
+            Fixed(localPanel.transform.parent.gameObject, new Vector2(-215, 80), new Vector2(380 + 24, 550 + 24));
+
+            var localLabel      = TMP(localPanel, "LocalLabel",      Center(0, 240, 340, 60),  22, UI_TEXT, "Current Data",  PopupAccountConflictLocalLabel, TextCategory.Header);
+            var localStageText  = TMP(localPanel, "LocalStageText",  Center(0, 150, 340, 55),  18, UI_TEXT, "Stage 0",       PopupAccountConflictStageFmt,   TextCategory.Normal);
+            var localGoldText   = TMP(localPanel, "LocalGoldText",   Center(0,  80, 340, 55),  18, UI_TEXT, "Gold: 0",       PopupAccountConflictGoldFmt,    TextCategory.Normal);
+            var localStarsText  = TMP(localPanel, "LocalStarsText",  Center(0,  10, 340, 55),  18, UI_TEXT, "★ 0",          PopupAccountConflictStarsFmt,   TextCategory.Normal);
+            var localItemsText  = TMP(localPanel, "LocalItemsText",  Center(0, -60, 340, 55),  18, UI_TEXT, "Items: 0",      PopupAccountConflictItemsFmt,   TextCategory.Normal);
+            var keepLocalBtn    = Btn(localPanel, "KeepLocalButton", new Vector2(0, -190), new Vector2(340, 75), UI_PRIMARY, "Keep Current", PopupAccountConflictBtnKeepLocal);
+
+            // Cloud save panel (right)
+            var cloudPanel = Panel(panel, "CloudPanel", new Vector2(380, 550), UI_BG_DEEP);
+            Fixed(cloudPanel.transform.parent.gameObject, new Vector2(215, 80), new Vector2(380 + 24, 550 + 24));
+
+            var cloudLabel      = TMP(cloudPanel, "CloudLabel",      Center(0, 240, 340, 60),  22, UI_TEXT, "Google Account Data", PopupAccountConflictCloudLabel,        TextCategory.Header);
+            var cloudStageText  = TMP(cloudPanel, "CloudStageText",  Center(0, 150, 340, 55),  18, UI_TEXT, "Stage 0",             PopupAccountConflictStageFmt,          TextCategory.Normal);
+            var cloudGoldText   = TMP(cloudPanel, "CloudGoldText",   Center(0,  80, 340, 55),  18, UI_TEXT, "Gold: 0",             PopupAccountConflictGoldFmt,           TextCategory.Normal);
+            var cloudStarsText  = TMP(cloudPanel, "CloudStarsText",  Center(0,  10, 340, 55),  18, UI_TEXT, "★ 0",                PopupAccountConflictStarsFmt,          TextCategory.Normal);
+            var cloudItemsText  = TMP(cloudPanel, "CloudItemsText",  Center(0, -60, 340, 55),  18, UI_TEXT, "Items: 0",            PopupAccountConflictItemsFmt,          TextCategory.Normal);
+            var keepCloudBtn    = Btn(cloudPanel, "KeepCloudButton", new Vector2(0, -190), new Vector2(340, 75), UI_PRIMARY, "Use Google Data", PopupAccountConflictBtnKeepCloud);
+
+            var cancelBtn = Btn(panel, "CancelButton", new Vector2(0, -470), new Vector2(300, 70), UI_BG_DEEP, "Cancel", CommonBtnCancel);
+
+            var so = new SerializedObject(root.GetComponent<AccountConflictPopupView>());
+            so.FindProperty("_titleText").objectReferenceValue      = title;
+            so.FindProperty("_bodyText").objectReferenceValue       = body;
+            so.FindProperty("_localLabel").objectReferenceValue     = localLabel;
+            so.FindProperty("_localStageText").objectReferenceValue = localStageText;
+            so.FindProperty("_localGoldText").objectReferenceValue  = localGoldText;
+            so.FindProperty("_localStarsText").objectReferenceValue = localStarsText;
+            so.FindProperty("_localItemsText").objectReferenceValue = localItemsText;
+            so.FindProperty("_keepLocalButton").objectReferenceValue = keepLocalBtn.GetComponent<Button>();
+            so.FindProperty("_cloudLabel").objectReferenceValue     = cloudLabel;
+            so.FindProperty("_cloudStageText").objectReferenceValue = cloudStageText;
+            so.FindProperty("_cloudGoldText").objectReferenceValue  = cloudGoldText;
+            so.FindProperty("_cloudStarsText").objectReferenceValue = cloudStarsText;
+            so.FindProperty("_cloudItemsText").objectReferenceValue = cloudItemsText;
+            so.FindProperty("_keepCloudButton").objectReferenceValue = keepCloudBtn.GetComponent<Button>();
+            so.FindProperty("_cancelButton").objectReferenceValue   = cancelBtn.GetComponent<Button>();
+            so.ApplyModifiedProperties();
+
+            Save(root, "AccountConflictPopupView");
         }
     }
 }

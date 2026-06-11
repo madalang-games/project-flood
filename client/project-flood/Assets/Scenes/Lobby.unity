@@ -700,6 +700,10 @@ PrefabInstance:
       value: 36
       objectReference: {fileID: 0}
     - target: {fileID: 4123123072395871355, guid: adb78535c2f58d943a1acf55bcc26a1a, type: 3}
+      propertyPath: _guideOrbSprite
+      value: 
+      objectReference: {fileID: 21300000, guid: e31a5a8c5c59e15458ecee82d2378e71, type: 3}
+    - target: {fileID: 4123123072395871355, guid: adb78535c2f58d943a1acf55bcc26a1a, type: 3}
       propertyPath: _stageNodePrefab
       value: 
       objectReference: {fileID: 4284192770017596702, guid: 66a3efa4349ff01418bad245a055e4d6, type: 3}

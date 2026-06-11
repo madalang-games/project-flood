@@ -60,10 +60,14 @@ Namespace: `Game.Services`
 | `PlayerProgressService.RecordClear(int,int)` | method | Updates best stars + unlocks stageId+1 |
 | `AuthService.IsGuest` | prop | true until OAuth link |
 | `AuthService.UserId` | prop | Device UUID or OAuth ID |
+| `AuthService.PendingBootMessage` | static prop | Optional toast message to show after Boot redirect (currently unused) |
 | `AuthService.Initialize(Action<AuthResult>)` | method | Guest by default; fires ReLoginRequired if OAuth refresh fails; fires NewGuestCreated if account switch detected |
-| `AuthService.LinkOAuth(string)` | method | Sets IsGuest=false, persists OAuth ID |
-| `AuthService.Logout()` | method | Clears all auth prefs |
+| `AuthService.LinkGoogle(idToken,nonce,cb)` | method | `POST /api/auth/link-oauth` with `guestRefreshToken`; cb(ok, err, LinkAccountResponseJson) |
+| `AuthService.ResolveConflict(token,selection,cb)` | method | `POST /api/auth/resolve-conflict`; calls CompleteSession with returned auth tokens |
+| `AuthService.Logout()` | method | Clears all auth prefs; kept for internal use only — no UI button |
 | `AuthResult` | enum | Authenticated / Guest / ReLoginRequired / NewGuestCreated |
+| `AuthService.LinkAccountResponseJson` | class | `{success, conflict, localSave, cloudSave, conflictToken}` — public inner class |
+| `AuthService.SaveSnapshotJson` | class | `{maxStageId, gold, totalStars, totalItems}` — public inner class |
 | `AdWatchResult.Earned` | field | true if user earned the reward |
 | `AdWatchResult.AdToken` | field | SSV nonce; pass to server POST endpoint for reward claim |
 | `IAdService.WatchRewardedAd(string,Action<AdWatchResult?>)` | method | null result = cancel/fail/no-ad loaded |

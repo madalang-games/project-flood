@@ -53,12 +53,12 @@ namespace Game.Editor
             lockOverlay.AddComponent<Image>().color = new Color(0, 0, 0, 0.7f);
             lockOverlay.SetActive(false);
 
-            // Pulse ring (UIScalePulse)
+            // Pulse ring (UIGlowFlow shader)
             var ring = Child(root, "PulseRing");
             Fixed(ring, Vector2.zero, new Vector2(138, 138));
-            ring.AddComponent<Image>().color = new Color(0.91f, 0.63f, 0.125f, 0.5f);
-            ring.AddComponent<Game.Core.UI.UIScalePulse>();
-            ring.transform.SetAsFirstSibling(); // behind base
+            var ringImg = ring.AddComponent<Image>();
+            ringImg.material = LoadOrCreateGlowFlowMaterial();
+            ring.transform.SetAsFirstSibling();
             ring.SetActive(false);
 
             // Wire StageNodeView
@@ -78,6 +78,24 @@ namespace Game.Editor
             Object.DestroyImmediate(root);
             AssetDatabase.Refresh();
             Debug.Log("[UIEditorSetup] StageNodeView prefab created.");
+        }
+
+        static Material LoadOrCreateGlowFlowMaterial()
+        {
+            const string matPath = "Assets/Resources/Prefabs/UI/UIGlowFlowMaterial.mat";
+            var mat = AssetDatabase.LoadAssetAtPath<Material>(matPath);
+            if (mat != null) return mat;
+
+            var shader = Shader.Find("UI/GlowFlow");
+            if (shader == null)
+            {
+                Debug.LogError("[StageNodeEditorSetup] Shader 'UI/GlowFlow' not found. Import UIGlowFlow.shader first.");
+                return null;
+            }
+            mat = new Material(shader);
+            AssetDatabase.CreateAsset(mat, matPath);
+            AssetDatabase.SaveAssets();
+            return mat;
         }
 
         static GameObject Child(GameObject parent, string name)

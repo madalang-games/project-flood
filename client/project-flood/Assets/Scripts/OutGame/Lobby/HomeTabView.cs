@@ -20,8 +20,9 @@ namespace Game.OutGame.Lobby
         [SerializeField] private float         _pathWidth    = 12f;
         [SerializeField] private Sprite        _guideOrbSprite;
 
-                private readonly List<StageNodeView> _pool = new List<StageNodeView>();
-        private readonly List<UILineStrip>  _pathStrips = new List<UILineStrip>();
+                private readonly List<StageNodeView>       _pool          = new List<StageNodeView>();
+        private readonly List<UILineStrip>         _pathStrips    = new List<UILineStrip>();
+        private readonly Dictionary<int, Vector2>  _stagePositions = new Dictionary<int, Vector2>();
         private Coroutine                    _guideOrbCoroutine;
         private Image                        _guideOrb;
         private Stage[] _stages;
@@ -135,6 +136,7 @@ namespace Game.OutGame.Lobby
 
             // Deactivate all pool nodes — prevents stale 0-position nodes on re-enable
             foreach (var n in _pool) n.gameObject.SetActive(false);
+            _stagePositions.Clear();
 
             int needed = Mathf.Min(_stages.Length, Game.Core.GameConfig.StageNodePoolSize);
             while (_pool.Count < needed)
@@ -194,6 +196,7 @@ namespace Game.OutGame.Lobby
                 }
 
                 positions[i] = new Vector2(x, y);
+                _stagePositions[_stages[i].stage_id] = positions[i];
 
                 var nodeRt       = _pool[i].GetComponent<RectTransform>();
                 nodeRt.anchorMin = nodeRt.anchorMax = new Vector2(0.5f, 1f);
@@ -700,6 +703,21 @@ namespace Game.OutGame.Lobby
         private IEnumerator ApplyScrollNextFrame()
         {
             yield return null;
+            int targetId = ScrollStateCache.LastPlayedStageId;
+            if (targetId > 0)
+            {
+                ScrollStateCache.LastPlayedStageId = 0;
+                if (_stagePositions.TryGetValue(targetId, out Vector2 nodePos))
+                {
+                    float totalH     = _contentRoot.sizeDelta.y;
+                    float viewportH  = _scrollRect.viewport.rect.height;
+                    float scrollable = totalH - viewportH;
+                    _scrollRect.verticalNormalizedPosition = scrollable > 0f
+                        ? Mathf.Clamp01(1f + (nodePos.y + viewportH * 0.5f) / scrollable)
+                        : 1f;
+                    yield break;
+                }
+            }
             _scrollRect.verticalNormalizedPosition = ScrollStateCache.HomeScrollPosition;
         }
 

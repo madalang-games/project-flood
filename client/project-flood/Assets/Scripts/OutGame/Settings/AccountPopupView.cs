@@ -15,7 +15,6 @@ namespace Game.OutGame.Settings
         [SerializeField] private TMP_Text       _userIdText;
         [SerializeField] private Button         _linkAccountButton;
         [SerializeField] private Button         _switchAccountButton;
-        [SerializeField] private Button         _logoutButton;
         [SerializeField] private Button         _closeButton;
 
         [Header("Profile Modifications")]
@@ -93,7 +92,6 @@ namespace Game.OutGame.Settings
 
             _linkAccountButton?.onClick.AddListener(OnLinkAccount);
             _switchAccountButton?.onClick.AddListener(OnSwitchAccount);
-            _logoutButton?.onClick.AddListener(OnLogout);
             if (_closeButton != null) _closeButton.onClick.AddListener(Close);
 
             // Bind nickname
@@ -496,24 +494,61 @@ namespace Game.OutGame.Settings
                     return;
                 }
 
-                AuthService.Instance.LoginGoogle(idToken, null, (ok, err) =>
+                AuthService.Instance.LinkGoogle(idToken, null, (ok, err, linkResp) =>
                 {
                     Game.Core.UIManager.Instance?.HideLoading();
-                    if (ok)
-                    {
-                        Game.Core.UIManager.Instance?.ShowToast(LocalizationService.Instance.Get("toast.account_linked"), Core.UI.ToastType.Success);
-                        Close();
-                    }
-                    else
+                    if (!ok)
                     {
                         var msg = LocalizationService.Instance?.GetError(err) ?? err;
                         Game.Core.UIManager.Instance?.ShowToast(msg, Core.UI.ToastType.Error);
+                        return;
+                    }
+
+                    if (linkResp != null && linkResp.conflict)
+                    {
+                        var local = linkResp.localSave;
+                        var cloud = linkResp.cloudSave;
+                        Close();
+                        Game.Core.UIManager.Instance?.ShowPopup<AccountConflictPopupView>(v => v.Init(
+                            localMaxStage: local?.maxStageId ?? 0,
+                            localGold:     local?.gold ?? 0,
+                            localStars:    local?.totalStars ?? 0,
+                            localItems:    local?.totalItems ?? 0,
+                            cloudMaxStage: cloud?.maxStageId ?? 0,
+                            cloudGold:     cloud?.gold ?? 0,
+                            cloudStars:    cloud?.totalStars ?? 0,
+                            cloudItems:    cloud?.totalItems ?? 0,
+                            onKeepLocal: () => ResolveConflict(linkResp.conflictToken, "local"),
+                            onKeepCloud: () => ResolveConflict(linkResp.conflictToken, "cloud")
+                        ));
+                    }
+                    else
+                    {
+                        // No conflict — new Google account, link completed server-side
+                        // CompleteSession will show restart popup if PID changed
+                        // If no popup was shown, auth succeeded without switch (shouldn't happen for link flow)
+                        Close();
                     }
                 });
             });
 #else
             Game.Core.UIManager.Instance?.ShowToast(LocalizationService.Instance.Get("toast.google_signin_android_only"), Core.UI.ToastType.Error);
 #endif
+        }
+
+        private void ResolveConflict(string conflictToken, string selection)
+        {
+            Game.Core.UIManager.Instance?.ShowLoading();
+            AuthService.Instance.ResolveConflict(conflictToken, selection, (ok, err) =>
+            {
+                Game.Core.UIManager.Instance?.HideLoading();
+                if (!ok)
+                {
+                    var msg = LocalizationService.Instance?.GetError(err) ?? err;
+                    Game.Core.UIManager.Instance?.ShowToast(msg, Core.UI.ToastType.Error);
+                }
+                // On success: CompleteSession shows AccountRestartPopupView -> Boot redirect
+            });
         }
 
         private void OnSwitchAccount()
@@ -562,7 +597,9 @@ namespace Game.OutGame.Settings
                     Game.Core.UIManager.Instance?.HideLoading();
                     if (ok)
                     {
-                        Game.Core.UIManager.Instance?.ShowToast(LocalizationService.Instance.Get("toast.account_switched"), Core.UI.ToastType.Success);
+                        // Same account selected — no PID mismatch occurred
+                        Game.Core.UIManager.Instance?.ShowToast(
+                            LocalizationService.Instance.Get("toast.account_already_active"), Core.UI.ToastType.Warning);
                         Close();
                     }
                     else
@@ -570,17 +607,12 @@ namespace Game.OutGame.Settings
                         var msg = LocalizationService.Instance?.GetError(err) ?? err;
                         Game.Core.UIManager.Instance?.ShowToast(msg, Core.UI.ToastType.Error);
                     }
+                    // If PID mismatch detected: CompleteSession shows AccountRestartPopupView -> never reaches here
                 });
             });
 #else
             Game.Core.UIManager.Instance?.ShowToast(LocalizationService.Instance.Get("toast.google_signin_android_only"), Core.UI.ToastType.Error);
 #endif
-        }
-
-        private void OnLogout()
-        {
-            AuthService.Instance?.Logout();
-            Close();
         }
 
         private void Close()
