@@ -36,7 +36,7 @@ namespace Game.Services
 
         public bool IsAuthenticated => !string.IsNullOrEmpty(_accessToken);
         public bool IsGuest => _provider == "guest";
-        public string UserId => _storage?.Get(ClientIdKey) ?? string.Empty;
+        public string UserId => PlayerPrefs.GetString(ClientIdKey, string.Empty);
         public string AccessToken => _accessToken;
         public string DisplayName => _displayName;
         public int AvatarId => _avatarId;
@@ -199,16 +199,28 @@ namespace Game.Services
 
         private void ClearAllLocalProgress()
         {
-            // Clear all game-related PlayerPrefs to prevent account leakage
-            PlayerPrefs.DeleteAll(); 
+            // Preserve auth/identity keys across the DeleteAll (ClientId = device identity, tokens = current session)
+            var clientId     = PlayerPrefs.GetString(ClientIdKey, "");
+            var accessToken  = _storage.Get(AccessTokenKey);
+            var refreshToken = _storage.Get(RefreshTokenKey);
+            var provider     = _storage.Get(ProviderKey);
+            var expiresAt    = _storage.Get(AccessExpiresAtKey);
+            var pid          = PlayerPrefs.GetString(PlayerPrefsPidKey, "");
+
+            PlayerPrefs.DeleteAll();
+
+            if (!string.IsNullOrEmpty(clientId))     PlayerPrefs.SetString(ClientIdKey, clientId);
+            if (!string.IsNullOrEmpty(accessToken))  _storage.Set(AccessTokenKey, accessToken);
+            if (!string.IsNullOrEmpty(refreshToken)) _storage.Set(RefreshTokenKey, refreshToken);
+            if (!string.IsNullOrEmpty(provider))     _storage.Set(ProviderKey, provider);
+            if (!string.IsNullOrEmpty(expiresAt))    _storage.Set(AccessExpiresAtKey, expiresAt);
+            if (!string.IsNullOrEmpty(pid))          PlayerPrefs.SetString(PlayerPrefsPidKey, pid);
+
             PlayerPrefs.Save();
-            
-            // Clear memory-cached data in services
+
             if (PlayerProgressService.Instance != null)
-            {
                 PlayerProgressService.Instance.ResetData();
-            }
-            
+
             Debug.Log("[AuthService] All local progress cleared (Disk + Memory) for logout.");
         }
 
@@ -225,8 +237,7 @@ namespace Game.Services
             var newPid = auth.profile?.pid ?? string.Empty;
             if (!string.IsNullOrEmpty(oldPid) && !string.IsNullOrEmpty(newPid) && oldPid != newPid)
             {
-                Debug.LogWarning($"[AuthService] Account switch detected ({oldPid} → {newPid}). Clearing local progress.");
-                ClearAllLocalProgress();
+                Debug.LogWarning($"[AuthService] Account switch detected ({oldPid} → {newPid}). Will clear on restart confirmation.");
                 _accountSwitched = true;
             }
 
@@ -258,7 +269,11 @@ namespace Game.Services
             if (_accountSwitched)
             {
                 Game.Core.UIManager.Instance?.HideLoading();
-                ShowAccountRestartPopup(() => Game.Core.SceneTransition.Instance?.FadeToScene("Boot"));
+                ShowAccountRestartPopup(() =>
+                {
+                    ClearAllLocalProgress();
+                    Game.Core.SceneTransition.Instance?.FadeToScene("Boot");
+                });
                 return;
             }
 
@@ -336,12 +351,23 @@ namespace Game.Services
 
         private string GetOrCreateClientId()
         {
-            var id = _storage.Get(ClientIdKey);
+            // Plain PlayerPrefs — ClientId is a device identifier, not a secret
+            var id = PlayerPrefs.GetString(ClientIdKey, "");
             if (!string.IsNullOrEmpty(id)) return id;
 
+            // One-time migration: existing installs stored ClientId in SecureTokenStorage
+            var legacy = _storage.Get(ClientIdKey);
+            if (!string.IsNullOrEmpty(legacy))
+            {
+                PlayerPrefs.SetString(ClientIdKey, legacy);
+                _storage.Delete(ClientIdKey);
+                PlayerPrefs.Save();
+                return legacy;
+            }
+
             id = Guid.NewGuid().ToString("N");
-            _storage.Set(ClientIdKey, id);
-            _storage.Save();
+            PlayerPrefs.SetString(ClientIdKey, id);
+            PlayerPrefs.Save();
             return id;
         }
 
@@ -378,7 +404,14 @@ namespace Game.Services
 
         private static void ShowAccountRestartPopup(System.Action onConfirm)
         {
-            Game.Core.UIManager.Instance?.ShowPopup<Game.OutGame.Settings.AccountRestartPopupView>(
+            if (Game.Core.UIManager.Instance == null ||
+                Resources.Load<Game.OutGame.Settings.AccountRestartPopupView>("Prefabs/UI/AccountRestartPopupView") == null)
+            {
+                Debug.LogWarning("[AuthService] AccountRestartPopupView unavailable — executing restart directly.");
+                onConfirm?.Invoke();
+                return;
+            }
+            Game.Core.UIManager.Instance.ShowPopup<Game.OutGame.Settings.AccountRestartPopupView>(
                 v => v.Init(onConfirm));
         }
 
