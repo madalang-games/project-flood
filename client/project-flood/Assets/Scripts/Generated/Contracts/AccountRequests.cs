@@ -26,6 +26,7 @@ namespace ProjectFlood.Contracts.Account
     {
         public string Provider { get; set; } = string.Empty;
         public string IdToken { get; set; } = string.Empty;
+        public string GuestRefreshToken { get; set; } = string.Empty;
     }
 
     public sealed class RenameRequest

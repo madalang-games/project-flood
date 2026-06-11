@@ -80,7 +80,7 @@ public sealed class AuthController : ControllerBase
             provider = request.Provider,
             idToken = request.IdToken,
             clientId = "game_client",
-            guestRefreshToken = Request.Headers["X-Guest-Refresh-Token"].ToString()
+            guestRefreshToken = request.GuestRefreshToken
         };
 
         using var content = new StringContent(JsonSerializer.Serialize(payload), Encoding.UTF8, "application/json");
