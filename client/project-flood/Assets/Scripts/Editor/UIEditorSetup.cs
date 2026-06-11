@@ -1486,6 +1486,13 @@ namespace Game.Editor
             
             var snv = Comp<StageNodeView>(root);
             Comp<UIButtonAnimator>(root);
+
+            // Pulse Ring
+            var pulseRing = Child(root, "PulseRing");
+            Fixed(pulseRing, Vector2.zero, new Vector2(150f, 150f));
+            Img(pulseRing, UI_CTA);
+            Comp<UIScalePulse>(pulseRing);
+            pulseRing.SetActive(false);
             
             // Visual background border
             var visual = Child(root, "Visual");
@@ -1514,18 +1521,11 @@ namespace Game.Editor
             // Lock Overlay
             var lockOverlay = Child(root, "LockOverlay");
             Stretch(lockOverlay);
-            Img(lockOverlay, new Color(0.1f, 0.1f, 0.15f, 0.6f));
+            Img(lockOverlay, new Color(0f, 0f, 0f, 0f));
             var lockIcon = Child(lockOverlay, "LockIcon");
             Fixed(lockIcon, Vector2.zero, new Vector2(40f, 40f));
             Img(lockIcon, Color.white);
             lockOverlay.SetActive(false);
-
-            // Pulse Ring
-            var pulseRing = Child(root, "PulseRing");
-            Fixed(pulseRing, Vector2.zero, new Vector2(150f, 150f));
-            Img(pulseRing, UI_CTA);
-            Comp<UIScalePulse>(pulseRing);
-            pulseRing.SetActive(false);
 
             // Button
             var btn = Comp<Button>(root);

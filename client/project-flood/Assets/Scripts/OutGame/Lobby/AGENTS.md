@@ -52,7 +52,7 @@ Namespace: `Game.OutGame.Lobby`
 
 ## Rules
 - Scroll position must be saved in HomeTabView.OnDisable and restored in HomeTabView.OnEnable.
-- StageNodeView pool size = GameConfig.StageNodePoolSize (15).
+- StageNodeView pool size = GameConfig.StageNodePoolSize (50).
 - Ranking tab is active; if `RankingApiService` is absent, show unavailable state without breaking lobby flow.
 
 ## Cross-refs

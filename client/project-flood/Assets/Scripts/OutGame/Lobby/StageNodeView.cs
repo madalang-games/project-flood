@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -14,8 +15,7 @@ namespace Game.OutGame.Lobby
         [SerializeField] private Button         _button;
         [SerializeField] private Image          _border;
 
-        private static readonly Color GoldBorderColor = new Color(0.91f, 0.63f, 0.125f);
-        private static readonly Color NormalBorderColor = Color.white;
+        private static readonly Dictionary<int, Sprite> _chapterSpriteCache = new();
 
         public event Action<int> OnTapped;
 
@@ -26,7 +26,7 @@ namespace Game.OutGame.Lobby
             _button.onClick.AddListener(() => OnTapped?.Invoke(_stageId));
         }
 
-        public void Bind(int stageId, int stars, bool unlocked, bool isCurrent)
+        public void Bind(int stageId, int stars, bool unlocked, bool isCurrent, int chapterId = 0)
         {
             _stageId = stageId;
             if (_stageLabel != null) _stageLabel.text = stageId.ToString();
@@ -39,7 +39,16 @@ namespace Game.OutGame.Lobby
                 if (_starFills[i] != null) _starFills[i].SetActive(i < stars);
 
             if (_pulseRing != null) _pulseRing.SetActive(isCurrent && !locked);
-            if (_border    != null) _border.color = (stars == 3) ? GoldBorderColor : NormalBorderColor;
+
+            if (_border != null && chapterId > 0)
+            {
+                if (!_chapterSpriteCache.TryGetValue(chapterId, out var spr))
+                {
+                    spr = Resources.Load<Sprite>($"Sprites/StageNodes/stage_node_ch_{chapterId}");
+                    _chapterSpriteCache[chapterId] = spr;
+                }
+                if (spr != null) _border.sprite = spr;
+            }
         }
     }
 }

@@ -687,7 +687,7 @@ namespace Game.OutGame.Lobby
                 int stars   = progress?.GetBestStars(s.stage_id) ?? 0;
                 bool unlock = progress?.IsStageUnlocked(s.stage_id) ?? (s.stage_id == 1);
                 bool cur    = s.stage_id == _currentStageId;
-                _pool[i].Bind(s.stage_id, stars, unlock, cur);
+                _pool[i].Bind(s.stage_id, stars, unlock, cur, s.chapter_id);
                 _pool[i].gameObject.SetActive(true);
             }
 
