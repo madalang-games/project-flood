@@ -28,14 +28,19 @@ Namespace: `Game.Services`
 | `ErrorResponseJson.cs` | `ErrorResponseJson` | Serializable helper for server error code extraction |
 | `PlayerApiService.cs` | `PlayerApiService` | DDOL singleton; `GET /api/player/progress` fetch; deserializes to `PlayerProgressResponse` |
 | `NetworkRetryOptions.cs` | `NetworkRetryOptions` | Options class for HTTP retries with exponential backoff, jitter, loading overlay, and toast messages |
-| `SoundManager.cs` | `SoundManager` | DDOL singleton; handles background music (BGM) playback, sound effects (SFX), and volume/mute status stored in PlayerPrefs |
+| `SoundManager.cs` | `SoundManager` | DDOL singleton; BGM + SFX playback; SfxCatalog-based PlaySfx(SfxId) with pitch/cooldown; volume + mute in PlayerPrefs |
 
 ## Symbols
 | symbol | kind | note |
 |--------|------|------|
 | `SoundManager.Instance` | prop | DDOL singleton |
 | `SoundManager.PlayBGM(AudioClip)` | method | Plays loopable background music |
-| `SoundManager.PlaySFX(AudioClip)` | method | Plays one-shot sound effects |
+| `SoundManager.PlaySFX(AudioClip)` | method | Plays one-shot sound effect via raw AudioClip |
+| `SoundManager.PlaySfx(SfxId)` | method | Catalog-based SFX with pitch variation + cooldown; also SfxEventBus subscriber |
+| `SoundManager.BGMVolume` | prop | 0..1; persisted to PlayerPrefs |
+| `SoundManager.SFXVolume` | prop | 0..1; persisted to PlayerPrefs |
+| `SoundManager.BGMMute` | prop | bool; persisted to PlayerPrefs |
+| `SoundManager.SFXMute` | prop | bool; blocks all SFX including catalog-based |
 | `NetworkService.Instance` | prop | DDOL singleton; lazy-instantiated if not in scene |
 | `NetworkService.SetAuthToken(string)` | method | Called by AuthService after login; injects Bearer token into all subsequent requests |
 | `NetworkService.Get(string,Action<bool,string>)` | method | HTTP GET; path relative to AppConfig BaseUrl |

@@ -1,3 +1,4 @@
+using Game.Core;
 using UnityEngine;
 
 namespace Game.Services
@@ -5,6 +6,9 @@ namespace Game.Services
     public class SoundManager : MonoBehaviour
     {
         public static SoundManager Instance { get; private set; }
+
+        [SerializeField] SfxCatalog sfxCatalog;
+        [SerializeField] string resourcesCatalogPath = "SfxCatalog";
 
         [SerializeField] private AudioSource _bgmSource;
         [SerializeField] private AudioSource _sfxSource;
@@ -18,6 +22,8 @@ namespace Game.Services
         private float _sfxVolume = 1f;
         private bool _bgmMute = false;
         private bool _sfxMute = false;
+
+        private readonly System.Collections.Generic.Dictionary<SfxId, float> _lastPlayedAt = new();
 
         public float BGMVolume
         {
@@ -65,11 +71,7 @@ namespace Game.Services
 
         private void Awake()
         {
-            if (Instance != null)
-            {
-                Destroy(gameObject);
-                return;
-            }
+            if (Instance != null) { Destroy(gameObject); return; }
             Instance = this;
             DontDestroyOnLoad(gameObject);
 
@@ -91,19 +93,21 @@ namespace Game.Services
                 _sfxSource.playOnAwake = false;
             }
 
+            if (sfxCatalog == null)
+                sfxCatalog = Resources.Load<SfxCatalog>(resourcesCatalogPath);
+
             UpdateVolumes();
         }
+
+        private void OnEnable()  => SfxEventBus.Requested += PlaySfx;
+        private void OnDisable() => SfxEventBus.Requested -= PlaySfx;
 
         private void UpdateVolumes()
         {
             if (_bgmSource != null)
-            {
                 _bgmSource.volume = _bgmMute ? 0f : _bgmVolume;
-            }
             if (_sfxSource != null)
-            {
                 _sfxSource.volume = _sfxMute ? 0f : _sfxVolume;
-            }
         }
 
         public void PlayBGM(AudioClip clip)
@@ -123,6 +127,25 @@ namespace Game.Services
         {
             if (_sfxSource == null || clip == null || _sfxMute) return;
             _sfxSource.PlayOneShot(clip, _sfxVolume);
+        }
+
+        public void PlaySfx(SfxId id)
+        {
+            if (_sfxSource == null || _sfxMute || sfxCatalog == null) return;
+            if (!sfxCatalog.TryGet(id, out var entry) || entry.clip == null) return;
+
+            if (entry.cooldownSeconds > 0f &&
+                _lastPlayedAt.TryGetValue(id, out var lastPlayed) &&
+                Time.unscaledTime - lastPlayed < entry.cooldownSeconds)
+                return;
+
+            float minPitch = Mathf.Min(entry.pitchRange.x, entry.pitchRange.y);
+            float maxPitch = Mathf.Max(entry.pitchRange.x, entry.pitchRange.y);
+            _sfxSource.pitch = Mathf.Approximately(minPitch, maxPitch)
+                ? minPitch
+                : Random.Range(minPitch, maxPitch);
+            _sfxSource.PlayOneShot(entry.clip, Mathf.Clamp01(entry.volume) * _sfxVolume);
+            _lastPlayedAt[id] = Time.unscaledTime;
         }
     }
 }

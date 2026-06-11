@@ -15,6 +15,7 @@
 | `AppEnvironment.cs` | `AppEnvironment`, `AppConfig` | Env enum (Dev/Prod) + static config: server URLs, GoogleWebClientId |
 | `Language.cs` | `Language` | Shared enum for all 15 supported locales (EN KO ZH_CN ZH_TW JA RU ES PT FR DE TH AR IT TR ID) |
 | `GoogleSignInBridge.cs` | `GoogleSignInBridge` | DDOL singleton; Android JNI bridge to `GoogleSignInPlugin.java`; SignIn/SignOut; UnitySendMessage callbacks |
+| `SfxCatalog.cs` | `SfxId`, `SfxEntry`, `SfxCatalog`, `SfxEventBus` | SFX enum (10 ids), ScriptableObject catalog, static event bus |
 
 ## Symbols
 | symbol | kind | note |
@@ -42,6 +43,10 @@
 | `GoogleSignInBridge.Instance` | prop | DDOL singleton; auto-created at BeforeSceneLoad on Android |
 | `GoogleSignInBridge.SignIn(webClientId,cb)` | method | Starts Google Sign-In flow; cb(idToken, errorCode) |
 | `GoogleSignInBridge.SignOut(webClientId)` | method | Clears Google account session |
+| `SfxId` | enum | ConfirmClick/CancelClick/RewardClaimed/StageClear/StageFail/CellGroupRemoved/BoardRotated/ToastError/ItemUsed/ActionBlocked |
+| `SfxEntry` | class | id + clip + volume + pitchRange + cooldownSeconds |
+| `SfxCatalog.TryGet(id, out entry)` | method | ScriptableObject; linear search; loaded from Resources/SfxCatalog |
+| `SfxEventBus.Play(id)` | static method | Fire-and-forget; SoundManager subscribes |
 
 ## Rules
 - UIManager canvases: Sort Order 10/20/30/100. Scene canvases always Sort 0.
