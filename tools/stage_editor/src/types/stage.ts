@@ -1,5 +1,13 @@
 export type CellType = 'Basic' | 'Obstacle' | 'Void';
 
+export interface ChapterRow {
+  chapter_id: number;
+  display_order: number;
+  unlock_chapter_id: number | null;
+  reward_group_id: number;
+  bg_theme_id: number;
+}
+
 export interface CellData {
   colorId: number;
   type: CellType;

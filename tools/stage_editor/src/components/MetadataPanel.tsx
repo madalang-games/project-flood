@@ -45,6 +45,13 @@ export default function MetadataPanel({ meta, onFieldChange, onResize }: Props) 
   return (
     <div className="p-3 border-t border-gray-700 bg-gray-800 flex flex-wrap gap-3 items-center">
       <NumField
+        label="Order"
+        value={meta.stage_order}
+        min={1}
+        max={999}
+        onChange={v => onFieldChange('stage_order', Math.round(v))}
+      />
+      <NumField
         label="Width"
         value={meta.board_width}
         min={1}
@@ -76,6 +83,7 @@ export default function MetadataPanel({ meta, onFieldChange, onResize }: Props) 
             <option key={i} value={i}>{l}</option>
           ))}
         </select>
+        <span className="text-gray-500 text-xs ml-1">→ {meta.reward_group_id}</span>
       </label>
       <NumField
         label="Star1"
@@ -94,18 +102,18 @@ export default function MetadataPanel({ meta, onFieldChange, onResize }: Props) 
         onChange={v => onFieldChange('star2_ratio', v)}
       />
       <NumField
-        label="Reward"
-        value={meta.reward_group_id}
-        min={0}
-        max={999999}
-        onChange={v => onFieldChange('reward_group_id', Math.round(v))}
-      />
-      <NumField
         label="Rotate"
         value={meta.rotation_interval}
         min={0}
         max={100}
         onChange={v => onFieldChange('rotation_interval', Math.round(v))}
+      />
+      <NumField
+        label="Ruleset"
+        value={meta.ruleset_version}
+        min={1}
+        max={255}
+        onChange={v => onFieldChange('ruleset_version', Math.round(v))}
       />
     </div>
   );

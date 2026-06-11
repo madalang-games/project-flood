@@ -2,6 +2,7 @@ import { cloneBoard, findGroup, applyRemoval, applyGravity, applyConveyors, rota
 import type { Board } from './game-rules';
 
 const MAX_BFS_STATES = 5000;
+const MAX_BFS_STATES_EXACT = 80_000;
 
 function boardHash(board: Board): string {
   return board.map(row =>
@@ -79,6 +80,61 @@ function greedySolve(
 }
 
 type BFSNode = { board: Board; moves: [number, number][] };
+
+/**
+ * Exact BFS solver — no greedy fallback.
+ * Returns the minimum-move solution, or null if:
+ *   - board is not clearable in `turnLimit` moves, OR
+ *   - BFS state space exceeded MAX_BFS_STATES_EXACT (treats as unsolvable/unverifiable).
+ * Used by the generator to confirm exact minimum move count.
+ */
+export function autoSolveExact(
+  board: Board,
+  turnLimit: number,
+  initialValid: number,
+  star1: number,
+  star2: number,
+  portalData?: string,
+  conveyorData?: string,
+  rotationInterval?: number,
+): [number, number][] | null {
+  const visited = new Set<string>([boardHash(board)]);
+  const queue: BFSNode[] = [{ board: cloneBoard(board), moves: [] }];
+
+  while (queue.length > 0) {
+    if (visited.size > MAX_BFS_STATES_EXACT) return null;
+
+    const { board: b, moves } = queue.shift()!;
+    if (moves.length >= turnLimit) continue;
+
+    let starts = findAllGroupStarts(b, 2);
+    if (starts.length === 0) starts = findAllGroupStarts(b, 1);
+
+    for (const [r, c] of starts) {
+      let nb = applyRemoval(b, findGroup(b, r, c));
+      nb = applyConveyors(nb, conveyorData);
+      nb = applyGravity(nb, portalData);
+
+      const newMoves: [number, number][] = [...moves, [r, c]];
+      const newMovesCount = newMoves.length;
+
+      if (rotationInterval && rotationInterval > 0 && newMovesCount % rotationInterval === 0) {
+        nb = rotate180(nb);
+        nb = applyGravity(nb, portalData);
+      }
+
+      if (evaluate(nb, initialValid, star1, star2).stars === 3) return newMoves;
+
+      const hash = boardHash(nb);
+      if (!visited.has(hash) && newMoves.length < turnLimit) {
+        visited.add(hash);
+        queue.push({ board: nb, moves: newMoves });
+      }
+    }
+  }
+
+  return null;
+}
 
 export function autoSolve(
   board: Board,

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import type { StageRow, PaletteColor, CellData, BrushSettings, StageMeta } from '../types/stage';
+import type { StageRow, PaletteColor, CellData, BrushSettings, StageMeta, ChapterRow } from '../types/stage';
 import type { Board, StarResult } from '../lib/game-rules';
 import { decodeCells, encodeCells, deriveColorIds } from '../lib/ctm';
 import {
@@ -15,14 +15,17 @@ import {
 } from '../lib/game-rules';
 import { validate } from '../lib/validator';
 import type { ValidationResult } from '../lib/validator';
-import { autoSolve } from '../lib/solver';
+import { generateBoardParallel } from '../lib/generator-worker-pool';
+import type { GenerateResult, GeneratorSettings } from '../lib/generator';
 import StageList from '../components/StageList';
+import ChapterPanel from '../components/ChapterPanel';
 import BoardEditor from '../components/BoardEditor';
 import CellInspector from '../components/CellInspector';
 import MetadataPanel from '../components/MetadataPanel';
 import PlaytestPanel from '../components/PlaytestPanel';
 import GeneratorPanel from '../components/GeneratorPanel';
-import type { GeneratorSettings } from '../components/GeneratorPanel';
+import type { GeneratorStatus } from '../components/GeneratorPanel';
+import { DIFFICULTY_REWARD } from '../components/GeneratorPanel';
 
 type PlaytestState = {
   board: Board;
@@ -31,6 +34,12 @@ type PlaytestState = {
   moves: [number, number][];
   isRecording: boolean;
   result: StarResult | null;
+};
+
+type SimulateState = {
+  states: Board[];
+  taps: [number, number][];
+  stepIndex: number;
 };
 
 type HistoryEntry = { grid: CellData[][], width: number, height: number };
@@ -84,6 +93,8 @@ function colorDistLab(lab1: [number, number, number], lab2: [number, number, num
 
 export default function EditorPage() {
   const [stages, setStages] = useState<StageRow[]>([]);
+  const [chapters, setChapters] = useState<ChapterRow[]>([]);
+  const [selectedChapterId, setSelectedChapterId] = useState<number | null>(null);
   const [selectedId, setSelectedId] = useState<number | null>(null);
   const [palette, setPalette] = useState<PaletteColor[]>([]);
   const [grid, setGrid] = useState<CellData[][]>([]);
@@ -91,14 +102,21 @@ export default function EditorPage() {
   const [brush, setBrush] = useState<BrushSettings>({ type: 'Basic', colorId: 0, protector: 0, isCore: false });
   const [selectedCell, setSelectedCell] = useState<{ r: number; c: number } | null>(null);
   const [playtestState, setPlaytestState] = useState<PlaytestState | null>(null);
+  const [simulateState, setSimulateState] = useState<SimulateState | null>(null);
   const [validationResult, setValidationResult] = useState<ValidationResult | null>(null);
   const [showGenerator, setShowGenerator] = useState(false);
+  const [generatorStatus, setGeneratorStatus] = useState<GeneratorStatus>('idle');
+  const [generatorInfo, setGeneratorInfo] = useState<{ attempts: number; solveLength: number } | null>(null);
   const [history, setHistory] = useState<HistoryEntry[]>([]);
   const [redoHistory, setRedoHistory] = useState<HistoryEntry[]>([]);
 
   useEffect(() => {
     fetch('/api/stages').then(r => r.json()).then(setStages).catch(console.error);
     fetch('/api/palette').then(r => r.json()).then(setPalette).catch(console.error);
+    fetch('/api/chapters').then(r => r.json()).then((chs: ChapterRow[]) => {
+      setChapters(chs);
+      if (chs.length > 0) setSelectedChapterId(chs[0].chapter_id);
+    }).catch(console.error);
   }, []);
 
   // Keyboard shortcut listener for Undo/Redo
@@ -161,7 +179,7 @@ export default function EditorPage() {
       star2_ratio: stage.star2_ratio,
       verified_solution: stage.verified_solution,
       ruleset_version: stage.ruleset_version,
-      reward_group_id: stage.reward_group_id,
+      reward_group_id: DIFFICULTY_REWARD[stage.difficulty] ?? stage.reward_group_id,
       rotation_interval: stage.rotation_interval ?? 0,
       portal_data: stage.portal_data ?? '',
       conveyor_data: stage.conveyor_data ?? '',
@@ -179,13 +197,20 @@ export default function EditorPage() {
   }, [stages, loadStage]);
 
   const handleNew = useCallback(async () => {
-    const w = 4, h = 4;
+    const defaults = await fetch('/api/generator-defaults').then(r => r.json()).catch(() => ({}));
+    const w = defaults.boardWidth ?? 6;
+    const h = defaults.boardHeight ?? 6;
+    const turnLimit = defaults.turnLimit ?? 20;
+    const difficulty = defaults.difficulty ?? 0;
     const cells = '000'.repeat(w * h);
+    const chapterId = selectedChapterId ?? 1;
+    const stagesInChapter = stages.filter(s => s.chapter_id === chapterId);
+    const maxOrder = stagesInChapter.reduce((m, s) => Math.max(m, s.stage_order), 0);
     const payload = {
-      chapter_id: 1, stage_order: 1,
-      board_width: w, board_height: h, turn_limit: 20, difficulty: 1,
+      chapter_id: chapterId, stage_order: maxOrder + 1,
+      board_width: w, board_height: h, turn_limit: turnLimit, difficulty,
       color_ids: '0', star1_ratio: 0.80, star2_ratio: 0.90,
-      cells, verified_solution: '', ruleset_version: 1, reward_group_id: 0,
+      cells, verified_solution: '', ruleset_version: 1, reward_group_id: DIFFICULTY_REWARD[difficulty] ?? DIFFICULTY_REWARD[0],
       rotation_interval: 0, portal_data: '', conveyor_data: '',
     };
     const res = await fetch('/api/stages', {
@@ -196,7 +221,56 @@ export default function EditorPage() {
     const created: StageRow = await res.json();
     setStages(prev => [...prev, created]);
     loadStage(created);
-  }, [loadStage]);
+  }, [loadStage, selectedChapterId, stages]);
+
+  const handleInsertAfter = useCallback(async (afterOrder: number) => {
+    const defaults = await fetch('/api/generator-defaults').then(r => r.json()).catch(() => ({}));
+    const w = defaults.boardWidth ?? 6;
+    const h = defaults.boardHeight ?? 6;
+    const turnLimit = defaults.turnLimit ?? 20;
+    const difficulty = defaults.difficulty ?? 0;
+    const cells = '000'.repeat(w * h);
+    const chapterId = selectedChapterId ?? 1;
+
+    // shift subsequent stages upward sequentially to avoid CSV race
+    const toShift = stages
+      .filter(s => s.chapter_id === chapterId && s.stage_order > afterOrder)
+      .sort((a, b) => b.stage_order - a.stage_order);
+    const shifted: StageRow[] = [];
+    for (const s of toShift) {
+      const updated = { ...s, stage_order: s.stage_order + 1 };
+      await fetch(`/api/stages/${s.stage_id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updated),
+      });
+      shifted.push(updated);
+    }
+
+    const payload = {
+      chapter_id: chapterId, stage_order: afterOrder + 1,
+      board_width: w, board_height: h, turn_limit: turnLimit, difficulty,
+      color_ids: '0', star1_ratio: 0.80, star2_ratio: 0.90,
+      cells, verified_solution: '', ruleset_version: 1, reward_group_id: DIFFICULTY_REWARD[difficulty] ?? DIFFICULTY_REWARD[0],
+      rotation_interval: 0, portal_data: '', conveyor_data: '',
+    };
+    const res = await fetch('/api/stages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+    const created: StageRow = await res.json();
+
+    setStages(prev => {
+      const shiftedIds = new Set(shifted.map(s => s.stage_id));
+      return [
+        ...prev.filter(s => !shiftedIds.has(s.stage_id)).map(s => s),
+        ...shifted,
+        created,
+      ];
+    });
+    loadStage(created);
+  }, [loadStage, selectedChapterId, stages]);
 
   const handleDelete = useCallback(async (id: number) => {
     await fetch(`/api/stages/${id}`, { method: 'DELETE' });
@@ -208,6 +282,63 @@ export default function EditorPage() {
       setPlaytestState(null);
     }
   }, [selectedId]);
+
+  const handleSelectChapter = useCallback((id: number) => {
+    setSelectedChapterId(id);
+    if (selectedId !== null) {
+      const stage = stages.find(s => s.stage_id === selectedId);
+      if (stage && stage.chapter_id !== id) {
+        setSelectedId(null);
+        setGrid([]);
+        setMeta(null);
+        setPlaytestState(null);
+        setValidationResult(null);
+      }
+    }
+  }, [selectedId, stages]);
+
+  const handleNewChapter = useCallback(async () => {
+    const maxId = chapters.reduce((m, c) => Math.max(m, c.chapter_id), 0);
+    const payload = {
+      display_order: maxId + 1,
+      unlock_chapter_id: maxId > 0 ? maxId : null,
+      reward_group_id: 0,
+      bg_theme_id: 1,
+    };
+    const res = await fetch('/api/chapters', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+    const created: ChapterRow = await res.json();
+    setChapters(prev => [...prev, created]);
+    setSelectedChapterId(created.chapter_id);
+  }, [chapters]);
+
+  const handleDeleteChapter = useCallback(async (id: number) => {
+    const stageCount = stages.filter(s => s.chapter_id === id).length;
+    const msg = stageCount > 0
+      ? `Chapter ${id} has ${stageCount} stage(s).\nDelete chapter and all its stages?`
+      : `Delete Chapter ${id}?`;
+    if (!window.confirm(msg)) return;
+
+    const stagesInChapter = stages.filter(s => s.chapter_id === id);
+    for (const s of stagesInChapter) {
+      await fetch(`/api/stages/${s.stage_id}`, { method: 'DELETE' });
+    }
+    await fetch(`/api/chapters/${id}`, { method: 'DELETE' });
+
+    setStages(prev => prev.filter(s => s.chapter_id !== id));
+    setChapters(prev => prev.filter(c => c.chapter_id !== id));
+    if (selectedChapterId === id) {
+      setSelectedChapterId(null);
+      setSelectedId(null);
+      setGrid([]);
+      setMeta(null);
+      setPlaytestState(null);
+      setValidationResult(null);
+    }
+  }, [stages, selectedChapterId]);
 
   const handleDragStart = useCallback(() => {
     setGrid(currentGrid => {
@@ -356,6 +487,7 @@ export default function EditorPage() {
   }, [meta, palette]);
 
   const handleLeftClick = useCallback((r: number, c: number) => {
+    if (simulateState) return;
     if (playtestState) {
       if (playtestState.result) return;
       const group = findGroup(playtestState.board, r, c);
@@ -409,7 +541,7 @@ export default function EditorPage() {
   }, [playtestState, brush, meta]);
 
   const handleRightClick = useCallback((r: number, c: number) => {
-    if (playtestState) return;
+    if (simulateState || playtestState) return;
     setRedoHistory([]);
     setGrid(prev => {
       const next = prev.map(row => [...row]);
@@ -419,7 +551,17 @@ export default function EditorPage() {
   }, [playtestState]);
 
   const handleFieldChange = useCallback((key: keyof StageMeta, value: number) => {
-    setMeta(prev => prev ? { ...prev, [key]: value } : prev);
+    setMeta(prev => {
+      if (!prev) return prev;
+      if (key === 'difficulty') {
+        return { ...prev, difficulty: value, reward_group_id: DIFFICULTY_REWARD[value] ?? prev.reward_group_id };
+      }
+      return { ...prev, [key]: value };
+    });
+  }, []);
+
+  const handleGeneratorMetaChange = useCallback((patch: { difficulty?: number; turn_limit?: number; reward_group_id?: number }) => {
+    setMeta(prev => prev ? { ...prev, ...patch } : prev);
   }, []);
 
   const handleResize = useCallback((w: number, h: number) => {
@@ -446,6 +588,46 @@ export default function EditorPage() {
     if (!meta) return null;
     return { ...meta, cells: encodeCells(grid), color_ids: deriveColorIds(grid) };
   }, [meta, grid]);
+
+  const handleStartSimulate = useCallback(() => {
+    if (!meta?.verified_solution) return;
+    const taps = meta.verified_solution.split(';')
+      .filter(Boolean)
+      .map(s => { const [r, c] = s.split(',').map(Number); return [r, c] as [number, number]; });
+
+    let board: Board = grid.map(row => row.map(cell => ({ ...cell })));
+    board = applyGravity(board, meta.portal_data);
+    const cloneBoard = (b: Board): Board => b.map(row => row.map(cell => cell ? { ...cell } : null));
+    const states: Board[] = [cloneBoard(board)];
+
+    for (let i = 0; i < taps.length; i++) {
+      const [r, c] = taps[i];
+      const group = findGroup(board, r, c);
+      if (group.length > 0) {
+        board = applyRemoval(board, group);
+        board = applyConveyors(board, meta.conveyor_data);
+        board = applyGravity(board, meta.portal_data);
+      }
+      const movesMade = i + 1;
+      if (meta.rotation_interval && meta.rotation_interval > 0 && movesMade % meta.rotation_interval === 0) {
+        board = rotate180(board);
+        board = applyGravity(board, meta.portal_data);
+      }
+      states.push(cloneBoard(board));
+    }
+
+    setSimulateState({ states, taps, stepIndex: 0 });
+  }, [meta, grid]);
+
+  const handleStopSimulate = useCallback(() => setSimulateState(null), []);
+
+  const handleSimStep = useCallback((delta: number) => {
+    setSimulateState(prev => {
+      if (!prev) return prev;
+      const newIdx = Math.max(0, Math.min(prev.states.length - 1, prev.stepIndex + delta));
+      return { ...prev, stepIndex: newIdx };
+    });
+  }, []);
 
   const handleValidate = useCallback(() => {
     const stage = buildStageRow();
@@ -487,83 +669,80 @@ export default function EditorPage() {
     });
   }, [meta]);
 
-  const handleGenerate = useCallback((settings: GeneratorSettings) => {
+  const handleGenerate = useCallback(async (settings: GeneratorSettings) => {
     if (!meta) return;
-    const w = meta.board_width, h = meta.board_height;
-    const total = w * h;
+    setGeneratorStatus('running');
+    setGeneratorInfo(null);
+    await new Promise(r => setTimeout(r, 0));
 
-    const indices = Array.from({ length: total }, (_, i) => i);
-    for (let i = indices.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [indices[i], indices[j]] = [indices[j], indices[i]];
+    let result: GenerateResult | null = null;
+    try {
+      result = await generateBoardParallel({
+        ...settings,
+        width: meta.board_width,
+        height: meta.board_height,
+        turnLimit: meta.turn_limit,
+        star1Ratio: meta.star1_ratio,
+        star2Ratio: meta.star2_ratio,
+        rotationInterval: meta.rotation_interval,
+        portalData: meta.portal_data,
+        conveyorData: meta.conveyor_data,
+      });
+    } catch (error) {
+      console.error(error);
     }
 
-    const newGrid: CellData[][] = Array.from({ length: h }, () =>
-      Array.from({ length: w }, (): CellData => ({ colorId: 0, type: 'Basic', protector: 0, isCore: false }))
-    );
-
-    const obstacleCount = Math.min(settings.obstacleCount, total - 1);
-    const obstacleSet = indices.slice(0, obstacleCount);
-    const remaining = indices.slice(obstacleCount);
-
-    obstacleSet.forEach(idx => {
-      newGrid[Math.floor(idx / w)][idx % w] = { colorId: 0, type: 'Obstacle', protector: 0, isCore: false };
-    });
-
-    remaining.forEach((idx, i) => {
-      newGrid[Math.floor(idx / w)][idx % w].colorId = i % settings.colorCount;
-    });
-
-    const protCount = Math.min(settings.protectorCount, remaining.length);
-    remaining.slice(0, protCount).forEach(idx => {
-      newGrid[Math.floor(idx / w)][idx % w].protector = settings.protectorLevel;
-    });
-
-    const corCount = Math.min(settings.coreCellCount, remaining.length - protCount);
-    remaining.slice(protCount, protCount + corCount).forEach(idx => {
-      newGrid[Math.floor(idx / w)][idx % w].isCore = true;
-    });
-
-    const solverBoard: Board = newGrid.map(row => row.map(cell => ({ ...cell })));
-    const initialValid = countInitialValidCells(solverBoard);
-    const solution = autoSolve(
-      solverBoard,
-      meta.turn_limit,
-      initialValid,
-      meta.star1_ratio,
-      meta.star2_ratio,
-      meta.portal_data,
-      meta.conveyor_data,
-      meta.rotation_interval
-    );
-    const verifiedSolution = solution ? solution.map(([r, c]) => `${r},${c}`).join(';') : '';
-
-    setGrid(currentGrid => {
-      setHistory(prev => [...prev, {
-        grid: currentGrid.map(r => r.map(c => ({ ...c }))),
-        width: currentGrid[0]?.length ?? 0,
-        height: currentGrid.length,
-      }]);
-      setRedoHistory([]);
-      return newGrid;
-    });
+    if (result) {
+      setGeneratorStatus('success');
+      setGeneratorInfo({ attempts: result.attempts, solveLength: result.solveLength });
+      setGrid(currentGrid => {
+        setHistory(prev => [...prev, {
+          grid: currentGrid.map(r => r.map(c => ({ ...c }))),
+          width: currentGrid[0]?.length ?? 0,
+          height: currentGrid.length,
+        }]);
+        setRedoHistory([]);
+        return result.board;
+      });
+      setMeta(prev => prev ? { ...prev, verified_solution: result.verifiedSolution } : prev);
+    } else {
+      setGeneratorStatus('failed');
+    }
     setValidationResult(null);
-    setMeta(prev => prev ? { ...prev, verified_solution: verifiedSolution } : prev);
   }, [meta]);
 
-  const displayGrid: Board = playtestState ? playtestState.board : grid;
+  const filteredStages = selectedChapterId !== null
+    ? stages.filter(s => s.chapter_id === selectedChapterId)
+    : stages;
+
+  const displayGrid: Board = simulateState
+    ? simulateState.states[simulateState.stepIndex]
+    : playtestState
+      ? playtestState.board
+      : grid;
 
   return (
     <div className="flex h-screen overflow-hidden">
-      {/* Stage List */}
+      {/* Chapter + Stage List */}
       <div className="w-44 flex-shrink-0 border-r border-gray-700 bg-gray-900 flex flex-col">
-        <StageList
+        <ChapterPanel
+          chapters={chapters}
           stages={stages}
-          selectedId={selectedId}
-          onSelect={handleSelect}
-          onNew={handleNew}
-          onDelete={handleDelete}
+          selectedChapterId={selectedChapterId}
+          onSelect={handleSelectChapter}
+          onNew={handleNewChapter}
+          onDelete={handleDeleteChapter}
         />
+        <div className="flex-1 min-h-0 overflow-hidden">
+          <StageList
+            stages={filteredStages}
+            selectedId={selectedId}
+            onSelect={handleSelect}
+            onNew={handleNew}
+            onDelete={handleDelete}
+            onInsertAfter={handleInsertAfter}
+          />
+        </div>
       </div>
 
       {/* Center */}
@@ -601,7 +780,12 @@ export default function EditorPage() {
                 <GeneratorPanel
                   boardWidth={meta.board_width}
                   boardHeight={meta.board_height}
+                  metaDifficulty={meta.difficulty}
+                  metaTurnLimit={meta.turn_limit}
                   onGenerate={handleGenerate}
+                  onMetaChange={handleGeneratorMetaChange}
+                  status={generatorStatus}
+                  info={generatorInfo}
                 />
               )}
               <PlaytestPanel
@@ -610,6 +794,13 @@ export default function EditorPage() {
                 playtestTurns={playtestState?.turns ?? 0}
                 playtestResult={playtestState?.result ?? null}
                 validationResult={validationResult}
+                hasVerifiedSolution={!!meta.verified_solution}
+                isSimulate={!!simulateState}
+                simulateStep={simulateState?.stepIndex ?? 0}
+                simulateTotal={simulateState ? simulateState.taps.length : 0}
+                onStartSimulate={handleStartSimulate}
+                onStopSimulate={handleStopSimulate}
+                onSimStep={handleSimStep}
                 onStartPlaytest={() => {
                   let board: Board = grid.map(row => row.map(cell => ({ ...cell })));
                   board = applyGravity(board, meta?.portal_data);

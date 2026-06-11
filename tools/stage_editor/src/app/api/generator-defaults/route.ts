@@ -16,13 +16,24 @@ export async function GET() {
     const ini = parseIni(fs.readFileSync(INI_PATH, 'utf-8'));
     const s = ini['stage-editor-generator'] ?? {};
     return NextResponse.json({
-      colorCount:     intVal(s['color_count'],     3),
-      obstacleCount:  intVal(s['obstacle_count'],  0),
-      protectorCount: intVal(s['protector_count'], 0),
-      protectorLevel: Math.max(1, Math.min(2, intVal(s['protector_level'], 1))) as 1 | 2,
-      coreCellCount:  intVal(s['core_cell_count'], 0),
+      boardWidth:           intVal(s['board_width'],            6),
+      boardHeight:          intVal(s['board_height'],           6),
+      turnLimit:            intVal(s['turn_limit'],             20),
+      difficulty:           intVal(s['difficulty'],             0),
+      colorCount:           intVal(s['color_count'],            3),
+      obstacleCount:        intVal(s['obstacle_count'],         0),
+      protectorLevel1Count: intVal(s['protector_level1_count'], 0),
+      protectorLevel2Count: intVal(s['protector_level2_count'], 0),
+      coreCellCount:        intVal(s['core_cell_count'],        0),
+      maxAttempts:          intVal(s['max_attempts'],           500),
+      difficultyMargin:     intVal(s['difficulty_margin'],      3),
     });
   } catch {
-    return NextResponse.json({ colorCount: 3, obstacleCount: 0, protectorCount: 0, protectorLevel: 1, coreCellCount: 0 });
+    return NextResponse.json({
+      boardWidth: 6, boardHeight: 6, turnLimit: 20, difficulty: 0,
+      colorCount: 3, obstacleCount: 0,
+      protectorLevel1Count: 0, protectorLevel2Count: 0,
+      coreCellCount: 0, maxAttempts: 500, difficultyMargin: 3,
+    });
   }
 }

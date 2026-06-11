@@ -10,9 +10,10 @@ interface Props {
   onSelect: (id: number) => void;
   onNew: () => void;
   onDelete: (id: number) => void;
+  onInsertAfter: (stageOrder: number) => void;
 }
 
-export default function StageList({ stages, selectedId, onSelect, onNew, onDelete }: Props) {
+export default function StageList({ stages, selectedId, onSelect, onNew, onDelete, onInsertAfter }: Props) {
   return (
     <div className="flex flex-col h-full">
       <div className="p-2 border-b border-gray-700 flex items-center justify-between flex-shrink-0">
@@ -28,7 +29,9 @@ export default function StageList({ stages, selectedId, onSelect, onNew, onDelet
         {stages.length === 0 && (
           <div className="p-3 text-xs text-gray-500">No stages yet</div>
         )}
-        {[...stages].sort((a, b) => b.stage_id - a.stage_id).map(s => (
+        {[...stages]
+          .sort((a, b) => a.stage_order - b.stage_order)
+          .map(s => (
           <div
             key={s.stage_id}
             className={`flex items-center justify-between px-3 py-2 cursor-pointer hover:bg-gray-700 border-b border-gray-800 ${
@@ -37,7 +40,7 @@ export default function StageList({ stages, selectedId, onSelect, onNew, onDelet
             onClick={() => onSelect(s.stage_id)}
           >
             <div>
-              <div className="text-sm text-white">Stage {s.stage_id}</div>
+              <div className="text-sm text-white">Stage {s.stage_id} <span className="text-xs text-gray-500">#{s.stage_order}</span></div>
               <div className="text-xs text-gray-400">
                 {DIFFICULTY_LABELS[s.difficulty] ?? '?'} {s.board_width}×{s.board_height}
               </div>
@@ -45,12 +48,21 @@ export default function StageList({ stages, selectedId, onSelect, onNew, onDelet
                 <div className="text-xs text-green-500">✓ Verified</div>
               )}
             </div>
-            <button
-              onClick={e => { e.stopPropagation(); onDelete(s.stage_id); }}
-              className="text-gray-600 hover:text-red-400 text-sm ml-2 flex-shrink-0"
-            >
-              ✕
-            </button>
+            <div className="flex flex-col gap-1 ml-2 flex-shrink-0">
+              <button
+                onClick={e => { e.stopPropagation(); onInsertAfter(s.stage_order); }}
+                className="text-gray-600 hover:text-green-400 text-xs leading-none"
+                title="Insert stage after this"
+              >
+                ＋
+              </button>
+              <button
+                onClick={e => { e.stopPropagation(); onDelete(s.stage_id); }}
+                className="text-gray-600 hover:text-red-400 text-xs leading-none"
+              >
+                ✕
+              </button>
+            </div>
           </div>
         ))}
       </div>

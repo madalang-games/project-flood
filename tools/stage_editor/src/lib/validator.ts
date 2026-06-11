@@ -1,5 +1,13 @@
 import { decodeCells } from './ctm';
-import { findGroup, applyRemoval, applyGravity, evaluate, countInitialValidCells } from './game-rules';
+import {
+  applyConveyors,
+  applyGravity,
+  applyRemoval,
+  countInitialValidCells,
+  evaluate,
+  findGroup,
+  rotate180,
+} from './game-rules';
 import type { Board } from './game-rules';
 import type { StageRow } from '../types/stage';
 
@@ -49,11 +57,19 @@ export function validate(stage: StageRow): ValidationResult {
       let b: Board = grid.map(row => row.map(cell => ({ ...cell })));
       const initial = countInitialValidCells(b);
 
-      for (const [r, c] of moves) {
+      for (let i = 0; i < moves.length; i++) {
+        const [r, c] = moves[i];
         const group = findGroup(b, r, c);
         if (group.length > 0) {
           b = applyRemoval(b, group);
-          b = applyGravity(b);
+          b = applyConveyors(b, stage.conveyor_data);
+          b = applyGravity(b, stage.portal_data);
+        }
+
+        const movesMade = i + 1;
+        if (stage.rotation_interval && stage.rotation_interval > 0 && movesMade % stage.rotation_interval === 0) {
+          b = rotate180(b);
+          b = applyGravity(b, stage.portal_data);
         }
       }
 

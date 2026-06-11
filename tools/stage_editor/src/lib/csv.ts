@@ -1,9 +1,10 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import type { StageRow, PaletteColor } from '../types/stage';
+import type { StageRow, PaletteColor, ChapterRow } from '../types/stage';
 
 const PROJECT_ROOT = process.env.PROJECT_ROOT ?? path.join(process.cwd(), '..');
 const STAGE_CSV = path.join(PROJECT_ROOT, 'shared', 'datas', 'stage', 'stage.csv');
+const CHAPTER_CSV = path.join(PROJECT_ROOT, 'shared', 'datas', 'stage', 'chapter.csv');
 const PALETTE_CSV = path.join(PROJECT_ROOT, 'shared', 'datas', 'common', 'color_palette.csv');
 
 function parseCSVLine(line: string): string[] {
@@ -105,6 +106,39 @@ export function writeStages(stages: StageRow[]): void {
   const headers = lines.slice(0, 4);
   const dataLines = stages.map(s => serializeCSVLine(stageToRow(s)));
   fs.writeFileSync(STAGE_CSV, [...headers, ...dataLines].join('\n') + '\n', 'utf-8');
+}
+
+function rowToChapter(fields: string[]): ChapterRow {
+  return {
+    chapter_id:        parseInt(fields[0]),
+    display_order:     parseInt(fields[1]) || 1,
+    unlock_chapter_id: fields[2] ? parseInt(fields[2]) : null,
+    reward_group_id:   parseInt(fields[3]) || 0,
+    bg_theme_id:       parseInt(fields[4]) || 1,
+  };
+}
+
+function chapterToRow(c: ChapterRow): string[] {
+  return [
+    String(c.chapter_id),
+    String(c.display_order),
+    c.unlock_chapter_id != null ? String(c.unlock_chapter_id) : '',
+    String(c.reward_group_id),
+    String(c.bg_theme_id),
+  ];
+}
+
+export function readChapters(): ChapterRow[] {
+  const { data } = readCSV(CHAPTER_CSV);
+  return data.map(rowToChapter);
+}
+
+export function writeChapters(chapters: ChapterRow[]): void {
+  const content = fs.readFileSync(CHAPTER_CSV, 'utf-8');
+  const lines = content.split('\n').map(l => l.trimEnd()).filter(l => l.length > 0);
+  const headers = lines.slice(0, 4);
+  const dataLines = chapters.map(c => serializeCSVLine(chapterToRow(c)));
+  fs.writeFileSync(CHAPTER_CSV, [...headers, ...dataLines].join('\n') + '\n', 'utf-8');
 }
 
 export function readPalette(): PaletteColor[] {

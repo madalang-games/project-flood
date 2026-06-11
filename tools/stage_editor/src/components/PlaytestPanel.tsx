@@ -9,6 +9,10 @@ interface Props {
   playtestTurns: number;
   playtestResult: StarResult | null;
   validationResult: ValidationResult | null;
+  hasVerifiedSolution: boolean;
+  isSimulate: boolean;
+  simulateStep: number;
+  simulateTotal: number;
   onStartPlaytest: () => void;
   onStopPlaytest: () => void;
   onToggleRecord: () => void;
@@ -16,6 +20,9 @@ interface Props {
   onValidate: () => void;
   onExport: () => void;
   onSave: () => void;
+  onStartSimulate: () => void;
+  onStopSimulate: () => void;
+  onSimStep: (delta: number) => void;
 }
 
 export default function PlaytestPanel({
@@ -24,6 +31,10 @@ export default function PlaytestPanel({
   playtestTurns,
   playtestResult,
   validationResult,
+  hasVerifiedSolution,
+  isSimulate,
+  simulateStep,
+  simulateTotal,
   onStartPlaytest,
   onStopPlaytest,
   onToggleRecord,
@@ -31,17 +42,74 @@ export default function PlaytestPanel({
   onValidate,
   onExport,
   onSave,
+  onStartSimulate,
+  onStopSimulate,
+  onSimStep,
 }: Props) {
   return (
     <div className="p-3 border-t border-gray-700 bg-gray-800">
       <div className="flex flex-wrap gap-2 items-center">
-        {!isPlaytest ? (
-          <button
-            onClick={onStartPlaytest}
-            className="text-xs bg-green-700 hover:bg-green-600 px-3 py-1.5 rounded"
-          >
-            ▶ Playtest
-          </button>
+        {isSimulate ? (
+          <>
+            <button
+              onClick={onStopSimulate}
+              className="text-xs bg-red-700 hover:bg-red-600 px-3 py-1.5 rounded"
+            >
+              ■ Stop
+            </button>
+            <button
+              onClick={() => onSimStep(-1)}
+              disabled={simulateStep === 0}
+              className="text-xs bg-gray-600 hover:bg-gray-500 disabled:opacity-40 px-2 py-1.5 rounded"
+            >
+              ◀
+            </button>
+            <span className="text-xs text-gray-300 tabular-nums">
+              {simulateStep === 0 ? 'Initial' : `Tap ${simulateStep} / ${simulateTotal}`}
+            </span>
+            <button
+              onClick={() => onSimStep(1)}
+              disabled={simulateStep === simulateTotal}
+              className="text-xs bg-gray-600 hover:bg-gray-500 disabled:opacity-40 px-2 py-1.5 rounded"
+            >
+              ▶
+            </button>
+          </>
+        ) : !isPlaytest ? (
+          <>
+            <button
+              onClick={onStartPlaytest}
+              className="text-xs bg-green-700 hover:bg-green-600 px-3 py-1.5 rounded"
+            >
+              ▶ Playtest
+            </button>
+            {hasVerifiedSolution && (
+              <button
+                onClick={onStartSimulate}
+                className="text-xs bg-indigo-700 hover:bg-indigo-600 px-3 py-1.5 rounded"
+              >
+                ⏩ Simulate
+              </button>
+            )}
+            <button
+              onClick={onValidate}
+              className="text-xs bg-gray-600 hover:bg-gray-500 px-3 py-1.5 rounded"
+            >
+              ✓ Validate
+            </button>
+            <button
+              onClick={onExport}
+              className="text-xs bg-blue-700 hover:bg-blue-600 px-3 py-1.5 rounded"
+            >
+              ⬇ Export
+            </button>
+            <button
+              onClick={onSave}
+              className="text-xs bg-gray-600 hover:bg-gray-500 px-3 py-1.5 rounded"
+            >
+              Save
+            </button>
+          </>
         ) : (
           <>
             <button
@@ -70,29 +138,6 @@ export default function PlaytestPanel({
                 ↻ 180°
               </button>
             )}
-          </>
-        )}
-
-        {!isPlaytest && (
-          <>
-            <button
-              onClick={onValidate}
-              className="text-xs bg-gray-600 hover:bg-gray-500 px-3 py-1.5 rounded"
-            >
-              ✓ Validate
-            </button>
-            <button
-              onClick={onExport}
-              className="text-xs bg-blue-700 hover:bg-blue-600 px-3 py-1.5 rounded"
-            >
-              ⬇ Export
-            </button>
-            <button
-              onClick={onSave}
-              className="text-xs bg-gray-600 hover:bg-gray-500 px-3 py-1.5 rounded"
-            >
-              Save
-            </button>
           </>
         )}
       </div>
