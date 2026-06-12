@@ -9,6 +9,7 @@ UI/UX specs, wireframes, game design documents.
 | `stage-editor-design.md` | Stage editor feature spec: UI layout, API routes, playtest, export validation |
 | `ingame-core-design.md` | InGame core architecture: modules, tap flow, clear conditions, stage loading |
 | `item-system-design.md` | Item system spec: Bomb/H-Rocket/ColorSweep/RowShift/CellSwap, Use Phase UX, Void/Obstacle policy, architecture integration |
+| `conveyor-belt-design.md` | Conveyor belt gimmick spec: row-segment Left/Right movement, turn order, rotation, stage editor, generator, visual asset prompts |
 | `progression-system-design.md` | Progression system spec: Star logic, Chapter grouping, Milestone rewards |
 | `chapter-theme-design.md` | Chapter theme spec: per-chapter visual/audio identity, shader colors, particle presets, asset naming (Initial Draft) |
 | `economy-system-design.md` | Game economy spec: currency types, reward formulas, sink/source balance |

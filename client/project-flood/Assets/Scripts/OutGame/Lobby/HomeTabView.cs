@@ -20,6 +20,8 @@ namespace Game.OutGame.Lobby
         [SerializeField] private float         _pathWidth    = 12f;
         [SerializeField] private Sprite        _guideOrbSprite;
 
+        private const float OverdrawBuffer = 400f;
+
                 private readonly List<StageNodeView>       _pool          = new List<StageNodeView>();
         private readonly List<UILineStrip>         _pathStrips    = new List<UILineStrip>();
         private readonly Dictionary<int, Vector2>  _stagePositions = new Dictionary<int, Vector2>();
@@ -62,7 +64,12 @@ namespace Game.OutGame.Lobby
             _stages         = StageDataService.Instance?.GetAll();
             _currentStageId = FindCurrentStage();
             BuildPool();
-            RefreshVisible();
+            _scrollRect.onValueChanged.AddListener(OnScrolled);
+
+            // Immediate render if layout already built (tab re-enter); otherwise ApplyScrollNextFrame handles it
+            if (_scrollRect.viewport.rect.height > 0f)
+                OnScrolled(new Vector2(0f, _scrollRect.verticalNormalizedPosition));
+
             RestoreScrollPosition();
 
             if (RewardsApiService.Instance != null)
@@ -80,7 +87,7 @@ namespace Game.OutGame.Lobby
                             _chestClaimed[src.SourceId] = !src.Claimable;
                         }
                     }
-                    RefreshVisible();
+                    RefreshChestNodes();
                 }, err => Debug.LogWarning($"[HomeTabView] failed to fetch reward sources: {err}"));
             }
         }
@@ -89,6 +96,9 @@ namespace Game.OutGame.Lobby
         {
             ScrollStateCache.HomeScrollPosition = _scrollRect != null
                 ? _scrollRect.verticalNormalizedPosition : 0f;
+
+            if (_scrollRect != null)
+                _scrollRect.onValueChanged.RemoveListener(OnScrolled);
 
             if (_guideOrbCoroutine != null)
             {
@@ -149,7 +159,8 @@ namespace Game.OutGame.Lobby
                 _pool.Add(node);
             }
 
-            int   count  = Mathf.Min(_stages.Length, _pool.Count);
+            // stageCount drives ALL layout/position math — decoupled from pool size
+            int   stageCount = _stages.Length;
             float rowY   = _nodeSpacingY;
             float rowOff = Game.Core.GameConfig.StageNodeRowOffset;
             float conOff = Game.Core.GameConfig.StageNodeZigzagOffset;
@@ -161,18 +172,18 @@ namespace Game.OutGame.Lobby
             float connH    = 2f * stagger + _connectorTurnGap;
             float groupH   = connH + _connectorTurnGap;
 
-            int   lastI     = count - 1;
+            int   lastI     = stageCount - 1;
             int   lastG     = lastI / 4;
             int   lastP     = lastI % 4;
             float lastYBot  = lastG * groupH + (lastP == 3 ? connH : lastP * stagger);
-            
+
             float bottomPadding = 180f; // Add bottom padding so Stage 1 is not cut off
             float totalHeight = lastYBot + _connectorTurnGap + bottomPadding;
 
             _contentRoot.sizeDelta = new Vector2(_contentRoot.sizeDelta.x, totalHeight);
 
-            var positions = new Vector2[count];
-            for (int i = 0; i < count; i++)
+            var positions = new Vector2[stageCount];
+            for (int i = 0; i < stageCount; i++)
             {
                 int  g       = i / 4;
                 int  p       = i % 4;
@@ -197,11 +208,6 @@ namespace Game.OutGame.Lobby
 
                 positions[i] = new Vector2(x, y);
                 _stagePositions[_stages[i].stage_id] = positions[i];
-
-                var nodeRt       = _pool[i].GetComponent<RectTransform>();
-                nodeRt.anchorMin = nodeRt.anchorMax = new Vector2(0.5f, 1f);
-                nodeRt.pivot     = new Vector2(0.5f, 0.5f);
-                nodeRt.anchoredPosition = positions[i];
             }
 
             foreach (var node in _chestNodes)
@@ -211,7 +217,7 @@ namespace Game.OutGame.Lobby
             _chestNodes.Clear();
 
             var chapterLastIdx = new Dictionary<int, int>();
-            for (int i = 0; i < count; i++)
+            for (int i = 0; i < stageCount; i++)
                 chapterLastIdx[_stages[i].chapter_id] = i;
 
             var sortedChapters = new List<int>(chapterLastIdx.Keys);
@@ -219,9 +225,10 @@ namespace Game.OutGame.Lobby
             foreach (int cid in sortedChapters)
                 CreateChestNode(cid, positions[chapterLastIdx[cid]], totalHeight);
 
-            BuildPath(positions, count, totalHeight);
-            StartGuideOrb(positions, count);
-            BuildChapterBackgrounds(positions, count, totalHeight);
+            BuildPath(positions, stageCount, totalHeight);
+            StartGuideOrb(positions, stageCount);
+            BuildChapterBackgrounds(positions, stageCount, totalHeight);
+            RefreshChestNodes();
         }
 
         private void CreateChestNode(int chapterNum, Vector2 stagePos, float totalHeight)
@@ -496,7 +503,14 @@ namespace Game.OutGame.Lobby
                     if (customTex != null)
                         Debug.Log($"[HomeTabView] Loaded path texture for chapter {cid} from Resources/{resourcePath}");
                     else
-                        Debug.LogWarning($"[HomeTabView] Failed to load path texture for chapter {cid} at Resources/{resourcePath}. Fallback to procedural dash.");
+                        Debug.LogWarning($"[HomeTabView] path texture '{theme.PathResourceKey}' not found for chapter {cid}. Trying path_chapter fallback.");
+                }
+
+                if (customTex == null)
+                {
+                    customTex = Resources.Load<Texture2D>("Sprites/Path/path_chapter");
+                    if (customTex != null)
+                        Debug.Log($"[HomeTabView] Loaded fallback path texture 'path_chapter' for chapter {cid}");
                 }
 
                 if (customTex != null)
@@ -677,21 +691,58 @@ namespace Game.OutGame.Lobby
                 + (-p0 + 3f * p1 - 3f * p2 + p3) * t3);
         }
 
-        private void RefreshVisible()
+        private void OnScrolled(Vector2 scrollVal)
         {
-            if (_stages == null) return;
-            var progress = PlayerProgressService.Instance;
-            for (int i = 0; i < _stages.Length && i < _pool.Count; i++)
+            if (_stages == null || _pool.Count == 0) return;
+
+            float viewportH = _scrollRect.viewport.rect.height;
+            if (viewportH <= 0f)
             {
-                var s       = _stages[i];
-                int stars   = progress?.GetBestStars(s.stage_id) ?? 0;
-                bool unlock = progress?.IsStageUnlocked(s.stage_id) ?? (s.stage_id == 1);
-                bool cur    = s.stage_id == _currentStageId;
-                _pool[i].Bind(s.stage_id, stars, unlock, cur, s.chapter_id);
-                _pool[i].gameObject.SetActive(true);
+                LayoutRebuilder.ForceRebuildLayoutImmediate(_scrollRect.viewport);
+                viewportH = _scrollRect.viewport.rect.height;
+                if (viewportH <= 0f) return;
             }
 
-            RefreshChestNodes();
+            float totalH     = _contentRoot.sizeDelta.y;
+            float scrollable = Mathf.Max(0f, totalH - viewportH);
+            float offset     = Mathf.Clamp01(1f - scrollVal.y) * scrollable;
+
+            // visible Y range in anchor-top space (y is negative going down from top)
+            float visTop = -(offset - OverdrawBuffer);
+            float visBot = -(offset + viewportH + OverdrawBuffer);
+
+            var progress = PlayerProgressService.Instance;
+            int  poolIdx = 0;
+
+            for (int i = 0; i < _stages.Length && poolIdx < _pool.Count; i++)
+            {
+                if (!_stagePositions.TryGetValue(_stages[i].stage_id, out Vector2 nodePos)) continue;
+                if (nodePos.y > visTop || nodePos.y < visBot) continue;
+
+                var node = _pool[poolIdx++];
+                var s    = _stages[i];
+                int  stars  = progress?.GetBestStars(s.stage_id) ?? 0;
+                bool unlock = progress?.IsStageUnlocked(s.stage_id) ?? (s.stage_id == 1);
+                bool cur    = s.stage_id == _currentStageId;
+                node.Bind(s.stage_id, stars, unlock, cur, s.chapter_id, (int)s.difficulty);
+                var rt      = node.GetComponent<RectTransform>();
+                rt.anchorMin = rt.anchorMax = new Vector2(0.5f, 1f);
+                rt.pivot     = new Vector2(0.5f, 0.5f);
+                rt.anchoredPosition = nodePos;
+                node.gameObject.SetActive(true);
+            }
+
+            for (; poolIdx < _pool.Count; poolIdx++)
+                _pool[poolIdx].gameObject.SetActive(false);
+
+            // Pause animations for off-screen chapter backgrounds (coroutine CPU saving)
+            const float bgBuffer = 350f;
+            foreach (var bg in _bgViews)
+            {
+                if (bg == null) continue;
+                bool inView = bg.YTop >= visBot - bgBuffer && bg.YBot <= visTop + bgBuffer;
+                if (bg.enabled != inView) bg.enabled = inView;
+            }
         }
 
         private void RestoreScrollPosition()
@@ -703,6 +754,8 @@ namespace Game.OutGame.Lobby
         private IEnumerator ApplyScrollNextFrame()
         {
             yield return null;
+            LayoutRebuilder.ForceRebuildLayoutImmediate(_scrollRect.viewport);
+
             int targetId = ScrollStateCache.LastPlayedStageId;
             if (targetId > 0)
             {
@@ -715,10 +768,12 @@ namespace Game.OutGame.Lobby
                     _scrollRect.verticalNormalizedPosition = scrollable > 0f
                         ? Mathf.Clamp01(1f + (nodePos.y + viewportH * 0.5f) / scrollable)
                         : 1f;
+                    OnScrolled(new Vector2(0f, _scrollRect.verticalNormalizedPosition));
                     yield break;
                 }
             }
             _scrollRect.verticalNormalizedPosition = ScrollStateCache.HomeScrollPosition;
+            OnScrolled(new Vector2(0f, _scrollRect.verticalNormalizedPosition));
         }
 
         private void OnStageTapped(int stageId)
@@ -726,14 +781,17 @@ namespace Game.OutGame.Lobby
             var stage = StageDataService.Instance?.GetStage(stageId);
             if (stage == null) return;
 
-            var progress = PlayerProgressService.Instance;
-            int stars    = progress?.GetBestStars(stageId) ?? 0;
+            var progress  = PlayerProgressService.Instance;
+            int stars     = progress?.GetBestStars(stageId) ?? 0;
+            bool isLocked = !(progress?.IsStageUnlocked(stageId) ?? (stageId == 1));
 
             Game.Core.UIManager.Instance?.ShowPopup<StageInfoPopupView>(v => v.Init(
-                stageId:   stageId,
-                bestStars: stars,
-                bestMoves: 0,
-                onPlay:    () => EnterStage(stageId)));
+                stageId:    stageId,
+                bestStars:  stars,
+                bestMoves:  0,
+                onPlay:     () => EnterStage(stageId),
+                difficulty: (int)stage.difficulty,
+                isLocked:   isLocked));
         }
 
         private void EnterStage(int stageId)

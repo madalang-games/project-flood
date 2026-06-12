@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Game.InGame.Items;
 using UnityEngine;
 
@@ -15,6 +16,7 @@ namespace Game.InGame.View
         public event Action<ItemType> OnSlotTapped;
 
         private bool _isLocked;
+        private readonly Dictionary<ItemType, int> _prices = new();
 
         private void Awake()
         {
@@ -23,6 +25,12 @@ namespace Game.InGame.View
             _colorSweepSlot.Button.onClick.AddListener(() => OnSlotTapped?.Invoke(ItemType.ColorSweep));
             _rowShiftSlot.Button.onClick.AddListener(() => OnSlotTapped?.Invoke(ItemType.RowShift));
             _cellSwapSlot.Button.onClick.AddListener(() => OnSlotTapped?.Invoke(ItemType.CellSwap));
+        }
+
+        public void SetItemPrices(Dictionary<ItemType, int> prices)
+        {
+            _prices.Clear();
+            foreach (var kv in prices) _prices[kv.Key] = kv.Value;
         }
 
         public void Refresh(ItemManager manager)
@@ -39,12 +47,25 @@ namespace Game.InGame.View
             _isLocked = locked;
         }
 
+        public Sprite GetSlotSprite(ItemType type) => GetSlot(type)?.Icon?.sprite;
+
+        private ItemSlotView GetSlot(ItemType type) => type switch
+        {
+            ItemType.Bomb       => _bombSlot,
+            ItemType.HRocket    => _hRocketSlot,
+            ItemType.ColorSweep => _colorSweepSlot,
+            ItemType.RowShift   => _rowShiftSlot,
+            ItemType.CellSwap   => _cellSwapSlot,
+            _                   => null
+        };
+
         private void RefreshSlot(ItemSlotView slot, ItemType type, ItemManager manager)
         {
             if (slot == null) return;
             bool canUse = !_isLocked && (manager.CanUse(type) || manager.GetCount(type) == 0);
             bool selected = manager.IsInUsePhase && manager.SelectedItem == type;
-            slot.Refresh(manager.GetCount(type), manager.IsDevMode, canUse, selected);
+            int goldCost = _prices.TryGetValue(type, out var p) ? p : 100;
+            slot.Refresh(manager.GetCount(type), manager.IsDevMode, canUse, selected, goldCost);
         }
     }
 }

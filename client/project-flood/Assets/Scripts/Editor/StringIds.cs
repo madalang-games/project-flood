@@ -71,6 +71,8 @@ namespace Game.Editor
         public const string PopupStageInfoBestStars = "popup.stage_info.best_stars";
         public const string PopupStageInfoBestMoves = "popup.stage_info.best_moves";
         public const string PopupStageInfoNoRecord = "popup.stage_info.no_record";
+        public const string PopupStageInfoOwnedItems = "popup.stage_info.owned_items";
+        public const string PopupStageInfoItemCountFmt = "popup.stage_info.item_count_fmt";
         public const string PopupResultFailed = "popup.result.failed";
         public const string PopupResultClearTitle = "popup.result.clear_title";
         public const string PopupResultRatio = "popup.result.ratio";
@@ -87,6 +89,9 @@ namespace Game.Editor
         public const string PopupAccountTabAvatars = "popup.account.tab_avatars";
         public const string PopupAccountTabBoardSkins = "popup.account.tab_board_skins";
         public const string PopupAccountPlaceholderNickname = "popup.account.placeholder_nickname";
+        public const string PopupBuyTitle = "popup.buy.title";
+        public const string PopupBuyCostFmt = "popup.buy.cost_fmt";
+        public const string PopupBuyGoldFmt = "popup.buy.gold_fmt";
         public const string PopupFailWatchAd = "popup.fail.watch_ad";
         public const string PopupSettingsHaptic = "popup.settings.haptic";
         public const string PopupSettingsLanguage = "popup.settings.language";
@@ -115,6 +120,7 @@ namespace Game.Editor
         public const string ToastBoosterPurchased = "toast.booster_purchased";
         public const string ToastRevived = "toast.revived";
         public const string ToastAdCancelled = "toast.ad_cancelled";
+        public const string ToastAdServiceUnavailable = "toast.ad_service_unavailable";
         public const string ToastLifeGained = "toast.life_gained";
         public const string ToastChapterUnlockRequirement = "toast.chapter_unlock_requirement";
         public const string ToastChestClaimed = "toast.chest_claimed";

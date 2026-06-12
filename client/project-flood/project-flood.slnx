@@ -1,5 +1,8 @@
 ﻿<Solution>
   <Project Path="Assembly-CSharp.csproj" />
+  <Project Path="Game.Utils.csproj" />
   <Project Path="Assembly-CSharp-Editor.csproj" />
+  <Project Path="Game.Contracts.csproj" />
   <Project Path="GoogleMobileAds.Editor.csproj" />
+  <Project Path="Game.Data.csproj" />
 </Solution>

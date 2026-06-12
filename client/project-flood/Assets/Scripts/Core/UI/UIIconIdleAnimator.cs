@@ -30,6 +30,7 @@ namespace Game.Core.UI
         private Graphic _graphic;
         private Vector3 _initialScale;
         private Vector2 _initialPosition;
+        private bool _positionCaptured;
         private Color _initialColor;
         private float _timeOffset;
 
@@ -38,7 +39,6 @@ namespace Game.Core.UI
             _rt = GetComponent<RectTransform>();
             _graphic = GetComponent<Graphic>();
             _initialScale = _rt.localScale;
-            _initialPosition = _rt.anchoredPosition;
             _initialColor = _graphic != null ? _graphic.color : Color.white;
 
             // Randomize phase offset to ensure multiple instances on screen breathe asynchronously
@@ -50,7 +50,8 @@ namespace Game.Core.UI
             if (_rt != null)
             {
                 _rt.localScale = _initialScale;
-                _rt.anchoredPosition = _initialPosition;
+                if (_positionCaptured)
+                    _rt.anchoredPosition = _initialPosition;
             }
             if (_graphic != null)
                 _graphic.color = _initialColor;
@@ -59,6 +60,13 @@ namespace Game.Core.UI
         private void Update()
         {
             if (_rt == null) return;
+
+            // Defer position capture to first Update so layout systems (HLG etc.) have resolved first
+            if (!_positionCaptured)
+            {
+                _initialPosition = _rt.anchoredPosition;
+                _positionCaptured = true;
+            }
 
             float t = (Time.time + _timeOffset) * _speed;
 

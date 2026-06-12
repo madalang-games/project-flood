@@ -37,8 +37,9 @@ namespace Game.InGame.Rules
         {
             var currR = r;
             var currC = c;
+            int maxSteps = board.Height * board.Width;
 
-            while (true)
+            for (int step = 0; step < maxSteps; step++)
             {
                 (int nextR, int nextC) next;
                 if (board.OutletToInlet.TryGetValue((currR, currC), out var inlet))
@@ -68,6 +69,8 @@ namespace Game.InGame.Rules
                 currR = next.nextR;
                 currC = next.nextC;
             }
+
+            return null;
         }
     }
 }

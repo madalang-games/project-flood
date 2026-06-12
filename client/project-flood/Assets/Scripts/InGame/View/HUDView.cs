@@ -1,4 +1,5 @@
 using System.Collections;
+using Game.Core;
 using Game.Core.UI;
 using TMPro;
 using UnityEngine;
@@ -15,6 +16,9 @@ namespace Game.InGame.View
         [SerializeField] private Sprite   _starFilled;
         [SerializeField] private Sprite   _starEmpty;
         [SerializeField] private Image    _turnsBorder;
+        [SerializeField] private Image      _stageInfoBg;
+        [SerializeField] private TMP_Text   _stageText;
+        [SerializeField] private GameObject _skullBadge;
 
         [Header("Border Colors")]
         [SerializeField] private Color _safeColor       = new Color(0.24f, 1f,   0.47f, 1f);
@@ -44,13 +48,20 @@ namespace Game.InGame.View
             if (_pulseCoroutine != null) StopCoroutine(_pulseCoroutine);
         }
 
-        public void Init(int totalTurns, int initialValidCells, float star1Ratio, float star2Ratio)
+        public void Init(int totalTurns, int initialValidCells, float star1Ratio, float star2Ratio, int difficulty = 0, int stageNumber = 0)
         {
             _initialValidCells = initialValidCells;
             _star1Ratio = star1Ratio;
             _star2Ratio = star2Ratio;
             UpdateTurns(totalTurns);
             UpdateRemainingCells(initialValidCells);
+
+            if (_stageInfoBg != null)
+                _stageInfoBg.color = DifficultyStyle.Get(difficulty, new Color(0.302f, 0.137f, 0.365f, 1f));
+            if (_stageText != null)
+                _stageText.text = stageNumber > 0 ? stageNumber.ToString() : "";
+            if (_skullBadge != null)
+                _skullBadge.SetActive(difficulty == 2);
         }
 
         public void UpdateTurns(int remaining)

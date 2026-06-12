@@ -75,6 +75,7 @@ namespace Game.Editor
             CreateTutorialOverlay();
             CreateChapterChest();
             CreateRankingItemPrefab();
+            CreateItemBuyConfirmPopup();
             
             // Generate Scenes as well
             SetupBoot();
@@ -153,6 +154,9 @@ namespace Game.Editor
 
         [MenuItem("Tools/UI Setup/Prefabs/AccountConflictPopup", false, 136)]
         static void CreateAccountConflictPopupSingle() { EnsureDirs(); CreateAccountConflictPopup(); AssetDatabase.Refresh(); }
+
+        [MenuItem("Tools/UI Setup/Prefabs/ItemBuyConfirmPopup", false, 137)]
+        static void CreateItemBuyConfirmPopupSingle() { EnsureDirs(); CreateItemBuyConfirmPopup(); AssetDatabase.Refresh(); }
 
         [MenuItem("Tools/UI Setup/Prefabs/BootCanvas",       false, 123)]
         static void CreateBootCanvasSingle()     { EnsureDirs(); SetupBoot();            AssetDatabase.Refresh(); }
@@ -554,7 +558,21 @@ namespace Game.Editor
                 var spr = AssetDatabase.LoadAssetAtPath<Sprite>(pip);
                 if (spr != null) { pauseIconImg.sprite = spr; pauseIconImg.preserveAspect = true; }
             }
-            
+
+            // StageInfo — shows stage number; background colored by DifficultyStyle at runtime; SkullBadge for Hard
+            var stageInfo = Child(hud, "StageInfo");
+            Fixed(stageInfo, new Vector2(-290f, -90f), new Vector2(160f, 80f));
+            var stageInfoImg = Img(stageInfo, Color.clear);
+
+            var stageNumTxt = TMP(stageInfo, "StageNumberText", Center(0, 0, 140, 70), 28, UI_TEXT, "1", null, TextCategory.Header);
+            stageNumTxt.alignment = TextAlignmentOptions.Center;
+
+            // Skull badge nested inside (Hard only)
+            var hudSkull = Child(stageInfo, "SkullBadge");
+            Fixed(hudSkull, new Vector2(55f, 10f), new Vector2(30f, 30f));
+            var hudSkullImg = Img(hudSkull, Color.white);
+            hudSkull.SetActive(false);
+
             // Turns HUD bubble — top-center circular container
             var turnsBubble = Child(hud, "TurnsBubble");
             Fixed(turnsBubble, new Vector2(0, -90), new Vector2(180, 180));
@@ -576,14 +594,6 @@ namespace Game.Editor
             var progressContainer = Child(hud, "ProgressContainer");
             Fixed(progressContainer, new Vector2(230, -90), new Vector2(380, 110));
             Img(progressContainer, UI_BG_DEEP);
-
-            var progBorder = Child(progressContainer, "Border");
-            Stretch(progBorder);
-            var progBorderImg = Img(progBorder, UI_BORDER);
-            progBorder.transform.SetAsFirstSibling();
-            var progRt = progBorderImg.rectTransform;
-            progRt.offsetMin = new Vector2(-8, -8);
-            progRt.offsetMax = new Vector2(8, 8);
 
             var progHlg = Comp<HorizontalLayoutGroup>(progressContainer);
             progHlg.childAlignment       = TextAnchor.MiddleLeft;
@@ -650,8 +660,18 @@ namespace Game.Editor
             starImagesArr.GetArrayElementAtIndex(2).objectReferenceValue = star3Img;
             soHud.FindProperty("_starFilled").objectReferenceValue   = starFilledSpr;
             soHud.FindProperty("_starEmpty").objectReferenceValue    = starEmptySpr;
-            soHud.FindProperty("_turnsBorder").objectReferenceValue = borderImg;
+            soHud.FindProperty("_turnsBorder").objectReferenceValue    = borderImg;
+            soHud.FindProperty("_stageInfoBg").objectReferenceValue    = stageInfoImg;
+            soHud.FindProperty("_stageText").objectReferenceValue      = stageNumTxt;
+            soHud.FindProperty("_skullBadge").objectReferenceValue     = hudSkull;
             soHud.ApplyModifiedProperties();
+
+            // Load skull sprite for HUD badge
+            if (resMapInGame.TryGetValue("ui_hard_skull", out string hudSkulPath))
+            {
+                var spr = AssetDatabase.LoadAssetAtPath<Sprite>(hudSkulPath);
+                if (spr != null) { hudSkullImg.sprite = spr; hudSkullImg.preserveAspect = true; }
+            }
 
             // BoardContainer (anchor for world-space board)
             var board = Child(canvas, "BoardContainer"); Stretch(board);
@@ -827,6 +847,52 @@ namespace Game.Editor
             Save(root, "ConfirmDialogView");
         }
 
+        static void CreateItemBuyConfirmPopup()
+        {
+            var root = FullScreen("ItemBuyConfirmPopupView");
+            Comp<ItemBuyConfirmPopupView>(root); Comp<UIPanelAppear>(root); Comp<CanvasGroup>(root);
+
+            var backdrop = Btn(root, "Backdrop", Vector2.zero, new Vector2(1080, 1920), DIM, "", shadowAlpha: 200f / 255f);
+            Stretch(backdrop);
+
+            var panel = Panel(root, "Panel", new Vector2(700, 720), UI_BG_MID);
+
+            RibbonTitle(panel, "TitleText", "Buy Item", PopupBuyTitle);
+
+            var iconGo = Child(panel, "Icon");
+            Fixed(iconGo, new Vector2(0, 175), new Vector2(110, 110));
+            var iconImg = Img(iconGo, Color.white);
+            iconImg.preserveAspect = true;
+
+            var nameText = TMP(panel, "NameText", Center(0, 80, 600, 55), 22, UI_TEXT, "Item Name", null, TextCategory.Header);
+
+            var descText = TMP(panel, "DescText", Center(0, 10, 580, 52), 15, new Color(0.75f, 0.75f, 0.75f, 1f), "Item description", null, TextCategory.Normal);
+            descText.enableWordWrapping = true;
+            descText.alignment = TextAlignmentOptions.Center;
+
+            var priceText = TMP(panel, "PriceText", Center(0, -67, 600, 50), 22, UI_CTA, "Cost: 100 Gold", null, TextCategory.Normal);
+            priceText.alignment = TextAlignmentOptions.Center;
+
+            var ownedGoldText = TMP(panel, "OwnedGoldText", Center(0, -127, 600, 50), 18, new Color(0.65f, 0.65f, 0.65f, 1f), "Owned: 350 Gold", null, TextCategory.Normal);
+            ownedGoldText.alignment = TextAlignmentOptions.Center;
+
+            var cancel  = Btn(panel, "CancelButton",  new Vector2(-170, -270), new Vector2(280, 88), UI_BG_DEEP, "Cancel", CommonBtnCancel);
+            var confirm = Btn(panel, "ConfirmButton",  new Vector2( 170, -270), new Vector2(280, 88), UI_CTA,     "Buy",   CommonBtnConfirm);
+
+            var so = new SerializedObject(root.GetComponent<ItemBuyConfirmPopupView>());
+            so.FindProperty("_icon").objectReferenceValue           = iconImg;
+            so.FindProperty("_nameText").objectReferenceValue       = nameText;
+            so.FindProperty("_descText").objectReferenceValue       = descText;
+            so.FindProperty("_priceText").objectReferenceValue      = priceText;
+            so.FindProperty("_ownedGoldText").objectReferenceValue  = ownedGoldText;
+            so.FindProperty("_cancelButton").objectReferenceValue   = cancel.GetComponent<Button>();
+            so.FindProperty("_confirmButton").objectReferenceValue  = confirm.GetComponent<Button>();
+            so.FindProperty("_backdropButton").objectReferenceValue = backdrop.GetComponent<Button>();
+            so.ApplyModifiedProperties();
+
+            Save(root, "ItemBuyConfirmPopupView");
+        }
+
         static void CreateToast()
         {
             var root = new GameObject("ToastView");
@@ -980,24 +1046,37 @@ namespace Game.Editor
             var backdrop = Btn(root, "Backdrop", Vector2.zero, new Vector2(1080, 1920), new Color(0, 0, 0, 0), "", shadowAlpha: 200f / 255f);
             Stretch(backdrop);
 
-            var panel = Panel(root, "Panel", new Vector2(700, 700), UI_BG_MID);
+            var panel = Panel(root, "Panel", new Vector2(700, 760), UI_BG_MID);
             var title = RibbonTitle(panel, "StageTitleText", "Stage 1", PopupStageInfoTitle);
+            var ribbonImg = title.transform.parent.GetComponent<Image>();
 
-            var best  = TMP(panel, "BestRecordText", Center(0, 160, 600, 55), 20, UI_TEXT, "Best: 2 Stars", null, TextCategory.Normal);
+            var best  = TMP(panel, "BestRecordText", Center(0, 195, 600, 55), 20, UI_TEXT, "Best: 2 Stars", null, TextCategory.Normal);
             var bestCsf = Comp<ContentSizeFitter>(best.gameObject);
             bestCsf.horizontalFit = ContentSizeFitter.FitMode.PreferredSize;
 
             // 3 star placeholders — empty always visible, Fill child shown per bestStars
-            var starsRoot = Child(panel, "Stars"); Fixed(starsRoot, new Vector2(0, 40), new Vector2(450, 130));
+            var starsRoot = Child(panel, "Stars"); Fixed(starsRoot, new Vector2(0, 90), new Vector2(450, 130));
             var hlg = starsRoot.AddComponent<HorizontalLayoutGroup>();
             hlg.spacing = 16; hlg.childAlignment = TextAnchor.MiddleCenter;
             hlg.childControlWidth = false; hlg.childControlHeight = false;
             hlg.childForceExpandWidth = false; hlg.childForceExpandHeight = false;
             var s0 = StarGO(starsRoot, "Star0", 110f); var s1 = StarGO(starsRoot, "Star1", 110f); var s2 = StarGO(starsRoot, "Star2", 110f);
 
-            // Item container — HorizontalLayoutGroup; future booster items slot in here
+            // Section label ribbon — "보유 아이템" header above ItemContainer
+            var sectionRibbon = Child(panel, "ItemSectionLabel_Ribbon");
+            Fixed(sectionRibbon, new Vector2(0, -10), new Vector2(260, 38));
+            Img(sectionRibbon, Hex("2B1040"));
+            var sectionShadow = Child(sectionRibbon, "Shadow");
+            Fixed(sectionShadow, new Vector2(0, -4), new Vector2(260, 38));
+            Img(sectionShadow, Hex("2B003B"));
+            sectionShadow.transform.SetAsFirstSibling();
+            TMP(sectionRibbon, "ItemSectionLabel", Center(0, 0, 240, 34), 16, UI_TEXT, "Owned Items", PopupStageInfoOwnedItems, TextCategory.Normal);
+
+            // Item container — HorizontalLayoutGroup; booster items
             var itemContainer = Child(panel, "ItemContainer");
-            Fixed(itemContainer, new Vector2(0, -105), new Vector2(420, 148));
+            Fixed(itemContainer, new Vector2(0, -110), new Vector2(420, 148));
+            Img(itemContainer, Hex("1A0D2E")); // subtle dark bg to visually group item section
+            var itemContainerGroup = Comp<CanvasGroup>(itemContainer);
             var itemHlg = itemContainer.AddComponent<HorizontalLayoutGroup>();
             itemHlg.spacing = 20f;
             itemHlg.childAlignment = TextAnchor.MiddleCenter;
@@ -1008,17 +1087,21 @@ namespace Game.Editor
             itemHlg.padding = new RectOffset(10, 10, 10, 10);
 
             var toggleRow = ItemToggleRow(itemContainer, "ExtraTurnsToggleRow", Vector2.zero, "Add Turns", ItemNameAddTurn);
+            var countTmp = TMP(toggleRow, "CountText", Center(0, -38, 120, 26), 16, UI_CTA, "×0", null, TextCategory.Normal);
 
-            var play = Btn(panel, "PlayButton", new Vector2(0, -260), new Vector2(400, 80), UI_CTA, "Play", CommonBtnPlay);
+            var play = Btn(panel, "PlayButton", new Vector2(0, -285), new Vector2(400, 80), UI_CTA, "Play", CommonBtnPlay);
 
             var so = new SerializedObject(root.GetComponent<StageInfoPopupView>());
             so.FindProperty("_stageTitle").objectReferenceValue       = title;
             so.FindProperty("_bestRecord").objectReferenceValue       = best;
+            so.FindProperty("_ribbonImage").objectReferenceValue      = ribbonImg;
             so.FindProperty("_playButton").objectReferenceValue       = play.GetComponent<Button>();
             so.FindProperty("_backdropButton").objectReferenceValue   = backdrop.GetComponent<Button>();
             so.FindProperty("_extraTurnsToggle").objectReferenceValue = toggleRow.GetComponent<Toggle>();
             so.FindProperty("_extraTurnsStateIcon").objectReferenceValue =
                 toggleRow.transform.Find("StateIndicator")?.GetComponent<Image>();
+            so.FindProperty("_itemCountText").objectReferenceValue    = countTmp;
+            so.FindProperty("_itemContainerGroup").objectReferenceValue = itemContainerGroup;
             var starsArr = so.FindProperty("_bestStarFills");
             starsArr.arraySize = 3;
             starsArr.GetArrayElementAtIndex(0).objectReferenceValue = s0.transform.Find("Fill").gameObject;
@@ -1493,7 +1576,13 @@ namespace Game.Editor
             Img(pulseRing, UI_CTA);
             Comp<UIScalePulse>(pulseRing);
             pulseRing.SetActive(false);
-            
+
+            // Difficulty outline (colored at runtime by DifficultyStyle; hidden for Easy)
+            var diffOutline = Child(root, "DifficultyOutline");
+            Fixed(diffOutline, Vector2.zero, new Vector2(148f, 148f));
+            var diffOutlineImg = Img(diffOutline, Color.white);
+            diffOutline.SetActive(false);
+
             // Visual background border
             var visual = Child(root, "Visual");
             Stretch(visual);
@@ -1527,18 +1616,27 @@ namespace Game.Editor
             Img(lockIcon, Color.white);
             lockOverlay.SetActive(false);
 
+            // Skull badge (Hard only — top-right corner of 130x130 root)
+            var skullBadge = Child(root, "SkullBadge");
+            Fixed(skullBadge, new Vector2(45f, 45f), new Vector2(40f, 40f));
+            var skullBadgeImg = Img(skullBadge, Color.white);
+            skullBadge.SetActive(false);
+
             // Button
             var btn = Comp<Button>(root);
             btn.targetGraphic = borderImg;
 
             // Wire StageNodeView properties
             var so = new SerializedObject(snv);
-            so.FindProperty("_stageLabel").objectReferenceValue = stageLabel;
-            so.FindProperty("_lockOverlay").objectReferenceValue = lockOverlay;
-            so.FindProperty("_pulseRing").objectReferenceValue  = pulseRing;
-            so.FindProperty("_button").objectReferenceValue     = btn;
-            so.FindProperty("_border").objectReferenceValue     = borderImg;
-            
+            so.FindProperty("_stageLabel").objectReferenceValue       = stageLabel;
+            so.FindProperty("_lockOverlay").objectReferenceValue      = lockOverlay;
+            var pulseRingProp = so.FindProperty("_pulseRing");
+            if (pulseRingProp != null) pulseRingProp.objectReferenceValue = pulseRing;
+            so.FindProperty("_button").objectReferenceValue           = btn;
+            so.FindProperty("_border").objectReferenceValue           = borderImg;
+            so.FindProperty("_difficultyOutline").objectReferenceValue = diffOutlineImg;
+            so.FindProperty("_skullIcon").objectReferenceValue        = skullBadge;
+
             var starFillsArr = so.FindProperty("_starFills");
             starFillsArr.arraySize = 3;
             starFillsArr.GetArrayElementAtIndex(0).objectReferenceValue = s0.transform.Find("Fill").gameObject;
@@ -1558,6 +1656,8 @@ namespace Game.Editor
             }
             var lockImgComp = lockIcon.GetComponent<Image>();
             if (lockImgComp != null && lockSpr != null) { lockImgComp.sprite = lockSpr; lockImgComp.preserveAspect = true; }
+            var skullSpr = resMap.TryGetValue("ui_hard_skull", out string skulp) ? AssetDatabase.LoadAssetAtPath<Sprite>(skulp) : null;
+            if (skullSpr != null) { skullBadgeImg.sprite = skullSpr; skullBadgeImg.preserveAspect = true; }
 
             Save(root, "StageNodeView");
         }

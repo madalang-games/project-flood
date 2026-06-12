@@ -65,9 +65,6 @@ namespace Game.Services
             _instance = this;
             DontDestroyOnLoad(gameObject);
 
-            if (_environment == AppEnvironment.Prod)
-                _enableLogging = false;
-
             // Silence console stack trace for cleaner network logs
             Application.SetStackTraceLogType(LogType.Log, StackTraceLogType.None);
         }

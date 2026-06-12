@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Game.Core;
 using Game.InGame.Board;
 using Game.InGame.Items;
 using Game.InGame.Rules;
@@ -69,6 +70,7 @@ namespace Game.InGame.Controller
             if (_itemTrayView != null)
             {
                 _itemTrayView.OnSlotTapped += OnItemSlotTapped;
+                _itemTrayView.SetItemPrices(BuildItemPrices());
                 _itemTrayView.Refresh(_itemManager);
             }
 
@@ -87,6 +89,11 @@ namespace Game.InGame.Controller
                 _itemManager.OnUsePhaseChanged -= OnItemUsePhaseChanged;
             if (_itemTrayView != null)
                 _itemTrayView.OnSlotTapped -= OnItemSlotTapped;
+        }
+
+        private void OnDisable()
+        {
+            _isAnimating = false;
         }
 
         private void Update()
@@ -237,6 +244,13 @@ namespace Game.InGame.Controller
         private IEnumerator RotateBoardSequence()
         {
             _isAnimating = true;
+            yield return RotateBoardAnimation();
+            _isAnimating = false;
+        }
+
+        private IEnumerator RotateBoardAnimation()
+        {
+            SfxEventBus.Play(SfxId.BoardRotated);
             yield return _boardView.PlayBoardRotation(2);
             _board.Rotate180();
             _boardView.CompleteBoardRotation(_board);
@@ -244,7 +258,6 @@ namespace Game.InGame.Controller
             var beforeGravity = CloneGrid(_board);
             GravitySystem.Apply(_board);
             yield return _boardView.PlayGravity(beforeGravity, _board);
-            _isAnimating = false;
         }
 
         private IEnumerator HandleTapSequence(int row, int col, List<(int row, int col)> group)
@@ -257,6 +270,7 @@ namespace Game.InGame.Controller
             yield return _boardView.PlayGroupPulse(group, row, col);
 
             RemovalSystem.Remove(_board, group);
+            SfxEventBus.Play(SfxId.CellGroupRemoved);
             yield return _boardView.PlayRemovalEffects(_board, group, row, col);
 
             ShiftConveyors();
@@ -273,9 +287,15 @@ namespace Game.InGame.Controller
             {
                 _isPlaying = false;
                 if (!turnsLeft && result == StarResult.Fail && !_continueUsed)
+                {
+                    SfxEventBus.Play(SfxId.StageFail);
                     OnContinueAvailable?.Invoke();
+                }
                 else
+                {
+                    SfxEventBus.Play(result == StarResult.Fail ? SfxId.StageFail : SfxId.StageClear);
                     OnStageEnd?.Invoke(result, _turnManager.RemainingTurns);
+                }
             }
 
             if (_isPlaying && _stage.rotation_interval > 0)
@@ -283,7 +303,7 @@ namespace Game.InGame.Controller
                 int movesMade = _turnManager.UsedTurns;
                 if (movesMade > 0 && movesMade % _stage.rotation_interval == 0)
                 {
-                    yield return RotateBoardSequence();
+                    yield return RotateBoardAnimation();
                 }
             }
 
@@ -320,6 +340,8 @@ namespace Game.InGame.Controller
                 }
             }
 
+            SfxEventBus.Play(SfxId.ItemUsed);
+
             if (itemType == ItemType.CellSwap)
             {
                 // Play swap animation, NO gravity applied for CellSwap per rules
@@ -347,6 +369,7 @@ namespace Game.InGame.Controller
             if (result == StarResult.Star3)
             {
                 _isPlaying = false;
+                SfxEventBus.Play(SfxId.StageClear);
                 OnStageEnd?.Invoke(result, _turnManager.RemainingTurns);
             }
 
@@ -402,50 +425,66 @@ namespace Game.InGame.Controller
             _isAnimating = false;
         }
 
+        private static readonly Dictionary<ItemType, int> ItemTypeToId = new()
+        {
+            { ItemType.Bomb,       2 },
+            { ItemType.HRocket,    3 },
+            { ItemType.ColorSweep, 4 },
+            { ItemType.RowShift,   5 },
+            { ItemType.CellSwap,   6 },
+        };
+
+        private Dictionary<ItemType, int> BuildItemPrices()
+        {
+            var prices = new Dictionary<ItemType, int>();
+            foreach (var kv in ItemTypeToId)
+            {
+                var data = Services.ItemDataService.Instance?.GetItem(kv.Value);
+                if (data != null) prices[kv.Key] = data.price;
+            }
+            return prices;
+        }
+
         private void OnItemSlotTapped(ItemType type)
         {
             if (!_isPlaying || _isAnimating) return;
-            _boardView.ClearAllCellSelectedHighlights(); // Clear any visual swap highlights
+            _boardView.ClearAllCellSelectedHighlights();
 
             if (!_isDevMode && _itemManager.GetCount(type) <= 0)
             {
-                var cost = 100;
-                if (Services.PlayerProgressService.Instance != null && !Services.PlayerProgressService.Instance.CanAfford(cost))
-                {
-                    Core.UIManager.Instance?.ShowToast(LocalizationService.Instance.Get("toast.insufficient_gold"), Core.UI.ToastType.Warning);
-                    return;
-                }
+                if (!ItemTypeToId.TryGetValue(type, out int itemId)) return;
 
-                int itemId = type switch
-                {
-                    ItemType.Bomb => 2,
-                    ItemType.HRocket => 3,
-                    ItemType.ColorSweep => 4,
-                    ItemType.RowShift => 5,
-                    ItemType.CellSwap => 6,
-                    _ => 0
-                };
+                var itemData = Services.ItemDataService.Instance?.GetItem(itemId);
+                var price = itemData?.price ?? 100;
+                var ownedGold = Services.PlayerProgressService.Instance?.Gold ?? 0;
+                var icon = _itemTrayView?.GetSlotSprite(type);
+                var itemName = itemData != null
+                    ? LocalizationService.Instance.Get(itemData.name_key)
+                    : type.ToString();
+                var itemDesc = itemData != null
+                    ? LocalizationService.Instance.Get(itemData.desc_key)
+                    : string.Empty;
 
-                if (itemId > 0 && Services.InventoryApiService.Instance != null)
+                Core.UIManager.Instance?.ShowPopup<View.ItemBuyConfirmPopupView>(popup =>
                 {
-                    Core.UIManager.Instance?.ShowLoading();
-                    Services.InventoryApiService.Instance.BuyItem(itemId,
-                        onSuccess: response =>
-                        {
-                            Core.UIManager.Instance?.HideLoading();
-                            Core.UIManager.Instance?.ShowToast(LocalizationService.Instance.Get("toast.booster_purchased"), Core.UI.ToastType.Success);
-                            if (_itemTrayView != null)
+                    popup.Init(icon, itemName, itemDesc, price, ownedGold, () =>
+                    {
+                        Core.UIManager.Instance?.ShowLoading();
+                        Services.InventoryApiService.Instance.BuyItem(itemId,
+                            onSuccess: _ =>
                             {
-                                _itemTrayView.Refresh(_itemManager);
-                            }
-                            _itemManager.SelectItem(type);
-                        },
-                        onError: err =>
-                        {
-                            Core.UIManager.Instance?.HideLoading();
-                            Core.UIManager.Instance?.ShowToast($"Purchase failed: {err}", Core.UI.ToastType.Warning);
-                        });
-                }
+                                Core.UIManager.Instance?.HideLoading();
+                                Core.UIManager.Instance?.ShowToast(LocalizationService.Instance.Get("toast.booster_purchased"), Core.UI.ToastType.Success);
+                                _itemTrayView?.Refresh(_itemManager);
+                                _itemManager.SelectItem(type);
+                            },
+                            onError: err =>
+                            {
+                                Core.UIManager.Instance?.HideLoading();
+                                Core.UIManager.Instance?.ShowToast($"Purchase failed: {err}", Core.UI.ToastType.Warning);
+                            });
+                    });
+                });
                 return;
             }
 
@@ -730,6 +769,7 @@ namespace Game.InGame.Controller
 
             bool allowObstacle = (itemType == ItemType.Bomb || itemType == ItemType.HRocket);
             RemovalSystem.Remove(_board, cells, allowObstacle);
+            SfxEventBus.Play(SfxId.CellGroupRemoved);
             yield return _boardView.PlayRemovalEffects(_board, cells, originRow, originCol);
 
             ShiftConveyors();
@@ -743,6 +783,7 @@ namespace Game.InGame.Controller
             if (result == StarResult.Star3)
             {
                 _isPlaying = false;
+                SfxEventBus.Play(SfxId.StageClear);
                 OnStageEnd?.Invoke(result, _turnManager.RemainingTurns);
             }
 

@@ -11,10 +11,13 @@ namespace Game.OutGame.Boot
         [SerializeField] private SceneBackgroundView _sceneBackground;
 
         private const string LobbyScene = "Lobby";
+        private const string BootScene  = "Boot";
 
         private void Awake()
         {
             Screen.orientation = ScreenOrientation.Portrait;
+            Application.targetFrameRate = 60;
+            QualitySettings.vSyncCount = 0;
             _sceneBackground?.Bind(0, BackgroundMode.Default);
         }
 
@@ -57,6 +60,11 @@ namespace Game.OutGame.Boot
                     UIManager.Instance?.HideLoading();
                     ShowReLoginScreen();
                     break;
+
+                case AuthResult.NetworkError:
+                    UIManager.Instance?.HideLoading();
+                    UIManager.Instance?.ShowNetworkError(RetryFromBoot);
+                    break;
             }
         }
 
@@ -97,6 +105,14 @@ namespace Game.OutGame.Boot
                 UnityEngine.SceneManagement.SceneManager.LoadScene(LobbyScene);
         }
 
+        private void RetryFromBoot()
+        {
+            if (SceneTransition.Instance != null)
+                SceneTransition.Instance.FadeToScene(BootScene);
+            else
+                UnityEngine.SceneManagement.SceneManager.LoadScene(BootScene);
+        }
+
         private void ShowReLoginScreen()
         {
             UIManager.Instance?.ShowPopup<ReLoginView>(v => v.Init(
@@ -124,7 +140,7 @@ namespace Game.OutGame.Boot
         {
             UIManager.Instance?.CloseAllPopups();
             UIManager.Instance?.ShowLoading();
-            AuthService.Instance.Initialize(OnAuthResult);
+            AuthService.Instance.ContinueAsGuest(OnAuthResult);
         }
     }
 }

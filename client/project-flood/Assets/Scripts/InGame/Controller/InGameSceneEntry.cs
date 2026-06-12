@@ -93,7 +93,7 @@ namespace Game.InGame.Controller
             _controller.OnStageEnd          += OnStageEnd;
 
             _controller.Init(_stage, extraTurns);
-            _hudView?.Init(_stage.turn_limit + extraTurns, _controller.RemainingCells, _controller.Star1Ratio, _controller.Star2Ratio);
+            _hudView?.Init(_stage.turn_limit + extraTurns, _controller.RemainingCells, _controller.Star1Ratio, _controller.Star2Ratio, (int)_stage.difficulty, _stage.stage_id);
             if (_hudView != null) _hudView.OnPausePressed += OnPausePressed;
             
             StageApiService.Instance?.StartAttempt(_stage.stage_id, response =>
@@ -115,6 +115,8 @@ namespace Game.InGame.Controller
                 else
                 {
                     Debug.LogWarning($"[InGameSceneEntry] StartAttempt failed: {error}");
+                    UIManager.Instance?.ShowToast(LocalizationService.Instance.GetError(error), ToastType.Warning);
+                    GoToLobby();
                 }
             });
         }
@@ -170,19 +172,15 @@ namespace Game.InGame.Controller
             int  turnsUsed = _stage.turn_limit - remainingTurns;
             int  nextId    = _stage.stage_id + 1;
 
+            bool isFirstClear = false;
             if (!fail)
             {
-                bool isFirstClear = (PlayerProgressService.Instance?.GetBestStars(_stage.stage_id) ?? 0) == 0;
+                isFirstClear = (PlayerProgressService.Instance?.GetBestStars(_stage.stage_id) ?? 0) == 0;
                 if (isFirstClear)
-                {
                     _goldEarned = CalculateGold(_stage);
-                    PlayerProgressService.Instance?.AddGold(_goldEarned);
-                }
-                PlayerProgressService.Instance?.RecordClear(_stage.stage_id, (int)result);
                 PlayerPrefs.DeleteKey("stage_fail_count_" + _stage.stage_id);
                 PlayerPrefs.Save();
             }
-            // Note: _goldEarned is for UI display only; server gold is reconciled from ClearAttempt response below.
             else
             {
                 StageApiService.Instance?.FailAttempt(_stage.stage_id);
@@ -194,8 +192,10 @@ namespace Game.InGame.Controller
             }
 
             float ratio     = _controller.ComputeRatioPublic();
-            bool  nextLocked = StageDataService.Instance?.GetStage(nextId) == null
-                             || !(PlayerProgressService.Instance?.IsStageUnlocked(nextId) ?? false);
+            bool  nextLocked = !fail
+                ? StageDataService.Instance?.GetStage(nextId) == null
+                : (StageDataService.Instance?.GetStage(nextId) == null
+                   || !(PlayerProgressService.Instance?.IsStageUnlocked(nextId) ?? false));
 
             UIManager.Instance?.ShowOverlay<ResultOverlayView>(v => v.Init(
                 result:         result,
@@ -209,17 +209,17 @@ namespace Game.InGame.Controller
             var overlay = UIManager.Instance?.GetCurrentOverlay<ResultOverlayView>();
             if (overlay != null)
             {
-                overlay.OnRetry += () => 
-                { 
-                    UIManager.Instance?.CloseOverlay(); 
+                overlay.OnRetry += () =>
+                {
+                    UIManager.Instance?.CloseOverlay();
                     ScrollStateCache.LastPlayedStageId = _stage.stage_id;
-                    SceneManager.LoadScene(InGameScene); 
+                    SceneManager.LoadScene(InGameScene);
                 };
-                overlay.OnNext  += () => 
-                { 
-                    UIManager.Instance?.CloseOverlay(); 
+                overlay.OnNext  += () =>
+                {
+                    UIManager.Instance?.CloseOverlay();
                     ScrollStateCache.LastPlayedStageId = nextId;
-                    SceneManager.LoadScene(InGameScene); 
+                    SceneManager.LoadScene(InGameScene);
                 };
                 overlay.OnMap   += () => { UIManager.Instance?.CloseOverlay(); GoToLobby(); };
 
@@ -228,6 +228,7 @@ namespace Game.InGame.Controller
                     var request = _controller.BuildClearRequest(System.Guid.NewGuid().ToString("N"));
                     StageApiService.Instance.ClearAttempt(_stage.stage_id, request, response =>
                     {
+                        PlayerProgressService.Instance?.RecordClear(_stage.stage_id, (int)result);
                         overlay.SetServerRank(response.StageRank, response.IsNewBest);
                         StaminaApiService.Instance?.FetchStamina();
                         if (response.Currency != null)

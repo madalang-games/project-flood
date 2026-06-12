@@ -49,7 +49,7 @@ namespace Game.OutGame.Lobby
             {
                 _statusText.text = state switch
                 {
-                    ChestState.Inactive => "Locked",
+                    ChestState.Inactive => "",
                     ChestState.Active => "Claim!",
                     ChestState.Claimed => "Cleared",
                     _ => ""
@@ -75,7 +75,7 @@ namespace Game.OutGame.Lobby
 
             if (_canvasGroup != null)
             {
-                _canvasGroup.alpha = (state == ChestState.Inactive) ? 0.6f : 1.0f;
+                _canvasGroup.alpha = 1.0f;
             }
         }
     }

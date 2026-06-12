@@ -9,6 +9,7 @@ namespace Game.Core.UI
     public class UIButtonAnimator : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
     {
         [SerializeField] private bool _isCTA;
+        [SerializeField] private SfxId _clickSfxId = SfxId.ConfirmClick;
 
         private RectTransform _rt;
         private Coroutine _idleCoroutine;
@@ -39,6 +40,7 @@ namespace Game.Core.UI
         {
             if (_idleCoroutine != null) { StopCoroutine(_idleCoroutine); _idleCoroutine = null; }
             _pressed = true;
+            SfxEventBus.Play(_clickSfxId);
             StartCoroutine(ScaleTo(PressScale, PressDuration, UIEasing.EaseIn));
         }
 

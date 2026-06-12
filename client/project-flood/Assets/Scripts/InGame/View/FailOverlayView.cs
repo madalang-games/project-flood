@@ -45,10 +45,12 @@ namespace Game.InGame.View
             _onForfeit  = onForfeit;
             _onReviveSuccess = onReviveSuccess;
 
-            if (_continueLabel  != null) 
+            if (_continueLabel  != null)
                 _continueLabel.text = string.Format(LocalizationService.Instance.Get("popup.fail.continue_turns"), GameConfig.ContinueExtraTurns);
-            if (_costText       != null) _costText.text      = $"{continueCost}";
-            if (_ownedGoldText  != null) _ownedGoldText.text = $"{currentGold}";
+            if (_costText      != null)
+                _costText.text = string.Format(LocalizationService.Instance.Get("popup.buy.cost_fmt"), continueCost);
+            if (_ownedGoldText != null)
+                _ownedGoldText.text = string.Format(LocalizationService.Instance.Get("popup.buy.gold_fmt"), currentGold);
 
             bool canAfford = currentGold >= continueCost;
             var animator   = _continueButton.GetComponent<UIButtonAnimator>();
@@ -117,7 +119,12 @@ namespace Game.InGame.View
 
         private void OnWatchAd()
         {
-            if (AdMobService.Instance == null || StageApiService.Instance == null || StageApiService.Instance.CurrentAttempt == null) return;
+            if (StageApiService.Instance == null || StageApiService.Instance.CurrentAttempt == null) return;
+            if (AdMobService.Instance == null)
+            {
+                UIManager.Instance?.ShowToast(LocalizationService.Instance.Get("toast.ad_service_unavailable"), ToastType.Warning);
+                return;
+            }
 
             var attempt = StageApiService.Instance.CurrentAttempt;
             int stageId = attempt.StageId;

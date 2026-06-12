@@ -1,4 +1,5 @@
 using System;
+using Game.Core;
 using Game.Services;
 using TMPro;
 using UnityEngine;
@@ -17,20 +18,29 @@ namespace Game.OutGame.Lobby
         [SerializeField] private Image      _extraTurnsStateIcon;
         [SerializeField] private Sprite     _toggleOnSprite;
         [SerializeField] private Sprite     _toggleOffSprite;
+        [SerializeField] private Image      _ribbonImage;
+        [SerializeField] private TMP_Text    _itemCountText;
+        [SerializeField] private CanvasGroup _itemContainerGroup;
 
         private int    _stageId;
         private Action _onPlay;
+        private Color  _defaultRibbonColor;
 
         private void Awake()
         {
             _playButton.onClick.AddListener(OnPlay);
             if (_backdropButton != null) _backdropButton.onClick.AddListener(OnClose);
+            if (_ribbonImage != null) _defaultRibbonColor = _ribbonImage.color;
         }
 
-        public void Init(int stageId, int bestStars, int bestMoves, Action onPlay)
+        public void Init(int stageId, int bestStars, int bestMoves, Action onPlay, int difficulty = 0, bool isLocked = false)
         {
             _stageId   = stageId;
             _onPlay    = onPlay;
+            _playButton.interactable = !isLocked;
+
+            if (_ribbonImage != null)
+                _ribbonImage.color = DifficultyStyle.Get(difficulty, _defaultRibbonColor);
 
             if (_stageTitle != null)
                 _stageTitle.text = string.Format(Game.Services.LocalizationService.Instance.Get("popup.stage_info.title"), stageId);
@@ -46,6 +56,12 @@ namespace Game.OutGame.Lobby
                 if (_bestStarFills[i] != null) _bestStarFills[i].SetActive(i < bestStars);
 
             int addTurnsCount = Game.Services.PlayerProgressService.Instance != null ? Game.Services.PlayerProgressService.Instance.GetItemCount(1) : 0;
+
+            if (_itemCountText != null)
+                _itemCountText.text = string.Format(Game.Services.LocalizationService.Instance.Get("popup.stage_info.item_count_fmt"), addTurnsCount);
+            if (_itemContainerGroup != null)
+                _itemContainerGroup.alpha = addTurnsCount > 0 ? 1f : 0.4f;
+
             if (_extraTurnsToggle != null)
             {
                 _extraTurnsToggle.interactable = addTurnsCount > 0;

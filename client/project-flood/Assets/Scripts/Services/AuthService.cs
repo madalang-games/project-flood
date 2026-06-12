@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Game.Services
 {
-    public enum AuthResult { Authenticated, Guest, ReLoginRequired, NewGuestCreated }
+    public enum AuthResult { Authenticated, Guest, ReLoginRequired, NewGuestCreated, NetworkError }
 
     public class AuthService : MonoBehaviour
     {
@@ -75,6 +75,11 @@ namespace Game.Services
                     {
                         onComplete?.Invoke(IsGuest ? AuthResult.Guest : AuthResult.Authenticated);
                     }
+                    else if (IsRateLimitedError(error))
+                    {
+                        // Temporary rate limit — token preserved, surface as transient network error
+                        onComplete?.Invoke(AuthResult.NetworkError);
+                    }
                     else
                     {
                         onComplete?.Invoke(AuthResult.ReLoginRequired);
@@ -92,9 +97,8 @@ namespace Game.Services
                 }
                 else
                 {
-                    Debug.LogWarning($"[AuthService] Server guest login failed: {error}. Falling back to offline guest.");
-                    SetupOfflineGuest();
-                    onComplete?.Invoke(AuthResult.Guest);
+                    Debug.LogWarning($"[AuthService] Guest login failed (network unreachable): {error}");
+                    onComplete?.Invoke(AuthResult.NetworkError);
                 }
             });
         }
@@ -166,10 +170,29 @@ namespace Game.Services
                 var waiters = _refreshWaiters;
                 _refreshWaiters = null;
 
-                ClearToken();
+                // Only wipe tokens when the server explicitly rejects them (parseable JSON error).
+                // Network failures (server unreachable, timeout) return raw strings — preserve tokens
+                // so the next launch can retry the refresh instead of creating a new guest account.
+                if (IsServerAuthRejection(error)) ClearToken();
+
                 onComplete?.Invoke(false, error);
                 if (waiters != null)
                     foreach (var w in waiters) w?.Invoke(false, error);
+            });
+        }
+
+        public void ContinueAsGuest(Action<AuthResult> onComplete)
+        {
+            _accountSwitched = false;
+            LoginGuest((success, error) =>
+            {
+                if (success)
+                    onComplete?.Invoke(_accountSwitched ? AuthResult.NewGuestCreated : AuthResult.Guest);
+                else
+                {
+                    Debug.LogWarning($"[AuthService] Guest login failed: {error}");
+                    onComplete?.Invoke(AuthResult.NetworkError);
+                }
             });
         }
 
@@ -280,34 +303,34 @@ namespace Game.Services
             onComplete?.Invoke(true, "");
         }
 
-        private void SetupOfflineGuest()
-        {
-            _provider = "guest";
-            _accessToken = "offline_access_token";
-            _refreshToken = "offline_refresh_token";
-            _accessExpiresAt = DateTimeOffset.UtcNow.AddDays(30);
-            _displayName = "Guest";
-            _avatarId = 1;
-
-            _storage.Set(AccessTokenKey, _accessToken);
-            _storage.Set(RefreshTokenKey, _refreshToken);
-            _storage.Set(ProviderKey, _provider);
-            _storage.Set(AccessExpiresAtKey, _accessExpiresAt.ToString("O"));
-            _storage.Save();
-
-            _displayName = "Guest";
-            _avatarId = 1;
-
-            SyncServiceTokens();
-            OnAuthStateChanged?.Invoke(true, _provider);
-            OnProfileChanged?.Invoke();
-        }
-
         public void UpdateCachedProfile(string displayName, int avatarId)
         {
             _displayName = displayName;
             _avatarId = avatarId;
             OnProfileChanged?.Invoke();
+        }
+
+        private static bool IsServerAuthRejection(string error)
+        {
+            if (string.IsNullOrEmpty(error) || !error.TrimStart().StartsWith("{")) return false;
+            try
+            {
+                var parsed = JsonUtility.FromJson<ErrorResponseJson>(error);
+                return parsed != null && !string.IsNullOrEmpty(parsed.code);
+            }
+            catch { return false; }
+        }
+
+        private static bool IsRateLimitedError(string error)
+        {
+            if (string.IsNullOrEmpty(error) || !error.TrimStart().StartsWith("{")) return false;
+            try
+            {
+                var parsed = JsonUtility.FromJson<PlatformErrorJson>(error);
+                return parsed != null
+                    && (parsed.error == "rate_limited" || parsed.error == "too_many_failures");
+            }
+            catch { return false; }
         }
 
         private void ClearToken()
@@ -430,6 +453,12 @@ namespace Game.Services
         }
 
         // --- JSON Helper Classes for Unity JsonUtility ---
+        [Serializable]
+        private class PlatformErrorJson
+        {
+            public string error;
+        }
+
         [Serializable]
         private class GuestLoginRequestJson
         {

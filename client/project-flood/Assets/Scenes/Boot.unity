@@ -782,7 +782,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 363e0cf1baa2a0441adbd9a40a07305d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Game.Services.NetworkService
-  _environment: 0
+  _environment: 1
   _protocolVersion: 1
   _enableLogging: 1
   _logLevel: 3
@@ -874,7 +874,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 568431379dae3e744a13ddf39e2f56fa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Game.Services.SoundManager
-  sfxCatalog: {fileID: 0}
+  sfxCatalog: {fileID: 11400000, guid: e41cdc88e5a17e540a57ababd80e342b, type: 2}
   resourcesCatalogPath: SfxCatalog
   _bgmSource: {fileID: 0}
   _sfxSource: {fileID: 0}
@@ -1525,6 +1525,50 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &2074481610
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2074481612}
+  - component: {fileID: 2074481611}
+  m_Layer: 0
+  m_Name: ItemDataService
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &2074481611
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2074481610}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b38c38d6fc2e1554c8d22ccbe7345a15, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Game.Services.ItemDataService
+--- !u!4 &2074481612
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2074481610}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 1270.2189, y: 2236.1997, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2102913506
 GameObject:
   m_ObjectHideFlags: 0
@@ -1672,3 +1716,4 @@ SceneRoots:
   - {fileID: 1506881933}
   - {fileID: 789680824}
   - {fileID: 955472464}
+  - {fileID: 2074481612}
