@@ -16,6 +16,7 @@ namespace ProjectFlood.Generated.Data
         public ItemUseType use_type { get; set; }
         public ItemEffectType effect_type { get; set; }
         public int effect_value { get; set; }
+        public int price { get; set; }
     }
 
     public static class ItemLoader
@@ -43,6 +44,7 @@ namespace ProjectFlood.Generated.Data
                     use_type = idx.TryGetValue("use_type", out var i3) && i3 < cols.Length && !string.IsNullOrEmpty(cols[i3]) ? Enum.Parse<ItemUseType>(cols[i3]) : default,
                     effect_type = idx.TryGetValue("effect_type", out var i4) && i4 < cols.Length && !string.IsNullOrEmpty(cols[i4]) ? Enum.Parse<ItemEffectType>(cols[i4]) : default,
                     effect_value = idx.TryGetValue("effect_value", out var i5) && i5 < cols.Length && !string.IsNullOrEmpty(cols[i5]) ? int.Parse(cols[i5]) : default,
+                    price = idx.TryGetValue("price", out var i6) && i6 < cols.Length && !string.IsNullOrEmpty(cols[i6]) ? int.Parse(cols[i6]) : default,
                 });
             }
             return result;

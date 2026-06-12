@@ -27,6 +27,7 @@ services:
       APP_REQUIRED_CLIENT_VERSION: ${APP_REQUIRED_CLIENT_VERSION:?APP_REQUIRED_CLIENT_VERSION is required}
       APP_ALLOWED_PROTOCOL_VERSION: ${APP_ALLOWED_PROTOCOL_VERSION:?APP_ALLOWED_PROTOCOL_VERSION is required}
       LOG_LEVEL: ${LOG_LEVEL:-Information}
+      RateLimit__TransactionalPerMinute: ${RATE_LIMIT_TRANSACTIONAL_PER_MINUTE:-30}
     networks:
       - default
       - madalang-net

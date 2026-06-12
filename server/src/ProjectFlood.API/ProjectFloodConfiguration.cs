@@ -51,7 +51,8 @@ public sealed class ProjectFloodConfiguration
             },
             RateLimit = new RateLimitOptions
             {
-                StageStartPerHour = ConfigIntOptional(configuration, "RateLimit:StageStartPerHour") ?? 720
+                StageStartPerHour      = ConfigIntOptional(configuration, "RateLimit:StageStartPerHour")      ?? 720,
+                TransactionalPerMinute = ConfigIntOptional(configuration, "RateLimit:TransactionalPerMinute") ?? 30
             }
         };
 
@@ -115,6 +116,7 @@ public sealed class ProjectFloodConfiguration
     public sealed class RateLimitOptions
     {
         public required int StageStartPerHour { get; init; }
+        public required int TransactionalPerMinute { get; init; }
     }
 
     private static string EnvRequired(string key)

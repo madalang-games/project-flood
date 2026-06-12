@@ -8,6 +8,7 @@ using ProjectFlood.Application.Common;
 using ProjectFlood.Application.Currency;
 using ProjectFlood.Application.Logging;
 using ProjectFlood.Contracts.Inventory;
+using ProjectFlood.Domain.Interfaces;
 using ProjectFlood.Infrastructure.Generated;
 
 namespace ProjectFlood.Application.Inventory;
@@ -16,11 +17,13 @@ public sealed class InventoryService
 {
     private readonly AppDbContext _db;
     private readonly CurrencyService _currency;
+    private readonly IStaticDataService _staticData;
 
-    public InventoryService(AppDbContext db, CurrencyService currency)
+    public InventoryService(AppDbContext db, CurrencyService currency, IStaticDataService staticData)
     {
         _db = db;
         _currency = currency;
+        _staticData = staticData;
     }
 
     public async Task<InventorySnapshot> GetInventoryAsync(long userId, CancellationToken ct)
@@ -109,7 +112,9 @@ public sealed class InventoryService
         CancellationToken ct)
     {
         var now = DateTimeOffset.UtcNow;
-        var cost = 100;
+        var itemData = _staticData.GetItem(itemId)
+            ?? throw new GameApiException("ITEM_NOT_FOUND", $"Item {itemId} not found.");
+        var cost = itemData.Price;
 
         await using var tx = await _db.Database.BeginTransactionAsync(ct);
 

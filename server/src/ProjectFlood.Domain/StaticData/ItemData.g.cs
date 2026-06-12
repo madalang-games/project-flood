@@ -12,4 +12,5 @@ public class ItemData
     public ItemUseType UseType { get; set; }
     public ItemEffectType EffectType { get; set; }
     public int EffectValue { get; set; }
+    public int Price { get; set; }
 }

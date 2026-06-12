@@ -14,10 +14,12 @@ namespace ProjectFlood.API.Middleware
         private static readonly Regex StageClearRegex = new Regex(@"^/api/stages/(?<stageId>\d+)/attempts/[^/]+/clear$", RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
         private readonly RequestDelegate _next;
+        private readonly ProjectFloodConfiguration _config;
 
-        public RateLimitingMiddleware(RequestDelegate next)
+        public RateLimitingMiddleware(RequestDelegate next, ProjectFloodConfiguration config)
         {
-            _next = next;
+            _next   = next;
+            _config = config;
         }
 
         public async Task InvokeAsync(HttpContext context, IConnectionMultiplexer redis)
@@ -77,13 +79,13 @@ namespace ProjectFlood.API.Middleware
                     // Count current requests
                     var currentRequestCount = await db.SortedSetLengthAsync(limitKey);
 
-                    if (currentRequestCount >= 5)
+                    if (currentRequestCount >= _config.RateLimit.TransactionalPerMinute)
                     {
                         context.Response.StatusCode = (int)HttpStatusCode.TooManyRequests; // 429
                         await context.Response.WriteAsJsonAsync(new ErrorResponse
                         {
                             Code = "RATE_LIMITED",
-                            Message = "Rate limit exceeded. Standard limit is 5 requests per minute."
+                            Message = $"Rate limit exceeded. Standard limit is {_config.RateLimit.TransactionalPerMinute} requests per minute."
                         });
                         return;
                     }

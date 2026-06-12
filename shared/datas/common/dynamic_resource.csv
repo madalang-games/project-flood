@@ -104,3 +104,4 @@ stage_node_ch_8,Assets/Resources/Sprites/StageNodes/stage_node_ch_8.png,StageNod
 stage_node_ch_9,Assets/Resources/Sprites/StageNodes/stage_node_ch_9.png,StageNode,Chapter 9 Sky stage node background
 stage_node_ch_10,Assets/Resources/Sprites/StageNodes/stage_node_ch_10.png,StageNode,Chapter 10 Aurora stage node background
 stage_node_ch_11,Assets/Resources/Sprites/StageNodes/stage_node_ch_11.png,StageNode,Chapter 11 Space stage node background
+ui_hard_skull,Assets/Sprites/UI/Icons/ui_hard_skull.png,UI,Hard difficulty skull icon

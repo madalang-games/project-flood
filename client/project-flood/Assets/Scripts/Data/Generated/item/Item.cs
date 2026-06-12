@@ -17,5 +17,6 @@ namespace ProjectFlood.Data.Generated
         public ItemEffectType effect_type;
         public int effect_value;
         public string icon_name;
+        public int price;
     }
 }

@@ -1,7 +1,7 @@
-item_id,name_key,desc_key,use_type,effect_type,effect_value
-1,item.name.add_turn,item.desc.add_turn,PreGame,AddTurns,3
-2,item.name.bomb,item.desc.bomb,InGame,Bomb,3
-3,item.name.h_rocket,item.desc.h_rocket,InGame,HRocket,1
-4,item.name.color_sweep,item.desc.color_sweep,InGame,ColorSweep,0
-5,item.name.row_shift,item.desc.row_shift,InGame,RowShift,0
-6,item.name.cell_swap,item.desc.cell_swap,InGame,CellSwap,0
+item_id,name_key,desc_key,use_type,effect_type,effect_value,price
+1,item.name.add_turn,item.desc.add_turn,PreGame,AddTurns,3,100
+2,item.name.bomb,item.desc.bomb,InGame,Bomb,3,100
+3,item.name.h_rocket,item.desc.h_rocket,InGame,HRocket,1,100
+4,item.name.color_sweep,item.desc.color_sweep,InGame,ColorSweep,0,100
+5,item.name.row_shift,item.desc.row_shift,InGame,RowShift,0,100
+6,item.name.cell_swap,item.desc.cell_swap,InGame,CellSwap,0,100

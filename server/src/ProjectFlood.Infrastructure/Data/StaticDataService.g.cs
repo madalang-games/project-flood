@@ -80,6 +80,7 @@ public partial class StaticDataService
                 UseType = r.use_type,
                 EffectType = r.effect_type,
                 EffectValue = r.effect_value,
+                Price = r.price,
             });
         _rewardGroups = RewardGroupLoader.LoadAll(System.IO.Path.Combine(rewardPath, "reward_group.csv"))
             .ToDictionary(r => r.reward_group_id, r => new RewardGroupData
