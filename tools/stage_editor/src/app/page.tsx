@@ -15,7 +15,6 @@ import {
 } from '../lib/game-rules';
 import { validate } from '../lib/validator';
 import type { ValidationResult } from '../lib/validator';
-import { generateBoardParallel } from '../lib/generator-worker-pool';
 import type { GenerateResult, GeneratorSettings } from '../lib/generator';
 import StageList from '../components/StageList';
 import ChapterPanel from '../components/ChapterPanel';
@@ -106,7 +105,7 @@ export default function EditorPage() {
   const [validationResult, setValidationResult] = useState<ValidationResult | null>(null);
   const [showGenerator, setShowGenerator] = useState(false);
   const [generatorStatus, setGeneratorStatus] = useState<GeneratorStatus>('idle');
-  const [generatorInfo, setGeneratorInfo] = useState<{ attempts: number; solveLength: number } | null>(null);
+  const [generatorInfo, setGeneratorInfo] = useState<{ attempts: number; solveLength: number; score?: number } | null>(null);
   const [history, setHistory] = useState<HistoryEntry[]>([]);
   const [redoHistory, setRedoHistory] = useState<HistoryEntry[]>([]);
 
@@ -677,24 +676,33 @@ export default function EditorPage() {
 
     let result: GenerateResult | null = null;
     try {
-      result = await generateBoardParallel({
-        ...settings,
-        width: meta.board_width,
-        height: meta.board_height,
-        turnLimit: meta.turn_limit,
-        star1Ratio: meta.star1_ratio,
-        star2Ratio: meta.star2_ratio,
-        rotationInterval: meta.rotation_interval,
-        portalData: meta.portal_data,
-        conveyorData: meta.conveyor_data,
+      const res = await fetch('/api/generate-board', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ...settings,
+          width: meta.board_width,
+          height: meta.board_height,
+          difficulty: meta.difficulty,
+          turnLimit: meta.turn_limit,
+          star1Ratio: meta.star1_ratio,
+          star2Ratio: meta.star2_ratio,
+          rotationInterval: meta.rotation_interval,
+          portalData: meta.portal_data,
+          conveyorData: meta.conveyor_data,
+        }),
       });
+      if (!res.ok) {
+        throw new Error(await res.text());
+      }
+      result = await res.json();
     } catch (error) {
       console.error(error);
     }
 
     if (result) {
       setGeneratorStatus('success');
-      setGeneratorInfo({ attempts: result.attempts, solveLength: result.solveLength });
+      setGeneratorInfo({ attempts: result.attempts, solveLength: result.solveLength, score: result.score });
       setGrid(currentGrid => {
         setHistory(prev => [...prev, {
           grid: currentGrid.map(r => r.map(c => ({ ...c }))),

@@ -45,6 +45,7 @@ export async function generateBoardParallel(config: GeneratorConfig): Promise<Ge
     let active = 0;
     let requestId = 0;
     let settled = false;
+    let best: GenerateResult | null = null;
 
     const cleanup = () => {
       for (const worker of workers) worker.terminate();
@@ -67,7 +68,7 @@ export async function generateBoardParallel(config: GeneratorConfig): Promise<Ge
     const assign = (worker: Worker) => {
       if (settled) return;
       if (nextAttempt > config.maxAttempts) {
-        if (active === 0) finish(null);
+        if (active === 0) finish(best);
         return;
       }
 
@@ -91,13 +92,10 @@ export async function generateBoardParallel(config: GeneratorConfig): Promise<Ge
           return;
         }
 
-        if (result) {
-          finish(result);
-          return;
-        }
+        if (result && (!best || result.score > best.score)) best = result;
 
         assign(worker);
-        if (nextAttempt > config.maxAttempts && active === 0) finish(null);
+        if (nextAttempt > config.maxAttempts && active === 0) finish(best);
       };
 
       worker.onerror = event => {

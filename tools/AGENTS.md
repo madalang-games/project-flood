@@ -8,6 +8,7 @@
 | `db_generator/` | `server/db/schema.json` -> DB CREATE/ALTER TABLE + migration SQL + generated EF data access |
 | `pkt_generator/` | `shared/contracts/**/*.cs` -> `client/.../Generated/Contracts/*.cs` (diff-only, preserves `.meta`) |
 | `stage_editor/` | Next.js stage editor — CSV CRUD + board UI + playtest |
+| `stage_generator/` | C# local CLI for parallel best-candidate stage generation | -> `stage_generator/AGENTS.md` |
 | `all_generator.bat` | Runs all gen steps in order (`info_generator` -> `db_generator` -> `pkt_generator`) |
 | `info_generator.bat` | Runs info_generator only |
 | `db_generator.bat` | Runs db_generator only |

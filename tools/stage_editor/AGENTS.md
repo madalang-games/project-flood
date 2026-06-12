@@ -11,6 +11,7 @@ Standalone development tool. Reads/writes `shared/datas/stage/stage.csv` and `sh
 | `src/app/api/stages/[id]/route.ts` | GET, PUT, DELETE by stage_id |
 | `src/app/api/chapters/route.ts` | GET all chapters, POST new chapter |
 | `src/app/api/chapters/[id]/route.ts` | DELETE chapter by chapter_id |
+| `src/app/api/generate-board/route.ts` | POST generator config, run C# stage_generator CLI, return best candidate |
 | `src/app/api/generator-defaults/route.ts` | GET generator defaults from `template.ini [stage-editor-generator]` |
 | `src/app/api/palette/route.ts` | GET all 16 palette colors |
 | `src/workers/` | Web Worker entrypoints for CPU-heavy client tasks | -> `src/workers/AGENTS.md` |
@@ -31,7 +32,7 @@ Standalone development tool. Reads/writes `shared/datas/stage/stage.csv` and `sh
 ## Files
 | file | class/export | role |
 |------|-------------|------|
-| `src/components/GeneratorPanel.tsx` | `GeneratorSettings` | re-exported from `generator.ts`; colorCount, obstacleCount, protectorLevel1Count, protectorLevel2Count, coreCellCount, maxAttempts, difficultyMargin |
+| `src/components/GeneratorPanel.tsx` | `GeneratorSettings` | re-exported from `generator.ts`; colorCount, obstacleCount, voidCount, protectorLevel1Count, protectorLevel2Count, coreCellCount, maxAttempts, legacy difficultyMargin |
 | `src/types/stage.ts` | `CellData` | colorId, type (Basic|Obstacle|Void), protector, isCore |
 | `src/types/stage.ts` | `ChapterRow` | chapter.csv row: chapter_id, display_order, unlock_chapter_id, reward_group_id, bg_theme_id |
 | `src/types/stage.ts` | `StageRow` | Raw CSV row shape, including server-only reward_group_id |
@@ -47,6 +48,7 @@ Standalone development tool. Reads/writes `shared/datas/stage/stage.csv` and `sh
 | `src/lib/csv.ts` | `readChapters` | Parse chapter.csv → ChapterRow[] |
 | `src/lib/csv.ts` | `writeChapters` | ChapterRow[] → rewrite chapter.csv |
 | `src/lib/csv.ts` | `readPalette` | Parse color_palette.csv → PaletteColor[] |
+| `src/app/api/generate-board/route.ts` | `POST` | Runs `tools/stage_generator` C# CLI and returns best scored board |
 | `src/lib/game-rules.ts` | `findGroup` | BFS same-color group from (r,c); Void/Obstacle excluded |
 | `src/lib/game-rules.ts` | `applyRemoval` | Strip protector or remove cells |
 | `src/lib/game-rules.ts` | `applyGravity` | TS port: downward gravity with portal routing support |
@@ -55,9 +57,9 @@ Standalone development tool. Reads/writes `shared/datas/stage/stage.csv` and `sh
 | `src/lib/game-rules.ts` | `evaluate` | clearance_ratio + star result; Void excluded |
 | `src/lib/validator.ts` | `validate` | Replay solution with gravity/conveyor/rotation + core warnings |
 | `src/lib/solver.ts` | `autoSolve` | BFS (min-move) with portal, conveyor, and rotation support → greedy fallback; single-cell fallback when no ≥2 groups |
-| `src/lib/generator.ts` | `generateBoard` | Motif recipe generator: sandwich-first layout + cage-safe obstacle placement + exact autoSolve(K) verify + retry loop |
-| `src/lib/generator.ts` | `generateBoardAttempt` | Runs one generator attempt and tags a successful result with the assigned attempt number |
-| `src/lib/generator-worker-pool.ts` | `generateBoardParallel` | Spawns up to `navigator.hardwareConcurrency` workers; completed workers pull the next attempt |
+| `src/lib/generator.ts` | `generateBoard` | Best-candidate generator: samples clearable boards, scores difficulty/motif/group quality, returns highest score |
+| `src/lib/generator.ts` | `generateBoardAttempt` | Runs one generator attempt and tags a scored candidate with the assigned attempt number |
+| `src/lib/generator-worker-pool.ts` | `generateBoardParallel` | Spawns up to `navigator.hardwareConcurrency` workers; returns highest score after all attempts complete |
 | `src/workers/generator.worker.ts` | `workerScope.onmessage` | Executes one `generateBoardAttempt` per worker message |
 | `src/lib/ini.ts` | `parseIni` | Minimal INI parser — returns `Record<section, Record<key, string>>` |
 
@@ -70,8 +72,10 @@ Standalone development tool. Reads/writes `shared/datas/stage/stage.csv` and `sh
 | `ValidationResult` | interface | hasVerifiedSolution, solutionReplaySucceeds, warnings[], canExport |
 | `GenerateWorkerRequest` | interface | Worker message: request id, assigned attempt number, generator config |
 | `GenerateWorkerResponse` | interface | Worker response: request id, attempt, result or error |
-| `GeneratorRecipe` | interface (generator) | Internal target move, sandwich depth/width, direct group, obstacle recipe |
-| `SandwichMotif` | interface (generator) | Internal blocker/payload/protected cell sets used by motif validation |
+| `GeneratorRecipe` | interface (generator) | Internal difficulty, optimal-turn bounds, sandwich depth/width, direct group, obstacle recipe |
+| `SandwichMotif` | interface (generator) | Internal blocker/payload/protected/decoy cell sets used by motif validation |
+| `MotifUsage` | interface (generator) | Solution analysis flags for blocker/payload/decoy use; used for score, not hard reject |
+| `BoardStats` | interface (generator) | Initial group, largest group, pocket, sealed, isolated-cell metrics for score |
 | `PROJECT_ROOT` | const | env `PROJECT_ROOT` (set by `stage_editor.bat`) or `process.cwd()/..` — must resolve to project-flood root |
 | `BOARD_BG` | const (BoardEditor) | `#1e1e2e` — board panel color |
 | `SOCKET_COLOR` | const (BoardEditor) | `#2a2a3e` — empty cell slot color |

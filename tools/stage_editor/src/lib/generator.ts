@@ -10,6 +10,7 @@ import { autoSolveExact } from './solver';
 export interface GeneratorSettings {
   colorCount: number;
   obstacleCount: number;
+  voidCount: number;
   protectorLevel1Count: number;
   protectorLevel2Count: number;
   coreCellCount: number;
@@ -20,6 +21,7 @@ export interface GeneratorSettings {
 export interface GeneratorConfig extends GeneratorSettings {
   width: number;
   height: number;
+  difficulty: number;
   turnLimit: number;
   star1Ratio: number;
   star2Ratio: number;
@@ -33,17 +35,26 @@ export interface GenerateResult {
   verifiedSolution: string;
   attempts: number;
   solveLength: number;
+  score: number;
 }
 
 type Coord = [number, number];
 type Assigned = Map<string, { color: number; groupIdx: number }>;
 
 interface GeneratorRecipe {
-  targetMoves: number;
+  difficulty: number;
+  searchTurnLimit: number;
+  minOptimalMoves: number;
+  maxOptimalMoves: number;
   sandwichDepth: number;
   sandwichWidth: number;
+  blockerProtector: boolean;
   directGroupCount: number;
   obstacleCount: number;
+  voidCount: number;
+  useOffset: boolean;
+  usePartialBlocker: boolean;
+  useDecoys: boolean;
 }
 
 interface SandwichMotif {
@@ -53,10 +64,34 @@ interface SandwichMotif {
   blockerKeys: Set<string>;
   payloadKeys: Set<string>;
   protectedKeys: Set<string>;
+  blockerProtectorKeys: Set<string>;
+  decoyKeys: Set<string>;
 }
 
-type Marker = 'blocker' | 'payload' | null;
+type Marker = 'blocker' | 'payload' | 'decoy' | null;
 type MarkerBoard = Marker[][];
+
+interface MotifUsage {
+  blockerTouched: boolean;
+  blockerTouchCount: number;
+  payloadTouchedBeforeBlocker: boolean;
+  mergedPayloadTouched: boolean;
+  decoyTouched: boolean;
+}
+
+interface BoardStats {
+  groupCount: number;
+  largestGroup: number;
+  narrowPocketCount: number;
+  sealedBasicCount: number;
+  isolatedBasicCount: number;
+}
+
+interface CandidateResult {
+  board: CellData[][];
+  solution: Coord[];
+  score: number;
+}
 
 const DIRS = [[-1, 0], [1, 0], [0, -1], [0, 1]] as const;
 
@@ -79,6 +114,14 @@ function makeBasic(colorId = 0): CellData {
 
 function makeObstacle(): CellData {
   return { colorId: 0, type: 'Obstacle', protector: 0, isCore: false };
+}
+
+function makeVoid(): CellData {
+  return { colorId: 0, type: 'Void', protector: 0, isCore: false };
+}
+
+function clamp(value: number, min: number, max: number): number {
+  return Math.min(max, Math.max(min, value));
 }
 
 function toBoard(grid: CellData[][]): Board {
@@ -108,28 +151,46 @@ function pickSpreadSeeds(positions: Coord[], count: number): Coord[] {
 }
 
 function buildRecipe(config: GeneratorConfig): GeneratorRecipe | null {
-  const targetMoves = config.turnLimit - config.difficultyMargin;
-  if (targetMoves <= 0 || config.colorCount < 2 || config.width < 2) return null;
+  if (config.colorCount < 2 || config.width < 2) return null;
 
+  const difficulty = clamp(Math.floor(config.difficulty), 0, 2);
+  const requestedDepth = difficulty === 0 ? 0 : difficulty;
   const sandwichDepth = Math.min(
-    config.difficultyMargin,
+    requestedDepth,
     Math.floor((config.height - 1) / 2),
     config.colorCount - 1,
-    targetMoves - 1,
   );
 
-  const sandwichMoves = sandwichDepth > 0 ? sandwichDepth + 1 : 0;
-  const directGroupCount = Math.max(0, targetMoves - sandwichMoves);
+  const validCellEstimate = Math.max(1, config.width * config.height - config.obstacleCount - config.voidCount);
+  const targetGroupSize = difficulty === 0 ? 6 : difficulty === 1 ? 5 : 4;
+  const expectedMoves = clamp(
+    Math.round(validCellEstimate / targetGroupSize),
+    Math.max(4, sandwichDepth + 3),
+    Math.min(24, validCellEstimate),
+  );
+
+  const blockerProtector = difficulty >= 2 && sandwichDepth > 0 && Math.random() < 0.35;
+  const sandwichMoves = sandwichDepth > 0 ? sandwichDepth + 1 + (blockerProtector ? 1 : 0) : 0;
+  const directGroupCount = Math.max(1, expectedMoves - sandwichMoves);
   const sandwichWidth = sandwichDepth > 0
-    ? Math.max(2, Math.min(config.width, Math.round(config.width * sandwichMoves / targetMoves)))
+    ? Math.max(2, Math.min(config.width - 1, difficulty === 1 ? 3 : 4))
     : 0;
+  const maxOptimalMoves = Math.min(30, Math.max(expectedMoves + 4, config.turnLimit, sandwichMoves + directGroupCount + 2));
 
   return {
-    targetMoves,
+    difficulty,
+    searchTurnLimit: maxOptimalMoves,
+    minOptimalMoves: Math.max(2, expectedMoves - 3),
+    maxOptimalMoves,
     sandwichDepth,
     sandwichWidth,
+    blockerProtector,
     directGroupCount,
     obstacleCount: Math.max(0, config.obstacleCount),
+    voidCount: Math.max(0, config.voidCount),
+    useOffset: difficulty > 0,
+    usePartialBlocker: difficulty > 0,
+    useDecoys: difficulty > 0,
   };
 }
 
@@ -141,6 +202,10 @@ function placeSandwich(
   width: number,
   aColor: number,
   colorCount: number,
+  useBlockerProtector: boolean,
+  useOffset: boolean,
+  usePartialBlocker: boolean,
+  useDecoys: boolean,
 ): SandwichMotif | null {
   if (depth <= 0 || width <= 0) return null;
 
@@ -149,6 +214,50 @@ function placeSandwich(
   const blockerKeys = new Set<string>();
   const payloadKeys = new Set<string>();
   const protectedKeys = new Set<string>();
+  const blockerProtectorKeys = new Set<string>();
+  const decoyKeys = new Set<string>();
+  const layerCols: number[][] = [];
+  let hasOffsetPayload = false;
+
+  for (let layer = 0; layer <= 2 * depth; layer++) {
+    const isPayload = layer % 2 === 0;
+    const shiftRange = Math.max(0, W - width);
+    let start = colStart;
+
+    if (useOffset && isPayload && width < W && layer > 0) {
+      const starts = [colStart - 1, colStart + 1].filter(s => s >= 0 && s <= shiftRange);
+      start = starts.length > 0 ? starts[Math.floor(Math.random() * starts.length)] : colStart;
+      hasOffsetPayload = hasOffsetPayload || start !== colStart;
+    }
+
+    if (usePartialBlocker && !isPayload && width > 1) {
+      const trimLeft = Math.random() < 0.5 ? 1 : 0;
+      const trimRight = trimLeft === 1 ? 0 : 1;
+      layerCols[layer] = Array.from(
+        { length: Math.max(1, width - trimLeft - trimRight) },
+        (_, i) => colStart + trimLeft + i,
+      );
+    } else {
+      layerCols[layer] = Array.from({ length: width }, (_, i) => start + i);
+    }
+  }
+
+  if (useOffset && width < W && !hasOffsetPayload) return null;
+
+  const sharedPayloadCols = new Set<number>(layerCols[0]);
+  for (let layer = 2; layer <= 2 * depth; layer += 2) {
+    const cols = new Set(layerCols[layer]);
+    for (const col of [...sharedPayloadCols]) {
+      if (!cols.has(col)) sharedPayloadCols.delete(col);
+    }
+  }
+  if (sharedPayloadCols.size === 0) return null;
+  const gateCol = sharedPayloadCols.values().next().value!;
+  for (let layer = 1; layer <= 2 * depth; layer += 2) {
+    if (!layerCols[layer].some(c => sharedPayloadCols.has(c))) {
+      layerCols[layer][0] = gateCol;
+    }
+  }
 
   for (let layer = 0; layer <= 2 * depth; layer++) {
     const row = H - 1 - layer;
@@ -157,17 +266,75 @@ function placeSandwich(
       ? aColor
       : (aColor + 1 + (Math.floor(layer / 2) % (colorCount - 1))) % colorCount;
 
-    for (let c = colStart; c < colStart + width; c++) {
+    for (const c of layerCols[layer]) {
       grid[row][c] = makeBasic(colorId);
       const key = keyOf(row, c);
       preAssigned.set(key, { color: colorId, groupIdx: -(layer + 1) });
       protectedKeys.add(key);
-      if (isPayload) payloadKeys.add(key);
-      else blockerKeys.add(key);
+      if (isPayload) {
+        payloadKeys.add(key);
+      } else {
+        blockerKeys.add(key);
+        if (useBlockerProtector && (blockerProtectorKeys.size === 0 || Math.random() < 0.45)) {
+          grid[row][c].protector = 1;
+          blockerProtectorKeys.add(key);
+        }
+      }
     }
   }
 
-  return { depth, width, preAssigned, blockerKeys, payloadKeys, protectedKeys };
+  if (useDecoys) {
+    placeSandwichDecoys(
+      grid,
+      H,
+      W,
+      colorCount,
+      aColor,
+      layerCols,
+      protectedKeys,
+      preAssigned,
+      decoyKeys,
+    );
+  }
+
+  return { depth, width, preAssigned, blockerKeys, payloadKeys, protectedKeys, blockerProtectorKeys, decoyKeys };
+}
+
+function placeSandwichDecoys(
+  grid: CellData[][],
+  H: number,
+  W: number,
+  colorCount: number,
+  payloadColor: number,
+  layerCols: number[][],
+  protectedKeys: Set<string>,
+  preAssigned: Assigned,
+  decoyKeys: Set<string>,
+): void {
+  const rows = [H - 1, Math.max(0, H - 3)];
+  const usedCols = new Set(layerCols.flat());
+  const side = [...usedCols].reduce((sum, c) => sum + c, 0) / Math.max(1, usedCols.size) < W / 2 ? 1 : -1;
+  const anchor = side > 0
+    ? Math.min(W - 1, Math.max(...usedCols) + 2)
+    : Math.max(0, Math.min(...usedCols) - 2);
+  const cols = [anchor, clamp(anchor + side, 0, W - 1)].filter((c, i, arr) => arr.indexOf(c) === i);
+
+  for (let i = 0; i < rows.length; i++) {
+    const row = rows[i];
+    if (row < 0 || row >= H) continue;
+    for (const col of cols) {
+      const key = keyOf(row, col);
+      if (protectedKeys.has(key)) continue;
+      const adjacentToPayload = DIRS.some(([dr, dc]) => protectedKeys.has(keyOf(row + dr, col + dc)));
+      const colorId = i === 0 && !adjacentToPayload
+        ? payloadColor
+        : (payloadColor + 1 + Math.floor(Math.random() * Math.max(1, colorCount - 1))) % colorCount;
+      grid[row][col] = makeBasic(colorId);
+      protectedKeys.add(key);
+      decoyKeys.add(key);
+      preAssigned.set(key, { color: colorId, groupIdx: -100 - decoyKeys.size });
+    }
+  }
 }
 
 function openNeighborCount(grid: CellData[][], r: number, c: number): number {
@@ -197,11 +364,12 @@ function obstacleQualityFails(grid: CellData[][]): boolean {
   return narrowPocketCount > Math.max(2, Math.floor(basicCount * 0.08));
 }
 
-function placeObstacles(
+function placeBlockingCells(
   grid: CellData[][],
   candidates: Coord[],
   count: number,
   protectedKeys: Set<string>,
+  makeCell: () => CellData,
 ): boolean {
   if (count <= 0) return true;
   const shuffled = shuffle(candidates.filter(([r, c]) => !protectedKeys.has(keyOf(r, c))));
@@ -220,7 +388,7 @@ function placeObstacles(
     if (grid[r][c].type !== 'Basic') continue;
 
     const prev = grid[r][c];
-    grid[r][c] = makeObstacle();
+    grid[r][c] = makeCell();
     const fails = relaxed ? hasSealedBasicCell(grid) : obstacleQualityFails(grid);
     if (fails) {
       grid[r][c] = prev;
@@ -453,10 +621,54 @@ function countInitialGroups(grid: CellData[][]): number {
   return groups;
 }
 
+function collectBoardStats(grid: CellData[][]): BoardStats {
+  const board = toBoard(grid);
+  const visited = new Set<string>();
+  let groupCount = 0;
+  let largestGroup = 0;
+  let narrowPocketCount = 0;
+  let sealedBasicCount = 0;
+  let isolatedBasicCount = 0;
+
+  for (let r = 0; r < grid.length; r++) {
+    for (let c = 0; c < (grid[0]?.length ?? 0); c++) {
+      const cell = grid[r][c];
+      if (cell.type !== 'Basic') continue;
+
+      const open = openNeighborCount(grid, r, c);
+      if (open === 0) sealedBasicCount++;
+      if (open === 1) narrowPocketCount++;
+
+      let hasBasicNeighbor = false;
+      let hasSameColorNeighbor = false;
+      for (const [dr, dc] of DIRS) {
+        const nr = r + dr, nc = c + dc;
+        if (nr < 0 || nr >= grid.length || nc < 0 || nc >= (grid[0]?.length ?? 0)) continue;
+        if (grid[nr][nc].type !== 'Basic') continue;
+        hasBasicNeighbor = true;
+        if (grid[nr][nc].colorId === cell.colorId) hasSameColorNeighbor = true;
+      }
+      if (hasBasicNeighbor && !hasSameColorNeighbor) isolatedBasicCount++;
+
+      const key = keyOf(r, c);
+      if (visited.has(key)) continue;
+      const group = findGroup(board, r, c);
+      for (const [gr, gc] of group) visited.add(keyOf(gr, gc));
+      if (group.length > 0) {
+        groupCount++;
+        largestGroup = Math.max(largestGroup, group.length);
+      }
+    }
+  }
+
+  return { groupCount, largestGroup, narrowPocketCount, sealedBasicCount, isolatedBasicCount };
+}
+
 function placeProtectors(grid: CellData[][], basicPositions: Coord[], p1Count: number, p2Count: number): void {
-  const p2 = Math.min(p2Count, basicPositions.length);
-  const p1 = Math.min(p1Count, basicPositions.length - p2);
-  const scored = basicPositions
+  const candidates = basicPositions.filter(([r, c]) => grid[r][c].protector === 0);
+  const p2 = Math.min(p2Count, candidates.length);
+  const p1 = Math.min(p1Count, candidates.length - p2);
+  const scored = candidates
     .map(([r, c]) => {
       const color = grid[r][c].colorId;
       let score = 0;
@@ -497,6 +709,7 @@ function buildMarkerBoard(grid: CellData[][], motif: SandwichMotif): MarkerBoard
       const key = keyOf(r, c);
       if (motif.blockerKeys.has(key)) return 'blocker';
       if (motif.payloadKeys.has(key)) return 'payload';
+      if (motif.decoyKeys.has(key)) return 'decoy';
       return null;
     })
   );
@@ -638,28 +851,43 @@ function rotateMarkers(markers: MarkerBoard): MarkerBoard {
   return rotated;
 }
 
-function validateSolutionUsesSandwich(
+function analyzeMotifUsage(
   initialGrid: CellData[][],
   solution: Coord[],
   motif: SandwichMotif | null,
   config: GeneratorConfig,
-): boolean {
-  if (!motif) return true;
+): MotifUsage {
+  if (!motif) {
+    return {
+      blockerTouched: false,
+      blockerTouchCount: 0,
+      payloadTouchedBeforeBlocker: false,
+      mergedPayloadTouched: false,
+      decoyTouched: false,
+    };
+  }
 
   let board: Board = toBoard(initialGrid);
   let markers = buildMarkerBoard(initialGrid, motif);
   let blockerTouched = false;
   let payloadTouchedBeforeBlocker = false;
   let mergedPayloadTouched = false;
+  let blockerTouchCount = 0;
+  let decoyTouched = false;
 
   for (let moveIndex = 0; moveIndex < solution.length; moveIndex++) {
     const [r, c] = solution[moveIndex];
     const group = findGroup(board, r, c);
     const touchesBlocker = group.some(([gr, gc]) => markers[gr]?.[gc] === 'blocker');
     const touchesPayload = group.some(([gr, gc]) => markers[gr]?.[gc] === 'payload');
+    const touchesDecoy = group.some(([gr, gc]) => markers[gr]?.[gc] === 'decoy');
 
     if (touchesPayload && !blockerTouched) payloadTouchedBeforeBlocker = true;
-    if (touchesBlocker) blockerTouched = true;
+    if (touchesBlocker) {
+      blockerTouched = true;
+      blockerTouchCount++;
+    }
+    if (touchesDecoy) decoyTouched = true;
     if (blockerTouched && touchesPayload && group.length >= motif.width * 2) {
       mergedPayloadTouched = true;
     }
@@ -678,10 +906,59 @@ function validateSolutionUsesSandwich(
     }
   }
 
-  return blockerTouched && mergedPayloadTouched && !payloadTouchedBeforeBlocker;
+  return {
+    blockerTouched,
+    blockerTouchCount,
+    payloadTouchedBeforeBlocker,
+    mergedPayloadTouched,
+    decoyTouched,
+  };
 }
 
-function tryGenerate(config: GeneratorConfig): Omit<GenerateResult, 'attempts'> | null {
+function scoreCandidate(
+  recipe: GeneratorRecipe,
+  stats: BoardStats,
+  solution: Coord[],
+  motif: SandwichMotif | null,
+  usage: MotifUsage,
+): number {
+  const difficulty = recipe.difficulty;
+  let score = 1000;
+
+  const idealMoves = (recipe.minOptimalMoves + recipe.maxOptimalMoves) / 2;
+  score -= Math.abs(solution.length - idealMoves) * (difficulty === 0 ? 12 : difficulty === 1 ? 20 : 28);
+  score += Math.min(solution.length, 24) * (difficulty === 0 ? 5 : difficulty === 1 ? 10 : 14);
+
+  const idealLargest = difficulty === 0 ? 10 : difficulty === 1 ? 7 : 5;
+  score -= Math.max(0, stats.largestGroup - idealLargest) * (difficulty === 0 ? 8 : difficulty === 1 ? 18 : 30);
+  score -= Math.max(0, recipe.minOptimalMoves - stats.groupCount) * 35;
+
+  score -= stats.sealedBasicCount * 200;
+  score -= stats.narrowPocketCount * (difficulty === 0 ? 8 : 16);
+  score -= stats.isolatedBasicCount * 24;
+
+  if (motif) {
+    score += 60;
+    if (motif.decoyKeys.size > 0) score += difficulty === 0 ? 5 : difficulty === 1 ? 35 : 50;
+    if (motif.blockerProtectorKeys.size > 0) score += difficulty >= 2 ? 45 : 15;
+  }
+
+  if (usage.blockerTouched) score += difficulty === 0 ? 20 : 90;
+  if (usage.mergedPayloadTouched) score += difficulty === 0 ? 30 : difficulty === 1 ? 160 : 220;
+  if (usage.payloadTouchedBeforeBlocker) score -= difficulty === 0 ? 20 : 100;
+  if (usage.decoyTouched) score -= difficulty === 0 ? 10 : difficulty === 1 ? 60 : 110;
+
+  const requiredBlockerTouches = motif && motif.blockerProtectorKeys.size > 0 ? 2 : 1;
+  if (motif && usage.blockerTouchCount >= requiredBlockerTouches) {
+    score += difficulty >= 2 ? 70 : 30;
+  }
+
+  if (difficulty > 0 && motif && !usage.mergedPayloadTouched) score -= difficulty === 1 ? 140 : 220;
+
+  return score;
+}
+
+function tryGenerateCandidate(config: GeneratorConfig): CandidateResult | null {
   const recipe = buildRecipe(config);
   if (!recipe) return null;
 
@@ -704,12 +981,21 @@ function tryGenerate(config: GeneratorConfig): Omit<GenerateResult, 'attempts'> 
     recipe.sandwichWidth,
     aColor,
     colorCount,
+    recipe.blockerProtector,
+    recipe.useOffset,
+    recipe.usePartialBlocker,
+    recipe.useDecoys,
   );
 
   const allPositions: Coord[] = Array.from({ length: H * W }, (_, i) => [Math.floor(i / W), i % W]);
   const protectedKeys = motif?.protectedKeys ?? new Set<string>();
-  const maxObstacles = Math.max(0, H * W - protectedKeys.size - 1);
-  if (!placeObstacles(grid, allPositions, Math.min(recipe.obstacleCount, maxObstacles), protectedKeys)) {
+  const maxBlockingCells = Math.max(0, H * W - protectedKeys.size - 1);
+  const voidCells = Math.min(recipe.voidCount, maxBlockingCells);
+  if (!placeBlockingCells(grid, allPositions, voidCells, protectedKeys, makeVoid)) {
+    return null;
+  }
+  const obstacleCells = Math.min(recipe.obstacleCount, maxBlockingCells - voidCells);
+  if (!placeBlockingCells(grid, allPositions, obstacleCells, protectedKeys, makeObstacle)) {
     return null;
   }
 
@@ -724,47 +1010,50 @@ function tryGenerate(config: GeneratorConfig): Omit<GenerateResult, 'attempts'> 
       H,
       W,
       colorCount,
-      recipe.sandwichDepth > 0 ? Math.max(1, recipe.directGroupCount) : recipe.targetMoves,
+      recipe.directGroupCount,
       motif?.preAssigned,
     );
   }
 
-  if (obstacleQualityFails(grid) || hasArtificialIsolation(grid)) return null;
-  if (motif && countInitialGroups(grid) < recipe.targetMoves) return null;
+  if (hasSealedBasicCell(grid)) return null;
 
   placeProtectors(grid, basicPositions, protectorLevel1Count, protectorLevel2Count);
   placeCores(grid, basicPositions, coreCellCount);
 
   const board = toBoard(grid);
   const initialValid = countInitialValidCells(board);
-  const solution = autoSolveExact(board, recipe.targetMoves, initialValid, star1Ratio, star2Ratio,
+  const solution = autoSolveExact(board, recipe.searchTurnLimit, initialValid, star1Ratio, star2Ratio,
     config.portalData, config.conveyorData, config.rotationInterval);
-  if (!solution || solution.length !== recipe.targetMoves) return null;
+  if (!solution) return null;
 
-  if (!validateSolutionUsesSandwich(grid, solution, motif, config)) return null;
-
-  if (recipe.targetMoves > 1) {
-    const easierSolution = autoSolveExact(board, recipe.targetMoves - 1, initialValid, star1Ratio, star2Ratio,
-      config.portalData, config.conveyorData, config.rotationInterval);
-    if (easierSolution !== null) return null;
-  }
+  const stats = collectBoardStats(grid);
+  if (stats.sealedBasicCount > 0) return null;
+  const usage = analyzeMotifUsage(grid, solution, motif, config);
+  const score = scoreCandidate(recipe, stats, solution, motif, usage);
 
   return {
     board: grid,
-    verifiedSolution: solution.map(([r, c]) => `${r},${c}`).join(';'),
-    solveLength: solution.length,
+    solution,
+    score,
   };
 }
 
 export function generateBoard(config: GeneratorConfig): GenerateResult | null {
+  let best: GenerateResult | null = null;
   for (let attempt = 1; attempt <= config.maxAttempts; attempt++) {
     const result = generateBoardAttempt(config, attempt);
-    if (result) return result;
+    if (result && (!best || result.score > best.score)) best = result;
   }
-  return null;
+  return best;
 }
 
 export function generateBoardAttempt(config: GeneratorConfig, attempt: number): GenerateResult | null {
-  const result = tryGenerate(config);
-  return result ? { ...result, attempts: attempt } : null;
+  const result = tryGenerateCandidate(config);
+  return result ? {
+    board: result.board,
+    verifiedSolution: result.solution.map(([r, c]) => `${r},${c}`).join(';'),
+    attempts: attempt,
+    solveLength: result.solution.length,
+    score: result.score,
+  } : null;
 }

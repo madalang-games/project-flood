@@ -13,6 +13,7 @@ export const DIFFICULTY_REWARD: Record<number, number> = { 0: 2001, 1: 2002, 2: 
 const FALLBACK: GeneratorSettings = {
   colorCount: 3,
   obstacleCount: 0,
+  voidCount: 0,
   protectorLevel1Count: 0,
   protectorLevel2Count: 0,
   coreCellCount: 0,
@@ -34,7 +35,7 @@ interface Props {
   onGenerate: (settings: GeneratorSettings) => void;
   onMetaChange: (patch: MetaPatch) => void;
   status: GeneratorStatus;
-  info: { attempts: number; solveLength: number } | null;
+  info: { attempts: number; solveLength: number; score?: number } | null;
 }
 
 export default function GeneratorPanel({
@@ -46,6 +47,8 @@ export default function GeneratorPanel({
   const [s, setS] = useState<GeneratorSettings>(FALLBACK);
   const [loading, setLoading] = useState(true);
   const total = boardWidth * boardHeight;
+  const maxObstacleCount = Math.max(0, total - 1 - s.voidCount);
+  const maxVoidCount = Math.max(0, total - 1 - s.obstacleCount);
 
   useEffect(() => {
     fetch('/api/generator-defaults')
@@ -61,27 +64,28 @@ export default function GeneratorPanel({
   if (loading) {
     return (
       <div className="p-3 border-t border-gray-700 bg-gray-900 text-xs text-gray-500">
-        Loading generator defaults…
+        Loading generator defaults...
       </div>
     );
   }
 
   const statusEl =
     status === 'running' ? (
-      <span className="text-yellow-400">Generating…</span>
+      <span className="text-yellow-400">Generating...</span>
     ) : status === 'success' && info ? (
-      <span className="text-green-400">✓ {info.solveLength} moves (attempt {info.attempts})</span>
+      <span className="text-green-400">
+        Best: {info.solveLength} turns / score {Math.round(info.score ?? 0)}
+      </span>
     ) : status === 'failed' ? (
-      <span className="text-red-400">✗ No solution found</span>
+      <span className="text-red-400">No board found</span>
     ) : null;
 
   return (
     <div className="p-3 border-t border-gray-700 bg-gray-900">
       <div className="text-xs font-semibold text-gray-300 mb-2">
-        ⚙ Generator ({boardWidth}×{boardHeight})
+        Generator ({boardWidth}x{boardHeight})
       </div>
 
-      {/* Stage data — live sync with meta */}
       <div className="grid grid-cols-2 gap-x-3 gap-y-1 text-xs items-center mb-2 pb-2 border-b border-gray-700">
         <label className="text-gray-400">Turns</label>
         <input
@@ -98,15 +102,14 @@ export default function GeneratorPanel({
           }}
           className="bg-gray-700 text-white px-1 py-0.5 rounded w-full"
         >
-          {DIFFICULTY_LABELS.map((l, i) => (
-            <option key={i} value={i}>{l}</option>
+          {DIFFICULTY_LABELS.map((label, i) => (
+            <option key={i} value={i}>{label}</option>
           ))}
         </select>
       </div>
 
-      {/* Generator algorithm settings */}
       <div className="grid grid-cols-2 gap-x-3 gap-y-1 text-xs items-center">
-        <label className="text-gray-400">Colors (1–6)</label>
+        <label className="text-gray-400">Colors</label>
         <input
           type="number" min={1} max={6} value={s.colorCount}
           onChange={e => set('colorCount', Math.min(6, Math.max(1, parseInt(e.target.value) || 1)))}
@@ -114,8 +117,14 @@ export default function GeneratorPanel({
         />
         <label className="text-gray-400">Obstacles</label>
         <input
-          type="number" min={0} max={total - 1} value={s.obstacleCount}
-          onChange={e => set('obstacleCount', Math.min(total - 1, Math.max(0, parseInt(e.target.value) || 0)))}
+          type="number" min={0} max={maxObstacleCount} value={s.obstacleCount}
+          onChange={e => set('obstacleCount', Math.min(maxObstacleCount, Math.max(0, parseInt(e.target.value) || 0)))}
+          className="bg-gray-700 text-white px-1 py-0.5 rounded w-full"
+        />
+        <label className="text-gray-400">Void cells</label>
+        <input
+          type="number" min={0} max={maxVoidCount} value={s.voidCount}
+          onChange={e => set('voidCount', Math.min(maxVoidCount, Math.max(0, parseInt(e.target.value) || 0)))}
           className="bg-gray-700 text-white px-1 py-0.5 rounded w-full"
         />
         <label className="text-gray-400">Protector Lv1</label>
@@ -136,12 +145,6 @@ export default function GeneratorPanel({
           onChange={e => set('coreCellCount', Math.min(total, Math.max(0, parseInt(e.target.value) || 0)))}
           className="bg-gray-700 text-white px-1 py-0.5 rounded w-full"
         />
-        <label className="text-gray-400">Margin (turns)</label>
-        <input
-          type="number" min={1} max={Math.max(1, metaTurnLimit - 1)} value={s.difficultyMargin}
-          onChange={e => set('difficultyMargin', Math.min(metaTurnLimit - 1, Math.max(1, parseInt(e.target.value) || 1)))}
-          className="bg-gray-700 text-white px-1 py-0.5 rounded w-full"
-        />
         <label className="text-gray-400">Max attempts</label>
         <input
           type="number" min={1} max={2000} value={s.maxAttempts}
@@ -155,7 +158,7 @@ export default function GeneratorPanel({
         disabled={status === 'running'}
         className="mt-2 w-full text-xs bg-purple-700 hover:bg-purple-600 disabled:opacity-50 px-3 py-1.5 rounded"
       >
-        {status === 'running' ? 'Generating…' : 'Generate'}
+        {status === 'running' ? 'Generating...' : 'Generate'}
       </button>
     </div>
   );

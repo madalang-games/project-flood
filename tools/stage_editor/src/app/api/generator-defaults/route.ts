@@ -22,6 +22,7 @@ export async function GET() {
       difficulty:           intVal(s['difficulty'],             0),
       colorCount:           intVal(s['color_count'],            3),
       obstacleCount:        intVal(s['obstacle_count'],         0),
+      voidCount:            intVal(s['void_count'],             0),
       protectorLevel1Count: intVal(s['protector_level1_count'], 0),
       protectorLevel2Count: intVal(s['protector_level2_count'], 0),
       coreCellCount:        intVal(s['core_cell_count'],        0),
@@ -32,6 +33,7 @@ export async function GET() {
     return NextResponse.json({
       boardWidth: 6, boardHeight: 6, turnLimit: 20, difficulty: 0,
       colorCount: 3, obstacleCount: 0,
+      voidCount: 0,
       protectorLevel1Count: 0, protectorLevel2Count: 0,
       coreCellCount: 0, maxAttempts: 500, difficultyMargin: 3,
     });
