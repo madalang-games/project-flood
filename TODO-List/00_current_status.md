@@ -17,6 +17,7 @@
 | [07_ads_monetization.md](07_ads_monetization.md) | AdMob 보상형/전면 광고 | ✅ MVP 완료 |
 | [08_polish_ux_sfx.md](08_polish_ux_sfx.md) | 비주얼 폴리싱, VFX, 오디오 | [/] 기본 완료 — 쥬스/SFX 미시작 |
 | [09_deployment_prod.md](09_deployment_prod.md) | 프로덕션 배포 체크리스트 (pixelpop.mooo.com) | [/] Phase 1 완료 — Phase 2~4 진행 필요 |
+| [10_conveyor_belt.md](10_conveyor_belt.md) | ConveyorLeft/Right row-segment board gimmick | [ ] Planning complete; implementation pending |
 
 ---
 
@@ -37,6 +38,7 @@
 ## 3. 진행 중 (활성 스프린트)
 - [/] **프로덕션 배포**: Phase 1 완료 (DNS/SSL/nginx). 다음: secrets/.env.prod → deploy.bat(project-flood) → DB 마이그레이션. 상세: [09_deployment_prod.md](09_deployment_prod.md)
 - [/] **VFX 및 오디오 쥬스(Juice)**: 게임 효과음 추가, SoundManager를 통한 배경음악 처리, 퍼즐 비주얼 폴리싱.
+- [ ] **Conveyor belt gimmick**: row-only `ConveyorLeft/Right` 기획서와 구현 체크리스트 작성 완료. 다음: 데이터 포맷 확정 및 Unity/stage editor 구현. 상세: [10_conveyor_belt.md](10_conveyor_belt.md)
 
 ---
 

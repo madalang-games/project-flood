@@ -10,6 +10,7 @@
 | `DevRotateButton.cs` | `DevRotateButton` | UNITY_EDITOR or DEVELOPMENT_BUILD only; wires an existing UI Button or creates a fallback button for InGameController.TriggerRotateBoard |
 | `ItemSlotView.cs` | `ItemSlotView` | single item slot — count badge (TMP), Button, selected highlight; Refresh(count,devMode,canUse,selected) |
 | `ItemTrayView.cs` | `ItemTrayView` | HorizontalLayoutGroup container for 3 ItemSlotViews; fires OnSlotTapped event; SetLocked for animation lock |
+| `ItemBuyConfirmPopupView.cs` | `ItemBuyConfirmPopupView` | purchase confirm popup — item icon+name, price, owned gold, Cancel/Buy buttons |
 | `HUDView.cs` | `HUDView` | Canvas_Scene: Pause button, TurnCounter (Icon+TMP), ProgressContainer (Horizontal: CellIcon+RemainingText+Star1/2/3 images); Init(totalTurns,initialValidCells,star1Ratio,star2Ratio) |
 | `ResultOverlayView.cs` | `ResultOverlayView` | Canvas_Overlay: stage result — star pop sequence, stats, Retry/Next/Map buttons |
 | `FailOverlayView.cs` | `FailOverlayView` | Canvas_Overlay: continue popup — continue cost, owned gold, Continue/Forfeit; disables button if gold < cost |
@@ -23,13 +24,15 @@
 | `HUDView._starImages` | SerializeField | Image[3]: star1/2/3; star_empty default, star_filled applied left→right by ratio |
 | `HUDView._starFilled` | SerializeField | Sprite applied when star threshold is reached |
 | `HUDView._starEmpty` | SerializeField | Sprite applied when threshold not yet met |
+| `HUDView._stageInfoBg` | SerializeField | Image background of StageInfo container; color driven by DifficultyStyle at runtime |
+| `HUDView._stageText` | SerializeField | TMP_Text showing stage number inside StageInfo |
 | `HUDView._turnsBorder` | SerializeField | Image on TurnsBubble/Border; color driven by remaining turns |
 | `HUDView._safeColor` | SerializeField | Border color when turns > 10 (neon green) |
 | `HUDView._cautionColor` | SerializeField | Border color at 5 turns (golden yellow) |
 | `HUDView._dangerColor` | SerializeField | Border base color at ≤3 turns (neon red) |
 | `HUDView._dangerPulseColor` | SerializeField | Border pulse peak color for danger neon effect |
 | `HUDView._pulseDuration` | SerializeField | Seconds per half-cycle of danger pulse (default 0.8) |
-| `HUDView.Init(totalTurns,initialValidCells,star1Ratio,star2Ratio)` | method | stores thresholds; calls UpdateTurns + UpdateRemainingCells |
+| `HUDView.Init(totalTurns,initialValidCells,star1Ratio,star2Ratio,difficulty,stageNumber)` | method | stores thresholds; calls UpdateTurns + UpdateRemainingCells; colors _stageInfoBg by difficulty, sets _stageText, shows _skullBadge on Hard |
 | `HUDView.UpdateTurns(remaining)` | method | sets _turnsText; calls RefreshBorderColor |
 | `HUDView.UpdateRemainingCells(remaining)` | method | sets _remainingText; calls RefreshStars |
 | `HUDView.RefreshStars(remaining)` | method | computes ratio → 0/1/2/3 filled stars |
@@ -64,6 +67,9 @@
 | `ItemTrayView.OnSlotTapped` | event | `Action<ItemType>` — fired on slot button click |
 | `ItemTrayView.Refresh(manager)` | method | syncs all 3 slots to ItemManager state |
 | `ItemTrayView.SetLocked(locked)` | method | stores lock flag; next Refresh disables buttons when locked |
+| `ItemTrayView.SetItemPrices(dict)` | method | sets per-ItemType gold cost used by slot gold badges; call once after Init |
+| `ItemTrayView.GetSlotSprite(type)` | method | returns Sprite from the slot's icon Image; used by purchase popup |
+| `ItemBuyConfirmPopupView.Init(icon,name,desc,price,gold,onConfirm)` | method | shows item icon+name+desc+price(formatted)+owned gold(formatted); confirm disabled if gold<price |
 | `CellView.Init(cellSize)` | method | sets _baseScale from sprite bounds; sprite defines visual padding |
 | `CellView.SetData(data,color)` | method | null or Void data -> deactivate; else update sprite/color/overlays |
 | `CellView.PlayTapFeedback(duration)` | coroutine | code-only tap punch and bright flash |

@@ -22,7 +22,9 @@
 | `InGameController.HandleTapSequence(row,col,group)` | coroutine | tap feedback -> group pulse -> removal effects -> gravity drop -> turn/result |
 | `InGameController.HandleItemTap(row,col)` | method | UseItem -> starts HandleItemSequence if cells non-empty |
 | `InGameController.HandleItemSequence(originRow,originCol,cells)` | coroutine | removal effects -> gravity drop -> clear eval (no turn consumed) |
-| `InGameController.OnItemSlotTapped(type)` | method | guard (_isPlaying, _isAnimating) then SelectItem |
+| `InGameController.OnItemSlotTapped(type)` | method | if count=0 shows ItemBuyConfirmPopupView; on confirm calls BuyItem; otherwise SelectItem |
+| `InGameController.BuildItemPrices()` | method | builds Dictionary<ItemType,int> from ItemDataService; used by SetItemPrices on tray |
+| `InGameController.ItemTypeToId` | field | static Dictionary<ItemType,int> mapping type→item_id (Bomb=2…CellSwap=6) |
 | `InGameController.OnItemUsePhaseChanged(selected)` | method | SetItemTargetMode on BoardView; Refresh ItemTrayView |
 | `InGameController.CloneGrid(board)` | method | snapshots board grid before gravity animation |
 | `InGameController.OnStageEnd` | event | `Action<StarResult, int>` -> (result, remainingTurns) |

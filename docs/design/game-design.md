@@ -121,7 +121,9 @@ SameGame/Collapse 장르와의 차별점:
 - 중력은 포탈을 통해 매끄럽게 작동함.
 
 #### 컨베이어 벨트 셀 (Conveyor Belt Cell)
-- 플레이어의 매 턴 종료 시 지정된 방향(좌, 우, 상, 하)으로 위에 놓인 모든 셀을 1단계 이동시킴.
+- 플레이어의 매 턴 종료 안정화 후, 지정된 Row 구간의 위에 놓인 모든 셀을 좌/우 방향으로 1칸 순환 이동시킴.
+- 지원 방향은 `ConveyorLeft`, `ConveyorRight`만 허용하며, `Void` 또는 보드 가장자리가 구간 경계가 됨.
+- 상세 스펙은 [conveyor-belt-design.md](conveyor-belt-design.md)를 따른다.
 
 ---
 

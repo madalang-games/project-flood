@@ -13,6 +13,7 @@
 | `07_ads_monetization.md` | AdMob, Interstitials, and monetization checklist |
 | `08_polish_ux_sfx.md` | UI/UX visual polish, particle VFX, and SFX/BGM checklist |
 | `09_deployment_prod.md` | Production deployment checklist for pixelpop.mooo.com |
+| `10_conveyor_belt.md` | Conveyor belt gimmick checklist: data, Unity rules, stage editor, visuals, verification |
 
 ## Rules
 - One file per major feature area

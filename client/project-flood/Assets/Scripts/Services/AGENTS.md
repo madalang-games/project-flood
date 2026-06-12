@@ -11,6 +11,7 @@ Namespace: `Game.Services`
 | file | class | role |
 |------|-------|------|
 | `StageDataService.cs` | `StageDataService` | DDOL singleton; loads Stage CSV via CsvLoader; GetStage(id), GetAll(), MaxStageId() |
+| `ItemDataService.cs` | `ItemDataService` | DDOL singleton; loads Item CSV via CsvLoader; GetItem(itemId) |
 | `PlayerProgressService.cs` | `PlayerProgressService` | DDOL singleton; gold balance, per-stage stars/unlock, booster inventories |
 | `AuthService.cs` | `AuthService` | DDOL singleton; auth result enum; Initialize(callback); stub until real HTTP auth wiring |
 | `LocalizationService.cs` | `LocalizationService` | DDOL singleton; loads string/error CSV tables; Get(key), GetError(code), SetLanguage(Language), GetFont(Language) |
@@ -55,6 +56,8 @@ Namespace: `Game.Services`
 | `LocalizationService.GetFont(Language)` | method | Returns TMP_FontAsset from FontLocalizationConfig; null if config missing |
 | `StageDataService.GetStage(int)` | method | Returns Stage or null |
 | `StageDataService.GetAll()` | method | Returns Stage[] |
+| `ItemDataService.Instance` | prop | DDOL singleton |
+| `ItemDataService.GetItem(int)` | method | Returns Item or null; item_id matches item.csv |
 | `PlayerProgressService.Gold` | prop | Current gold balance |
 | `PlayerProgressService.CanAfford(int)` | method | Gold >= cost check |
 | `PlayerProgressService.SpendGold(int)` | method | Returns false if insufficient gold |
@@ -66,7 +69,8 @@ Namespace: `Game.Services`
 | `AuthService.IsGuest` | prop | true until OAuth link |
 | `AuthService.UserId` | prop | Device UUID or OAuth ID |
 | `AuthService.PendingBootMessage` | static prop | Optional toast message to show after Boot redirect (currently unused) |
-| `AuthService.Initialize(Action<AuthResult>)` | method | Guest by default; fires ReLoginRequired if OAuth refresh fails; fires NewGuestCreated if account switch detected |
+| `AuthService.Initialize(Action<AuthResult>)` | method | Guest by default; fires NetworkError if refresh is rate-limited (429); fires ReLoginRequired if token is invalid; fires NewGuestCreated if account switch detected |
+| `AuthService.ContinueAsGuest(Action<AuthResult>)` | method | Explicit guest login path — skips token check, calls LoginGuest directly; use from ReLoginView "Continue as Guest" only |
 | `AuthService.LinkGoogle(idToken,nonce,cb)` | method | `POST /api/auth/link-oauth` with `guestRefreshToken`; cb(ok, err, LinkAccountResponseJson) |
 | `AuthService.ResolveConflict(token,selection,cb)` | method | `POST /api/auth/resolve-conflict`; calls CompleteSession with returned auth tokens |
 | `AuthService.Logout()` | method | Clears all auth prefs; kept for internal use only — no UI button |
@@ -121,7 +125,7 @@ Namespace: `Game.Services`
 - AdMobService SDK-missing stub must return `null` for rewarded ads; reward success is verified or mocked only server-side.
 - pkt_generator must be run to sync Ad + Currency contracts to Generated/Contracts/ before ad flows work.
 - **NetworkService owns all HTTP transmission**: do NOT add UnityWebRequest code to individual services.
-- NetworkService._enableLogging is forced false when AppEnvironment == Prod.
+- NetworkService._enableLogging respects the Inspector value in all environments; disable manually in Prod if log suppression is needed.
 
 ## Cross-refs
 - Depends on: `Game.Utils.CsvLoader`, `ProjectFlood.Data.Generated.Stage`, `Game.Localization.FontLocalizationConfig`

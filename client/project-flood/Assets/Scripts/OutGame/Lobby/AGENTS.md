@@ -30,9 +30,11 @@ Namespace: `Game.OutGame.Lobby`
 | `RankingTabView.Refresh` | method | Fetches page + my rank via `RankingApiService` |
 | `RankingTabView._myRankPin` | SerializeField | Pinned player ranking panel at the bottom |
 | `HomeTabView` | component | OnEnable refreshes pool; OnDisable saves scroll position |
-| `StageNodeView.Bind(id,stars,unlocked,isCurrent)` | method | Updates all visual states |
+| `StageNodeView.Bind(id,stars,unlocked,isCurrent,chapterId,difficulty)` | method | Updates visual states; toggles `_lockOverlay` on `!unlocked`; difficulty 0=Easy(no outline), 1=Normal(neon blue), 2=Hard(neon red+skull) |
 | `StageNodeView.OnTapped` | event | `Action<int>` stageId |
-| `StageInfoPopupView.Init(stageId,bestStars,bestMoves,onPlay)` | method | Required before showing; _bestStarFills stores Fill child GOs (show/hide per bestStars); _extraTurnsToggle only (bomb/hrocket removed — in-game items only) |
+| `StageInfoPopupView.Init(stageId,bestStars,bestMoves,onPlay,difficulty,isLocked)` | method | Required before showing; isLocked=true disables PlayButton; difficulty tints ribbon: 0=amber(default), 1=neon blue, 2=coral red; dims ItemContainer at alpha 0.4 when no items |
+| `StageInfoPopupView._itemCountText` | SerializeField | TMP showing "×N" owned add_turn count; set in Init() |
+| `StageInfoPopupView._itemContainerGroup` | SerializeField | CanvasGroup on ItemContainer; alpha=1 if count>0, 0.4 if count=0 |
 | `ScrollStateCache.HomeScrollPosition` | prop | Float 0..1; save on leave, restore on enter |
 | `ScrollStateCache.LastPlayedStageId` | prop | Set before entering InGame scene |
 | `HeaderView._staminaButton` | SerializeField | Button on StaminaPanel; tapped → StaminaPopupView |
@@ -43,8 +45,11 @@ Namespace: `Game.OutGame.Lobby`
 | `LobbyTab` | enum | Home / Shop / Ranking |
 | `ShopTabView` | component | Shop screen preview containing Starter Pack, Item Bundle, and No-Ads package preview buttons |
 | `ScrollStateCache.UseExtraTurnsItem` | prop | boolean; true if +3 turns booster is active for next attempt |
-| `ChapterBgTheme.Get(themeId)` | method | Returns theme config for given bg_theme_id; themes 1=Grassland 2=Ocean |
-| `ChapterBackgroundView.Bind(chapterId,bgThemeId,yAnchoredTop,height)` | method | Positions bg in content-root space, applies theme, starts particle coroutine |
+| `ParticleDir` | enum | Upward / Downward / Horizontal — particle movement direction per theme |
+| `ChapterBgTheme.Get(themeId)` | method | Returns theme config; 1=Grassland 2=Ocean(beach/shallow) 3=Forest 4=Desert |
+| `ChapterBackgroundView.YTop` | prop | Chapter top Y in content-root space; used by HomeTabView for viewport culling |
+| `ChapterBackgroundView.YBot` | prop | Chapter bottom Y in content-root space |
+| `ChapterBackgroundView.Bind(chapterId,bgThemeId,yAnchoredTop,height)` | method | Positions bg, creates decorations, starts animation coroutine |
 | `HomeTabView.BuildChapterBackgrounds(positions,count)` | method | Groups stages by chapter_id, instantiates ChapterBackgroundView per chapter at sibling index 0 |
 | `HomeTabView.CreateChestNode` | method | Instantiates a ChapterChestView prefab near the chapter-end stage node |
 | `HomeTabView.OnChestTapped` | method | Invokes generic reward claim API, grants Gold/booster items, shows toast, and refreshes UI |
@@ -52,7 +57,7 @@ Namespace: `Game.OutGame.Lobby`
 
 ## Rules
 - Scroll position must be saved in HomeTabView.OnDisable and restored in HomeTabView.OnEnable.
-- StageNodeView pool size = GameConfig.StageNodePoolSize (50).
+- StageNodeView pool size = GameConfig.StageNodePoolSize (12). Virtual scroll: OnScrolled binds visible nodes; position math uses full _stages.Length.
 - Ranking tab is active; if `RankingApiService` is absent, show unavailable state without breaking lobby flow.
 
 ## Cross-refs

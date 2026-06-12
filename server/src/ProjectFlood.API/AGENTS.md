@@ -17,7 +17,8 @@
 |--------|------|------|
 | `UserClaims.UserId` | const | Internal server-side uid claim added by `UserIdResolutionMiddleware` |
 | `UserClaims.PlatformPid` | const | JWT `sub`; platform PID, not numeric uid |
-| `ProjectFloodConfiguration.RateLimit.StageStartPerHour` | property | Stage-start limiter setting |
+| `ProjectFloodConfiguration.RateLimit.StageStartPerHour` | property | Stage-start limiter setting; env `RateLimit:StageStartPerHour`; default 720 |
+| `ProjectFloodConfiguration.RateLimit.TransactionalPerMinute` | property | Redis sliding-window limit for start/clear/reward per user per minute; env `RateLimit:TransactionalPerMinute`; default 30 |
 | `ProjectFloodConfiguration.AdReward.VerifyMode` | property | Required `AD_REWARD_VERIFY_MODE`; allowed values: `mock`, `ssv` |
 | `RankingRebuildHostedService.ExecuteAsync` | method | Rebuilds Redis ranking keys on init; logs warning without blocking startup |
 

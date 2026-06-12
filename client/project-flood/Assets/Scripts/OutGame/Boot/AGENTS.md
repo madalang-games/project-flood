@@ -13,6 +13,7 @@ Namespace: `Game.OutGame.Boot`
 | symbol | kind | note |
 |--------|------|------|
 | `BootSceneEntry.Start()` | method | Entry point; shows loading, calls auth |
+| `BootSceneEntry.OnContinueAsGuestConfirmed()` | method | Calls `AuthService.ContinueAsGuest` — NOT Initialize; only explicit user action creates guest session |
 | `BootView.SetSpinnerActive(bool)` | method | Shows/hides spinner GameObject |
 | `ReLoginView.Init(onReLogin,onContinueAsGuest)` | method | Wires button callbacks |
 

@@ -42,6 +42,7 @@ Namespace: `Game.Core.UI`
 | symbol | kind | note |
 |--------|------|------|
 | `UIButtonAnimator._isCTA` | SerializeField | Enables idle breathing animation on UI_CTA buttons |
+| `UIButtonAnimator._clickSfxId` | SerializeField | SfxId played on pointer down; default `ConfirmClick`; set `CancelClick` for close/cancel buttons |
 | `UIButtonAnimator.SetInteractable(bool)` | method | Dims opacity 40% + stops idle anim when false |
 | `UIPanelAppear.Disappear(Action)` | method | Triggers disappear coroutine; calls onComplete when done |
 | `UICountUp.Play(int,int,Action)` | method | Animates from→to; optional completion callback |
