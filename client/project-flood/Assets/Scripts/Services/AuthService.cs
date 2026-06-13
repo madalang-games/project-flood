@@ -118,6 +118,12 @@ namespace Game.Services
         }
 
         public void LoginGoogle(string idToken, string nonce, Action<bool, string> onComplete)
+            => LoginGoogleInternal(idToken, nonce, IsGuest ? _refreshToken : null, onComplete);
+
+        public void SwitchGoogle(string idToken, string nonce, Action<bool, string> onComplete)
+            => LoginGoogleInternal(idToken, nonce, null, onComplete);
+
+        private void LoginGoogleInternal(string idToken, string nonce, string guestRefreshToken, Action<bool, string> onComplete)
         {
             var clientId = GetOrCreateClientId();
             var req = new GoogleLoginRequestJson
@@ -125,7 +131,7 @@ namespace Game.Services
                 clientId = clientId,
                 idToken = idToken,
                 nonce = string.IsNullOrEmpty(nonce) ? null : nonce,
-                guestRefreshToken = string.IsNullOrEmpty(_refreshToken) ? null : _refreshToken
+                guestRefreshToken = string.IsNullOrEmpty(guestRefreshToken) ? null : guestRefreshToken
             };
             Post("/api/auth/google", JsonUtility.ToJson(req), text =>
             {
@@ -292,6 +298,7 @@ namespace Game.Services
             if (_accountSwitched)
             {
                 Game.Core.UIManager.Instance?.HideLoading();
+                Game.Core.UIManager.Instance?.CloseAllPopups();
                 ShowAccountRestartPopup(() =>
                 {
                     ClearAllLocalProgress();
@@ -353,6 +360,7 @@ namespace Game.Services
         private void SyncServiceTokens()
         {
             NetworkService.Instance.SetAuthToken(_accessToken);
+            NetworkService.Instance.SetTokenRefresher(cb => Refresh((ok, _) => cb(ok)));
         }
 
         private void LoadSession()
@@ -400,8 +408,15 @@ namespace Game.Services
             var req = new LinkAccountRequestJson { provider = "google", idToken = idToken, guestRefreshToken = guestRefreshToken };
             Post("/api/auth/link-oauth", JsonUtility.ToJson(req), (ok, text) =>
             {
+                Debug.Log($"[LinkGoogle] ok={ok} | body={text}");
                 if (!ok) { onComplete?.Invoke(false, text, null); return; }
                 var resp = JsonUtility.FromJson<LinkAccountResponseJson>(text);
+                if (!resp.conflict && resp.auth != null && !string.IsNullOrEmpty(resp.auth.accessToken))
+                {
+                    CompleteSession(true, string.Empty, "google", resp.auth, (authOk, authErr) =>
+                        onComplete?.Invoke(authOk, authErr, resp));
+                    return;
+                }
                 onComplete?.Invoke(true, string.Empty, resp);
             });
         }
@@ -489,7 +504,7 @@ namespace Game.Services
         }
 
         [Serializable]
-        private class ProfileJson
+        public class ProfileJson
         {
             public string userId;
             public string pid;
@@ -501,7 +516,7 @@ namespace Game.Services
         }
 
         [Serializable]
-        private class AuthResponseJson
+        public class AuthResponseJson
         {
             public string accessToken;
             public string refreshToken;
@@ -526,6 +541,8 @@ namespace Game.Services
             public SaveSnapshotJson localSave;
             public SaveSnapshotJson cloudSave;
             public string conflictToken;
+            // No-conflict path: server wraps auth tokens in this field
+            public AuthResponseJson auth;
         }
 
         [Serializable]

@@ -12,6 +12,8 @@ Namespace: `Game.Services`
 |------|-------|------|
 | `StageDataService.cs` | `StageDataService` | DDOL singleton; loads Stage CSV via CsvLoader; GetStage(id), GetAll(), MaxStageId() |
 | `ItemDataService.cs` | `ItemDataService` | DDOL singleton; loads Item CSV via CsvLoader; GetItem(itemId) |
+| `DynamicResourceService.cs` | `DynamicResourceService` | DDOL singleton; loads dynamic_resource CSV; GetSprite(resourceKey) via Resources.Load (Resources-path entries only) |
+| `CurrencyDataService.cs` | `CurrencyDataService` | DDOL singleton; loads currency CSV; GetByRewardType(string) |
 | `PlayerProgressService.cs` | `PlayerProgressService` | DDOL singleton; gold balance, per-stage stars/unlock, booster inventories |
 | `AuthService.cs` | `AuthService` | DDOL singleton; auth result enum; Initialize(callback); stub until real HTTP auth wiring |
 | `LocalizationService.cs` | `LocalizationService` | DDOL singleton; loads string/error CSV tables; Get(key), GetError(code), SetLanguage(Language), GetFont(Language) |
@@ -58,6 +60,10 @@ Namespace: `Game.Services`
 | `StageDataService.GetAll()` | method | Returns Stage[] |
 | `ItemDataService.Instance` | prop | DDOL singleton |
 | `ItemDataService.GetItem(int)` | method | Returns Item or null; item_id matches item.csv |
+| `DynamicResourceService.Instance` | prop | DDOL singleton |
+| `DynamicResourceService.GetSprite(string)` | method | Loads Sprite via Resources.Load; caches result; returns null for non-Resources paths |
+| `CurrencyDataService.Instance` | prop | DDOL singleton |
+| `CurrencyDataService.GetByRewardType(string)` | method | Returns Currency matching reward_type_key; null if not found |
 | `PlayerProgressService.Gold` | prop | Current gold balance |
 | `PlayerProgressService.CanAfford(int)` | method | Gold >= cost check |
 | `PlayerProgressService.SpendGold(int)` | method | Returns false if insufficient gold |

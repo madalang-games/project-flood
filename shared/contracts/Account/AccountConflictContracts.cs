@@ -19,6 +19,8 @@ namespace ProjectFlood.Contracts.Account
         public SaveSnapshotDto? LocalSave { get; set; }
         public SaveSnapshotDto? CloudSave { get; set; }
         public string? ConflictToken { get; set; }
+        // No-conflict path: server returns auth tokens directly instead of conflict data
+        public AuthResponse? Auth { get; set; }
     }
 
     public sealed class ResolveConflictRequest

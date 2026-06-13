@@ -6,6 +6,7 @@
 | `design/` | UI/UX specs, wireframes, game design documents |
 | `technical/` | Infra guides, build guides, platform refs, deployment docs |
 | `decisions/` | Architecture Decision Records (ADRs) — one file per decision |
+| `release_notes/` | Version history and store listing notes |
 | `tests/` | QA plans, release checklists, test strategy docs |
 | `refs/` | Platform dependency docs (platform-auth contracts, infra guide) |
 

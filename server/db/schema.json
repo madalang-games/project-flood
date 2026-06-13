@@ -10,13 +10,15 @@
       "comment": "Game-local player record. platform_pid is the 24-char public cross-reference from platform-auth JWT sub.",
       "conflict": "ignore",
       "columns": [
-        { "name": "user_id",            "type": "int64",      "pk": true,  "null": false },
-        { "name": "platform_pid",       "type": "string(24)", "null": false, "unique": true },
-        { "name": "display_name",       "type": "string(64)", "null": false },
-        { "name": "avatar_id",          "type": "int32",      "null": false, "default": 1 },
-        { "name": "equipped_board_theme_id", "type": "int32",  "null": false, "default": 1 },
-        { "name": "account_created_at", "type": "datetime",   "null": false },
-        { "name": "last_login_at",      "type": "datetime",   "null": false }
+        { "name": "user_id",              "type": "int64",      "pk": true, "null": false },
+        { "name": "platform_pid",         "type": "string(24)", "null": true,  "unique": true },
+        { "name": "display_name",         "type": "string(64)", "null": false },
+        { "name": "avatar_id",            "type": "int32",      "null": false, "default": 1 },
+        { "name": "equipped_board_theme_id", "type": "int32",   "null": false, "default": 1 },
+        { "name": "account_created_at",   "type": "datetime",   "null": false },
+        { "name": "last_login_at",        "type": "datetime",   "null": false },
+        { "name": "is_active",            "type": "bool",       "null": false, "default": true },
+        { "name": "conflict_cloud_pid",   "type": "string(24)", "null": true }
       ]
     },
     {

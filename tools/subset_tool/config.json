@@ -16,7 +16,7 @@
     "TR",
     "ID"
   ],
-  "commonCharacters": "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz .,!?;:'\"()[]{}<>+-=*/%#@&_~|\\^$`\n\r\t",
+  "commonCharacters": "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz .,!?;:'\"()[]{}<>+-=*/%#@&_~|\\^$`\n\r\t…",
   "fonts": [
     {
       "source": "Silver.ttf",

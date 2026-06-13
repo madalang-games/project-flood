@@ -1,0 +1,123 @@
+<en-US>
+v1.0.1 Update: Improved Stability and Account Management!
+- Enhanced Account Conflict Popup for seamless social account linking.
+- Optimized font assets to reduce download and installation size.
+- Improved authentication flow and guest account migration.
+- Better logging and build stability for a smoother experience.
+</en-US>
+
+<ko-KR>
+v1.0.1 업데이트: 계정 연동 및 안정성 개선!
+- 소셜 계정 연동 시 발생하는 계정 충돌 해결 팝업 추가.
+- 폰트 에셋 최적화로 다운로드 및 설치 용량 감소.
+- 인증 프로세스 및 게스트 계정 이전 로직 개선.
+- 원활한 게임 플레이를 위한 로그 시스템 및 빌드 안정성 강화.
+</ko-KR>
+
+<zh-CN>
+v1.0.1 更新：提高稳定性和账户管理！
+- 增强了账户冲突弹出窗口，实现无缝社交账户绑定。
+- 优化了字体资产，减小下载和安装大小。
+- 改进了身份验证流程和游客账户迁移。
+- 更好的日志记录和构建稳定性，带来更流畅的体验。
+</zh-CN>
+
+<zh-TW>
+v1.0.1 更新：提高穩定性和帳戶管理！
+- 增強了帳戶衝突彈出窗口，實現無縫社交帳戶綁定。
+- 優化了字體資產，減小下載和安裝大小。
+- 改進了身份驗證流程和遊客帳戶遷移。
+- 更好的日誌記錄和構建穩定性，帶來更流暢的體驗。
+</zh-TW>
+
+<ja-JP>
+v1.0.1 アップデート：安定性とアカウント管理の向上！
+- ソーシャルアカウント連携をスムーズにするアカウント衝突ポップアップの強化。
+- フォントアセットの最適化により、ダウンロードとインストールサイズを削減。
+- 認証フローとゲストアカウントの移行を改善。
+- ロギングとビルドの安定性が向上し、よりスムーズな体験を提供。
+</ja-JP>
+
+<ru-RU>
+Обновление v1.0.1: Улучшенная стабильность и управление аккаунтом!
+- Улучшено всплывающее окно конфликта аккаунтов для плавной привязки соцсетей.
+- Оптимизированы шрифты для уменьшения размера загрузки и установки.
+- Улучшен процесс аутентификации и переноса гостевых аккаунтов.
+- Улучшено ведение логов и стабильность сборки для более плавной игры.
+</ru-RU>
+
+<es-ES>
+Actualización v1.0.1: ¡Estabilidad y gestión de cuentas mejoradas!
+- Ventana emergente de conflicto de cuentas mejorada para vincular cuentas sociales sin problemas.
+- Activos de fuentes optimizados para reducir el tamaño de descarga e instalación.
+- Flujo de autenticación y migración de cuentas de invitado mejorados.
+- Mejor registro y estabilidad de construcción para una experiencia más fluida.
+</es-ES>
+
+<pt-PT>
+Atualização v1.0.1: Estabilidade e gestão de contas melhoradas!
+- Pop-up de conflito de conta melhorado para vinculação perfeita de contas sociais.
+- Ativos de fonte otimizados para reduzir o tamanho de download e instalação.
+- Fluxo de autenticação e migração de contas de convidado melhorados.
+- Melhor registo e estabilidade de construção para uma experiência mais suave.
+</pt-PT>
+
+<fr-FR>
+Mise à jour v1.0.1 : Stabilité et gestion de compte améliorées !
+- Fenêtre contextuelle de conflit de compte améliorée pour une liaison fluide des comptes sociaux.
+- Actifs de police optimisés pour réduire la taille du téléchargement et de l'installation.
+- Amélioration du flux d'authentification et de la migration des comptes invités.
+- Meilleure journalisation et stabilité de construction pour une expérience plus fluide.
+</fr-FR>
+
+<de-DE>
+v1.0.1 Update: Verbesserte Stabilität und Kontoverwaltung!
+- Verbessertes Pop-up bei Kontokonflikten für nahtlose Verknüpfung sozialer Konten.
+- Schriftarten-Assets optimiert, um die Download- und Installationsgröße zu reduzieren.
+- Authentifizierungsfluss und Migration von Gastkonten verbessert.
+- Besseres Logging und Build-Stabilität für ein reibungsloseres Erlebnis.
+</de-DE>
+
+<th>
+อัปเดต v1.0.1: ปรับปรุงความเสถียรและการจัดการบัญชี!
+- ปรับปรุงป๊อปอัปแจ้งเตือนข้อขัดแย้งของบัญชีเพื่อการผูกบัญชีโซเชียลที่ราบรื่น
+- เพิ่มประสิทธิภาพฟอนต์เพื่อลดขนาดการดาวน์โหลดและติดตั้ง
+- ปรับปรุงขั้นตอนการตรวจสอบสิทธิ์และการย้ายบัญชีเกสต์
+- ระบบบันทึกข้อมูลและความเสถียรของการสร้างที่ดีขึ้นเพื่อประสบการณ์ที่ราบรื่นยิ่งขึ้น
+</th>
+
+<ar>
+تحديث v1.0.1: تحسين الاستقرار وإدارة الحساب!
+- تحسين نافذة تعارض الحساب لربط الحسابات الاجتماعية بسلاسة.
+- تحسين أصول الخطوط لتقليل حجم التنزيل والتثبيت.
+- تحسين تدفق المصادقة ونقل حسابات الضيوف.
+- تسجيل أفضل واستقرار في البناء لتجربة أكثر سلاسة.
+</ar>
+
+<it-IT>
+Aggiornamento v1.0.1: Stabilità e gestione dell'account migliorate!
+- Popup di conflitto dell'account migliorato per un collegamento fluido degli account social.
+- Asset dei caratteri ottimizzati per ridurre le dimensioni di download e installazione.
+- Flusso di autenticazione e migrazione dell'account ospite migliorati.
+- Migliore registrazione e stabilità della build per un'esperienza più fluida.
+</it-IT>
+
+<tr-TR>
+v1.0.1 Güncellemesi: Gelişmiş Kararlılık ve Hesap Yönetimi!
+- Sorunsuz sosyal hesap bağlama için geliştirilmiş Hesap Çakışması Penceresi.
+- İndirme ve kurulum boyutunu azaltmak için optimize edilmiş yazı tipi varlıkları.
+- Kimlik doğrulama akışı ve misafir hesabı taşıma iyileştirildi.
+- Daha pürüzsüz bir deneyim için daha iyi günlük kaydı ve oluşturma kararlılığı.
+</tr-TR>
+
+<id>
+Pembaruan v1.0.1: Stabilitas dan Manajemen Akun yang Ditingkatkan!
+- Popup Konflik Akun yang ditingkatkan untuk penautan akun sosial yang lancar.
+- Aset font yang dioptimalkan untuk mengurangi ukuran unduhan dan instalasi.
+- Alur autentikasi dan migrasi akun tamu yang ditingkatkan.
+- Pencatatan dan stabilitas build yang lebih baik untuk pengalaman yang lebih lancar.
+</id>
+
+<!-- metadata -->
+commit: 3cd2323
+date: 2026-06-14

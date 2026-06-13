@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using UnityEditor;
+using UnityEditor.Build;
 using UnityEditor.Build.Reporting;
 using UnityEngine;
 
@@ -33,6 +34,7 @@ public static class BuildScript
         };
 
         EditorUserBuildSettings.buildAppBundle = true;
+        ApplyAndroidReleaseSizeSettings();
 
         var keystorePass = System.Environment.GetEnvironmentVariable("KEYSTORE_PASS") ?? GetArg("-keystorePass") ?? "";
         var keyAliasPass = System.Environment.GetEnvironmentVariable("KEY_ALIAS_PASS") ?? GetArg("-keyaliasPass") ?? keystorePass;
@@ -64,5 +66,16 @@ public static class BuildScript
             if (args[i] == name) return args[i + 1];
         }
         return null;
+    }
+
+    private static void ApplyAndroidReleaseSizeSettings()
+    {
+        var android = NamedBuildTarget.Android;
+
+        EditorUserBuildSettings.androidBuildType = AndroidBuildType.Release;
+        PlayerSettings.stripEngineCode = true;
+        PlayerSettings.Android.minifyRelease = true;
+        PlayerSettings.SetManagedStrippingLevel(android, ManagedStrippingLevel.High);
+        PlayerSettings.SetIl2CppCodeGeneration(android, Il2CppCodeGeneration.OptimizeSize);
     }
 }

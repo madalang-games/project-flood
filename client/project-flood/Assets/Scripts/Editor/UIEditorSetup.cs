@@ -101,71 +101,71 @@ namespace Game.Editor
             }
         }
 
-        [MenuItem("Tools/UI Setup/Prefabs/ConfirmDialog",  false, 110)]
-        static void CreateConfirmDialogSingle()  { EnsureDirs(); CreateConfirmDialog();  AssetDatabase.Refresh(); }
-
-        [MenuItem("Tools/UI Setup/Prefabs/Toast",           false, 111)]
-        static void CreateToastSingle()          { EnsureDirs(); CreateToast();          AssetDatabase.Refresh(); }
-
-        [MenuItem("Tools/UI Setup/Prefabs/LoadingOverlay",  false, 112)]
-        static void CreateLoadingOverlaySingle() { EnsureDirs(); CreateLoadingOverlay(); AssetDatabase.Refresh(); }
-
-        [MenuItem("Tools/UI Setup/Prefabs/NetworkError",    false, 113)]
-        static void CreateNetworkErrorSingle()   { EnsureDirs(); CreateNetworkError();   AssetDatabase.Refresh(); }
-
-        [MenuItem("Tools/UI Setup/Prefabs/RewardPopup",     false, 114)]
-        static void CreateRewardPopupSingle()    { EnsureDirs(); CreateRewardPopup();    AssetDatabase.Refresh(); }
-
-        [MenuItem("Tools/UI Setup/Prefabs/ReLoginView",     false, 115)]
-        static void CreateReLoginViewSingle()    { EnsureDirs(); CreateReLoginView();    AssetDatabase.Refresh(); }
-
-        [MenuItem("Tools/UI Setup/Prefabs/StageInfoPopup",  false, 116)]
-        static void CreateStageInfoPopupSingle() { EnsureDirs(); CreateStageInfoPopup(); AssetDatabase.Refresh(); }
-
-        [MenuItem("Tools/UI Setup/Prefabs/ResultOverlay",   false, 117)]
-        static void CreateResultOverlaySingle()  { EnsureDirs(); CreateResultOverlay();  AssetDatabase.Refresh(); }
-
-        [MenuItem("Tools/UI Setup/Prefabs/FailOverlay",     false, 118)]
-        static void CreateFailOverlaySingle()    { EnsureDirs(); CreateFailOverlay();    AssetDatabase.Refresh(); }
-
-        [MenuItem("Tools/UI Setup/Prefabs/PausePopup",      false, 119)]
-        static void CreatePausePopupSingle()     { EnsureDirs(); CreatePausePopup();     AssetDatabase.Refresh(); }
-
-        [MenuItem("Tools/UI Setup/Prefabs/SettingsPanel",   false, 120)]
-        static void CreateSettingsPanelSingle()  { EnsureDirs(); CreateSettingsPanel();  AssetDatabase.Refresh(); }
-
-        [MenuItem("Tools/UI Setup/Prefabs/AccountPopup",    false, 121)]
-        static void CreateAccountPopupSingle()   { EnsureDirs(); CreateAccountPopup();   AssetDatabase.Refresh(); }
-
-        [MenuItem("Tools/UI Setup/Prefabs/StageNodeView",    false, 122)]
-        static void CreateStageNodeViewSingle()  { EnsureDirs(); CreateStageNodeView();  AssetDatabase.Refresh(); }
-
-        [MenuItem("Tools/UI Setup/Prefabs/StaminaPopup",     false, 126)]
-        static void CreateStaminaPopupSingle()   { EnsureDirs(); CreateStaminaPopup();   AssetDatabase.Refresh(); }
-
-        [MenuItem("Tools/UI Setup/Prefabs/TutorialOverlay",  false, 127)]
-        static void CreateTutorialOverlaySingle() { EnsureDirs(); CreateTutorialOverlay(); AssetDatabase.Refresh(); }
-
-        [MenuItem("Tools/UI Setup/Prefabs/ChapterChest",     false, 128)]
-        static void CreateChapterChestSingle()    { EnsureDirs(); CreateChapterChest();    AssetDatabase.Refresh(); }
-
-        [MenuItem("Tools/UI Setup/Prefabs/AccountRestartPopup", false, 135)]
-        static void CreateAccountRestartPopupSingle() { EnsureDirs(); CreateAccountRestartPopup(); AssetDatabase.Refresh(); }
-
-        [MenuItem("Tools/UI Setup/Prefabs/AccountConflictPopup", false, 136)]
+        [MenuItem("Tools/UI Setup/Prefabs/AccountConflictPopup", false, 110)]
         static void CreateAccountConflictPopupSingle() { EnsureDirs(); CreateAccountConflictPopup(); AssetDatabase.Refresh(); }
 
-        [MenuItem("Tools/UI Setup/Prefabs/ItemBuyConfirmPopup", false, 137)]
-        static void CreateItemBuyConfirmPopupSingle() { EnsureDirs(); CreateItemBuyConfirmPopup(); AssetDatabase.Refresh(); }
+        [MenuItem("Tools/UI Setup/Prefabs/AccountPopup",    false, 111)]
+        static void CreateAccountPopupSingle()   { EnsureDirs(); CreateAccountPopup();   AssetDatabase.Refresh(); }
 
-        [MenuItem("Tools/UI Setup/Prefabs/BootCanvas",       false, 123)]
+        [MenuItem("Tools/UI Setup/Prefabs/AccountRestartPopup", false, 112)]
+        static void CreateAccountRestartPopupSingle() { EnsureDirs(); CreateAccountRestartPopup(); AssetDatabase.Refresh(); }
+
+        [MenuItem("Tools/UI Setup/Prefabs/BootCanvas",       false, 113)]
         static void CreateBootCanvasSingle()     { EnsureDirs(); SetupBoot();            AssetDatabase.Refresh(); }
 
-        [MenuItem("Tools/UI Setup/Prefabs/LobbyCanvas",      false, 124)]
+        [MenuItem("Tools/UI Setup/Prefabs/ChapterChest",     false, 114)]
+        static void CreateChapterChestSingle()    { EnsureDirs(); CreateChapterChest();    AssetDatabase.Refresh(); }
+
+        [MenuItem("Tools/UI Setup/Prefabs/ConfirmDialog",  false, 115)]
+        static void CreateConfirmDialogSingle()  { EnsureDirs(); CreateConfirmDialog();  AssetDatabase.Refresh(); }
+
+        [MenuItem("Tools/UI Setup/Prefabs/FailOverlay",     false, 116)]
+        static void CreateFailOverlaySingle()    { EnsureDirs(); CreateFailOverlay();    AssetDatabase.Refresh(); }
+
+        [MenuItem("Tools/UI Setup/Prefabs/InGameCanvas",     false, 117)]
+        static void CreateInGameCanvasSingle()   { EnsureDirs(); SetupInGame();          AssetDatabase.Refresh(); }
+
+        [MenuItem("Tools/UI Setup/Prefabs/ItemBuyConfirmPopup", false, 118)]
+        static void CreateItemBuyConfirmPopupSingle() { EnsureDirs(); CreateItemBuyConfirmPopup(); AssetDatabase.Refresh(); }
+
+        [MenuItem("Tools/UI Setup/Prefabs/LoadingOverlay",  false, 119)]
+        static void CreateLoadingOverlaySingle() { EnsureDirs(); CreateLoadingOverlay(); AssetDatabase.Refresh(); }
+
+        [MenuItem("Tools/UI Setup/Prefabs/LobbyCanvas",      false, 120)]
         static void CreateLobbyCanvasSingle()    { EnsureDirs(); SetupLobby();           AssetDatabase.Refresh(); }
 
-        [MenuItem("Tools/UI Setup/Prefabs/InGameCanvas",     false, 125)]
-        static void CreateInGameCanvasSingle()   { EnsureDirs(); SetupInGame();          AssetDatabase.Refresh(); }
+        [MenuItem("Tools/UI Setup/Prefabs/NetworkError",    false, 121)]
+        static void CreateNetworkErrorSingle()   { EnsureDirs(); CreateNetworkError();   AssetDatabase.Refresh(); }
+
+        [MenuItem("Tools/UI Setup/Prefabs/PausePopup",      false, 122)]
+        static void CreatePausePopupSingle()     { EnsureDirs(); CreatePausePopup();     AssetDatabase.Refresh(); }
+
+        [MenuItem("Tools/UI Setup/Prefabs/ReLoginView",     false, 123)]
+        static void CreateReLoginViewSingle()    { EnsureDirs(); CreateReLoginView();    AssetDatabase.Refresh(); }
+
+        [MenuItem("Tools/UI Setup/Prefabs/ResultOverlay",   false, 124)]
+        static void CreateResultOverlaySingle()  { EnsureDirs(); CreateResultOverlay();  AssetDatabase.Refresh(); }
+
+        [MenuItem("Tools/UI Setup/Prefabs/RewardPopup",     false, 125)]
+        static void CreateRewardPopupSingle()    { EnsureDirs(); CreateRewardPopup();    AssetDatabase.Refresh(); }
+
+        [MenuItem("Tools/UI Setup/Prefabs/SettingsPanel",   false, 126)]
+        static void CreateSettingsPanelSingle()  { EnsureDirs(); CreateSettingsPanel();  AssetDatabase.Refresh(); }
+
+        [MenuItem("Tools/UI Setup/Prefabs/StageInfoPopup",  false, 127)]
+        static void CreateStageInfoPopupSingle() { EnsureDirs(); CreateStageInfoPopup(); AssetDatabase.Refresh(); }
+
+        [MenuItem("Tools/UI Setup/Prefabs/StageNodeView",    false, 128)]
+        static void CreateStageNodeViewSingle()  { EnsureDirs(); CreateStageNodeView();  AssetDatabase.Refresh(); }
+
+        [MenuItem("Tools/UI Setup/Prefabs/StaminaPopup",     false, 129)]
+        static void CreateStaminaPopupSingle()   { EnsureDirs(); CreateStaminaPopup();   AssetDatabase.Refresh(); }
+
+        [MenuItem("Tools/UI Setup/Prefabs/Toast",           false, 130)]
+        static void CreateToastSingle()          { EnsureDirs(); CreateToast();          AssetDatabase.Refresh(); }
+
+        [MenuItem("Tools/UI Setup/Prefabs/TutorialOverlay",  false, 131)]
+        static void CreateTutorialOverlaySingle() { EnsureDirs(); CreateTutorialOverlay(); AssetDatabase.Refresh(); }
 
         static void SetupBoot()
         {
@@ -197,8 +197,8 @@ namespace Game.Editor
             Stretch(safeRoot);
             Comp<SafeAreaHandler>(safeRoot);
 
-            // Header — top 180px (Taller for casual layered styling)
-            var header = Child(safeRoot, "Header");
+            // Header — Canvas direct child so background reaches physical screen top (not safe area top)
+            var header = Child(canvas, "Header");
             TopStrip(header, 180);
             Img(header, UI_BG_DEEP);
             var hv = Comp<HeaderView>(header);
@@ -293,6 +293,8 @@ namespace Game.Editor
             var bnv = Comp<BottomNavBarView>(navBar);
             var navHlg = Comp<HorizontalLayoutGroup>(navBar);
             navHlg.childAlignment      = TextAnchor.MiddleCenter;
+            navHlg.childControlWidth      = true;
+            navHlg.childControlHeight     = true;
             navHlg.childForceExpandWidth  = true;
             navHlg.childForceExpandHeight = true;
             navHlg.padding = new RectOffset(0, 0, 0, 0);
@@ -305,8 +307,8 @@ namespace Game.Editor
             if (resMap.TryGetValue("nav_home",    out string nhp)) { var s = AssetDatabase.LoadAssetAtPath<Sprite>(nhp); if (s != null) { var i = homeBtn.transform.Find("Visual/Icon")?.GetComponent<Image>(); if (i != null) i.sprite = s; } }
             if (resMap.TryGetValue("nav_ranking", out string nrp)) { var s = AssetDatabase.LoadAssetAtPath<Sprite>(nrp); if (s != null) { var i = rankBtn.transform.Find("Visual/Icon")?.GetComponent<Image>(); if (i != null) i.sprite = s; } }
 
-            // Tab content area — fills between header and nav
-            var tabContent = Child(safeRoot, "TabContent");
+            // Tab content area — Canvas direct child so top padding is in screen space (aligns with Header)
+            var tabContent = Child(canvas, "TabContent");
             PaddedStretch(tabContent, 180, 160);
 
             // HomeTab — ScrollRect with curved zigzag map path
@@ -385,6 +387,7 @@ namespace Game.Editor
             var rankScrollRect = Comp<ScrollRect>(scrollRectGo);
             rankScrollRect.horizontal = false;
             rankScrollRect.vertical = true;
+            rankScrollRect.movementType = ScrollRect.MovementType.Clamped;
 
             var rankViewportGo = Child(scrollRectGo, "Viewport");
             Stretch(rankViewportGo);
@@ -417,19 +420,38 @@ namespace Game.Editor
             soVScroll.FindProperty("_spacing").floatValue = 6f;
             soVScroll.ApplyModifiedProperties();
 
-            // Pinned player ranking item at the bottom
-            var myRankPin = Child(rankingTab, "MyRankPin");
-            Fixed(myRankPin, new Vector2(0, -700), new Vector2(820, 90));
-            Img(myRankPin, UI_BG_MID);
-
-            var pinBorder = Child(myRankPin, "Border");
-            Stretch(pinBorder);
-            var pinBorderImg = Img(pinBorder, Hex("2B003B"));
-            pinBorder.transform.SetAsFirstSibling();
-            pinBorderImg.rectTransform.offsetMin = new Vector2(-4, -4);
-            pinBorderImg.rectTransform.offsetMax = new Vector2(4, 4);
-
-            BuildRankingItemHierarchy(myRankPin, resMap);
+            // Pinned player ranking item at the bottom — instance of Final Prefab
+            var rankItemFinalAsset = AssetDatabase.LoadAssetAtPath<GameObject>($"{PrefabRoot}/RankingItemPrefab.prefab")
+                                  ?? AssetDatabase.LoadAssetAtPath<GameObject>($"{BaseCommonPath}/RankingItemPrefab.prefab");
+            GameObject myRankPin;
+            RankingItemView myRankPinView;
+            if (rankItemFinalAsset != null)
+            {
+                myRankPin = (GameObject)PrefabUtility.InstantiatePrefab(rankItemFinalAsset, rankingTab.transform);
+                myRankPin.name = "MyRankPin";
+                var pinRt = myRankPin.GetComponent<RectTransform>();
+                pinRt.anchorMin        = new Vector2(0.5f, 0.5f);
+                pinRt.anchorMax        = new Vector2(0.5f, 0.5f);
+                pinRt.pivot            = new Vector2(0.5f, 0.5f);
+                pinRt.anchoredPosition = new Vector2(0, -700);
+                pinRt.sizeDelta        = new Vector2(860, 90);
+                myRankPinView = myRankPin.GetComponent<RankingItemView>();
+                if (myRankPinView == null) myRankPinView = myRankPin.AddComponent<RankingItemView>();
+            }
+            else
+            {
+                myRankPin = Child(rankingTab, "MyRankPin");
+                Fixed(myRankPin, new Vector2(0, -700), new Vector2(860, 90));
+                Img(myRankPin, UI_BG_MID);
+                var pinBorder = Child(myRankPin, "Border");
+                Stretch(pinBorder);
+                var pinBorderImg = Img(pinBorder, Hex("2B003B"));
+                pinBorder.transform.SetAsFirstSibling();
+                pinBorderImg.rectTransform.offsetMin = new Vector2(-4, -4);
+                pinBorderImg.rectTransform.offsetMax = new Vector2(4, 4);
+                BuildRankingItemHierarchy(myRankPin, resMap);
+                myRankPinView = Comp<RankingItemView>(myRankPin);
+            }
 
             // Wire LobbyView refs
             var soLobby = new SerializedObject(canvas.GetComponent<LobbyView>());
@@ -450,12 +472,7 @@ namespace Game.Editor
             soRanking.FindProperty("_virtualizedScrollRect").objectReferenceValue = vScroll;
 
             // Wire MyRankPin elements
-            soRanking.FindProperty("_myRankPin").objectReferenceValue = myRankPin;
-            soRanking.FindProperty("_myRankPinRankText").objectReferenceValue = myRankPin.transform.Find("RankText")?.GetComponent<TMP_Text>();
-            soRanking.FindProperty("_myRankPinAvatarIcon").objectReferenceValue = myRankPin.transform.Find("AvatarIcon")?.GetComponent<Image>();
-            soRanking.FindProperty("_myRankPinNameText").objectReferenceValue = myRankPin.transform.Find("NameText")?.GetComponent<TMP_Text>();
-            soRanking.FindProperty("_myRankPinScoreIcon").objectReferenceValue = myRankPin.transform.Find("ScoreIcon")?.GetComponent<Image>();
-            soRanking.FindProperty("_myRankPinScoreText").objectReferenceValue = myRankPin.transform.Find("ScoreText")?.GetComponent<TMP_Text>();
+            soRanking.FindProperty("_myRankPin").objectReferenceValue = myRankPinView;
 
             // Populate avatarSprites list in RankingTabView
             var avatarSpritesProp = soRanking.FindProperty("_avatarSprites");
@@ -534,6 +551,9 @@ namespace Game.Editor
             soHeader.FindProperty("_staminaTimerText").objectReferenceValue  = staminaTimerText;
             soHeader.FindProperty("_staminaButton").objectReferenceValue     = staminaBtn;
             soHeader.ApplyModifiedProperties();
+
+            // Header must render on top of TabContent (later sibling = higher z-order in Canvas)
+            header.transform.SetAsLastSibling();
 
             SaveScenePrefab(canvas, "Lobby");
         }
@@ -1138,6 +1158,7 @@ namespace Game.Editor
 
         static void CreateResultOverlay()
         {
+            var resMap = LoadDynamicResourceMap();
             var root = FullScreen("ResultOverlayView");
             Img(root, DIM); Comp<ResultOverlayView>(root); Comp<UIPanelAppear>(root); Comp<CanvasGroup>(root);
 
@@ -1146,10 +1167,48 @@ namespace Game.Editor
 
             var ratio  = TMP(panel, "RatioText", Center(0,   65, 700, 60), 22, UI_TEXT, "Cleared: 90%", null, TextCategory.Normal);
             var turns  = TMP(panel, "TurnsText", Center(0,  -20, 700, 60), 22, UI_TEXT, "Turns: 12/20", null, TextCategory.Normal);
-            var rank   = TMP(panel, "RankText",  Center(0, -105, 700, 55), 20, UI_CTA,  "",             null, TextCategory.Normal);
+
+            // Rank Row to house RankText and NewBestText
+            var rankRow = Child(panel, "RankRow"); Fixed(rankRow, new Vector2(0, -105), new Vector2(700, 80));
+            var rankVlg = rankRow.AddComponent<VerticalLayoutGroup>();
+            rankVlg.spacing = 6f;
+            rankVlg.childAlignment = TextAnchor.MiddleCenter;
+            rankVlg.childControlWidth = false;
+            rankVlg.childControlHeight = false;
+            rankVlg.childForceExpandWidth = false;
+            rankVlg.childForceExpandHeight = false;
+
+            var rankText = TMP(rankRow, "RankText", new Rect(0, 0, 700, 35), 20, UI_CTA, "", null, TextCategory.Normal);
+            var rankCsf = rankText.gameObject.AddComponent<ContentSizeFitter>();
+            rankCsf.horizontalFit = ContentSizeFitter.FitMode.PreferredSize;
+            rankCsf.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+
+            var newBestText = TMP(rankRow, "NewBestText", new Rect(0, 0, 700, 35), 20, UI_CTA, "", null, TextCategory.Normal);
+            var newBestCsf = newBestText.gameObject.AddComponent<ContentSizeFitter>();
+            newBestCsf.horizontalFit = ContentSizeFitter.FitMode.PreferredSize;
+            newBestCsf.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
 
             var goldRow = Child(panel, "GoldRow"); Fixed(goldRow, new Vector2(0, -185), new Vector2(700, 60));
-            var goldTxt = TMP(goldRow, "GoldText", Center(0, 0, 700, 60), 24, UI_CTA, "+120 Gold", null, TextCategory.Normal);
+            var goldHlg = goldRow.AddComponent<HorizontalLayoutGroup>();
+            goldHlg.spacing = 12f;
+            goldHlg.childAlignment = TextAnchor.MiddleCenter;
+            goldHlg.childControlWidth = false;
+            goldHlg.childControlHeight = false;
+            goldHlg.childForceExpandWidth = false;
+            goldHlg.childForceExpandHeight = false;
+
+            var goldIcon = Child(goldRow, "Icon");
+            Fixed(goldIcon, Vector2.zero, new Vector2(50, 50));
+            var goldIconImg = Img(goldIcon, Color.white);
+            if (resMap.TryGetValue("ui_gold_icon", out string gip))
+            {
+                var spr = AssetDatabase.LoadAssetAtPath<Sprite>(gip);
+                if (spr != null) { goldIconImg.sprite = spr; goldIconImg.preserveAspect = true; }
+            }
+
+            var goldTxt = TMP(goldRow, "GoldText", new Rect(0, 0, 200, 60), 24, UI_CTA, "+120 Gold", null, TextCategory.Normal);
+            var goldCsf = goldTxt.gameObject.AddComponent<ContentSizeFitter>();
+            goldCsf.horizontalFit = ContentSizeFitter.FitMode.PreferredSize;
 
             // Stars — UIStarPop drives Fill children sequentially left-to-right with punch animation
             var starsRoot = Child(panel, "Stars"); Fixed(starsRoot, new Vector2(0, 240), new Vector2(600, 160));
@@ -1167,7 +1226,8 @@ namespace Game.Editor
             so.FindProperty("_titleText").objectReferenceValue  = title;
             so.FindProperty("_ratioText").objectReferenceValue  = ratio;
             so.FindProperty("_turnsText").objectReferenceValue  = turns;
-            so.FindProperty("_rankText").objectReferenceValue   = rank;
+            so.FindProperty("_rankText").objectReferenceValue   = rankText;
+            so.FindProperty("_newBestText").objectReferenceValue = newBestText;
             so.FindProperty("_goldText").objectReferenceValue   = goldTxt;
             so.FindProperty("_goldRow").objectReferenceValue    = goldRow;
             so.FindProperty("_retryButton").objectReferenceValue = retry.GetComponent<Button>();
@@ -1180,7 +1240,6 @@ namespace Game.Editor
             starsArr.GetArrayElementAtIndex(2).objectReferenceValue = s2;
             so.ApplyModifiedProperties();
 
-            var resMap = LoadDynamicResourceMap();
             var starEmpty  = resMap.TryGetValue("star_empty",  out string ep) ? AssetDatabase.LoadAssetAtPath<Sprite>(ep)  : null;
             var starFilled = resMap.TryGetValue("star_filled", out string fp) ? AssetDatabase.LoadAssetAtPath<Sprite>(fp) : null;
             foreach (var star in new[] { s0, s1, s2 })
@@ -1804,21 +1863,20 @@ namespace Game.Editor
             var root = new GameObject("ChapterChest");
             var rootRt = RT(root);
             rootRt.sizeDelta = new Vector2(120, 120);
-            
-            var chestImg = Img(root, Color.white);
-            chestImg.preserveAspect = true;
+
             var chestBtn = Comp<Button>(root);
             var chestCg = Comp<CanvasGroup>(root);
             var chestView = Comp<ChapterChestView>(root);
-            
-            // Glow Effect
+
+            // GlowEffect — child 0, renders behind ChestImage
             var glow = Child(root, "GlowEffect");
-            var glowRt = RT(glow);
-            glowRt.sizeDelta = new Vector2(180, 180);
+            RT(glow).sizeDelta = new Vector2(180, 180);
             var glowImg = Img(glow, new Color(1, 0.85f, 0.3f, 0.5f));
-            Comp<UIPulseGlowEffect>(glow);
-            
-            // Dynamic Material with Shader
+            var glowEffect = Comp<UIPulseGlowEffect>(glow);
+            var soGlow = new SerializedObject(glowEffect);
+            soGlow.FindProperty("_rotationSpeed").floatValue = 0f;
+            soGlow.ApplyModifiedProperties();
+
             Shader glowShader = Shader.Find("UI/PulseGlow");
             if (glowShader != null)
             {
@@ -1834,31 +1892,15 @@ namespace Game.Editor
                 }
                 glowImg.material = glowMat;
             }
-            
-            // Status Text
-            var statusTextGo = Child(root, "StatusText");
-            var textRt = RT(statusTextGo);
-            textRt.anchorMin = new Vector2(0.5f, 0);
-            textRt.anchorMax = new Vector2(0.5f, 0);
-            textRt.pivot = new Vector2(0.5f, 1f);
-            textRt.anchoredPosition = new Vector2(0, -10);
-            textRt.sizeDelta = new Vector2(150, 40);
-            
-            var textTmp = statusTextGo.GetComponent<TextMeshProUGUI>();
-            if (textTmp == null) textTmp = statusTextGo.AddComponent<TextMeshProUGUI>();
-            textTmp.fontSizeMin = 18f;
-            textTmp.fontSizeMax = 28f;
-            textTmp.fontSize = 24f;
-            textTmp.alignment = TextAlignmentOptions.Center;
-            textTmp.color = Color.yellow;
-            textTmp.text = "Locked";
-            textTmp.enableWordWrapping = true;
-            var chestStatusLt = Comp<LocalizedText>(statusTextGo);
-            var soChestStatusLt = new SerializedObject(chestStatusLt);
-            soChestStatusLt.FindProperty("_stringId").stringValue = ChapterLocked;
-            soChestStatusLt.ApplyModifiedProperties();
 
-            // Sparkle Particles
+            // ChestImage — child 1, renders in front of GlowEffect
+            var chestImgGo = Child(root, "ChestImage");
+            RT(chestImgGo).sizeDelta = new Vector2(120, 120);
+            var chestImg = Img(chestImgGo, Color.white);
+            chestImg.preserveAspect = true;
+            chestBtn.targetGraphic = chestImg;
+
+            // SparkleParticles — child 2
             var sparkleGo = Child(root, "SparkleParticles");
             var sparkleRt = RT(sparkleGo);
             sparkleRt.anchorMin = sparkleRt.anchorMax = new Vector2(0.5f, 0.5f);
@@ -1895,16 +1937,39 @@ namespace Game.Editor
             psRenderer.material = new Material(Shader.Find("Sprites/Default"));
             sparkleGo.SetActive(false);
 
+            // StarCountContainer — dark pill below chest image; shows {current}/{max} stars
+            var starContainer = Child(root, "StarCountContainer");
+            Fixed(starContainer, new Vector2(0, -85), new Vector2(150, 40));
+            var starContainerImg = Img(starContainer, Hex("2A1635"));
+            starContainerImg.raycastTarget = false;
+
+            var starShadow = Child(starContainer, "Shadow");
+            Fixed(starShadow, new Vector2(0, -3), new Vector2(150, 40));
+            var starShadowImg = Img(starShadow, Hex("1A0020"));
+            starShadowImg.raycastTarget = false;
+            starShadow.transform.SetAsFirstSibling();
+
+            var starTxt = TMP(starContainer, "StarCountText", Center(0, 1, 140, 34), 16, UI_TEXT, "0/0", null, TextCategory.Normal);
+            starTxt.alignment = TextAlignmentOptions.Center;
+            starTxt.enableWordWrapping = false;
+
             // Bind Serialized Fields on ChapterChestView
             var so = new SerializedObject(chestView);
             so.FindProperty("_chestImage").objectReferenceValue = chestImg;
-            so.FindProperty("_statusText").objectReferenceValue = textTmp;
             so.FindProperty("_button").objectReferenceValue = chestBtn;
             so.FindProperty("_glowEffect").objectReferenceValue = glow;
             so.FindProperty("_sparkleParticles").objectReferenceValue = ps;
             so.FindProperty("_canvasGroup").objectReferenceValue = chestCg;
+            so.FindProperty("_starCountLabel").objectReferenceValue = starTxt;
+
+            // Map chest sprites from dynamic_resource.csv
+            var resMap = LoadDynamicResourceMap();
+            TryMapSprite(so, "_inactiveSprite", "chest_inactive", resMap);
+            TryMapSprite(so, "_activeSprite",   "chest_active",   resMap);
+            TryMapSprite(so, "_claimedSprite",  "chest_claimed",  resMap);
+
             so.ApplyModifiedProperties();
-            
+
             Save(root, "ChapterChest");
         }
 
@@ -2744,40 +2809,31 @@ namespace Game.Editor
             }
 
             // 3. Map ChapterChest Sprites
-            string[] chestPaths = {
-                "Assets/Resources/Prefabs/UI/ChapterChest.prefab",
-                "Assets/UI/Prefabs/Base/Common/ChapterChest.prefab"
-            };
-            foreach (var path in chestPaths)
+            // Only map base prefab; Resources variant inherits from it via PrefabVariant
+            string chestBasePath = "Assets/UI/Prefabs/Base/Common/ChapterChest.prefab";
+            var chestBasePrefab = AssetDatabase.LoadAssetAtPath<GameObject>(chestBasePath);
+            if (chestBasePrefab != null)
             {
-                var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(path);
-                if (prefab != null)
+                var chestView = chestBasePrefab.GetComponentInChildren<ChapterChestView>(true);
+                if (chestView == null) chestView = chestBasePrefab.GetComponent<ChapterChestView>();
+                if (chestView != null)
                 {
-                    var chestView = prefab.GetComponent<ChapterChestView>();
-                    if (chestView != null)
-                    {
-                        var soChest = new SerializedObject(chestView);
-                        TryMapSprite(soChest, "_inactiveSprite", "chest_inactive", resMap);
-                        TryMapSprite(soChest, "_activeSprite", "chest_active", resMap);
-                        TryMapSprite(soChest, "_claimedSprite", "chest_claimed", resMap);
-                        
-                        // Set preserveAspect on the Image component of the chest
-                        var chestImgProp = soChest.FindProperty("_chestImage");
-                        if (chestImgProp != null && chestImgProp.objectReferenceValue != null)
-                        {
-                            var img = chestImgProp.objectReferenceValue as Image;
-                            if (img != null)
-                            {
-                                img.preserveAspect = true;
-                                EditorUtility.SetDirty(img);
-                            }
-                        }
-                        
-                        soChest.ApplyModifiedProperties();
-                        EditorUtility.SetDirty(prefab);
-                        Debug.Log($"[UIEditorSetup] Successfully mapped chest sprites to {path}");
-                    }
+                    var soChest = new SerializedObject(chestView);
+                    TryMapSprite(soChest, "_inactiveSprite", "chest_inactive", resMap);
+                    TryMapSprite(soChest, "_activeSprite",   "chest_active",   resMap);
+                    TryMapSprite(soChest, "_claimedSprite",  "chest_claimed",  resMap);
+                    soChest.ApplyModifiedProperties();
+                    PrefabUtility.SavePrefabAsset(chestBasePrefab);
+                    Debug.Log($"[UIEditorSetup] Successfully mapped chest sprites to {chestBasePath}");
                 }
+                else
+                {
+                    Debug.LogWarning($"[UIEditorSetup] ChapterChestView not found in {chestBasePath}");
+                }
+            }
+            else
+            {
+                Debug.LogWarning($"[UIEditorSetup] ChapterChest base prefab not found at {chestBasePath}");
             }
 
             // 4. Map ToastView Sprites
@@ -2959,6 +3015,7 @@ namespace Game.Editor
 
             var resMap = LoadDynamicResourceMap();
             BuildRankingItemHierarchy(root, resMap);
+            Comp<RankingItemView>(root);
 
             Save(root, "RankingItemPrefab");
         }

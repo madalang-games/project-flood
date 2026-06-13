@@ -116,6 +116,8 @@ namespace Game.InGame.View
             };
         }
 
+        public float PaddingFactor => _currentPaddingFactor;
+
         public void SetTheme(int themeId)
         {
             InitializeDefaultThemes();
@@ -136,6 +138,7 @@ namespace Game.InGame.View
             _neonCyan = _activeTheme.neonCyan;
             _neonPink = _activeTheme.neonPink;
             _animateTexture = _activeTheme.animateTexture;
+            _currentPaddingFactor = _activeTheme.themeId > 0 ? _activeTheme.borderPaddingFactor : 0.65f;
 
             if (_activeTheme.customSocketSprite != null)
             {

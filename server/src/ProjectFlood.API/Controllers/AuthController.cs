@@ -13,7 +13,6 @@ namespace ProjectFlood.API.Controllers;
 
 [ApiController]
 [Route("api/auth")]
-[AllowAnonymous]
 public sealed class AuthController : ControllerBase
 {
     private static readonly JsonSerializerOptions JsonOpts = new() { PropertyNameCaseInsensitive = true };
@@ -39,18 +38,22 @@ public sealed class AuthController : ControllerBase
         _nicknameGenerator = nicknameGenerator;
     }
 
+    [AllowAnonymous]
     [HttpPost("guest")]
     public Task<IActionResult> Guest(CancellationToken ct)
         => ProxyAndTransform("auth/guest", ct);
 
+    [AllowAnonymous]
     [HttpPost("google")]
     public Task<IActionResult> Google(CancellationToken ct)
         => ProxyAndTransform("auth/google", ct);
 
+    [AllowAnonymous]
     [HttpPost("refresh")]
     public Task<IActionResult> Refresh(CancellationToken ct)
         => ProxyAndTransform("auth/refresh", ct);
 
+    [AllowAnonymous]
     [HttpPost("logout")]
     public async Task<IActionResult> Logout(CancellationToken ct)
     {
@@ -90,14 +93,15 @@ public sealed class AuthController : ControllerBase
         if (!response.IsSuccessStatusCode)
             return StatusCode((int)response.StatusCode, responseBody);
 
-        return await ProcessPlatformSessionAsync(responseBody, ct);
+        return await ProcessPlatformSessionAsync(responseBody, ct, wrapInLinkResponse: true);
     }
 
+    [AllowAnonymous]
     [HttpPost("resolve-conflict")]
     public async Task<IActionResult> ResolveConflict([FromBody] ResolveConflictRequest request, CancellationToken ct)
     {
-        var db = _redis.GetDatabase();
-        var cached = await db.StringGetAsync($"pending_conflict:{request.ConflictToken}");
+        var redisDb = _redis.GetDatabase();
+        var cached = await redisDb.StringGetAsync($"pending_conflict:{request.ConflictToken}");
         if (!cached.HasValue)
             return BadRequest(new ErrorResponse { Code = "CONFLICT_EXPIRED", Message = "Conflict resolution session expired or not found." });
 
@@ -105,68 +109,56 @@ public sealed class AuthController : ControllerBase
         if (conflict is null)
             return BadRequest(new ErrorResponse { Code = "INVALID_CONFLICT", Message = "Invalid conflict details." });
 
-        await db.KeyDeleteAsync($"pending_conflict:{request.ConflictToken}");
+        await redisDb.KeyDeleteAsync($"pending_conflict:{request.ConflictToken}");
+
+        long winnerUserId;
 
         if (request.Selection == "local")
         {
-            // Keep Guest Save: delete cloud rows, update guest rows to cloud user ID and PID
-            await using var transaction = await _db.Database.BeginTransactionAsync(ct);
+            // Keep guest data: archive cloud player, reassign cloud PID to guest player
+            await using var txn = await _db.Database.BeginTransactionAsync(ct);
             try
             {
-                // Delete cloud player
-                await _db.Database.ExecuteSqlRawAsync("DELETE FROM players WHERE user_id = {0}", conflict.CloudUserId);
-
-                // Update guest player to cloud user ID and PID
                 await _db.Database.ExecuteSqlRawAsync(
-                    "UPDATE players SET user_id = {0}, platform_pid = {1} WHERE user_id = {2}",
-                    conflict.CloudUserId, conflict.CloudPid, conflict.GuestUserId);
+                    "UPDATE players SET is_active=0, platform_pid=NULL, conflict_cloud_pid={0} WHERE user_id={1}",
+                    new object[] { conflict.CloudPid, conflict.CloudUserId }, ct);
 
-                var tables = new[] {
-                    "user_stage_progress", "user_currency", "user_inventory", 
-                    "user_stamina_state", "user_ranking_totals", "user_tutorial_progress", 
-                    "sessions", "event_logs", "ad_reward_transactions"
-                };
+                await _db.Database.ExecuteSqlRawAsync(
+                    "UPDATE players SET platform_pid={0} WHERE user_id={1}",
+                    new object[] { conflict.CloudPid, conflict.GuestUserId }, ct);
 
-                foreach (var table in tables)
-                {
-                    await _db.Database.ExecuteSqlRawAsync($"DELETE FROM {table} WHERE user_id = {{0}}", conflict.CloudUserId);
-                    await _db.Database.ExecuteSqlRawAsync($"UPDATE {table} SET user_id = {{0}} WHERE user_id = {{1}}", conflict.CloudUserId, conflict.GuestUserId);
-                }
-
-                await transaction.CommitAsync(ct);
+                await txn.CommitAsync(ct);
             }
             catch (Exception ex)
             {
-                await transaction.RollbackAsync(ct);
-                return StatusCode(500, $"Failed to migrate local progress: {ex.Message}");
+                await txn.RollbackAsync(ct);
+                return StatusCode(500, $"Failed to resolve conflict (local): {ex.Message} | inner: {ex.InnerException?.Message}");
             }
+
+            // Invalidate stale Redis cache so cloudPid resolves to guestUserId immediately
+            await redisDb.StringSetAsync($"user_id:{conflict.CloudPid}", conflict.GuestUserId.ToString(), CacheTtl);
+
+            winnerUserId = conflict.GuestUserId;
         }
         else if (request.Selection == "cloud")
         {
-            // Keep Cloud Save: delete guest rows
-            await using var transaction = await _db.Database.BeginTransactionAsync(ct);
+            // Keep cloud data: archive guest player
+            await using var txn = await _db.Database.BeginTransactionAsync(ct);
             try
             {
-                await _db.Database.ExecuteSqlRawAsync("DELETE FROM players WHERE user_id = {0}", conflict.GuestUserId);
+                await _db.Database.ExecuteSqlRawAsync(
+                    "UPDATE players SET is_active=0, platform_pid=NULL, conflict_cloud_pid={0} WHERE user_id={1}",
+                    new object[] { conflict.CloudPid, conflict.GuestUserId }, ct);
 
-                var tables = new[] {
-                    "user_stage_progress", "user_currency", "user_inventory", 
-                    "user_stamina_state", "user_ranking_totals", "user_tutorial_progress", 
-                    "sessions", "event_logs", "ad_reward_transactions"
-                };
-
-                foreach (var table in tables)
-                {
-                    await _db.Database.ExecuteSqlRawAsync($"DELETE FROM {table} WHERE user_id = {{0}}", conflict.GuestUserId);
-                }
-
-                await transaction.CommitAsync(ct);
+                await txn.CommitAsync(ct);
             }
             catch (Exception ex)
             {
-                await transaction.RollbackAsync(ct);
-                return StatusCode(500, $"Failed to delete guest progress: {ex.Message}");
+                await txn.RollbackAsync(ct);
+                return StatusCode(500, $"Failed to resolve conflict (cloud): {ex.Message} | inner: {ex.InnerException?.Message}");
             }
+
+            winnerUserId = conflict.CloudUserId;
         }
         else
         {
@@ -178,7 +170,7 @@ public sealed class AuthController : ControllerBase
         if (session is null)
             return StatusCode(500, "Failed to restore platform session.");
 
-        var player = await _db.Players.FindAsync(conflict.CloudUserId, ct);
+        var player = await _db.Players.FindAsync(winnerUserId, ct);
         var authRes = new AuthResponse
         {
             AccessToken = session.Tokens.AccessToken,
@@ -186,7 +178,7 @@ public sealed class AuthController : ControllerBase
             ExpiresAt = session.Tokens.AccessTokenExpiresAt,
             Profile = new AccountMeResponse
             {
-                UserId = session.UserId.ToString(),
+                UserId = winnerUserId.ToString(),
                 Pid = session.Pid,
                 DisplayName = player?.DisplayName ?? "Player",
                 IsGuest = false,
@@ -217,7 +209,7 @@ public sealed class AuthController : ControllerBase
         return await ProcessPlatformSessionAsync(responseBody, ct);
     }
 
-    private async Task<IActionResult> ProcessPlatformSessionAsync(string responseBody, CancellationToken ct)
+    private async Task<IActionResult> ProcessPlatformSessionAsync(string responseBody, CancellationToken ct, bool wrapInLinkResponse = false)
     {
         try
         {
@@ -233,17 +225,24 @@ public sealed class AuthController : ControllerBase
                 guestUserId = uid;
             }
 
+            // Find if there is an existing active player mapping to this PlatformPid in our DB
+            var existing = await _db.Players.Query()
+                .Where(p => p.PlatformPid == session.Pid)
+                .FirstOrDefaultAsync(ct);
+
+            long resolvedUserId = existing?.UserId ?? session.UserId;
+
             // Conflict condition: authenticated as guest, but the linked social account userId is different
-            if (guestUserId.HasValue && session.UserId != guestUserId.Value)
+            if (guestUserId.HasValue && resolvedUserId != guestUserId.Value)
             {
                 var localSave = await GetSaveSnapshotAsync(guestUserId.Value, ct);
-                var cloudSave = await GetSaveSnapshotAsync(session.UserId, ct);
+                var cloudSave = await GetSaveSnapshotAsync(resolvedUserId, ct);
                 var conflictToken = Guid.NewGuid().ToString("N");
 
                 var conflictDetails = new PendingConflictDetails
                 {
                     GuestUserId = guestUserId.Value,
-                    CloudUserId = session.UserId,
+                    CloudUserId = resolvedUserId,
                     CloudPid = session.Pid,
                     PlatformSession = responseBody
                 };
@@ -264,10 +263,6 @@ public sealed class AuthController : ControllerBase
             }
 
             var now = DateTimeOffset.UtcNow;
-            var existing = await _db.Players.Query()
-                .Where(p => p.PlatformPid == session.Pid)
-                .FirstOrDefaultAsync(ct);
-
             string displayName;
             if (existing is null)
             {
@@ -290,7 +285,7 @@ public sealed class AuthController : ControllerBase
             await _db.SaveAsync(ct);
 
             var cacheKey = $"user_id:{session.Pid}";
-            await _redis.GetDatabase().StringSetAsync(cacheKey, session.UserId.ToString(), CacheTtl);
+            await _redis.GetDatabase().StringSetAsync(cacheKey, resolvedUserId.ToString(), CacheTtl);
 
             var result = new AuthResponse
             {
@@ -299,7 +294,7 @@ public sealed class AuthController : ControllerBase
                 ExpiresAt = session.Tokens.AccessTokenExpiresAt,
                 Profile = new AccountMeResponse
                 {
-                    UserId = session.UserId.ToString(),
+                    UserId = resolvedUserId.ToString(),
                     Pid = session.Pid,
                     DisplayName = displayName,
                     IsGuest = session.AccountType == "guest",
@@ -311,7 +306,9 @@ public sealed class AuthController : ControllerBase
                 }
             };
 
-            return Ok(result);
+            return wrapInLinkResponse
+                ? Ok(new LinkAccountResponse { Success = true, Auth = result })
+                : Ok(result);
         }
         catch (Exception ex)
         {

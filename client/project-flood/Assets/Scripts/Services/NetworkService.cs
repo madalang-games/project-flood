@@ -51,6 +51,7 @@ namespace Game.Services
 
         // ─── 런타임 상태 ─────────────────────────────────────────────────
         string _authToken = string.Empty;
+        Action<Action<bool>> _tokenRefresher;
 
         // ─── 프로퍼티 ────────────────────────────────────────────────────
         public AppEnvironment Environment => _environment;
@@ -79,6 +80,9 @@ namespace Game.Services
         /// <summary>인증 JWT 토큰을 설정합니다. AuthService 가 로그인 완료 시 호출합니다.</summary>
         public void SetAuthToken(string token) => _authToken = token ?? string.Empty;
 
+        /// <summary>401 수신 시 호출할 토큰 갱신 델리게이트. AuthService 가 설정합니다.</summary>
+        public void SetTokenRefresher(Action<Action<bool>> refresher) => _tokenRefresher = refresher;
+
         /// <summary>HTTP GET 요청. onComplete(success, responseText|errorText)</summary>
         public void Get(string path, Action<bool, string> onComplete)
             => StartCoroutine(SendGet(path, NetworkRetryOptions.None, onComplete));
@@ -102,6 +106,7 @@ namespace Game.Services
             var url = BuildUrl(path);
             int attempt = 0;
             bool didShowOverlay = false;
+            bool tokenRefreshed = false;
 
             while (true)
             {
@@ -118,6 +123,15 @@ namespace Game.Services
                     }
                     Complete(req, "GET", null, onComplete);
                     yield break;
+                }
+
+                if (req.responseCode == 401 && !tokenRefreshed && _tokenRefresher != null)
+                {
+                    tokenRefreshed = true;
+                    bool refreshDone = false, refreshOk = false;
+                    _tokenRefresher(ok => { refreshOk = ok; refreshDone = true; });
+                    yield return new WaitUntil(() => refreshDone);
+                    if (refreshOk) continue;
                 }
 
                 attempt++;
@@ -163,6 +177,7 @@ namespace Game.Services
             var body = string.IsNullOrEmpty(jsonPayload) ? "{}" : jsonPayload;
             int attempt = 0;
             bool didShowOverlay = false;
+            bool tokenRefreshed = false;
 
             while (true)
             {
@@ -183,6 +198,15 @@ namespace Game.Services
                     }
                     Complete(req, method, body, onComplete);
                     yield break;
+                }
+
+                if (req.responseCode == 401 && !tokenRefreshed && _tokenRefresher != null)
+                {
+                    tokenRefreshed = true;
+                    bool refreshDone = false, refreshOk = false;
+                    _tokenRefresher(ok => { refreshOk = ok; refreshDone = true; });
+                    yield return new WaitUntil(() => refreshDone);
+                    if (refreshOk) continue;
                 }
 
                 attempt++;

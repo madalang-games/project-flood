@@ -17,12 +17,7 @@ namespace Game.OutGame.Lobby
         [SerializeField] private VirtualizedScrollRect _virtualizedScrollRect;
 
         [Header("Pinned My Rank Item")]
-        [SerializeField] private GameObject _myRankPin;
-        [SerializeField] private TMP_Text _myRankPinRankText;
-        [SerializeField] private Image _myRankPinAvatarIcon;
-        [SerializeField] private TMP_Text _myRankPinNameText;
-        [SerializeField] private Image _myRankPinScoreIcon;
-        [SerializeField] private TMP_Text _myRankPinScoreText;
+        [SerializeField] private RankingItemView _myRankPin;
 
         [System.Serializable]
         public struct AvatarSpriteMapping
@@ -88,6 +83,8 @@ namespace Game.OutGame.Lobby
             if (_entriesText != null)
                 _entriesText.text = LocalizationService.Instance.Get("lobby.ranking.loading");
 
+            var scoreSprite = _rankingType == "stars" ? _starSprite : _stageSprite;
+
             api.FetchGlobalPage(_rankingType, 0, PageLimit, page =>
             {
                 if (page.Entries.Count == 0)
@@ -107,28 +104,34 @@ namespace Game.OutGame.Lobby
                     {
                         if (idx < 0 || idx >= entryList.Count) return;
                         var entry = entryList[idx];
-
-                        var rankText = go.transform.Find("RankText")?.GetComponent<TMP_Text>();
-                        var avatarIcon = go.transform.Find("AvatarIcon")?.GetComponent<Image>();
-                        var nameText = go.transform.Find("NameText")?.GetComponent<TMP_Text>();
-                        var scoreIcon = go.transform.Find("ScoreIcon")?.GetComponent<Image>();
-                        var scoreText = go.transform.Find("ScoreText")?.GetComponent<TMP_Text>();
-
-                        if (rankText != null) rankText.text = $"#{entry.Rank}";
-                        if (nameText != null) nameText.text = entry.DisplayName;
-                        if (scoreText != null) scoreText.text = entry.Score.ToString();
-
-                        if (avatarIcon != null)
+                        var view = go.GetComponent<RankingItemView>();
+                        if (view != null)
                         {
-                            var spr = GetAvatarSprite(entry.AvatarId);
-                            avatarIcon.sprite = spr;
-                            avatarIcon.gameObject.SetActive(spr != null);
+                            view.Bind(entry, GetAvatarSprite(entry.AvatarId), scoreSprite);
                         }
-
-                        if (scoreIcon != null)
+                        else
                         {
-                            scoreIcon.sprite = _rankingType == "stars" ? _starSprite : _stageSprite;
-                            scoreIcon.gameObject.SetActive(scoreIcon.sprite != null);
+                            var rankText  = go.transform.Find("RankText")?.GetComponent<TMP_Text>();
+                            var avatarIcon = go.transform.Find("AvatarIcon")?.GetComponent<Image>();
+                            var nameText  = go.transform.Find("NameText")?.GetComponent<TMP_Text>();
+                            var scoreIcon  = go.transform.Find("ScoreIcon")?.GetComponent<Image>();
+                            var scoreText  = go.transform.Find("ScoreText")?.GetComponent<TMP_Text>();
+
+                            if (rankText  != null) rankText.text  = $"#{entry.Rank}";
+                            if (nameText  != null) nameText.text  = entry.DisplayName;
+                            if (scoreText != null) scoreText.text = entry.Score.ToString();
+
+                            if (avatarIcon != null)
+                            {
+                                var spr = GetAvatarSprite(entry.AvatarId);
+                                avatarIcon.sprite = spr;
+                                avatarIcon.gameObject.SetActive(spr != null);
+                            }
+                            if (scoreIcon != null)
+                            {
+                                scoreIcon.sprite = scoreSprite;
+                                scoreIcon.gameObject.SetActive(scoreIcon.sprite != null);
+                            }
                         }
                     });
                 }
@@ -151,7 +154,7 @@ namespace Game.OutGame.Lobby
             {
                 if (mine.Entry == null)
                 {
-                    if (_myRankPin != null) _myRankPin.SetActive(false);
+                    if (_myRankPin != null) _myRankPin.gameObject.SetActive(false);
                     if (_myRankText != null)
                         _myRankText.text = LocalizationService.Instance.Get("lobby.ranking.my_rank_empty");
                 }
@@ -159,30 +162,16 @@ namespace Game.OutGame.Lobby
                 {
                     if (_myRankPin != null)
                     {
-                        _myRankPin.SetActive(true);
-                        if (_myRankPinRankText != null) _myRankPinRankText.text = $"#{mine.Entry.Rank}";
-                        if (_myRankPinNameText != null) _myRankPinNameText.text = mine.Entry.DisplayName;
-                        if (_myRankPinScoreText != null) _myRankPinScoreText.text = mine.Entry.Score.ToString();
-
-                        if (_myRankPinAvatarIcon != null)
-                        {
-                            var spr = GetAvatarSprite(mine.Entry.AvatarId);
-                            _myRankPinAvatarIcon.sprite = spr;
-                            _myRankPinAvatarIcon.gameObject.SetActive(spr != null);
-                        }
-
-                        if (_myRankPinScoreIcon != null)
-                        {
-                            _myRankPinScoreIcon.sprite = _rankingType == "stars" ? _starSprite : _stageSprite;
-                            _myRankPinScoreIcon.gameObject.SetActive(_myRankPinScoreIcon.sprite != null);
-                        }
+                        _myRankPin.gameObject.SetActive(true);
+                        _myRankPin.Bind(mine.Entry, GetAvatarSprite(mine.Entry.AvatarId), scoreSprite);
+                        _myRankPin.SetHighlight(true);
                     }
 
                     if (_myRankText != null)
                         _myRankText.text = string.Format(LocalizationService.Instance.Get("lobby.ranking.my_rank_format"), mine.Entry.Rank, mine.Entry.Score);
                 }
             }, _ => {
-                if (_myRankPin != null) _myRankPin.SetActive(false);
+                if (_myRankPin != null) _myRankPin.gameObject.SetActive(false);
             });
         }
 
@@ -198,13 +187,9 @@ namespace Game.OutGame.Lobby
         private void UpdateTabButtonColors()
         {
             if (_starsTabButton != null && _starsTabButton.targetGraphic != null)
-            {
                 _starsTabButton.targetGraphic.color = _rankingType == "stars" ? _activeTabColor : _inactiveTabColor;
-            }
             if (_maxStageTabButton != null && _maxStageTabButton.targetGraphic != null)
-            {
                 _maxStageTabButton.targetGraphic.color = _rankingType == "max-stage" ? _activeTabColor : _inactiveTabColor;
-            }
         }
 
         private void SetUnavailable()
@@ -213,7 +198,7 @@ namespace Game.OutGame.Lobby
             if (_myRankText != null) _myRankText.text = LocalizationService.Instance.Get("lobby.ranking.my_rank_empty");
             if (_entriesText != null) _entriesText.text = LocalizationService.Instance.Get("lobby.ranking.unavailable");
             if (_virtualizedScrollRect != null) _virtualizedScrollRect.gameObject.SetActive(false);
-            if (_myRankPin != null) _myRankPin.SetActive(false);
+            if (_myRankPin != null) _myRankPin.gameObject.SetActive(false);
         }
     }
 }

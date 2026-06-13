@@ -14,10 +14,7 @@ namespace Game.OutGame.Lobby
         [SerializeField] private RectTransform _contentRoot;
         [SerializeField] private GameObject    _stageNodePrefab;
         [SerializeField] private GameObject    _chestPrefab;
-        [SerializeField] private float         _nodeSpacingY      = 200f;
-        [SerializeField] private float         _connectorTurnGap = 375f; // Y gap: row-end→connector and connector→next-row
-        [SerializeField] private Color         _pathColor    = new Color(0.5f, 0.7f, 1f, 0.5f);
-        [SerializeField] private float         _pathWidth    = 12f;
+        [SerializeField] private float         _nodeSpacingY      = 120f;
         [SerializeField] private Sprite        _guideOrbSprite;
 
         private const float OverdrawBuffer = 400f;
@@ -159,53 +156,148 @@ namespace Game.OutGame.Lobby
                 _pool.Add(node);
             }
 
-            // stageCount drives ALL layout/position math — decoupled from pool size
-            int   stageCount = _stages.Length;
-            float rowY   = _nodeSpacingY;
-            float rowOff = Game.Core.GameConfig.StageNodeRowOffset;
-            float conOff = Game.Core.GameConfig.StageNodeZigzagOffset;
-
-            // S-shape layout — groups of 4:
-            //   even group: L(-rowOff), C(0), R(+rowOff), Connector(+conOff)
-            //   odd  group: R(+rowOff), C(0), L(-rowOff), Connector(-conOff)
-            float stagger  = rowY * 0.08f;
-            float connH    = 2f * stagger + _connectorTurnGap;
-            float groupH   = connH + _connectorTurnGap;
-
-            int   lastI     = stageCount - 1;
-            int   lastG     = lastI / 4;
-            int   lastP     = lastI % 4;
-            float lastYBot  = lastG * groupH + (lastP == 3 ? connH : lastP * stagger);
-
-            float bottomPadding = 180f; // Add bottom padding so Stage 1 is not cut off
-            float totalHeight = lastYBot + _connectorTurnGap + bottomPadding;
-
-            _contentRoot.sizeDelta = new Vector2(_contentRoot.sizeDelta.x, totalHeight);
-
-            var positions = new Vector2[stageCount];
-            for (int i = 0; i < stageCount; i++)
+            // 1. Calculate dynamic viewport width (with robust fallbacks)
+            float viewportWidth = _scrollRect != null && _scrollRect.viewport != null 
+                ? _scrollRect.viewport.rect.width 
+                : 0f;
+            
+            if (viewportWidth <= 0f)
             {
-                int  g       = i / 4;
-                int  p       = i % 4;
-                bool goRight = (g % 2 == 0);
-
-                float rowStagger  = p < 3 ? p * stagger : 0f;
-                float yFromBottom = g * groupH + (p == 3 ? connH : rowStagger) + bottomPadding;
-                float y           = -(totalHeight - yFromBottom);
-
-                float x;
-                if (p < 3)
+                var canvas = GetComponentInParent<Canvas>();
+                if (canvas != null)
                 {
-                    // Row nodes: even L→C→R, odd R→C→L
-                    float sign = goRight ? 1f : -1f;
-                    x = (p - 1) * rowOff * sign; // p=0→-rowOff*sign, p=1→0, p=2→+rowOff*sign
+                    var canvasRT = canvas.GetComponent<RectTransform>();
+                    if (canvasRT != null)
+                        viewportWidth = canvasRT.rect.width;
+                }
+                if (viewportWidth <= 0f)
+                {
+                    viewportWidth = 1080f; // Reference width fallback
+                }
+            }
+
+            int   stageCount = _stages.Length;
+            float bottomPadding = 180f;
+
+
+
+            // 2. Compute raw coordinates using a serpentine winding layout
+            var positions = new Vector2[stageCount];
+            float maxAllowedX = (viewportWidth * 0.5f) - 180f;
+
+            var oldRandomState = UnityEngine.Random.state;
+            UnityEngine.Random.InitState(1004); // Fixed seed for consistent layout rendering
+
+            // Start first node at the bottom-left/center area
+            bool goingRight = true;
+            positions[0] = new Vector2(UnityEngine.Random.Range(-maxAllowedX * 0.6f, -maxAllowedX * 0.2f), bottomPadding);
+
+            for (int i = 1; i < stageCount; i++)
+            {
+                Vector2 prevPos = positions[i - 1];
+                float stepDistance = UnityEngine.Random.Range(310f, 380f); // Spacing strictly between 300 and 400
+
+                // Determine if we need to turn (transition to next tier)
+                bool needTurn = false;
+                if (goingRight && prevPos.x + 150f > maxAllowedX)
+                {
+                    needTurn = true;
+                }
+                else if (!goingRight && prevPos.x - 150f < -maxAllowedX)
+                {
+                    needTurn = true;
+                }
+
+                if (needTurn)
+                {
+                    // Vertical step up to the next tier
+                    float angle = UnityEngine.Random.Range(75f, 105f) * Mathf.Deg2Rad; // Mostly vertical
+                    float testX = prevPos.x + Mathf.Cos(angle) * stepDistance;
+                    float testY = prevPos.y + Mathf.Sin(angle) * stepDistance;
+
+                    positions[i] = new Vector2(Mathf.Clamp(testX, -maxAllowedX, maxAllowedX), testY);
+                    goingRight = !goingRight; // Reverse direction
                 }
                 else
                 {
-                    // Connector: swing to far edge
-                    x = goRight ? conOff : -conOff;
-                }
+                    // Horizontal step with Y undulations
+                    float angleDeg;
+                    if (goingRight)
+                    {
+                        // Angle range: -25 to 40 degrees (going right, slightly up/down/flat)
+                        angleDeg = UnityEngine.Random.Range(-25f, 40f);
+                    }
+                    else
+                    {
+                        // Angle range: 140 to 205 degrees (going left, slightly up/down/flat)
+                        angleDeg = UnityEngine.Random.Range(140f, 205f);
+                    }
 
+                    float angle = angleDeg * Mathf.Deg2Rad;
+                    float testX = prevPos.x + Mathf.Cos(angle) * stepDistance;
+                    float testY = prevPos.y + Mathf.Sin(angle) * stepDistance;
+                    testY = Mathf.Max(testY, bottomPadding);
+
+                    // Check if this step would overshoot the screen bounds. If so, force a turn instead!
+                    if (testX < -maxAllowedX || testX > maxAllowedX)
+                    {
+                        // Force a vertical turn step instead
+                        float turnAngle = UnityEngine.Random.Range(75f, 105f) * Mathf.Deg2Rad;
+                        testX = prevPos.x + Mathf.Cos(turnAngle) * stepDistance;
+                        testY = prevPos.y + Mathf.Sin(turnAngle) * stepDistance;
+                        testY = Mathf.Max(testY, bottomPadding);
+                        positions[i] = new Vector2(Mathf.Clamp(testX, -maxAllowedX, maxAllowedX), testY);
+                        goingRight = !goingRight;
+                    }
+                    else
+                    {
+                        positions[i] = new Vector2(testX, testY);
+                    }
+                }
+            }
+
+            UnityEngine.Random.state = oldRandomState;
+
+            // 3. Deterministic relaxation pass to guarantee min distance (300f) between ALL nodes
+            float minDistance = 300f; // Minimum distance between all StageNodes is 300f
+            for (int iter = 0; iter < 18; iter++) // 18 iterations to ensure correct convergence
+            {
+                for (int i = 0; i < stageCount; i++)
+                {
+                    for (int j = i + 1; j < stageCount; j++)
+                    {
+                        float dist = Vector2.Distance(positions[i], positions[j]);
+                        if (dist < minDistance)
+                        {
+                            Vector2 dir = positions[i] - positions[j];
+                            if (dir.sqrMagnitude == 0f) dir = Vector2.up;
+                            dir.Normalize();
+                            float overlap = minDistance - dist;
+                            positions[i] += dir * (overlap * 0.5f);
+                            positions[j] -= dir * (overlap * 0.5f);
+                            
+                            // Keep X within responsive limits
+                            positions[i].x = Mathf.Clamp(positions[i].x, -maxAllowedX, maxAllowedX);
+                            positions[j].x = Mathf.Clamp(positions[j].x, -maxAllowedX, maxAllowedX);
+                        }
+                    }
+                }
+            }
+
+            // Find total height based on relaxed positions
+            float maxRelaxedY = 0f;
+            for (int i = 0; i < stageCount; i++)
+            {
+                if (positions[i].y > maxRelaxedY) maxRelaxedY = positions[i].y;
+            }
+            float totalHeight = maxRelaxedY + bottomPadding + 50f;
+            _contentRoot.sizeDelta = new Vector2(_contentRoot.sizeDelta.x, totalHeight);
+
+            // Convert relaxed positions to anchor-top space (negative Y) and store
+            for (int i = 0; i < stageCount; i++)
+            {
+                float x = positions[i].x;
+                float y = -(totalHeight - positions[i].y);
                 positions[i] = new Vector2(x, y);
                 _stagePositions[_stages[i].stage_id] = positions[i];
             }
@@ -216,14 +308,32 @@ namespace Game.OutGame.Lobby
             }
             _chestNodes.Clear();
 
-            var chapterLastIdx = new Dictionary<int, int>();
+            var chapterFirstIdx = new Dictionary<int, int>();
+            var chapterLastIdx  = new Dictionary<int, int>();
             for (int i = 0; i < stageCount; i++)
-                chapterLastIdx[_stages[i].chapter_id] = i;
+            {
+                int cid = _stages[i].chapter_id;
+                if (!chapterFirstIdx.ContainsKey(cid))
+                    chapterFirstIdx[cid] = i;
+                chapterLastIdx[cid] = i;
+            }
 
             var sortedChapters = new List<int>(chapterLastIdx.Keys);
             sortedChapters.Sort();
             foreach (int cid in sortedChapters)
-                CreateChestNode(cid, positions[chapterLastIdx[cid]], totalHeight);
+            {
+                int firstIdx = chapterFirstIdx[cid];
+                int lastIdx  = chapterLastIdx[cid];
+                
+                // Chapter boundaries in anchor-top space (firstY is bottom-most/more negative, lastY is top-most/less negative)
+                float firstY = positions[firstIdx].y;
+                float lastY  = positions[lastIdx].y;
+                
+                float yBotLimit = firstY - 100f - 160f; // Bottom boundary (Y value is more negative)
+                float yTopLimit = lastY + 100f + 160f;  // Top boundary (Y value is less negative)
+                
+                CreateChestNode(cid, positions[lastIdx], totalHeight, yBotLimit, yTopLimit);
+            }
 
             BuildPath(positions, stageCount, totalHeight);
             StartGuideOrb(positions, stageCount);
@@ -231,7 +341,7 @@ namespace Game.OutGame.Lobby
             RefreshChestNodes();
         }
 
-        private void CreateChestNode(int chapterNum, Vector2 stagePos, float totalHeight)
+        private void CreateChestNode(int chapterNum, Vector2 stagePos, float totalHeight, float yBotLimit, float yTopLimit)
         {
             if (_chestPrefab == null) return;
 
@@ -244,9 +354,112 @@ namespace Game.OutGame.Lobby
             nodeRt.anchorMin = nodeRt.anchorMax = new Vector2(0.5f, 1f);
             nodeRt.pivot = new Vector2(0.5f, 0.5f);
 
-            // Reposition chest to chapter clear top margins, away from stage nodes
-            float targetX = stagePos.x >= 0 ? 260f : -260f;
-            nodeRt.anchoredPosition = new Vector2(targetX, stagePos.y + 110f);
+            // Dynamically scale chest position offset based on viewport width
+            float viewportWidth = _scrollRect != null && _scrollRect.viewport != null 
+                ? _scrollRect.viewport.rect.width 
+                : 0f;
+            if (viewportWidth <= 0f)
+            {
+                var canvas = GetComponentInParent<Canvas>();
+                if (canvas != null)
+                {
+                    var canvasRT = canvas.GetComponent<RectTransform>();
+                    if (canvasRT != null)
+                        viewportWidth = canvasRT.rect.width;
+                }
+                if (viewportWidth <= 0f) viewportWidth = 1080f;
+            }
+
+            float maxAllowedX = (viewportWidth * 0.5f) - 180f;
+            float chestOffset = Mathf.Min(260f, maxAllowedX * 0.6f);
+            
+            // Build stage node positions list for collision checking
+            var stagePositionsList = new List<Vector2>();
+            for (int i = 0; i < _stages.Length; i++)
+            {
+                if (_stagePositions.TryGetValue(_stages[i].stage_id, out Vector2 p))
+                {
+                    stagePositionsList.Add(p);
+                }
+            }
+
+            float targetX = 0f;
+            float targetY = 0f;
+            bool foundSpot = false;
+            float safeDistance = 300f; // Spacing between ChapterChest and all StageNodes must be at least 300f
+
+            // Candidate chest placement offsets relative to stagePos:
+            // We prioritize opposite side lane, then same side lane, with varying Y-offsets (offset from node center)
+            var candidates = new List<Vector2>();
+            float oppX  = stagePos.x >= 0 ? -chestOffset : chestOffset;
+            float sameX = stagePos.x >= 0 ? chestOffset : -chestOffset;
+            
+            // 1. Opposite side candidates (highest priority)
+            candidates.Add(new Vector2(oppX, stagePos.y + 110f));
+            candidates.Add(new Vector2(oppX, stagePos.y - 110f));
+            candidates.Add(new Vector2(oppX, stagePos.y + 180f));
+            candidates.Add(new Vector2(oppX, stagePos.y - 180f));
+            candidates.Add(new Vector2(oppX, stagePos.y));
+            
+            // 2. Same side candidates (fallback if opposite side is crowded)
+            candidates.Add(new Vector2(sameX, stagePos.y + 140f));
+            candidates.Add(new Vector2(sameX, stagePos.y - 140f));
+            candidates.Add(new Vector2(sameX, stagePos.y + 200f));
+            candidates.Add(new Vector2(sameX, stagePos.y - 200f));
+
+            foreach (var cand in candidates)
+            {
+                // Clamp candidate Y to ensure the chest stays strictly within the chapter visual boundary
+                float clampedY = Mathf.Clamp(cand.y, yBotLimit + 60f, yTopLimit - 60f);
+                Vector2 testPos = new Vector2(cand.x, clampedY);
+                
+                bool overlaps = false;
+                foreach (var pos in stagePositionsList)
+                {
+                    if (Vector2.Distance(testPos, pos) < safeDistance)
+                    {
+                        overlaps = true;
+                        break;
+                    }
+                }
+                
+                if (!overlaps)
+                {
+                    targetX = testPos.x;
+                    targetY = testPos.y;
+                    foundSpot = true;
+                    break;
+                }
+            }
+            
+            // 3. Ultimate fallback (push vertically within boundaries if all candidates overlap)
+            if (!foundSpot)
+            {
+                targetX = oppX;
+                targetY = Mathf.Clamp(stagePos.y + 110f, yBotLimit + 60f, yTopLimit - 60f);
+                int attempts = 0;
+                bool overlaps = true;
+                while (overlaps && attempts < 25)
+                {
+                    overlaps = false;
+                    foreach (var pos in stagePositionsList)
+                    {
+                        if (Vector2.Distance(new Vector2(targetX, targetY), pos) < safeDistance)
+                        {
+                            overlaps = true;
+                            // Shift upwards, but if hitting top boundary, reverse and shift down
+                            if (targetY + 60f < yTopLimit - 60f)
+                                targetY += 60f;
+                            else
+                                targetY -= 60f;
+                            break;
+                        }
+                    }
+                    attempts++;
+                }
+            }
+
+            nodeRt.anchoredPosition = new Vector2(targetX, targetY);
 
             var button = chestView.GetComponentInChildren<Button>();
             if (button != null)
@@ -272,6 +485,21 @@ namespace Game.OutGame.Lobby
             return hasStages;
         }
 
+        private (int current, int max) GetChapterStarInfo(int chapterNum)
+        {
+            var progress = PlayerProgressService.Instance;
+            if (progress == null || _stages == null) return (0, 0);
+            int current = 0;
+            int max = 0;
+            foreach (var s in _stages)
+            {
+                if (s.chapter_id != chapterNum) continue;
+                current += progress.GetBestStars(s.stage_id);
+                max += 3;
+            }
+            return (current, max);
+        }
+
         private void RefreshChestNodes()
         {
             for (int i = 0; i < _chestNodes.Count; i++)
@@ -289,6 +517,10 @@ namespace Game.OutGame.Lobby
                     state = ChapterChestView.ChestState.Active;
 
                 chestView.SetState(state);
+
+                var (current, max) = GetChapterStarInfo(chapterNum);
+                chestView.SetStarInfo(current, max);
+
                 chestView.gameObject.SetActive(true);
             }
         }
@@ -318,30 +550,33 @@ namespace Game.OutGame.Lobby
                     RefreshChestNodes();
 
                     var loc = LocalizationService.Instance;
-                    System.Text.StringBuilder sb = new System.Text.StringBuilder(loc.Get("toast.chest_claimed") + "\n");
+                    var dynRes = DynamicResourceService.Instance;
+                    var rewardItems = new List<Game.Core.UI.RewardItem>();
                     foreach (var r in response.GrantedRewards)
                     {
                         if (r.RewardType == "SOFT_CURRENCY")
                         {
-                            sb.AppendLine($"+{r.Amount} {loc.Get("common.gold")}");
                             PlayerProgressService.Instance?.AddGold(r.Amount);
+                            var currency = CurrencyDataService.Instance?.GetByRewardType("SOFT_CURRENCY");
+                            rewardItems.Add(new Game.Core.UI.RewardItem
+                            {
+                                Icon = currency != null ? dynRes?.GetSprite(currency.icon_name) : null,
+                                Quantity = r.Amount,
+                                Label = loc.Get("common.gold")
+                            });
                         }
                         else if (r.RewardType == "ITEM")
                         {
-                            string itemName = r.TargetId switch
+                            var item = ItemDataService.Instance?.GetItem(r.TargetId);
+                            rewardItems.Add(new Game.Core.UI.RewardItem
                             {
-                                1 => loc.Get("item.name.add_turn"),
-                                2 => loc.Get("item.name.bomb"),
-                                3 => loc.Get("item.name.h_rocket"),
-                                4 => loc.Get("item.name.color_sweep"),
-                                5 => loc.Get("item.name.row_shift"),
-                                6 => loc.Get("item.name.cell_swap"),
-                                _ => $"Item {r.TargetId}"
-                            };
-                            sb.AppendLine($"+{r.Amount} {itemName}");
+                                Icon = item != null ? dynRes?.GetSprite(item.icon_name) : null,
+                                Quantity = r.Amount,
+                                Label = item != null ? loc.Get(item.name_key) : $"Item {r.TargetId}"
+                            });
                         }
                     }
-                    Game.Core.UIManager.Instance?.ShowToast(sb.ToString(), Game.Core.UI.ToastType.Success);
+                    Game.Core.UIManager.Instance?.ShowPopup<RewardPopupView>(popup => popup.Init(rewardItems));
                 },
                 onError: error =>
                 {
@@ -491,7 +726,7 @@ namespace Game.OutGame.Lobby
                 pathStrip.lineWidth = theme.PathWidth;
                 pathStrip.scrollSpeed = theme.PathScrollSpeed;
                 pathStrip.useOutline = true;
-                pathStrip.outlineWidth = 4f;
+                pathStrip.outlineWidth = 8f;
                 pathStrip.outlineColor = new Color(0f, 0.05f, 0.15f, 0.65f);
                 pathStrip.raycastTarget = false;
 
@@ -500,17 +735,11 @@ namespace Game.OutGame.Lobby
                 {
                     string resourcePath = $"Sprites/Path/{theme.PathResourceKey}";
                     customTex = Resources.Load<Texture2D>(resourcePath);
-                    if (customTex != null)
-                        Debug.Log($"[HomeTabView] Loaded path texture for chapter {cid} from Resources/{resourcePath}");
-                    else
-                        Debug.LogWarning($"[HomeTabView] path texture '{theme.PathResourceKey}' not found for chapter {cid}. Trying path_chapter fallback.");
                 }
 
                 if (customTex == null)
                 {
                     customTex = Resources.Load<Texture2D>("Sprites/Path/path_chapter");
-                    if (customTex != null)
-                        Debug.Log($"[HomeTabView] Loaded fallback path texture 'path_chapter' for chapter {cid}");
                 }
 
                 if (customTex != null)
@@ -839,23 +1068,52 @@ namespace Game.OutGame.Lobby
                 confirmLabel: LocalizationService.Instance.Get("popup.fail.watch_ad"),
                 onConfirm: () =>
                 {
+                    var staminaApi = StaminaApiService.Instance;
+                    var adMob = AdMobService.Instance;
+                    if (staminaApi == null || adMob == null)
+                    {
+                        Game.Core.UIManager.Instance?.ShowToast(LocalizationService.Instance.Get("error.ad_failed"), Game.Core.UI.ToastType.Warning);
+                        return;
+                    }
+
                     Game.Core.UIManager.Instance?.ShowLoading();
-                    StaminaApiService.Instance?.ClaimAdLife("rewarded_video", "dummy_ad_token",
-                        onSuccess: resp =>
-                        {
-                            Game.Core.UIManager.Instance?.HideLoading();
-                            Game.Core.UIManager.Instance?.ShowToast(LocalizationService.Instance.Get("toast.life_gained"), Game.Core.UI.ToastType.Success);
-                        },
-                        onError: err =>
+                    adMob.WatchRewardedAd("STAMINA_LIFE", result =>
+                    {
+                        if (!result.HasValue || !result.Value.Earned)
                         {
                             Game.Core.UIManager.Instance?.HideLoading();
                             Game.Core.UIManager.Instance?.ShowToast(LocalizationService.Instance.Get("error.ad_failed"), Game.Core.UI.ToastType.Warning);
+                            return;
                         }
-                    );
+
+                        staminaApi.ClaimAdLife("admob", result.Value.AdToken,
+                            onSuccess: resp =>
+                            {
+                                Game.Core.UIManager.Instance?.HideLoading();
+                                Game.Core.UIManager.Instance?.ShowToast(LocalizationService.Instance.Get("toast.life_gained"), Game.Core.UI.ToastType.Success);
+                            },
+                            onError: err =>
+                            {
+                                Game.Core.UIManager.Instance?.HideLoading();
+                                Game.Core.UIManager.Instance?.ShowToast(LocalizationService.Instance.Get("error.ad_failed"), Game.Core.UI.ToastType.Warning);
+                            }
+                        );
+                    });
                 },
                 onCancel: null,
                 cancelLabel: LocalizationService.Instance.Get("common.btn_cancel")
             ));
+        }
+
+        private static bool SegmentsIntersect(Vector2 p1, Vector2 p2, Vector2 p3, Vector2 p4)
+        {
+            float d = (p2.x - p1.x) * (p4.y - p3.y) - (p2.y - p1.y) * (p4.x - p3.x);
+            if (Mathf.Abs(d) < 0.0001f) return false;
+
+            float u = ((p3.x - p1.x) * (p4.y - p3.y) - (p3.y - p1.y) * (p4.x - p3.x)) / d;
+            float v = ((p3.x - p1.x) * (p2.y - p1.y) - (p3.y - p1.y) * (p2.x - p1.x)) / d;
+
+            return (u >= 0f && u <= 1f && v >= 0f && v <= 1f);
         }
     }
 }

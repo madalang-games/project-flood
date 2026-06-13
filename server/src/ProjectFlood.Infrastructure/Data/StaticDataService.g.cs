@@ -12,6 +12,7 @@ public partial class StaticDataService
     private IReadOnlyDictionary<int, BoardThemeData> _boardThemes = new Dictionary<int, BoardThemeData>();
     private IReadOnlyDictionary<byte, ColorPaletteData> _colorPalettes = new Dictionary<byte, ColorPaletteData>();
     private IReadOnlyDictionary<string, DynamicResourceData> _dynamicResources = new Dictionary<string, DynamicResourceData>();
+    private IReadOnlyDictionary<int, CurrencyData> _currencys = new Dictionary<int, CurrencyData>();
     private IReadOnlyDictionary<int, ItemData> _items = new Dictionary<int, ItemData>();
     private IReadOnlyDictionary<int, RewardGroupData> _rewardGroups = new Dictionary<int, RewardGroupData>();
     private IReadOnlyDictionary<string, RewardSourceData> _rewardSources = new Dictionary<string, RewardSourceData>();
@@ -25,6 +26,7 @@ public partial class StaticDataService
         var avatarPath = System.IO.Path.Combine(dataRoot, "avatar");
         var boardThemePath = System.IO.Path.Combine(dataRoot, "board_theme");
         var commonPath = System.IO.Path.Combine(dataRoot, "common");
+        var currencyPath = System.IO.Path.Combine(dataRoot, "currency");
         var itemPath = System.IO.Path.Combine(dataRoot, "item");
         var rewardPath = System.IO.Path.Combine(dataRoot, "reward");
         var stagePath = System.IO.Path.Combine(dataRoot, "stage");
@@ -70,6 +72,13 @@ public partial class StaticDataService
                 SpritePath = r.sprite_path,
                 Category = r.category,
                 Comment = r.comment,
+            });
+        _currencys = CurrencyLoader.LoadAll(System.IO.Path.Combine(currencyPath, "currency.csv"))
+            .ToDictionary(r => r.currency_id, r => new CurrencyData
+            {
+                CurrencyId = r.currency_id,
+                RewardTypeKey = r.reward_type_key,
+                NameKey = r.name_key,
             });
         _items = ItemLoader.LoadAll(System.IO.Path.Combine(itemPath, "item.csv"))
             .ToDictionary(r => r.item_id, r => new ItemData
@@ -157,6 +166,8 @@ public partial class StaticDataService
     public IReadOnlyList<ColorPaletteData> GetAllColorPalettes() => _colorPalettes.Values.ToList();
     public DynamicResourceData? GetDynamicResource(string resource_key) => _dynamicResources.GetValueOrDefault(resource_key);
     public IReadOnlyList<DynamicResourceData> GetAllDynamicResources() => _dynamicResources.Values.ToList();
+    public CurrencyData? GetCurrency(int currency_id) => _currencys.GetValueOrDefault(currency_id);
+    public IReadOnlyList<CurrencyData> GetAllCurrencys() => _currencys.Values.ToList();
     public ItemData? GetItem(int item_id) => _items.GetValueOrDefault(item_id);
     public IReadOnlyList<ItemData> GetAllItems() => _items.Values.ToList();
     public RewardGroupData? GetRewardGroup(int reward_group_id) => _rewardGroups.GetValueOrDefault(reward_group_id);
