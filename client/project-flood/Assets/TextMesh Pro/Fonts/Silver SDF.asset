@@ -18,9 +18,9 @@ MonoBehaviour:
     m_FamilyName: Silver
     m_StyleName: Medium
     m_PointSize: 90
-    m_Scale: 2.75
+    m_Scale: 2.5
     m_UnitsPerEM: 1900
-    m_LineHeight: 99.47369
+    m_LineHeight: 50
     m_AscentLine: 56.842106
     m_CapLine: 43
     m_MeanLine: 29

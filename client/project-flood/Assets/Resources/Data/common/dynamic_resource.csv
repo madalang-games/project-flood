@@ -1,9 +1,9 @@
 resource_key,sprite_path,category,comment
-item_bomb,Assets/Sprites/UI/Items/Item_bomb.png,Item,Bomb item icon
-item_h_rocket,Assets/Sprites/UI/Items/Item_h_rocket.png,Item,HRocket item icon
-item_color_sweep,Assets/Sprites/UI/Items/Item_color_sweep.png,Item,ColorSweep item icon
-item_row_shift,Assets/Sprites/UI/Items/Item_row_shift.png,Item,RowShift item icon
-item_cell_swap,Assets/Sprites/UI/Items/Item_cell_swap.png,Item,CellSwap item icon
+item_bomb,Assets/Resources/Sprites/Items/Item_bomb.png,Item,Bomb item icon
+item_h_rocket,Assets/Resources/Sprites/Items/Item_h_rocket.png,Item,HRocket item icon
+item_color_sweep,Assets/Resources/Sprites/Items/Item_color_sweep.png,Item,ColorSweep item icon
+item_row_shift,Assets/Resources/Sprites/Items/Item_row_shift.png,Item,RowShift item icon
+item_cell_swap,Assets/Resources/Sprites/Items/Item_cell_swap.png,Item,CellSwap item icon
 cell_0,Assets/Sprites/Gameplay/Cells/cell_0.png,Cell,Red Cell Sprite
 cell_1,Assets/Sprites/Gameplay/Cells/cell_1.png,Cell,Blue Cell Sprite
 cell_2,Assets/Sprites/Gameplay/Cells/cell_2.png,Cell,Green Cell Sprite
@@ -39,6 +39,7 @@ socket_15,Assets/Sprites/Gameplay/Sockets/socket_15.png,Socket,Crimson Socket Sp
 cell_obstacle,Assets/Sprites/Gameplay/Cells/cell_obstacle.png,Cell,Obstacle Cell Sprite
 cell_protector_1,Assets/Sprites/Gameplay/Cells/cell_protector_1.png,Cell,Protector strength 1 overlay
 cell_protector_2,Assets/Sprites/Gameplay/Cells/cell_protector_2.png,Cell,Protector strength 2 overlay
+cell_core,Assets/Sprites/Gameplay/Cells/cell_core.png,Cell,Core cell indicator sprite (top-left quarter overlay)
 socket_default,Assets/Sprites/Gameplay/Sockets/socket_default.png,Socket,Default Socket Sprite
 chest_inactive,Assets/Sprites/UI/Chest/chest_inactive.png,Chest,Inactive chest icon
 chest_active,Assets/Sprites/UI/Chest/chest_active.png,Chest,Active chest icon
@@ -46,7 +47,7 @@ chest_claimed,Assets/Sprites/UI/Chest/chest_claimed.png,Chest,Claimed chest icon
 toast_warning,Assets/Sprites/UI/Toast/toast_warning.png,Toast,Toast warning icon
 toast_success,Assets/Sprites/UI/Toast/toast_success.png,Toast,Toast success icon
 toast_error,Assets/Sprites/UI/Toast/toast_error.png,Toast,Toast error icon
-item_add_turn,Assets/Sprites/UI/Items/Item_add_turn.png,Item,AddTurn item icon
+item_add_turn,Assets/Resources/Sprites/Items/Item_add_turn.png,Item,AddTurn item icon
 avatar_1,Assets/Sprites/UI/Avatar/avatar_1.png,Avatar,Common Avatar Portait 1
 avatar_2,Assets/Sprites/UI/Avatar/avatar_2.png,Avatar,Common Avatar Portait 2
 avatar_3,Assets/Sprites/UI/Avatar/avatar_3.png,Avatar,Common Avatar Portait 3
@@ -82,7 +83,7 @@ nav_shop,Assets/Sprites/UI/Nav/nav_shop.png,Nav,Shop tab icon
 nav_ranking,Assets/Sprites/UI/Nav/nav_ranking.png,Nav,Ranking tab icon
 ui_pause_icon,Assets/Sprites/UI/Icons/ui_pause_icon.png,UI,Pause button icon
 ui_cell_icon,Assets/Sprites/Gameplay/Cells/cell_0.png,UI,Cell count icon for HUD
-ui_gold_icon,Assets/Sprites/UI/Icons/ui_gold_icon.png,UI,Gold coin icon
+ui_gold_icon,Assets/Resources/Sprites/Icons/ui_gold_icon.png,UI,Gold coin icon
 ui_lock_icon,Assets/Sprites/UI/Icons/ui_lock_icon.png,UI,Lock icon for locked stage nodes
 ui_flag_icon,Assets/Sprites/UI/Icons/ui_flag_icon.png,UI,Flag icon
 ui_avatar_default,Assets/Sprites/UI/Avatar/avatar_free_01.png,UI,Default avatar placeholder

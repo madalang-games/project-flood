@@ -15,11 +15,10 @@ call :log "[%BATCH_NAME%] log=%LOG_FILE%"
 call :log "[%BATCH_NAME%] args=%*"
 
 powershell -NoProfile -ExecutionPolicy Bypass -Command ^
-  "$ErrorActionPreference='Continue';" ^
   "$node=(Get-Command node -ErrorAction Stop).Source;" ^
   "$script='%SCRIPT_DIR%subset_tool\subset_fonts.js';" ^
-  "& $node $script %* 2>&1 | ForEach-Object { $_.ToString() | Tee-Object -FilePath '%LOG_FILE%' -Append };" ^
-  "exit $global:LASTEXITCODE"
+  "& $node $script %* | ForEach-Object { Write-Host $_; Add-Content -Value $_ -Path '%LOG_FILE%' -Encoding UTF8 };" ^
+  "exit $LASTEXITCODE"
 set "EXIT_CODE=%ERRORLEVEL%"
 
 call :log "[%BATCH_NAME%] exit_code=%EXIT_CODE%"
