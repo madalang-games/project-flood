@@ -57,7 +57,7 @@ namespace Game.OutGame.Lobby
         private readonly List<float>         _seaweedPhase = new();
 
         // ── Forest ─────────────────────────────────────────────────
-        private readonly List<(Image img, float phase, float speed)> _sunbeams = new();
+        private readonly List<(Image img, float phase, float speed, float alphaScale)> _sunbeams = new();
 
         // ── Desert ─────────────────────────────────────────────────
         private RectTransform _desertSun;
@@ -66,10 +66,10 @@ namespace Game.OutGame.Lobby
         // ── Leaf color palette for Forest ──────────────────────────
         private static readonly Color[] LeafPalette =
         {
-            new Color(0.67f, 0.82f, 0.22f, 0.82f), // yellow-green
-            new Color(0.82f, 0.55f, 0.14f, 0.78f), // orange-brown
-            new Color(0.48f, 0.72f, 0.18f, 0.85f), // medium green
-            new Color(0.86f, 0.72f, 0.12f, 0.78f), // golden yellow
+            new Color(0.22f, 0.60f, 0.10f, 0.85f), // dark green
+            new Color(0.44f, 0.76f, 0.16f, 0.82f), // medium bright green
+            new Color(0.62f, 0.84f, 0.12f, 0.78f), // lime green
+            new Color(0.82f, 0.70f, 0.10f, 0.72f), // golden (single autumn accent)
         };
 
         // ── Public API ─────────────────────────────────────────────
@@ -148,7 +148,7 @@ namespace Game.OutGame.Lobby
         {
             if (id == 1) { CreateSun(); CreateClouds(3); CreateGrass(20); }
             if (id == 2) { CreateSandBeach(); CreateWaves(2); CreateSeaweed(8); CreateFish(3); CreateRays(4); }
-            if (id == 3) { CreateSunbeams(5); CreateTreeTrunks(6); CreateLeafCanopy(8); CreateMushrooms(4); CreateGroundLitter(); }
+            if (id == 3) { CreateForestEdge(); CreateSunbeams(4); CreateTreeTrunks(6); CreateLeafCanopy(8); CreateMushrooms(4); CreateGroundLitter(); }
             if (id == 4) { CreateDesertSun(); CreateHeatShimmer(6); CreateSandDunes(4); CreateCactus(3); }
         }
 
@@ -335,57 +335,89 @@ namespace Game.OutGame.Lobby
         // ════════════════════════════════════════════════════════════
         private void CreateSunbeams(int count)
         {
+            // Each beam = 3 layered rects: outer glow (widest, faintest) → inner glow → core (sharpest)
             for (int i = 0; i < count; i++)
             {
-                float x     = Random.Range(-HalfWidth * 0.65f, HalfWidth * 0.65f);
-                float y     = -Random.Range(_height * 0.02f, _height * 0.40f);
-                float tilt  = Random.Range(-18f, 18f);
-                var   beam  = MakeImg(transform, new Vector2(x, y),
-                    new Vector2(Random.Range(14f, 30f), Random.Range(180f, 380f)),
-                    new Color(1f, 0.96f, 0.62f, 0f));
-                beam.rectTransform.localRotation = Quaternion.Euler(0f, 0f, tilt);
-                _sunbeams.Add((beam, Random.Range(0f, Mathf.PI * 2f), Random.Range(4f, 9f)));
+                float x     = Random.Range(-HalfWidth * 0.60f, HalfWidth * 0.60f);
+                float y     = -Random.Range(_height * 0.02f, _height * 0.52f);
+                float tilt  = Random.Range(-28f, 28f);
+                float coreW = Random.Range(52f, 88f);
+                float h     = Random.Range(340f, 540f);
+                float phase = Random.Range(0f, Mathf.PI * 2f);
+                float speed = Random.Range(5f, 11f);
+
+                var outer = MakeImg(transform, new Vector2(x, y), new Vector2(coreW * 2.8f, h),
+                    new Color(0.72f, 0.95f, 0.52f, 0f));
+                outer.rectTransform.localRotation = Quaternion.Euler(0f, 0f, tilt);
+                _sunbeams.Add((outer, phase, speed, 0.18f));
+
+                var inner = MakeImg(transform, new Vector2(x, y), new Vector2(coreW * 1.65f, h),
+                    new Color(0.82f, 0.98f, 0.62f, 0f));
+                inner.rectTransform.localRotation = Quaternion.Euler(0f, 0f, tilt);
+                _sunbeams.Add((inner, phase, speed, 0.44f));
+
+                var core = MakeImg(transform, new Vector2(x, y), new Vector2(coreW, h),
+                    new Color(0.95f, 1.00f, 0.78f, 0f));
+                core.rectTransform.localRotation = Quaternion.Euler(0f, 0f, tilt);
+                _sunbeams.Add((core, phase, speed, 1.0f));
             }
         }
 
         private void CreateTreeTrunks(int groups)
         {
-            // Spread trunk pairs at even depth intervals across the full chapter
-            int pairs = Mathf.Max(1, groups / 2);
-            float step = _height / (pairs + 1);
+            int   pairs = Mathf.Max(1, groups / 2);
+            float step  = _height / (pairs + 1);
 
             for (int p = 0; p < pairs; p++)
             {
-                float cy = -(step * (p + 1));
-                float h  = Random.Range(_height * 0.22f, _height * 0.32f);
-                float cy2 = cy - h * 0.05f; // anchor slightly above center
+                float cy  = -(step * (p + 1));
+                float h   = Random.Range(_height * 0.30f, _height * 0.42f);
+                float cy2 = cy - h * 0.08f;
 
-                // Left trunk
-                float wL = Random.Range(28f, 50f);
-                float xL = -HalfWidth + wL * 0.5f + Random.Range(0f, 20f);
+                // Left trunk: shadow + body + highlight + bark lines
+                float wL = Random.Range(38f, 60f);
+                float xL = -HalfWidth + wL * 0.5f + Random.Range(6f, 30f);
+                MakeImg(transform, new Vector2(xL - wL * 0.36f, cy2), new Vector2(wL * 0.30f, h),
+                    new Color(0.05f, 0.03f, 0.01f, 0.88f));
                 MakeImg(transform, new Vector2(xL, cy2), new Vector2(wL, h),
-                    new Color(0.18f, 0.10f, 0.04f, 0.80f));
-                MakeImg(transform, new Vector2(xL + wL * 0.28f, cy2), new Vector2(wL * 0.14f, h),
-                    new Color(0.30f, 0.18f, 0.08f, 0.32f)); // bark highlight
+                    new Color(0.22f, 0.12f, 0.04f, 0.90f));
+                MakeImg(transform, new Vector2(xL + wL * 0.32f, cy2), new Vector2(wL * 0.20f, h),
+                    new Color(0.38f, 0.24f, 0.10f, 0.52f));
+                for (int bl = 0; bl < 5; bl++)
+                {
+                    float by = cy2 + h * 0.40f - bl * (h * 0.18f);
+                    MakeImg(transform, new Vector2(xL, by), new Vector2(wL * 0.80f, 2f),
+                        new Color(0.07f, 0.04f, 0.01f, 0.42f));
+                }
 
-                // Right trunk
-                float wR = Random.Range(28f, 50f);
-                float xR = HalfWidth - wR * 0.5f - Random.Range(0f, 20f);
+                // Right trunk: mirror layout
+                float wR = Random.Range(38f, 60f);
+                float xR = HalfWidth - wR * 0.5f - Random.Range(6f, 30f);
+                MakeImg(transform, new Vector2(xR + wR * 0.36f, cy2), new Vector2(wR * 0.30f, h),
+                    new Color(0.05f, 0.03f, 0.01f, 0.88f));
                 MakeImg(transform, new Vector2(xR, cy2), new Vector2(wR, h),
-                    new Color(0.18f, 0.10f, 0.04f, 0.80f));
-                MakeImg(transform, new Vector2(xR - wR * 0.28f, cy2), new Vector2(wR * 0.14f, h),
-                    new Color(0.30f, 0.18f, 0.08f, 0.32f));
+                    new Color(0.22f, 0.12f, 0.04f, 0.90f));
+                MakeImg(transform, new Vector2(xR - wR * 0.32f, cy2), new Vector2(wR * 0.20f, h),
+                    new Color(0.38f, 0.24f, 0.10f, 0.52f));
+                for (int bl = 0; bl < 5; bl++)
+                {
+                    float by = cy2 + h * 0.40f - bl * (h * 0.18f);
+                    MakeImg(transform, new Vector2(xR, by), new Vector2(wR * 0.80f, 2f),
+                        new Color(0.07f, 0.04f, 0.01f, 0.42f));
+                }
             }
 
-            // Two mid-scene trunks for depth variety
-            for (int m = 0; m < 2; m++)
+            // Mid-depth background trunks (smaller, more transparent = depth)
+            for (int m = 0; m < 3; m++)
             {
-                float cy  = -(_height * (0.38f + m * 0.28f));
-                float h   = Random.Range(_height * 0.15f, _height * 0.22f);
-                float x   = (m == 0 ? -1f : 1f) * Random.Range(HalfWidth * 0.15f, HalfWidth * 0.40f);
-                float w   = Random.Range(18f, 30f);
+                float cy = -(_height * (0.22f + m * 0.24f));
+                float h  = Random.Range(_height * 0.20f, _height * 0.30f);
+                float x  = (m % 2 == 0 ? -1f : 1f) * Random.Range(HalfWidth * 0.18f, HalfWidth * 0.48f);
+                float w  = Random.Range(22f, 36f);
                 MakeImg(transform, new Vector2(x, cy), new Vector2(w, h),
-                    new Color(0.16f, 0.09f, 0.03f, 0.55f));
+                    new Color(0.18f, 0.10f, 0.03f, 0.44f));
+                MakeImg(transform, new Vector2(x + w * 0.32f, cy), new Vector2(w * 0.22f, h),
+                    new Color(0.30f, 0.18f, 0.08f, 0.20f));
             }
         }
 
@@ -393,21 +425,21 @@ namespace Game.OutGame.Lobby
         {
             for (int i = 0; i < count; i++)
             {
-                float cx = Random.Range(-HalfWidth * 0.72f, HalfWidth * 0.72f);
-                float cy = -(_height * i / count) - Random.Range(30f, 90f);
+                float cx = Random.Range(-HalfWidth * 0.68f, HalfWidth * 0.68f);
+                float cy = -(_height * i / count) - Random.Range(20f, 80f);
 
-                int leafN = Random.Range(3, 6);
-                Color cc  = new Color(
-                    Random.Range(0.14f, 0.28f),
-                    Random.Range(0.40f, 0.65f),
-                    Random.Range(0.08f, 0.20f),
-                    Random.Range(0.42f, 0.68f));
+                int   leafN = Random.Range(6, 10); // denser clusters
+                Color cc    = new Color(
+                    Random.Range(0.10f, 0.22f),
+                    Random.Range(0.46f, 0.72f), // strong green channel
+                    Random.Range(0.05f, 0.16f),
+                    Random.Range(0.52f, 0.78f));
 
                 for (int l = 0; l < leafN; l++)
                 {
                     var leaf = MakeImg(transform,
-                        new Vector2(cx + Random.Range(-38f, 38f), cy + Random.Range(-22f, 22f)),
-                        new Vector2(Random.Range(10f, 26f), Random.Range(8f, 18f)), cc);
+                        new Vector2(cx + Random.Range(-55f, 55f), cy + Random.Range(-32f, 32f)),
+                        new Vector2(Random.Range(18f, 42f), Random.Range(14f, 28f)), cc);
                     leaf.rectTransform.localRotation = Quaternion.Euler(0f, 0f, Random.Range(0f, 180f));
                 }
             }
@@ -461,6 +493,20 @@ namespace Game.OutGame.Lobby
             }
         }
 
+        private void CreateForestEdge()
+        {
+            // Subtle dark green framing — only top 70% of chapter to avoid dark seam at ch2→ch3 boundary
+            float edgeW  = HalfWidth * 0.40f;
+            float panelH = _height * 0.70f;
+            float topY   = -_height * 0.15f;            // start 15% down so bottom entry is bright
+            float cy     = topY - panelH * 0.5f;
+
+            MakeImg(transform, new Vector2(-HalfWidth + edgeW * 0.50f, cy), new Vector2(edgeW,         panelH), new Color(0.04f, 0.16f, 0.02f, 0.28f));
+            MakeImg(transform, new Vector2(-HalfWidth + edgeW * 0.26f, cy), new Vector2(edgeW * 0.50f, panelH), new Color(0.03f, 0.12f, 0.01f, 0.15f));
+            MakeImg(transform, new Vector2( HalfWidth - edgeW * 0.50f, cy), new Vector2(edgeW,         panelH), new Color(0.04f, 0.16f, 0.02f, 0.28f));
+            MakeImg(transform, new Vector2( HalfWidth - edgeW * 0.26f, cy), new Vector2(edgeW * 0.50f, panelH), new Color(0.03f, 0.12f, 0.01f, 0.15f));
+        }
+
         // ════════════════════════════════════════════════════════════
         // DESERT
         // ════════════════════════════════════════════════════════════
@@ -498,20 +544,21 @@ namespace Game.OutGame.Lobby
 
         private void CreateHeatShimmer(int count)
         {
-            for (int i = 0; i < count; i++)
+            // Short scattered patches — NOT full-width, so they don't read as moving bars
+            for (int i = 0; i < count * 2; i++)
             {
-                float baseY = -_height * (0.20f + i * 0.055f);
+                float x     = Random.Range(-HalfWidth * 0.62f, HalfWidth * 0.62f);
+                float baseY = -_height * (0.18f + (i % count) * 0.058f + Random.Range(-0.018f, 0.018f));
                 var go = new GameObject($"Shimmer{i}", typeof(Image));
                 go.transform.SetParent(transform, false);
                 var img = go.GetComponent<Image>();
-                img.color = new Color(1f, 0.88f, 0.60f, 0f);
+                img.color = new Color(1f, 0.90f, 0.65f, 0f);
                 img.raycastTarget = false;
                 var rt = go.GetComponent<RectTransform>();
-                rt.anchorMin = new Vector2(0f, 1f);
-                rt.anchorMax = new Vector2(1f, 1f);
+                rt.anchorMin = rt.anchorMax = new Vector2(0.5f, 1f);
                 rt.pivot     = new Vector2(0.5f, 0.5f);
-                rt.sizeDelta = new Vector2(0f, 2f);
-                rt.anchoredPosition = new Vector2(0f, baseY);
+                rt.sizeDelta = new Vector2(Random.Range(55f, 160f), Random.Range(2f, 4f));
+                rt.anchoredPosition = new Vector2(x, baseY);
                 _shimmer.Add((img, baseY, Random.Range(0f, Mathf.PI * 2f), Random.Range(2.2f, 4.8f)));
             }
         }
@@ -531,11 +578,11 @@ namespace Game.OutGame.Lobby
 
                 Color dc = new Color(0.90f - d * 0.05f, 0.62f - d * 0.05f, 0.28f - d * 0.03f, alpha);
 
-                // 5-row graduated arch
+                // 5-row graduated arch: row 0 (widest) at base, row 4 (narrowest) above = dune hill
                 float[] pct  = { 1.0f, 0.82f, 0.60f, 0.38f, 0.18f };
                 float   rowH = 24f;
                 for (int row = 0; row < pct.Length; row++)
-                    MakeImg(transform, new Vector2(cx, base_y - row * rowH * 0.75f),
+                    MakeImg(transform, new Vector2(cx, base_y + row * rowH * 0.75f),
                         new Vector2(baseW * pct[row], rowH), dc);
             }
         }
@@ -726,11 +773,10 @@ namespace Game.OutGame.Lobby
 
         private void UpdateForest(float dt, float t)
         {
-            // Dappled sunbeams: soft alpha pulse
             for (int i = 0; i < _sunbeams.Count; i++)
             {
-                var (img, phase, speed) = _sunbeams[i];
-                float alpha = Mathf.Max(0f, 0.04f + 0.09f * Mathf.Sin(t * (Mathf.PI * 2f / speed) + phase));
+                var (img, phase, speed, alphaScale) = _sunbeams[i];
+                float alpha = Mathf.Max(0f, (0.08f + 0.22f * Mathf.Sin(t * (Mathf.PI * 2f / speed) + phase)) * alphaScale);
                 img.color = new Color(img.color.r, img.color.g, img.color.b, alpha);
             }
         }
@@ -744,14 +790,15 @@ namespace Game.OutGame.Lobby
                 _desertSun.localScale = new Vector3(s, s, 1f);
             }
 
-            // Heat shimmer: per-strip Y jitter + alpha flicker
+            // Heat shimmer: short patches drift vertically + alpha flicker
             for (int i = 0; i < _shimmer.Count; i++)
             {
                 var (img, baseY, phase, speed) = _shimmer[i];
-                float jitter = Mathf.Sin(t * speed * 2.2f + phase) * 2.8f
-                             + Mathf.Sin(t * speed * 0.7f + phase + 1.3f) * 1.4f;
-                float alpha  = 0.04f + 0.07f * (0.5f + 0.5f * Mathf.Sin(t * speed + phase));
-                img.rectTransform.anchoredPosition = new Vector2(0f, baseY + jitter);
+                float jitter = Mathf.Sin(t * speed * 2.2f + phase) * 2.2f
+                             + Mathf.Sin(t * speed * 0.7f + phase + 1.3f) * 1.0f;
+                float alpha  = 0.03f + 0.06f * (0.5f + 0.5f * Mathf.Sin(t * speed + phase));
+                var pos = img.rectTransform.anchoredPosition;
+                img.rectTransform.anchoredPosition = new Vector2(pos.x, baseY + jitter);
                 img.color = new Color(img.color.r, img.color.g, img.color.b, alpha);
             }
         }

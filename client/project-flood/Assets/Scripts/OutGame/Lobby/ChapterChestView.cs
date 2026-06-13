@@ -1,6 +1,5 @@
 using UnityEngine;
 using UnityEngine.UI;
-using TMPro;
 
 namespace Game.OutGame.Lobby
 {
@@ -14,7 +13,6 @@ namespace Game.OutGame.Lobby
         }
 
         [SerializeField] private Image _chestImage;
-        [SerializeField] private TMP_Text _statusText;
         [SerializeField] private Button _button;
         
         [Header("Visual States")]
@@ -42,17 +40,6 @@ namespace Game.OutGame.Lobby
                     ChestState.Active => _activeSprite,
                     ChestState.Claimed => _claimedSprite,
                     _ => _inactiveSprite
-                };
-            }
-
-            if (_statusText != null)
-            {
-                _statusText.text = state switch
-                {
-                    ChestState.Inactive => "",
-                    ChestState.Active => "Claim!",
-                    ChestState.Claimed => "Cleared",
-                    _ => ""
                 };
             }
 

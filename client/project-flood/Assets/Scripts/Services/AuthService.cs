@@ -353,6 +353,7 @@ namespace Game.Services
         private void SyncServiceTokens()
         {
             NetworkService.Instance.SetAuthToken(_accessToken);
+            NetworkService.Instance.SetTokenRefresher(cb => Refresh((ok, _) => cb(ok)));
         }
 
         private void LoadSession()

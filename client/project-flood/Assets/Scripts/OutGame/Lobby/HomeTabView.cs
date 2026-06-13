@@ -500,17 +500,11 @@ namespace Game.OutGame.Lobby
                 {
                     string resourcePath = $"Sprites/Path/{theme.PathResourceKey}";
                     customTex = Resources.Load<Texture2D>(resourcePath);
-                    if (customTex != null)
-                        Debug.Log($"[HomeTabView] Loaded path texture for chapter {cid} from Resources/{resourcePath}");
-                    else
-                        Debug.LogWarning($"[HomeTabView] path texture '{theme.PathResourceKey}' not found for chapter {cid}. Trying path_chapter fallback.");
                 }
 
                 if (customTex == null)
                 {
                     customTex = Resources.Load<Texture2D>("Sprites/Path/path_chapter");
-                    if (customTex != null)
-                        Debug.Log($"[HomeTabView] Loaded fallback path texture 'path_chapter' for chapter {cid}");
                 }
 
                 if (customTex != null)

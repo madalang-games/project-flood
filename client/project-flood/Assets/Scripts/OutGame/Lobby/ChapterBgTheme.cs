@@ -38,8 +38,8 @@ namespace Game.OutGame.Lobby
         public static ChapterBgTheme Get(int themeId) => themeId switch
         {
             1 => new ChapterBgTheme(                               // Grassland
-                top:      new Color(0.42f, 0.71f, 0.83f, 1f),
-                bottom:   new Color(0.24f, 0.48f, 0.21f, 1f),
+                top:      new Color(0.42f, 0.71f, 0.83f, 1f),     // sky blue
+                bottom:   new Color(0.24f, 0.48f, 0.21f, 1f),     // grass green
                 particle: new Color(0.98f, 0.94f, 0.40f, 0.85f),
                 speed: 35f, count: 14, size: 7f,
                 pathResourceKey: "path_chapter_1",
@@ -47,8 +47,10 @@ namespace Game.OutGame.Lobby
                 pathColor: new Color(0.65f, 0.95f, 0.55f, 1f),
                 pathWidth: 64f,
                 particleDir: ParticleDir.Upward),
-            2 => new ChapterBgTheme(                               // Ocean (shallow beach/sea)
-                top:      new Color(0.96f, 0.87f, 0.70f, 1f),     // #F5DEB3 sandy beach
+
+            2 => new ChapterBgTheme(                               // Ocean
+                // TopColor == ch3 BottomColor → overlap band renders same-color = invisible seam
+                top:      new Color(0.42f, 0.69f, 0.25f, 1f),     // #6AB040 coastal meadow — MATCHES ch3 bottom
                 bottom:   new Color(0.23f, 0.75f, 0.81f, 1f),     // #3BBFCE shallow turquoise
                 particle: new Color(0.72f, 0.94f, 1.00f, 0.60f),
                 speed: 40f, count: 14, size: 8f,
@@ -57,26 +59,30 @@ namespace Game.OutGame.Lobby
                 pathColor: new Color(0.4f, 0.88f, 0.98f, 1f),
                 pathWidth: 64f,
                 particleDir: ParticleDir.Upward),
+
             3 => new ChapterBgTheme(                               // Forest
-                top:      new Color(0.29f, 0.50f, 0.19f, 1f),     // #4A8030 bright canopy
-                bottom:   new Color(0.11f, 0.20f, 0.06f, 1f),     // #1B3210 dark mossy floor
-                particle: new Color(0.80f, 0.78f, 0.22f, 0.80f),  // autumn leaf yellow (base; per-leaf colors vary)
-                speed: 22f, count: 16, size: 10f,
+                // TopColor == ch4 BottomColor → same technique, same invisible seam
+                top:      new Color(0.66f, 0.60f, 0.16f, 1f),     // #A89828 dry golden — MATCHES ch4 bottom
+                bottom:   new Color(0.42f, 0.69f, 0.25f, 1f),     // #6AB040 coastal meadow — MATCHES ch2 top
+                particle: new Color(0.44f, 0.75f, 0.18f, 0.82f),  // green (per-leaf colors vary)
+                speed: 22f, count: 18, size: 11f,
                 pathResourceKey: "path_chapter_3",
                 pathScrollSpeed: 0.12f,
                 pathColor: new Color(0.30f, 0.55f, 0.18f, 1f),
                 pathWidth: 64f,
                 particleDir: ParticleDir.Downward),
+
             4 => new ChapterBgTheme(                               // Desert
                 top:      new Color(0.91f, 0.63f, 0.31f, 1f),     // #E8A050 hot hazy sky
-                bottom:   new Color(0.78f, 0.48f, 0.17f, 1f),     // #C87A2A deep sand
-                particle: new Color(0.91f, 0.75f, 0.44f, 0.40f),  // sandy dust
-                speed: 55f, count: 22, size: 5f,
+                bottom:   new Color(0.66f, 0.60f, 0.16f, 1f),     // #A89828 dry golden — MATCHES ch3 top
+                particle: new Color(0.91f, 0.75f, 0.44f, 0.38f),  // sandy dust
+                speed: 58f, count: 24, size: 5f,
                 pathResourceKey: "path_chapter_4",
                 pathScrollSpeed: 0.20f,
                 pathColor: new Color(0.92f, 0.72f, 0.35f, 1f),
                 pathWidth: 64f,
                 particleDir: ParticleDir.Horizontal),
+
             _ => new ChapterBgTheme(
                 top:      Color.grey,
                 bottom:   Color.black,

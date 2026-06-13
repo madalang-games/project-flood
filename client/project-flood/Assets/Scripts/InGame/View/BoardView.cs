@@ -12,8 +12,9 @@ namespace Game.InGame.View
     {
         [SerializeField] private CellView _cellPrefab;
         [SerializeField] private BoardBackground _background;
-        [Range(0f, 1f)]
-        [SerializeField] private float _boardScreenRatio = 0.9f;
+        [SerializeField] private RectTransform _hudRectTransform;
+        [SerializeField] private RectTransform _itemTrayRectTransform;
+        [SerializeField] private float _minMarginPx = 24f;
 
         private float _cellSize;
         [SerializeField] private float _tapFeedbackDuration = 0.13f;
@@ -43,6 +44,7 @@ namespace Game.InGame.View
             _board = board;
             _cellViews = new CellView[board.Height, board.Width];
             _cellPositions = new Vector3[board.Height, board.Width];
+            PositionBoardCenter();
             _cellSize = ComputeCellSize(board.Width, board.Height);
             AlignBackground();
 
@@ -268,11 +270,41 @@ namespace Game.InGame.View
         private float ComputeCellSize(int boardWidth, int boardHeight)
         {
             var cam = Camera.main;
-            float viewH = cam.orthographicSize * 2f;
-            float viewW = viewH * ((float)Screen.width / Screen.height);
-            float fitW = viewW * _boardScreenRatio / boardWidth;
-            float fitH = viewH * _boardScreenRatio / boardHeight;
-            return Mathf.Min(fitW, fitH);
+            float viewH     = cam.orthographicSize * 2f;
+            float viewW     = viewH * ((float)Screen.width / Screen.height);
+            float pxToWorld = viewH / Screen.height;
+            float hudWorld  = GetReservedHeightWorld(_hudRectTransform,      pxToWorld);
+            float trayWorld = GetReservedHeightWorld(_itemTrayRectTransform, pxToWorld);
+            float margin    = _minMarginPx * pxToWorld;
+
+            float availH = Mathf.Max(0f, viewH - hudWorld - trayWorld - margin * 2f);
+            float availW = Mathf.Max(0f, viewW - margin * 2f);
+
+            return Mathf.Min(availW / boardWidth, availH / boardHeight);
+        }
+
+        private void PositionBoardCenter()
+        {
+            var cam         = Camera.main;
+            float viewH     = cam.orthographicSize * 2f;
+            float pxToWorld = viewH / Screen.height;
+            float hudWorld  = GetReservedHeightWorld(_hudRectTransform,      pxToWorld);
+            float trayWorld = GetReservedHeightWorld(_itemTrayRectTransform, pxToWorld);
+
+            float offsetY      = (trayWorld - hudWorld) * 0.5f;
+            var pos            = transform.position;
+            pos.x              = cam.transform.position.x;
+            pos.y              = cam.transform.position.y + offsetY;
+            transform.position = pos;
+        }
+
+        private static float GetReservedHeightWorld(RectTransform rt, float pxToWorld)
+        {
+            if (rt == null) return 0f;
+            Canvas canvas = rt.GetComponentInParent<Canvas>();
+            if (canvas != null) canvas = canvas.rootCanvas;
+            float scale = canvas != null ? canvas.scaleFactor : 1f;
+            return rt.rect.height * scale * pxToWorld;
         }
 
         private Color GetColor(int colorId)

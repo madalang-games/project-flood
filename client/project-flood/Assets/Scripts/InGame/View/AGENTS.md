@@ -40,7 +40,9 @@
 | `HUDView.PulseBorder()` | coroutine | neon pulse — PingPong Lerp between _dangerColor and _dangerPulseColor |
 | `BoardView._cellPrefab` | SerializeField | CellView prefab to instantiate |
 | `BoardView._background` | SerializeField | BoardBackground reference; parented/aligned to BoardView at Build |
-| `BoardView._boardScreenRatio` | SerializeField | target camera viewport fill used for computed cell size |
+| `BoardView._hudRectTransform` | SerializeField | HUD RectTransform; height used to compute reserved top area in world space |
+| `BoardView._itemTrayRectTransform` | SerializeField | ItemTray RectTransform; height used to compute reserved bottom area in world space |
+| `BoardView._minMarginPx` | SerializeField | minimum pixel margin around board within the available area (default 24) |
 | `BoardView._tapFeedbackDuration` | SerializeField | tap punch/flash duration |
 | `BoardView._groupPulseDuration` | SerializeField | matched group ripple pulse duration |
 | `BoardView._removeDuration` | SerializeField | cell pop/fade removal duration |
@@ -50,7 +52,9 @@
 | `BoardView._burstCount` | SerializeField | code-generated burst dots per removed cell |
 | `BoardView._rotateDuration` | SerializeField | 180-degree visual board rotation duration |
 | `BoardView._rotateScalePulse` | SerializeField | subtle board scale pulse during rotation |
-| `BoardView.Build(board,colorIds)` | method | initial setup -> computes cell positions, instantiates grid, aligns background, calls Refresh |
+| `BoardView.Build(board,colorIds)` | method | initial setup -> PositionBoardCenter -> computes cell positions, instantiates grid, aligns background, calls Refresh |
+| `BoardView.PositionBoardCenter()` | method | shifts board Y so it centers in the area between HUD (top) and ItemTray (bottom) |
+| `BoardView.GetReservedHeightWorld(rt,pxToWorld)` | method | static; converts RectTransform height (accounting for canvas scaleFactor) to world units |
 | `BoardView.Refresh(board)` | method | syncs all CellViews + socket visibility to current board state |
 | `BoardView.PlayTapFeedback(row,col)` | coroutine | selected cell scale punch + color flash |
 | `BoardView.PlayGroupPulse(group,originRow,originCol)` | coroutine | group ripple before resolution |

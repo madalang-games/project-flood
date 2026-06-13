@@ -1,0 +1,43 @@
+<en-US>
+Welcome to the grand opening of Project Flood!
+- Dynamic match-2 puzzle gameplay with deep strategy.
+- 5 Powerful Boosters: Bomb, Rocket, ColorSweep, and more.
+- Compete globally with Star & Stage Rankings.
+- Localization support for 15 languages including English, Korean, and Arabic!
+</en-US>
+
+<ko-KR>
+Project Flood 정식 릴리즈를 환영합니다!
+- 다이나믹한 매치-2 퍼즐과 전략적인 재미.
+- 5종의 강력한 부스터: 폭탄, 로켓, 컬러 스윕, 로우 시프트, 셀 스왑.
+- 스타 및 스테이지 랭킹으로 전 세계 유저와 경쟁하세요.
+- 한국어, 영어, 아랍어를 포함한 총 15개 글로벌 언어 지원!
+</ko-KR>
+
+<ar>
+مرحباً بكم في الافتتاح الكبير لـ Project Flood!
+- تجربة ألغاز مطابقة 2 ديناميكية مع استراتيجية عميقة.
+- 5 معززات قوية: قنبلة، صاروخ، مسح الألوان، والمزيد.
+- تنافس عالمياً مع تصنيفات النجوم والمراحل.
+- دعم اللغات لـ 15 لغة بما في ذلك الإنجليزية والكورية والعربية!
+</ar>
+
+<ja-JP>
+Project Floodのグランドオープンへようこそ！
+- 戦略的な深みを持つダイナミックなマッチ2パズル。
+- 5つの強力なブースター：爆弾、ロケット、カラースイープなど。
+- スター＆ステージランキングで世界中のプレイヤーと競い合おう。
+- 英語、韓国語、アラビア語を含む15言語のローカライズをサポート！
+</ja-JP>
+
+<zh-CN>
+欢迎来到 Project Flood 的盛大开幕！
+- 具有深厚策略的动态消除益智游戏。
+- 5 种强力助推器：炸弹、火箭、颜色扫描等。
+- 通过星星和关卡排名在全球范围内竞争。
+- 支持包括英语、韩语和阿拉伯语在内的 15 种语言！
+</zh-CN>
+
+<!-- metadata -->
+commit: c22b90c
+date: 2026-06-12

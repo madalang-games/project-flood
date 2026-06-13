@@ -101,71 +101,71 @@ namespace Game.Editor
             }
         }
 
-        [MenuItem("Tools/UI Setup/Prefabs/ConfirmDialog",  false, 110)]
-        static void CreateConfirmDialogSingle()  { EnsureDirs(); CreateConfirmDialog();  AssetDatabase.Refresh(); }
-
-        [MenuItem("Tools/UI Setup/Prefabs/Toast",           false, 111)]
-        static void CreateToastSingle()          { EnsureDirs(); CreateToast();          AssetDatabase.Refresh(); }
-
-        [MenuItem("Tools/UI Setup/Prefabs/LoadingOverlay",  false, 112)]
-        static void CreateLoadingOverlaySingle() { EnsureDirs(); CreateLoadingOverlay(); AssetDatabase.Refresh(); }
-
-        [MenuItem("Tools/UI Setup/Prefabs/NetworkError",    false, 113)]
-        static void CreateNetworkErrorSingle()   { EnsureDirs(); CreateNetworkError();   AssetDatabase.Refresh(); }
-
-        [MenuItem("Tools/UI Setup/Prefabs/RewardPopup",     false, 114)]
-        static void CreateRewardPopupSingle()    { EnsureDirs(); CreateRewardPopup();    AssetDatabase.Refresh(); }
-
-        [MenuItem("Tools/UI Setup/Prefabs/ReLoginView",     false, 115)]
-        static void CreateReLoginViewSingle()    { EnsureDirs(); CreateReLoginView();    AssetDatabase.Refresh(); }
-
-        [MenuItem("Tools/UI Setup/Prefabs/StageInfoPopup",  false, 116)]
-        static void CreateStageInfoPopupSingle() { EnsureDirs(); CreateStageInfoPopup(); AssetDatabase.Refresh(); }
-
-        [MenuItem("Tools/UI Setup/Prefabs/ResultOverlay",   false, 117)]
-        static void CreateResultOverlaySingle()  { EnsureDirs(); CreateResultOverlay();  AssetDatabase.Refresh(); }
-
-        [MenuItem("Tools/UI Setup/Prefabs/FailOverlay",     false, 118)]
-        static void CreateFailOverlaySingle()    { EnsureDirs(); CreateFailOverlay();    AssetDatabase.Refresh(); }
-
-        [MenuItem("Tools/UI Setup/Prefabs/PausePopup",      false, 119)]
-        static void CreatePausePopupSingle()     { EnsureDirs(); CreatePausePopup();     AssetDatabase.Refresh(); }
-
-        [MenuItem("Tools/UI Setup/Prefabs/SettingsPanel",   false, 120)]
-        static void CreateSettingsPanelSingle()  { EnsureDirs(); CreateSettingsPanel();  AssetDatabase.Refresh(); }
-
-        [MenuItem("Tools/UI Setup/Prefabs/AccountPopup",    false, 121)]
-        static void CreateAccountPopupSingle()   { EnsureDirs(); CreateAccountPopup();   AssetDatabase.Refresh(); }
-
-        [MenuItem("Tools/UI Setup/Prefabs/StageNodeView",    false, 122)]
-        static void CreateStageNodeViewSingle()  { EnsureDirs(); CreateStageNodeView();  AssetDatabase.Refresh(); }
-
-        [MenuItem("Tools/UI Setup/Prefabs/StaminaPopup",     false, 126)]
-        static void CreateStaminaPopupSingle()   { EnsureDirs(); CreateStaminaPopup();   AssetDatabase.Refresh(); }
-
-        [MenuItem("Tools/UI Setup/Prefabs/TutorialOverlay",  false, 127)]
-        static void CreateTutorialOverlaySingle() { EnsureDirs(); CreateTutorialOverlay(); AssetDatabase.Refresh(); }
-
-        [MenuItem("Tools/UI Setup/Prefabs/ChapterChest",     false, 128)]
-        static void CreateChapterChestSingle()    { EnsureDirs(); CreateChapterChest();    AssetDatabase.Refresh(); }
-
-        [MenuItem("Tools/UI Setup/Prefabs/AccountRestartPopup", false, 135)]
-        static void CreateAccountRestartPopupSingle() { EnsureDirs(); CreateAccountRestartPopup(); AssetDatabase.Refresh(); }
-
-        [MenuItem("Tools/UI Setup/Prefabs/AccountConflictPopup", false, 136)]
+        [MenuItem("Tools/UI Setup/Prefabs/AccountConflictPopup", false, 110)]
         static void CreateAccountConflictPopupSingle() { EnsureDirs(); CreateAccountConflictPopup(); AssetDatabase.Refresh(); }
 
-        [MenuItem("Tools/UI Setup/Prefabs/ItemBuyConfirmPopup", false, 137)]
-        static void CreateItemBuyConfirmPopupSingle() { EnsureDirs(); CreateItemBuyConfirmPopup(); AssetDatabase.Refresh(); }
+        [MenuItem("Tools/UI Setup/Prefabs/AccountPopup",    false, 111)]
+        static void CreateAccountPopupSingle()   { EnsureDirs(); CreateAccountPopup();   AssetDatabase.Refresh(); }
 
-        [MenuItem("Tools/UI Setup/Prefabs/BootCanvas",       false, 123)]
+        [MenuItem("Tools/UI Setup/Prefabs/AccountRestartPopup", false, 112)]
+        static void CreateAccountRestartPopupSingle() { EnsureDirs(); CreateAccountRestartPopup(); AssetDatabase.Refresh(); }
+
+        [MenuItem("Tools/UI Setup/Prefabs/BootCanvas",       false, 113)]
         static void CreateBootCanvasSingle()     { EnsureDirs(); SetupBoot();            AssetDatabase.Refresh(); }
 
-        [MenuItem("Tools/UI Setup/Prefabs/LobbyCanvas",      false, 124)]
+        [MenuItem("Tools/UI Setup/Prefabs/ChapterChest",     false, 114)]
+        static void CreateChapterChestSingle()    { EnsureDirs(); CreateChapterChest();    AssetDatabase.Refresh(); }
+
+        [MenuItem("Tools/UI Setup/Prefabs/ConfirmDialog",  false, 115)]
+        static void CreateConfirmDialogSingle()  { EnsureDirs(); CreateConfirmDialog();  AssetDatabase.Refresh(); }
+
+        [MenuItem("Tools/UI Setup/Prefabs/FailOverlay",     false, 116)]
+        static void CreateFailOverlaySingle()    { EnsureDirs(); CreateFailOverlay();    AssetDatabase.Refresh(); }
+
+        [MenuItem("Tools/UI Setup/Prefabs/InGameCanvas",     false, 117)]
+        static void CreateInGameCanvasSingle()   { EnsureDirs(); SetupInGame();          AssetDatabase.Refresh(); }
+
+        [MenuItem("Tools/UI Setup/Prefabs/ItemBuyConfirmPopup", false, 118)]
+        static void CreateItemBuyConfirmPopupSingle() { EnsureDirs(); CreateItemBuyConfirmPopup(); AssetDatabase.Refresh(); }
+
+        [MenuItem("Tools/UI Setup/Prefabs/LoadingOverlay",  false, 119)]
+        static void CreateLoadingOverlaySingle() { EnsureDirs(); CreateLoadingOverlay(); AssetDatabase.Refresh(); }
+
+        [MenuItem("Tools/UI Setup/Prefabs/LobbyCanvas",      false, 120)]
         static void CreateLobbyCanvasSingle()    { EnsureDirs(); SetupLobby();           AssetDatabase.Refresh(); }
 
-        [MenuItem("Tools/UI Setup/Prefabs/InGameCanvas",     false, 125)]
-        static void CreateInGameCanvasSingle()   { EnsureDirs(); SetupInGame();          AssetDatabase.Refresh(); }
+        [MenuItem("Tools/UI Setup/Prefabs/NetworkError",    false, 121)]
+        static void CreateNetworkErrorSingle()   { EnsureDirs(); CreateNetworkError();   AssetDatabase.Refresh(); }
+
+        [MenuItem("Tools/UI Setup/Prefabs/PausePopup",      false, 122)]
+        static void CreatePausePopupSingle()     { EnsureDirs(); CreatePausePopup();     AssetDatabase.Refresh(); }
+
+        [MenuItem("Tools/UI Setup/Prefabs/ReLoginView",     false, 123)]
+        static void CreateReLoginViewSingle()    { EnsureDirs(); CreateReLoginView();    AssetDatabase.Refresh(); }
+
+        [MenuItem("Tools/UI Setup/Prefabs/ResultOverlay",   false, 124)]
+        static void CreateResultOverlaySingle()  { EnsureDirs(); CreateResultOverlay();  AssetDatabase.Refresh(); }
+
+        [MenuItem("Tools/UI Setup/Prefabs/RewardPopup",     false, 125)]
+        static void CreateRewardPopupSingle()    { EnsureDirs(); CreateRewardPopup();    AssetDatabase.Refresh(); }
+
+        [MenuItem("Tools/UI Setup/Prefabs/SettingsPanel",   false, 126)]
+        static void CreateSettingsPanelSingle()  { EnsureDirs(); CreateSettingsPanel();  AssetDatabase.Refresh(); }
+
+        [MenuItem("Tools/UI Setup/Prefabs/StageInfoPopup",  false, 127)]
+        static void CreateStageInfoPopupSingle() { EnsureDirs(); CreateStageInfoPopup(); AssetDatabase.Refresh(); }
+
+        [MenuItem("Tools/UI Setup/Prefabs/StageNodeView",    false, 128)]
+        static void CreateStageNodeViewSingle()  { EnsureDirs(); CreateStageNodeView();  AssetDatabase.Refresh(); }
+
+        [MenuItem("Tools/UI Setup/Prefabs/StaminaPopup",     false, 129)]
+        static void CreateStaminaPopupSingle()   { EnsureDirs(); CreateStaminaPopup();   AssetDatabase.Refresh(); }
+
+        [MenuItem("Tools/UI Setup/Prefabs/Toast",           false, 130)]
+        static void CreateToastSingle()          { EnsureDirs(); CreateToast();          AssetDatabase.Refresh(); }
+
+        [MenuItem("Tools/UI Setup/Prefabs/TutorialOverlay",  false, 131)]
+        static void CreateTutorialOverlaySingle() { EnsureDirs(); CreateTutorialOverlay(); AssetDatabase.Refresh(); }
 
         static void SetupBoot()
         {
@@ -1804,21 +1804,20 @@ namespace Game.Editor
             var root = new GameObject("ChapterChest");
             var rootRt = RT(root);
             rootRt.sizeDelta = new Vector2(120, 120);
-            
-            var chestImg = Img(root, Color.white);
-            chestImg.preserveAspect = true;
+
             var chestBtn = Comp<Button>(root);
             var chestCg = Comp<CanvasGroup>(root);
             var chestView = Comp<ChapterChestView>(root);
-            
-            // Glow Effect
+
+            // GlowEffect — child 0, renders behind ChestImage
             var glow = Child(root, "GlowEffect");
-            var glowRt = RT(glow);
-            glowRt.sizeDelta = new Vector2(180, 180);
+            RT(glow).sizeDelta = new Vector2(180, 180);
             var glowImg = Img(glow, new Color(1, 0.85f, 0.3f, 0.5f));
-            Comp<UIPulseGlowEffect>(glow);
-            
-            // Dynamic Material with Shader
+            var glowEffect = Comp<UIPulseGlowEffect>(glow);
+            var soGlow = new SerializedObject(glowEffect);
+            soGlow.FindProperty("_rotationSpeed").floatValue = 0f;
+            soGlow.ApplyModifiedProperties();
+
             Shader glowShader = Shader.Find("UI/PulseGlow");
             if (glowShader != null)
             {
@@ -1834,31 +1833,15 @@ namespace Game.Editor
                 }
                 glowImg.material = glowMat;
             }
-            
-            // Status Text
-            var statusTextGo = Child(root, "StatusText");
-            var textRt = RT(statusTextGo);
-            textRt.anchorMin = new Vector2(0.5f, 0);
-            textRt.anchorMax = new Vector2(0.5f, 0);
-            textRt.pivot = new Vector2(0.5f, 1f);
-            textRt.anchoredPosition = new Vector2(0, -10);
-            textRt.sizeDelta = new Vector2(150, 40);
-            
-            var textTmp = statusTextGo.GetComponent<TextMeshProUGUI>();
-            if (textTmp == null) textTmp = statusTextGo.AddComponent<TextMeshProUGUI>();
-            textTmp.fontSizeMin = 18f;
-            textTmp.fontSizeMax = 28f;
-            textTmp.fontSize = 24f;
-            textTmp.alignment = TextAlignmentOptions.Center;
-            textTmp.color = Color.yellow;
-            textTmp.text = "Locked";
-            textTmp.enableWordWrapping = true;
-            var chestStatusLt = Comp<LocalizedText>(statusTextGo);
-            var soChestStatusLt = new SerializedObject(chestStatusLt);
-            soChestStatusLt.FindProperty("_stringId").stringValue = ChapterLocked;
-            soChestStatusLt.ApplyModifiedProperties();
 
-            // Sparkle Particles
+            // ChestImage — child 1, renders in front of GlowEffect
+            var chestImgGo = Child(root, "ChestImage");
+            RT(chestImgGo).sizeDelta = new Vector2(120, 120);
+            var chestImg = Img(chestImgGo, Color.white);
+            chestImg.preserveAspect = true;
+            chestBtn.targetGraphic = chestImg;
+
+            // SparkleParticles — child 2
             var sparkleGo = Child(root, "SparkleParticles");
             var sparkleRt = RT(sparkleGo);
             sparkleRt.anchorMin = sparkleRt.anchorMax = new Vector2(0.5f, 0.5f);
@@ -1898,13 +1881,19 @@ namespace Game.Editor
             // Bind Serialized Fields on ChapterChestView
             var so = new SerializedObject(chestView);
             so.FindProperty("_chestImage").objectReferenceValue = chestImg;
-            so.FindProperty("_statusText").objectReferenceValue = textTmp;
             so.FindProperty("_button").objectReferenceValue = chestBtn;
             so.FindProperty("_glowEffect").objectReferenceValue = glow;
             so.FindProperty("_sparkleParticles").objectReferenceValue = ps;
             so.FindProperty("_canvasGroup").objectReferenceValue = chestCg;
+
+            // Map chest sprites from dynamic_resource.csv
+            var resMap = LoadDynamicResourceMap();
+            TryMapSprite(so, "_inactiveSprite", "chest_inactive", resMap);
+            TryMapSprite(so, "_activeSprite",   "chest_active",   resMap);
+            TryMapSprite(so, "_claimedSprite",  "chest_claimed",  resMap);
+
             so.ApplyModifiedProperties();
-            
+
             Save(root, "ChapterChest");
         }
 
@@ -2744,40 +2733,31 @@ namespace Game.Editor
             }
 
             // 3. Map ChapterChest Sprites
-            string[] chestPaths = {
-                "Assets/Resources/Prefabs/UI/ChapterChest.prefab",
-                "Assets/UI/Prefabs/Base/Common/ChapterChest.prefab"
-            };
-            foreach (var path in chestPaths)
+            // Only map base prefab; Resources variant inherits from it via PrefabVariant
+            string chestBasePath = "Assets/UI/Prefabs/Base/Common/ChapterChest.prefab";
+            var chestBasePrefab = AssetDatabase.LoadAssetAtPath<GameObject>(chestBasePath);
+            if (chestBasePrefab != null)
             {
-                var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(path);
-                if (prefab != null)
+                var chestView = chestBasePrefab.GetComponentInChildren<ChapterChestView>(true);
+                if (chestView == null) chestView = chestBasePrefab.GetComponent<ChapterChestView>();
+                if (chestView != null)
                 {
-                    var chestView = prefab.GetComponent<ChapterChestView>();
-                    if (chestView != null)
-                    {
-                        var soChest = new SerializedObject(chestView);
-                        TryMapSprite(soChest, "_inactiveSprite", "chest_inactive", resMap);
-                        TryMapSprite(soChest, "_activeSprite", "chest_active", resMap);
-                        TryMapSprite(soChest, "_claimedSprite", "chest_claimed", resMap);
-                        
-                        // Set preserveAspect on the Image component of the chest
-                        var chestImgProp = soChest.FindProperty("_chestImage");
-                        if (chestImgProp != null && chestImgProp.objectReferenceValue != null)
-                        {
-                            var img = chestImgProp.objectReferenceValue as Image;
-                            if (img != null)
-                            {
-                                img.preserveAspect = true;
-                                EditorUtility.SetDirty(img);
-                            }
-                        }
-                        
-                        soChest.ApplyModifiedProperties();
-                        EditorUtility.SetDirty(prefab);
-                        Debug.Log($"[UIEditorSetup] Successfully mapped chest sprites to {path}");
-                    }
+                    var soChest = new SerializedObject(chestView);
+                    TryMapSprite(soChest, "_inactiveSprite", "chest_inactive", resMap);
+                    TryMapSprite(soChest, "_activeSprite",   "chest_active",   resMap);
+                    TryMapSprite(soChest, "_claimedSprite",  "chest_claimed",  resMap);
+                    soChest.ApplyModifiedProperties();
+                    PrefabUtility.SavePrefabAsset(chestBasePrefab);
+                    Debug.Log($"[UIEditorSetup] Successfully mapped chest sprites to {chestBasePath}");
                 }
+                else
+                {
+                    Debug.LogWarning($"[UIEditorSetup] ChapterChestView not found in {chestBasePath}");
+                }
+            }
+            else
+            {
+                Debug.LogWarning($"[UIEditorSetup] ChapterChest base prefab not found at {chestBasePath}");
             }
 
             // 4. Map ToastView Sprites
