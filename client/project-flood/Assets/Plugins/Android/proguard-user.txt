@@ -51,3 +51,16 @@
 -dontwarn com.google.android.libraries.ads.mobile.sdk.rewarded.RewardedAdPreloader
 -dontwarn com.google.android.libraries.ads.mobile.sdk.rewardedinterstitial.RewardedInterstitialAd
 -dontwarn com.google.android.libraries.ads.mobile.sdk.rewardedinterstitial.RewardedInterstitialAdEventCallback
+-dontwarn com.google.android.libraries.ads.mobile.sdk.common.AdChoicesPlacement
+-dontwarn com.google.android.libraries.ads.mobile.sdk.common.Image
+-dontwarn com.google.android.libraries.ads.mobile.sdk.common.VideoOptions
+-dontwarn com.google.android.libraries.ads.mobile.sdk.nativead.MediaView
+-dontwarn com.google.android.libraries.ads.mobile.sdk.nativead.NativeAd$NativeAdType
+-dontwarn com.google.android.libraries.ads.mobile.sdk.nativead.NativeAd$NativeMediaAspectRatio
+-dontwarn com.google.android.libraries.ads.mobile.sdk.nativead.NativeAd
+-dontwarn com.google.android.libraries.ads.mobile.sdk.nativead.NativeAdEventCallback
+-dontwarn com.google.android.libraries.ads.mobile.sdk.nativead.NativeAdLoader
+-dontwarn com.google.android.libraries.ads.mobile.sdk.nativead.NativeAdLoaderCallback
+-dontwarn com.google.android.libraries.ads.mobile.sdk.nativead.NativeAdRequest$Builder
+-dontwarn com.google.android.libraries.ads.mobile.sdk.nativead.NativeAdRequest
+-dontwarn com.google.android.libraries.ads.mobile.sdk.nativead.NativeAdView
