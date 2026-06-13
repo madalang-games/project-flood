@@ -197,8 +197,8 @@ namespace Game.Editor
             Stretch(safeRoot);
             Comp<SafeAreaHandler>(safeRoot);
 
-            // Header — top 180px (Taller for casual layered styling)
-            var header = Child(safeRoot, "Header");
+            // Header — Canvas direct child so background reaches physical screen top (not safe area top)
+            var header = Child(canvas, "Header");
             TopStrip(header, 180);
             Img(header, UI_BG_DEEP);
             var hv = Comp<HeaderView>(header);
@@ -293,6 +293,8 @@ namespace Game.Editor
             var bnv = Comp<BottomNavBarView>(navBar);
             var navHlg = Comp<HorizontalLayoutGroup>(navBar);
             navHlg.childAlignment      = TextAnchor.MiddleCenter;
+            navHlg.childControlWidth      = true;
+            navHlg.childControlHeight     = true;
             navHlg.childForceExpandWidth  = true;
             navHlg.childForceExpandHeight = true;
             navHlg.padding = new RectOffset(0, 0, 0, 0);
@@ -305,8 +307,8 @@ namespace Game.Editor
             if (resMap.TryGetValue("nav_home",    out string nhp)) { var s = AssetDatabase.LoadAssetAtPath<Sprite>(nhp); if (s != null) { var i = homeBtn.transform.Find("Visual/Icon")?.GetComponent<Image>(); if (i != null) i.sprite = s; } }
             if (resMap.TryGetValue("nav_ranking", out string nrp)) { var s = AssetDatabase.LoadAssetAtPath<Sprite>(nrp); if (s != null) { var i = rankBtn.transform.Find("Visual/Icon")?.GetComponent<Image>(); if (i != null) i.sprite = s; } }
 
-            // Tab content area — fills between header and nav
-            var tabContent = Child(safeRoot, "TabContent");
+            // Tab content area — Canvas direct child so top padding is in screen space (aligns with Header)
+            var tabContent = Child(canvas, "TabContent");
             PaddedStretch(tabContent, 180, 160);
 
             // HomeTab — ScrollRect with curved zigzag map path
@@ -385,6 +387,7 @@ namespace Game.Editor
             var rankScrollRect = Comp<ScrollRect>(scrollRectGo);
             rankScrollRect.horizontal = false;
             rankScrollRect.vertical = true;
+            rankScrollRect.movementType = ScrollRect.MovementType.Clamped;
 
             var rankViewportGo = Child(scrollRectGo, "Viewport");
             Stretch(rankViewportGo);
@@ -417,19 +420,38 @@ namespace Game.Editor
             soVScroll.FindProperty("_spacing").floatValue = 6f;
             soVScroll.ApplyModifiedProperties();
 
-            // Pinned player ranking item at the bottom
-            var myRankPin = Child(rankingTab, "MyRankPin");
-            Fixed(myRankPin, new Vector2(0, -700), new Vector2(820, 90));
-            Img(myRankPin, UI_BG_MID);
-
-            var pinBorder = Child(myRankPin, "Border");
-            Stretch(pinBorder);
-            var pinBorderImg = Img(pinBorder, Hex("2B003B"));
-            pinBorder.transform.SetAsFirstSibling();
-            pinBorderImg.rectTransform.offsetMin = new Vector2(-4, -4);
-            pinBorderImg.rectTransform.offsetMax = new Vector2(4, 4);
-
-            BuildRankingItemHierarchy(myRankPin, resMap);
+            // Pinned player ranking item at the bottom — instance of Final Prefab
+            var rankItemFinalAsset = AssetDatabase.LoadAssetAtPath<GameObject>($"{PrefabRoot}/RankingItemPrefab.prefab")
+                                  ?? AssetDatabase.LoadAssetAtPath<GameObject>($"{BaseCommonPath}/RankingItemPrefab.prefab");
+            GameObject myRankPin;
+            RankingItemView myRankPinView;
+            if (rankItemFinalAsset != null)
+            {
+                myRankPin = (GameObject)PrefabUtility.InstantiatePrefab(rankItemFinalAsset, rankingTab.transform);
+                myRankPin.name = "MyRankPin";
+                var pinRt = myRankPin.GetComponent<RectTransform>();
+                pinRt.anchorMin        = new Vector2(0.5f, 0.5f);
+                pinRt.anchorMax        = new Vector2(0.5f, 0.5f);
+                pinRt.pivot            = new Vector2(0.5f, 0.5f);
+                pinRt.anchoredPosition = new Vector2(0, -700);
+                pinRt.sizeDelta        = new Vector2(860, 90);
+                myRankPinView = myRankPin.GetComponent<RankingItemView>();
+                if (myRankPinView == null) myRankPinView = myRankPin.AddComponent<RankingItemView>();
+            }
+            else
+            {
+                myRankPin = Child(rankingTab, "MyRankPin");
+                Fixed(myRankPin, new Vector2(0, -700), new Vector2(860, 90));
+                Img(myRankPin, UI_BG_MID);
+                var pinBorder = Child(myRankPin, "Border");
+                Stretch(pinBorder);
+                var pinBorderImg = Img(pinBorder, Hex("2B003B"));
+                pinBorder.transform.SetAsFirstSibling();
+                pinBorderImg.rectTransform.offsetMin = new Vector2(-4, -4);
+                pinBorderImg.rectTransform.offsetMax = new Vector2(4, 4);
+                BuildRankingItemHierarchy(myRankPin, resMap);
+                myRankPinView = Comp<RankingItemView>(myRankPin);
+            }
 
             // Wire LobbyView refs
             var soLobby = new SerializedObject(canvas.GetComponent<LobbyView>());
@@ -450,12 +472,7 @@ namespace Game.Editor
             soRanking.FindProperty("_virtualizedScrollRect").objectReferenceValue = vScroll;
 
             // Wire MyRankPin elements
-            soRanking.FindProperty("_myRankPin").objectReferenceValue = myRankPin;
-            soRanking.FindProperty("_myRankPinRankText").objectReferenceValue = myRankPin.transform.Find("RankText")?.GetComponent<TMP_Text>();
-            soRanking.FindProperty("_myRankPinAvatarIcon").objectReferenceValue = myRankPin.transform.Find("AvatarIcon")?.GetComponent<Image>();
-            soRanking.FindProperty("_myRankPinNameText").objectReferenceValue = myRankPin.transform.Find("NameText")?.GetComponent<TMP_Text>();
-            soRanking.FindProperty("_myRankPinScoreIcon").objectReferenceValue = myRankPin.transform.Find("ScoreIcon")?.GetComponent<Image>();
-            soRanking.FindProperty("_myRankPinScoreText").objectReferenceValue = myRankPin.transform.Find("ScoreText")?.GetComponent<TMP_Text>();
+            soRanking.FindProperty("_myRankPin").objectReferenceValue = myRankPinView;
 
             // Populate avatarSprites list in RankingTabView
             var avatarSpritesProp = soRanking.FindProperty("_avatarSprites");
@@ -534,6 +551,9 @@ namespace Game.Editor
             soHeader.FindProperty("_staminaTimerText").objectReferenceValue  = staminaTimerText;
             soHeader.FindProperty("_staminaButton").objectReferenceValue     = staminaBtn;
             soHeader.ApplyModifiedProperties();
+
+            // Header must render on top of TabContent (later sibling = higher z-order in Canvas)
+            header.transform.SetAsLastSibling();
 
             SaveScenePrefab(canvas, "Lobby");
         }
@@ -1138,6 +1158,7 @@ namespace Game.Editor
 
         static void CreateResultOverlay()
         {
+            var resMap = LoadDynamicResourceMap();
             var root = FullScreen("ResultOverlayView");
             Img(root, DIM); Comp<ResultOverlayView>(root); Comp<UIPanelAppear>(root); Comp<CanvasGroup>(root);
 
@@ -1146,10 +1167,48 @@ namespace Game.Editor
 
             var ratio  = TMP(panel, "RatioText", Center(0,   65, 700, 60), 22, UI_TEXT, "Cleared: 90%", null, TextCategory.Normal);
             var turns  = TMP(panel, "TurnsText", Center(0,  -20, 700, 60), 22, UI_TEXT, "Turns: 12/20", null, TextCategory.Normal);
-            var rank   = TMP(panel, "RankText",  Center(0, -105, 700, 55), 20, UI_CTA,  "",             null, TextCategory.Normal);
+
+            // Rank Row to house RankText and NewBestText
+            var rankRow = Child(panel, "RankRow"); Fixed(rankRow, new Vector2(0, -105), new Vector2(700, 80));
+            var rankVlg = rankRow.AddComponent<VerticalLayoutGroup>();
+            rankVlg.spacing = 6f;
+            rankVlg.childAlignment = TextAnchor.MiddleCenter;
+            rankVlg.childControlWidth = false;
+            rankVlg.childControlHeight = false;
+            rankVlg.childForceExpandWidth = false;
+            rankVlg.childForceExpandHeight = false;
+
+            var rankText = TMP(rankRow, "RankText", new Rect(0, 0, 700, 35), 20, UI_CTA, "", null, TextCategory.Normal);
+            var rankCsf = rankText.gameObject.AddComponent<ContentSizeFitter>();
+            rankCsf.horizontalFit = ContentSizeFitter.FitMode.PreferredSize;
+            rankCsf.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+
+            var newBestText = TMP(rankRow, "NewBestText", new Rect(0, 0, 700, 35), 20, UI_CTA, "", null, TextCategory.Normal);
+            var newBestCsf = newBestText.gameObject.AddComponent<ContentSizeFitter>();
+            newBestCsf.horizontalFit = ContentSizeFitter.FitMode.PreferredSize;
+            newBestCsf.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
 
             var goldRow = Child(panel, "GoldRow"); Fixed(goldRow, new Vector2(0, -185), new Vector2(700, 60));
-            var goldTxt = TMP(goldRow, "GoldText", Center(0, 0, 700, 60), 24, UI_CTA, "+120 Gold", null, TextCategory.Normal);
+            var goldHlg = goldRow.AddComponent<HorizontalLayoutGroup>();
+            goldHlg.spacing = 12f;
+            goldHlg.childAlignment = TextAnchor.MiddleCenter;
+            goldHlg.childControlWidth = false;
+            goldHlg.childControlHeight = false;
+            goldHlg.childForceExpandWidth = false;
+            goldHlg.childForceExpandHeight = false;
+
+            var goldIcon = Child(goldRow, "Icon");
+            Fixed(goldIcon, Vector2.zero, new Vector2(50, 50));
+            var goldIconImg = Img(goldIcon, Color.white);
+            if (resMap.TryGetValue("ui_gold_icon", out string gip))
+            {
+                var spr = AssetDatabase.LoadAssetAtPath<Sprite>(gip);
+                if (spr != null) { goldIconImg.sprite = spr; goldIconImg.preserveAspect = true; }
+            }
+
+            var goldTxt = TMP(goldRow, "GoldText", new Rect(0, 0, 200, 60), 24, UI_CTA, "+120 Gold", null, TextCategory.Normal);
+            var goldCsf = goldTxt.gameObject.AddComponent<ContentSizeFitter>();
+            goldCsf.horizontalFit = ContentSizeFitter.FitMode.PreferredSize;
 
             // Stars — UIStarPop drives Fill children sequentially left-to-right with punch animation
             var starsRoot = Child(panel, "Stars"); Fixed(starsRoot, new Vector2(0, 240), new Vector2(600, 160));
@@ -1167,7 +1226,8 @@ namespace Game.Editor
             so.FindProperty("_titleText").objectReferenceValue  = title;
             so.FindProperty("_ratioText").objectReferenceValue  = ratio;
             so.FindProperty("_turnsText").objectReferenceValue  = turns;
-            so.FindProperty("_rankText").objectReferenceValue   = rank;
+            so.FindProperty("_rankText").objectReferenceValue   = rankText;
+            so.FindProperty("_newBestText").objectReferenceValue = newBestText;
             so.FindProperty("_goldText").objectReferenceValue   = goldTxt;
             so.FindProperty("_goldRow").objectReferenceValue    = goldRow;
             so.FindProperty("_retryButton").objectReferenceValue = retry.GetComponent<Button>();
@@ -1180,7 +1240,6 @@ namespace Game.Editor
             starsArr.GetArrayElementAtIndex(2).objectReferenceValue = s2;
             so.ApplyModifiedProperties();
 
-            var resMap = LoadDynamicResourceMap();
             var starEmpty  = resMap.TryGetValue("star_empty",  out string ep) ? AssetDatabase.LoadAssetAtPath<Sprite>(ep)  : null;
             var starFilled = resMap.TryGetValue("star_filled", out string fp) ? AssetDatabase.LoadAssetAtPath<Sprite>(fp) : null;
             foreach (var star in new[] { s0, s1, s2 })
@@ -1878,6 +1937,22 @@ namespace Game.Editor
             psRenderer.material = new Material(Shader.Find("Sprites/Default"));
             sparkleGo.SetActive(false);
 
+            // StarCountContainer — dark pill below chest image; shows {current}/{max} stars
+            var starContainer = Child(root, "StarCountContainer");
+            Fixed(starContainer, new Vector2(0, -85), new Vector2(150, 40));
+            var starContainerImg = Img(starContainer, Hex("2A1635"));
+            starContainerImg.raycastTarget = false;
+
+            var starShadow = Child(starContainer, "Shadow");
+            Fixed(starShadow, new Vector2(0, -3), new Vector2(150, 40));
+            var starShadowImg = Img(starShadow, Hex("1A0020"));
+            starShadowImg.raycastTarget = false;
+            starShadow.transform.SetAsFirstSibling();
+
+            var starTxt = TMP(starContainer, "StarCountText", Center(0, 1, 140, 34), 16, UI_TEXT, "0/0", null, TextCategory.Normal);
+            starTxt.alignment = TextAlignmentOptions.Center;
+            starTxt.enableWordWrapping = false;
+
             // Bind Serialized Fields on ChapterChestView
             var so = new SerializedObject(chestView);
             so.FindProperty("_chestImage").objectReferenceValue = chestImg;
@@ -1885,6 +1960,7 @@ namespace Game.Editor
             so.FindProperty("_glowEffect").objectReferenceValue = glow;
             so.FindProperty("_sparkleParticles").objectReferenceValue = ps;
             so.FindProperty("_canvasGroup").objectReferenceValue = chestCg;
+            so.FindProperty("_starCountLabel").objectReferenceValue = starTxt;
 
             // Map chest sprites from dynamic_resource.csv
             var resMap = LoadDynamicResourceMap();
@@ -2939,6 +3015,7 @@ namespace Game.Editor
 
             var resMap = LoadDynamicResourceMap();
             BuildRankingItemHierarchy(root, resMap);
+            Comp<RankingItemView>(root);
 
             Save(root, "RankingItemPrefab");
         }

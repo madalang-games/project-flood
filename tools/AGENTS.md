@@ -13,7 +13,7 @@
 | `info_generator.bat` | Runs info_generator only |
 | `db_generator.bat` | Runs db_generator only |
 | `pkt_generator.bat` | Runs pkt_generator only |
-| `stage_editor.bat` | Starts stage_editor dev server (sets PROJECT_ROOT, runs npm run dev) |
+| `stage_editor.bat` | Starts stage_editor dev server on `[::1]:3000` (sets PROJECT_ROOT, writes `tools/logs/stage_editor-*.log`) |
 | `subset_tool/` | CSV-driven TMP source font subsetting before Unity release builds | -> `subset_tool/AGENTS.md` |
 | `subset_fonts.bat` | Runs `subset_tool/subset_fonts.js` manually with logs; not part of `all_generator` |
 
@@ -26,7 +26,7 @@
 - On any error — print all errors, then `process.exit(1)`
 - db_generator dry-run mode is required in `template.ini`; set `false` to execute
 - Each generator script uses `require('../config-loader')` (one level up from its subdir)
-- `stage_editor.bat` sets `PROJECT_ROOT` env var so Next.js API routes resolve CSV paths correctly
+- `stage_editor.bat` sets `PROJECT_ROOT` env var so Next.js API routes resolve CSV paths correctly, and writes startup output to `tools/logs/`
 
 ## Adding a new gen tool
 1. Create `tools/[name]/[name].js` — use `require('../config-loader')` for all config

@@ -82,7 +82,7 @@ Standalone development tool. Reads/writes `shared/datas/stage/stage.csv` and `sh
 | `VOID_COLOR` | const (BoardEditor) | same as `BOARD_BG` — Void blends into board background |
 
 ## Rules
-- Launch via `tools/stage_editor.bat` (sets `PROJECT_ROOT` automatically) or run `npm run dev` inside `tools/stage_editor/` with `PROJECT_ROOT` pointing to project-flood root
+- Launch via `tools/stage_editor.bat` (sets `PROJECT_ROOT` automatically, binds Next.js to `[::1]:3000`, writes `tools/logs/stage_editor-*.log`) or run `npm run dev` inside `tools/stage_editor/` with `PROJECT_ROOT` pointing to project-flood root
 - CSV paths resolve via `PROJECT_ROOT` env var — must point to project-flood root (not `tools/`)
 - `lib/game-rules.ts` must mirror C# rule engine — update both when rules change (findGroup, applyGravity, evaluate, countInitialValidCells all have Void handling)
 - Supports Ctrl+Z (Undo) and Ctrl+Y (Redo) stack on paint actions
