@@ -13,12 +13,14 @@ namespace ProjectFlood.Infrastructure.Generated;
 public sealed class PlayersRow
 {
     public long UserId { get; set; }
-    public string PlatformPid { get; set; } = string.Empty;
+    public string? PlatformPid { get; set; }
     public string DisplayName { get; set; } = string.Empty;
     public int AvatarId { get; set; }
     public int EquippedBoardThemeId { get; set; }
     public DateTimeOffset AccountCreatedAt { get; set; }
     public DateTimeOffset LastLoginAt { get; set; }
+    public bool IsActive { get; set; }
+    public string? ConflictCloudPid { get; set; }
 }
 
 internal sealed class PlayersDbConfiguration : IEntityTypeConfiguration<PlayersRow>
@@ -33,8 +35,7 @@ internal sealed class PlayersDbConfiguration : IEntityTypeConfiguration<PlayersR
             .IsRequired();
         builder.Property(e => e.PlatformPid)
             .HasColumnName(PlayersDb.Schema.PlatformPid)
-            .HasColumnType("VARCHAR(24)")
-            .IsRequired();
+            .HasColumnType("VARCHAR(24)");
         builder.Property(e => e.DisplayName)
             .HasColumnName(PlayersDb.Schema.DisplayName)
             .HasColumnType("VARCHAR(64)")
@@ -55,6 +56,13 @@ internal sealed class PlayersDbConfiguration : IEntityTypeConfiguration<PlayersR
             .HasColumnName(PlayersDb.Schema.LastLoginAt)
             .HasColumnType("datetime(6)")
             .IsRequired();
+        builder.Property(e => e.IsActive)
+            .HasColumnName(PlayersDb.Schema.IsActive)
+            .HasDefaultValue(true)
+            .IsRequired();
+        builder.Property(e => e.ConflictCloudPid)
+            .HasColumnName(PlayersDb.Schema.ConflictCloudPid)
+            .HasColumnType("VARCHAR(24)");
 
         builder.HasIndex(e => e.PlatformPid).IsUnique().HasDatabaseName("ux_players_platform_pid");
     }
@@ -72,6 +80,8 @@ public sealed class PlayersDb
         public const string EquippedBoardThemeId = "equipped_board_theme_id";
         public const string AccountCreatedAt = "account_created_at";
         public const string LastLoginAt = "last_login_at";
+        public const string IsActive = "is_active";
+        public const string ConflictCloudPid = "conflict_cloud_pid";
     }
 
     private readonly AppDbContext _db;
@@ -80,7 +90,7 @@ public sealed class PlayersDb
     public ValueTask<PlayersRow?> FindAsync(long userId, CancellationToken ct = default)
         => _db._Players.FindAsync(new object[] { userId }, ct);
 
-    public Task<PlayersRow?> FindByPlatformPidAsync(string platformPid, CancellationToken ct = default)
+    public Task<PlayersRow?> FindByPlatformPidAsync(string? platformPid, CancellationToken ct = default)
         => _db._Players.FirstOrDefaultAsync(e => e.PlatformPid == platformPid, ct);
 
     public void Insert(PlayersRow row) => _db._Players.Add(row);
@@ -88,7 +98,7 @@ public sealed class PlayersDb
 
     public Task InsertIgnoreAsync(PlayersRow row, CancellationToken ct = default)
         => _db.Database.ExecuteSqlInterpolatedAsync(
-            $"INSERT IGNORE INTO `players` (`user_id`, `platform_pid`, `display_name`, `avatar_id`, `equipped_board_theme_id`, `account_created_at`, `last_login_at`) VALUES ({row.UserId}, {row.PlatformPid}, {row.DisplayName}, {row.AvatarId}, {row.EquippedBoardThemeId}, {row.AccountCreatedAt.UtcDateTime}, {row.LastLoginAt.UtcDateTime})",
+            $"INSERT IGNORE INTO `players` (`user_id`, `platform_pid`, `display_name`, `avatar_id`, `equipped_board_theme_id`, `account_created_at`, `last_login_at`, `is_active`, `conflict_cloud_pid`) VALUES ({row.UserId}, {row.PlatformPid}, {row.DisplayName}, {row.AvatarId}, {row.EquippedBoardThemeId}, {row.AccountCreatedAt.UtcDateTime}, {row.LastLoginAt.UtcDateTime}, {(row.IsActive ? 1 : 0)}, {row.ConflictCloudPid})",
             ct);
 
     public IQueryable<PlayersRow> Query() => _db._Players.AsQueryable();

@@ -503,6 +503,7 @@ namespace Game.OutGame.Settings
 
                 AuthService.Instance.LinkGoogle(idToken, null, (ok, err, linkResp) =>
                 {
+                    Debug.Log($"[LinkGoogle CB] ok={ok} err={err} | conflict={linkResp?.conflict} success={linkResp?.success} conflictToken={linkResp?.conflictToken}");
                     Game.Core.UIManager.Instance?.HideLoading();
                     if (!ok)
                     {
@@ -515,19 +516,28 @@ namespace Game.OutGame.Settings
                     {
                         var local = linkResp.localSave;
                         var cloud = linkResp.cloudSave;
-                        Close();
-                        Game.Core.UIManager.Instance?.ShowPopup<AccountConflictPopupView>(v => v.Init(
-                            localMaxStage: local?.maxStageId ?? 0,
-                            localGold:     local?.gold ?? 0,
-                            localStars:    local?.totalStars ?? 0,
-                            localItems:    local?.totalItems ?? 0,
-                            cloudMaxStage: cloud?.maxStageId ?? 0,
-                            cloudGold:     cloud?.gold ?? 0,
-                            cloudStars:    cloud?.totalStars ?? 0,
-                            cloudItems:    cloud?.totalItems ?? 0,
-                            onKeepLocal: () => ResolveConflict(linkResp.conflictToken, "local"),
-                            onKeepCloud: () => ResolveConflict(linkResp.conflictToken, "cloud")
-                        ));
+                        var token = linkResp.conflictToken;
+                        void ShowConflict()
+                        {
+                            Game.Core.UIManager.Instance?.CloseTopPopup();
+                            Game.Core.UIManager.Instance?.ShowPopup<AccountConflictPopupView>(v => v.Init(
+                                localMaxStage: local?.maxStageId ?? 0,
+                                localGold:     local?.gold ?? 0,
+                                localStars:    local?.totalStars ?? 0,
+                                localItems:    local?.totalItems ?? 0,
+                                cloudMaxStage: cloud?.maxStageId ?? 0,
+                                cloudGold:     cloud?.gold ?? 0,
+                                cloudStars:    cloud?.totalStars ?? 0,
+                                cloudItems:    cloud?.totalItems ?? 0,
+                                onKeepLocal: () => ResolveConflict(token, "local"),
+                                onKeepCloud: () => ResolveConflict(token, "cloud")
+                            ));
+                        }
+                        var appear = GetComponent<Core.UI.UIPanelAppear>();
+                        if (appear != null)
+                            appear.Disappear(ShowConflict);
+                        else
+                            ShowConflict();
                     }
                     else
                     {
@@ -586,6 +596,7 @@ namespace Game.OutGame.Settings
             }
 
             Game.Core.UIManager.Instance?.ShowLoading();
+            bridge.SignOut(webClientId);
             bridge.SignIn(webClientId, (idToken, error) =>
             {
                 if (string.IsNullOrEmpty(idToken))
@@ -599,7 +610,7 @@ namespace Game.OutGame.Settings
                     return;
                 }
 
-                AuthService.Instance.LoginGoogle(idToken, null, (ok, err) =>
+                AuthService.Instance.SwitchGoogle(idToken, null, (ok, err) =>
                 {
                     Game.Core.UIManager.Instance?.HideLoading();
                     if (ok)
