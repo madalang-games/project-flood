@@ -4,10 +4,11 @@
 | file | class | role |
 |------|-------|------|
 | `UIImageResourceExtractor.cs` | `UIImageResourceExtractor` | [MenuItem] batch-loads transparent UI images, parses alpha-connected components, previews and saves numbered PNG sprites |
-| `BuildScript.cs` | `BuildScript` | Batch-mode Android build entry points; reads KEYSTORE_PASS/KEY_ALIAS_PASS from env; `BuildAndroidRelease` → ARM64 AAB |
+| `BuildScript.cs` | `BuildScript` | Batch-mode Android build entry points; reads KEYSTORE_PASS/KEY_ALIAS_PASS from env; `BuildAndroidRelease` applies release size settings then builds ARM64 AAB |
 | `ClearPlayerPrefs.cs` | `PlayerPrefsResetMenu` | [MenuItem] clears all PlayerPrefs for local reset/debug |
 | `IconAutomator.cs` | `IconAutomator` | [MenuItem] icon DPI generator — resizes source icon and applies to all Android/iOS DPI slots |
 | `GoogleMobileAdsGradleManifestPostprocessor.cs` | `GoogleMobileAdsGradleManifestPostprocessor` | Android Gradle postprocessor for GMA plugin conflicts |
+| `BuildCleanupPostProcessor.cs` | `BuildCleanupPostProcessor` | IPostprocessBuildWithReport; deletes large unwanted artifacts (`_BackUpThisFolder...`, `_BurstDebugInformation...`) after successful build |
 | `UIEditorSetup.cs` | `UIEditorSetup` | [MenuItem] one-shot prefab/scene builders; attaches LocalizedText with stringId from StringIds.cs |
 | `StageNodeEditorSetup.cs` | `StageNodeEditorSetup` | [MenuItem] StageNodeView prefab builder |
 | `FontLocalizationConfigGenerator.cs` | `FontLocalizationConfigGenerator` | [MenuItem] reads tools/subset_tool/config.json → creates FontLocalizationConfig.asset with per-language fonts; sets TMP fallback |
@@ -19,7 +20,9 @@
 | symbol | kind | note |
 |--------|------|------|
 | `UIImageResourceExtractor.Open()` | method | [MenuItem "Tools/UI/Image Resource Extractor"] opens the extraction window |
-| `BuildScript.BuildAndroidRelease()` | method | Batch entry: ARM64 AAB for Play Store; reads KEYSTORE_PASS/KEY_ALIAS_PASS env vars |
+| `BuildScript.BuildAndroidRelease()` | method | Batch entry: Play Store AAB; applies High stripping, IL2CPP OptimizeSize, and release minify before build |
+| `BuildScript.ApplyAndroidReleaseSizeSettings()` | method | Sets Android Release build type and size knobs for batch builds |
+| `BuildCleanupPostProcessor.OnPostprocessBuild()` | method | Post-build cleanup entry point; scans and deletes unwanted folders |
 | `PlayerPrefsResetMenu.ResetPrefs()` | method | [MenuItem "Tools/Reset PlayerPrefs"] deletes all PlayerPrefs |
 | `IconAutomator.ShowWindow()` | method | [MenuItem "Tools/Icon Automator"] opens icon automation window |
 | `UIEditorSetup.CreateAllPrefabs()` | method | [MenuItem "Tools/UI Setup/1"] creates all popup/overlay prefabs |

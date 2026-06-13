@@ -24,7 +24,7 @@ Contents here...
 ## AI Agent Workflow
 1. **Diff Analysis:** Compare with previous version using git.
 2. **Drafting:** Max 4 lines summary. Benefit-driven bullet points.
-3. **Translation:** Ensure all supported languages (EN, KO, AR, etc.) are covered.
+3. **Translation:** Ensure all 15 supported languages are covered using full language-REGION tags (e.g., `ru-RU`, `es-ES`, `pt-PT`, `fr-FR`, `de-DE`, `it-IT`, `tr-TR`). Required list: `en-US`, `ko-KR`, `zh-CN`, `zh-TW`, `ja-JP`, `ru-RU`, `es-ES`, `pt-PT`, `fr-FR`, `de-DE`, `th-TH`, `ar-SA`, `it-IT`, `tr-TR`, `id-ID`.
 4. **Metadata:** Append current Git HEAD commit hash at the bottom.
 
 ## Release History
