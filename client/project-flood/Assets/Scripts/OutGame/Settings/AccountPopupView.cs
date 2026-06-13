@@ -51,6 +51,8 @@ namespace Game.OutGame.Settings
         [SerializeField] private List<BoardThemeSpriteMapping> _boardThemeSprites = new List<BoardThemeSpriteMapping>();
 
         private enum Tab { Avatars, BoardThemes }
+        private static readonly Color TabPrimaryColor = new Color(1f, 0.3019608f, 0.4745098f);
+        private static readonly Color TabSecondaryColor = new Color(0.3019608f, 0.1372549f, 0.3647059f);
         private Tab _currentTab = Tab.Avatars;
 
         public Sprite GetAvatarSprite(int avatarId)
@@ -118,7 +120,7 @@ namespace Game.OutGame.Settings
                 if (_nicknameArea != null) _nicknameArea.SetActive(true);
                 if (_gridLabelText != null) _gridLabelText.text = LocalizationService.Instance.Get("popup.account.choose_avatar");
 
-                SetTabVisuals(true);
+                SetTabVisuals();
                 PopulateAvatars();
             }
             else
@@ -126,23 +128,28 @@ namespace Game.OutGame.Settings
                 if (_nicknameArea != null) _nicknameArea.SetActive(false);
                 if (_gridLabelText != null) _gridLabelText.text = LocalizationService.Instance.Get("popup.account.choose_board_theme");
 
-                SetTabVisuals(false);
+                SetTabVisuals();
                 PopulateBoardThemes();
             }
         }
 
-        private void SetTabVisuals(bool avatarActive)
+        private void SetTabVisuals()
         {
-            if (_avatarTabButton != null)
-            {
-                var img = _avatarTabButton.GetComponent<Image>();
-                if (img != null) img.color = avatarActive ? new Color(1f, 0.3f, 0.47f) : new Color(0.3f, 0.14f, 0.36f);
-            }
-            if (_boardThemeTabButton != null)
-            {
-                var img = _boardThemeTabButton.GetComponent<Image>();
-                if (img != null) img.color = !avatarActive ? new Color(1f, 0.3f, 0.47f) : new Color(0.3f, 0.14f, 0.36f);
-            }
+            bool avatarActive = _currentTab == Tab.Avatars;
+            SetTabButtonColor(_avatarTabButton, avatarActive ? TabPrimaryColor : TabSecondaryColor);
+            SetTabButtonColor(_boardThemeTabButton, avatarActive ? TabSecondaryColor : TabPrimaryColor);
+        }
+
+        private void SetTabButtonColor(Button button, Color color)
+        {
+            if (button == null) return;
+
+            if (button.targetGraphic != null)
+                button.targetGraphic.color = color;
+
+            var textStyle = button.GetComponentInChildren<UITextStyle>();
+            if (textStyle != null)
+                textStyle.ApplyStyle();
         }
 
         private void OnSaveNickname()

@@ -45,42 +45,40 @@ namespace Game.OutGame.Lobby
                 pathResourceKey: "path_chapter_1",
                 pathScrollSpeed: 0.15f,
                 pathColor: new Color(0.65f, 0.95f, 0.55f, 1f),
-                pathWidth: 64f,
+                pathWidth: 140f,
                 particleDir: ParticleDir.Upward),
 
             2 => new ChapterBgTheme(                               // Ocean
-                // TopColor == ch3 BottomColor → overlap band renders same-color = invisible seam
-                top:      new Color(0.42f, 0.69f, 0.25f, 1f),     // #6AB040 coastal meadow — MATCHES ch3 bottom
-                bottom:   new Color(0.23f, 0.75f, 0.81f, 1f),     // #3BBFCE shallow turquoise
-                particle: new Color(0.72f, 0.94f, 1.00f, 0.60f),
-                speed: 40f, count: 14, size: 8f,
+                top:      new Color(0.28f, 0.74f, 0.90f, 1f),     // bright coastal blue / shallow water
+                bottom:   new Color(0.04f, 0.18f, 0.42f, 1f),     // deep ocean
+                particle: new Color(0.72f, 0.94f, 1.00f, 0.65f),  // light blue bubbles
+                speed: 38f, count: 16, size: 7f,
                 pathResourceKey: "path_chapter_2",
                 pathScrollSpeed: 0.3f,
-                pathColor: new Color(0.4f, 0.88f, 0.98f, 1f),
-                pathWidth: 64f,
+                pathColor: new Color(0.20f, 0.85f, 0.98f, 1f),
+                pathWidth: 140f,
                 particleDir: ParticleDir.Upward),
 
             3 => new ChapterBgTheme(                               // Forest
-                // TopColor == ch4 BottomColor → same technique, same invisible seam
-                top:      new Color(0.66f, 0.60f, 0.16f, 1f),     // #A89828 dry golden — MATCHES ch4 bottom
-                bottom:   new Color(0.42f, 0.69f, 0.25f, 1f),     // #6AB040 coastal meadow — MATCHES ch2 top
-                particle: new Color(0.44f, 0.75f, 0.18f, 0.82f),  // green (per-leaf colors vary)
-                speed: 22f, count: 18, size: 11f,
+                top:      new Color(0.06f, 0.20f, 0.04f, 1f),     // dark canopy
+                bottom:   new Color(0.14f, 0.30f, 0.06f, 1f),     // forest floor
+                particle: new Color(0.80f, 1.00f, 0.35f, 0.92f),  // firefly yellow-green
+                speed: 16f, count: 14, size: 4f,
                 pathResourceKey: "path_chapter_3",
-                pathScrollSpeed: 0.12f,
-                pathColor: new Color(0.30f, 0.55f, 0.18f, 1f),
-                pathWidth: 64f,
-                particleDir: ParticleDir.Downward),
+                pathScrollSpeed: 0.10f,
+                pathColor: new Color(0.28f, 0.65f, 0.12f, 1f),
+                pathWidth: 140f,
+                particleDir: ParticleDir.Upward),
 
             4 => new ChapterBgTheme(                               // Desert
-                top:      new Color(0.91f, 0.63f, 0.31f, 1f),     // #E8A050 hot hazy sky
-                bottom:   new Color(0.66f, 0.60f, 0.16f, 1f),     // #A89828 dry golden — MATCHES ch3 top
-                particle: new Color(0.91f, 0.75f, 0.44f, 0.38f),  // sandy dust
-                speed: 58f, count: 24, size: 5f,
+                top:      new Color(0.96f, 0.82f, 0.44f, 1f),     // bleached amber sky
+                bottom:   new Color(0.76f, 0.50f, 0.20f, 1f),     // terracotta sand
+                particle: new Color(0.90f, 0.76f, 0.52f, 0.50f),  // sandy dust
+                speed: 52f, count: 20, size: 4f,
                 pathResourceKey: "path_chapter_4",
                 pathScrollSpeed: 0.20f,
-                pathColor: new Color(0.92f, 0.72f, 0.35f, 1f),
-                pathWidth: 64f,
+                pathColor: new Color(0.95f, 0.80f, 0.35f, 1f),
+                pathWidth: 140f,
                 particleDir: ParticleDir.Horizontal),
 
             _ => new ChapterBgTheme(
@@ -91,7 +89,7 @@ namespace Game.OutGame.Lobby
                 pathResourceKey: "",
                 pathScrollSpeed: 0.2f,
                 pathColor: Color.white,
-                pathWidth: 12f)
+                pathWidth: 48f)
         };
     }
 }

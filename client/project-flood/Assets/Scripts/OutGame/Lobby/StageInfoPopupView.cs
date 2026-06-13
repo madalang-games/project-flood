@@ -166,19 +166,37 @@ namespace Game.OutGame.Lobby
                 confirmLabel: LocalizationService.Instance.Get("popup.fail.watch_ad"),
                 onConfirm: () =>
                 {
+                    var staminaApi = Game.Services.StaminaApiService.Instance;
+                    var adMob = Game.Services.AdMobService.Instance;
+                    if (staminaApi == null || adMob == null)
+                    {
+                        Game.Core.UIManager.Instance?.ShowToast(LocalizationService.Instance.Get("error.ad_failed"), Game.Core.UI.ToastType.Warning);
+                        return;
+                    }
+
                     Game.Core.UIManager.Instance?.ShowLoading();
-                    Game.Services.StaminaApiService.Instance?.ClaimAdLife("rewarded_video", "dummy_ad_token",
-                        onSuccess: resp =>
-                        {
-                            Game.Core.UIManager.Instance?.HideLoading();
-                            Game.Core.UIManager.Instance?.ShowToast(LocalizationService.Instance.Get("toast.life_gained"), Game.Core.UI.ToastType.Success);
-                        },
-                        onError: err =>
+                    adMob.WatchRewardedAd("STAMINA_LIFE", result =>
+                    {
+                        if (!result.HasValue || !result.Value.Earned)
                         {
                             Game.Core.UIManager.Instance?.HideLoading();
                             Game.Core.UIManager.Instance?.ShowToast(LocalizationService.Instance.Get("error.ad_failed"), Game.Core.UI.ToastType.Warning);
+                            return;
                         }
-                    );
+
+                        staminaApi.ClaimAdLife("admob", result.Value.AdToken,
+                            onSuccess: resp =>
+                            {
+                                Game.Core.UIManager.Instance?.HideLoading();
+                                Game.Core.UIManager.Instance?.ShowToast(LocalizationService.Instance.Get("toast.life_gained"), Game.Core.UI.ToastType.Success);
+                            },
+                            onError: err =>
+                            {
+                                Game.Core.UIManager.Instance?.HideLoading();
+                                Game.Core.UIManager.Instance?.ShowToast(LocalizationService.Instance.Get("error.ad_failed"), Game.Core.UI.ToastType.Warning);
+                            }
+                        );
+                    });
                 },
                 onCancel: null,
                 cancelLabel: LocalizationService.Instance.Get("common.btn_cancel")
