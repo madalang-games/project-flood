@@ -44,8 +44,21 @@ namespace Game.InGame.View
             _board = board;
             _cellViews = new CellView[board.Height, board.Width];
             _cellPositions = new Vector3[board.Height, board.Width];
+
+            float paddingFactor = 0f;
+            if (_background != null)
+            {
+                int equippedThemeId = 1;
+                if (Game.Services.PlayerProgressService.Instance != null)
+                {
+                    equippedThemeId = Game.Services.PlayerProgressService.Instance.EquippedBoardThemeId;
+                }
+                _background.SetTheme(equippedThemeId);
+                paddingFactor = _background.PaddingFactor;
+            }
+
             PositionBoardCenter();
-            _cellSize = ComputeCellSize(board.Width, board.Height);
+            _cellSize = ComputeCellSize(board.Width, board.Height, paddingFactor);
             AlignBackground();
 
             float startX = -(board.Width * _cellSize) / 2f + _cellSize / 2f;
@@ -67,13 +80,6 @@ namespace Game.InGame.View
 
             if (_background != null)
             {
-                int equippedThemeId = 1;
-                if (Game.Services.PlayerProgressService.Instance != null)
-                {
-                    equippedThemeId = Game.Services.PlayerProgressService.Instance.EquippedBoardThemeId;
-                }
-                _background.SetTheme(equippedThemeId);
-
                 int[,] initialColorIds = new int[board.Height, board.Width];
                 for (int r = 0; r < board.Height; r++)
                 for (int c = 0; c < board.Width; c++)
@@ -267,20 +273,36 @@ namespace Game.InGame.View
             return (row, col);
         }
 
-        private float ComputeCellSize(int boardWidth, int boardHeight)
+        private float ComputeCellSize(int boardWidth, int boardHeight, float paddingFactor)
         {
             var cam = Camera.main;
             float viewH     = cam.orthographicSize * 2f;
-            float viewW     = viewH * ((float)Screen.width / Screen.height);
             float pxToWorld = viewH / Screen.height;
             float hudWorld  = GetReservedHeightWorld(_hudRectTransform,      pxToWorld);
             float trayWorld = GetReservedHeightWorld(_itemTrayRectTransform, pxToWorld);
             float margin    = _minMarginPx * pxToWorld;
 
-            float availH = Mathf.Max(0f, viewH - hudWorld - trayWorld - margin * 2f);
-            float availW = Mathf.Max(0f, viewW - margin * 2f);
+            var safe = Screen.safeArea;
+            if (safe.width <= 0f || safe.height <= 0f)
+            {
+                safe = new Rect(0f, 0f, Screen.width, Screen.height);
+            }
 
-            return Mathf.Min(availW / boardWidth, availH / boardHeight);
+            float safeHWorld = safe.height * pxToWorld;
+            float safeWWorld = safe.width * pxToWorld;
+
+            float availH = Mathf.Max(0f, safeHWorld - hudWorld - trayWorld - margin * 2f);
+            float availW = Mathf.Max(0f, safeWWorld - margin * 2f);
+
+            float localScaleX = Mathf.Max(0.001f, transform.localScale.x);
+            float localScaleY = Mathf.Max(0.001f, transform.localScale.y);
+            float localAvailW = availW / localScaleX;
+            float localAvailH = availH / localScaleY;
+
+            float cellW = localAvailW / (boardWidth + paddingFactor);
+            float cellH = localAvailH / (boardHeight + paddingFactor);
+
+            return Mathf.Min(cellW, cellH);
         }
 
         private void PositionBoardCenter()
@@ -291,10 +313,18 @@ namespace Game.InGame.View
             float hudWorld  = GetReservedHeightWorld(_hudRectTransform,      pxToWorld);
             float trayWorld = GetReservedHeightWorld(_itemTrayRectTransform, pxToWorld);
 
-            float offsetY      = (trayWorld - hudWorld) * 0.5f;
-            var pos            = transform.position;
-            pos.x              = cam.transform.position.x;
-            pos.y              = cam.transform.position.y + offsetY;
+            var safe = Screen.safeArea;
+            if (safe.width <= 0f || safe.height <= 0f)
+            {
+                safe = new Rect(0f, 0f, Screen.width, Screen.height);
+            }
+
+            float centerY = cam.transform.position.y - viewH * 0.5f + (safe.y + safe.height * 0.5f) * pxToWorld + (trayWorld - hudWorld) * 0.5f;
+            float centerX = cam.transform.position.x - (viewH * ((float)Screen.width / Screen.height)) * 0.5f + (safe.x + safe.width * 0.5f) * pxToWorld;
+
+            var pos = transform.position;
+            pos.x = centerX;
+            pos.y = centerY;
             transform.position = pos;
         }
 

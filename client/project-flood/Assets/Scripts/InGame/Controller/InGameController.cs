@@ -13,6 +13,7 @@ using ProjectFlood.Contracts.Stage;
 using ProjectFlood.Data.Generated;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
 
 namespace Game.InGame.Controller
 {
@@ -123,8 +124,6 @@ namespace Game.InGame.Controller
                 }
                 return;
             }
-            if (_isAnimating) return;
-
             // 1. Check RowShift Swipe Input (Higher priority)
             if (_itemManager.IsInUsePhase && _itemManager.SelectedItem == ItemType.RowShift)
             {
@@ -133,13 +132,23 @@ namespace Game.InGame.Controller
                     _rowShiftOverlay.Show();
                 }
 
-                if (ReadPressStart(out Vector2 startPos))
+                bool hasStart = ReadPressStart(out Vector2 startPos);
+                bool hasEnd = ReadPressEnd(out Vector2 endPos);
+
+                if (_isAnimating)
+                {
+                    _isDragging = false;
+                    if (_rowShiftOverlay != null) _rowShiftOverlay.EndDrag();
+                    return;
+                }
+
+                if (hasStart)
                 {
                     _dragStartPos = startPos;
                     _isDragging = true;
                     if (_rowShiftOverlay != null) _rowShiftOverlay.StartDrag(startPos);
                 }
-                else if (ReadPressEnd(out Vector2 endPos))
+                else if (hasEnd)
                 {
                     if (_isDragging)
                     {
@@ -150,7 +159,7 @@ namespace Game.InGame.Controller
                         if (Mathf.Abs(deltaX) >= 50f)
                         {
                             ShiftDirection direction = deltaX > 0 ? ShiftDirection.Right : ShiftDirection.Left;
-                            StartCoroutine(HandleRowShiftSequence(direction));
+                            StartCoroutine(RunWithAnimationLock(HandleRowShiftSequence(direction)));
                             return;
                         }
                     }
@@ -166,6 +175,8 @@ namespace Game.InGame.Controller
             // 2. Normal Tap & Other Items Input
             Vector2? tapPos = ReadTapPosition();
             if (tapPos == null) return;
+
+            if (_isAnimating) return;
 
             var (row, col) = _boardView.ScreenToCell(tapPos.Value);
 
@@ -187,7 +198,6 @@ namespace Game.InGame.Controller
             if (row < 0 || col < 0) return;
             var tapped = _board.Grid[row, col];
             if (tapped == null || tapped.Value.cell_type == CellType.Void || tapped.Value.cell_type == CellType.Obstacle) return;
-
             if (tapped.Value.cell_type == CellType.Bomb || tapped.Value.cell_type == CellType.HRocket || tapped.Value.cell_type == CellType.ColorSweep)
             {
                 HandleSpecialCellTap(row, col, tapped.Value.cell_type);
@@ -202,13 +212,13 @@ namespace Game.InGame.Controller
         {
             if (!_isPlaying || _isAnimating) return;
             _itemManager.Cancel();
-            StartCoroutine(RotateBoardSequence());
+            StartCoroutine(RunWithAnimationLock(RotateBoardAnimation()));
         }
 
         private void HandleTap(int row, int col)
         {
             var group = GroupSelector.FindGroup(_board, row, col);
-            StartCoroutine(HandleTapSequence(row, col, group));
+            StartCoroutine(RunWithAnimationLock(HandleTapSequence(row, col, group)));
         }
 
         private void HandleItemTap(int row, int col)
@@ -238,14 +248,7 @@ namespace Game.InGame.Controller
             // Clear CellSwap selection highlight on completion
             _boardView.ClearAllCellSelectedHighlights();
 
-            StartCoroutine(HandleItemSequence(row, col, cells, itemType));
-        }
-
-        private IEnumerator RotateBoardSequence()
-        {
-            _isAnimating = true;
-            yield return RotateBoardAnimation();
-            _isAnimating = false;
+            StartCoroutine(RunWithAnimationLock(HandleItemSequence(row, col, cells, itemType)));
         }
 
         private IEnumerator RotateBoardAnimation()
@@ -262,21 +265,19 @@ namespace Game.InGame.Controller
 
         private IEnumerator HandleTapSequence(int row, int col, List<(int row, int col)> group)
         {
-            _isAnimating = true;
-
-            if (_itemTrayView != null) _itemTrayView.SetLocked(true);
-
             yield return _boardView.PlayTapFeedback(row, col);
             yield return _boardView.PlayGroupPulse(group, row, col);
 
             RemovalSystem.Remove(_board, group);
             SfxEventBus.Play(SfxId.CellGroupRemoved);
+            
             yield return _boardView.PlayRemovalEffects(_board, group, row, col);
 
             ShiftConveyors();
 
             var beforeGravity = CloneGrid(_board);
             GravitySystem.Apply(_board);
+            
             yield return _boardView.PlayGravity(beforeGravity, _board);
 
             bool turnsLeft = _turnManager.Consume();
@@ -306,22 +307,10 @@ namespace Game.InGame.Controller
                     yield return RotateBoardAnimation();
                 }
             }
-
-            if (_itemTrayView != null)
-            {
-                _itemTrayView.SetLocked(false);
-                _itemTrayView.Refresh(_itemManager);
-            }
-
-            _isAnimating = false;
         }
 
         private IEnumerator HandleItemSequence(int originRow, int originCol, List<(int row, int col)> cells, ItemType itemType)
         {
-            _isAnimating = true;
-
-            if (_itemTrayView != null) _itemTrayView.SetLocked(true);
-
             if (!_isDevMode && Game.Services.InventoryApiService.Instance != null)
             {
                 int itemId = itemType switch
@@ -372,22 +361,10 @@ namespace Game.InGame.Controller
                 SfxEventBus.Play(SfxId.StageClear);
                 OnStageEnd?.Invoke(result, _turnManager.RemainingTurns);
             }
-
-            if (_itemTrayView != null)
-            {
-                _itemTrayView.SetLocked(false);
-                _itemTrayView.Refresh(_itemManager);
-            }
-
-            _isAnimating = false;
         }
 
         private IEnumerator HandleRowShiftSequence(ShiftDirection direction)
         {
-            _isAnimating = true;
-
-            if (_itemTrayView != null) _itemTrayView.SetLocked(true);
-
             if (!_isDevMode && Game.Services.InventoryApiService.Instance != null)
             {
                 Game.Services.InventoryApiService.Instance.SpendItem(5, 1, "use_in_game",
@@ -415,14 +392,6 @@ namespace Game.InGame.Controller
                 _isPlaying = false;
                 OnStageEnd?.Invoke(result, _turnManager.RemainingTurns);
             }
-
-            if (_itemTrayView != null)
-            {
-                _itemTrayView.SetLocked(false);
-                _itemTrayView.Refresh(_itemManager);
-            }
-
-            _isAnimating = false;
         }
 
         private static readonly Dictionary<ItemType, int> ItemTypeToId = new()
@@ -758,18 +727,15 @@ namespace Game.InGame.Controller
             var cells = effect.GetAffectedCells(_board, row, col);
             if (cells == null || cells.Count == 0) return;
 
-            StartCoroutine(HandleSpecialCellSequence(row, col, cells, itemType));
+            StartCoroutine(RunWithAnimationLock(HandleSpecialCellSequence(row, col, cells, itemType)));
         }
 
         private IEnumerator HandleSpecialCellSequence(int originRow, int originCol, List<(int row, int col)> cells, ItemType itemType)
         {
-            _isAnimating = true;
-
-            if (_itemTrayView != null) _itemTrayView.SetLocked(true);
-
             bool allowObstacle = (itemType == ItemType.Bomb || itemType == ItemType.HRocket);
             RemovalSystem.Remove(_board, cells, allowObstacle);
             SfxEventBus.Play(SfxId.CellGroupRemoved);
+            
             yield return _boardView.PlayRemovalEffects(_board, cells, originRow, originCol);
 
             ShiftConveyors();
@@ -786,14 +752,34 @@ namespace Game.InGame.Controller
                 SfxEventBus.Play(SfxId.StageClear);
                 OnStageEnd?.Invoke(result, _turnManager.RemainingTurns);
             }
+        }
 
-            if (_itemTrayView != null)
+        private IEnumerator RunWithAnimationLock(IEnumerator animationSequence)
+        {
+            _isAnimating = true;
+            if (_itemTrayView != null) _itemTrayView.SetLocked(true);
+
+            try
             {
-                _itemTrayView.SetLocked(false);
-                _itemTrayView.Refresh(_itemManager);
+                yield return animationSequence;
             }
-
-            _isAnimating = false;
+            finally
+            {
+                if (_itemTrayView != null)
+                {
+                    _itemTrayView.SetLocked(false);
+                    _itemTrayView.Refresh(_itemManager);
+                }
+                if (Touchscreen.current != null)
+                {
+                    InputSystem.ResetDevice(Touchscreen.current, true);
+                }
+                if (Mouse.current != null)
+                {
+                    InputSystem.ResetDevice(Mouse.current, true);
+                }
+                _isAnimating = false;
+            }
         }
 
         private void ShiftConveyors()

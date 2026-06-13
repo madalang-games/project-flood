@@ -9,7 +9,8 @@ namespace Game.InGame.View
     {
         [SerializeField] private SpriteRenderer _baseRenderer;
         [SerializeField] private SpriteRenderer _protectorOverlay;
-        [SerializeField] private GameObject _coreIndicator;
+        [SerializeField] private SpriteRenderer _coreOverlay;
+        [SerializeField] private Sprite _coreSprite;
         [SerializeField] private GameObject _targetHighlight;
 
         [SerializeField] private Sprite _basicSprite;
@@ -154,8 +155,25 @@ namespace Game.InGame.View
                 }
             }
 
-            if (_coreIndicator != null)
-                _coreIndicator.SetActive(cell.is_core);
+            if (_coreOverlay != null)
+            {
+                _coreOverlay.gameObject.SetActive(cell.is_core);
+                if (cell.is_core && _coreSprite != null)
+                {
+                    _coreOverlay.sprite = _coreSprite;
+                    Vector2 baseSpriteSize = _baseRenderer.sprite != null
+                        ? _baseRenderer.sprite.bounds.size
+                        : Vector2.one;
+                    Vector2 coreSpriteSize = _coreSprite.bounds.size;
+                    _coreOverlay.transform.localPosition = new Vector3(
+                        -baseSpriteSize.x * 0.25f,
+                        baseSpriteSize.y * 0.25f,
+                        0f);
+                    float sx = coreSpriteSize.x > 0f ? baseSpriteSize.x * 0.5f / coreSpriteSize.x : 0.5f;
+                    float sy = coreSpriteSize.y > 0f ? baseSpriteSize.y * 0.5f / coreSpriteSize.y : 0.5f;
+                    _coreOverlay.transform.localScale = new Vector3(sx, sy, 1f);
+                }
+            }
         }
 
         public IEnumerator PlayTapFeedback(float duration)
@@ -319,6 +337,7 @@ namespace Game.InGame.View
         {
             SetRendererAlpha(_baseRenderer, alpha);
             SetRendererAlpha(_protectorOverlay, alpha);
+            SetRendererAlpha(_coreOverlay, alpha);
         }
 
         private static void SetRendererAlpha(SpriteRenderer renderer, float alpha)

@@ -13,6 +13,7 @@ namespace Game.InGame.View
         [SerializeField] private TMP_Text    _ratioText;
         [SerializeField] private TMP_Text    _turnsText;
         [SerializeField] private TMP_Text    _rankText;
+        [SerializeField] private TMP_Text    _newBestText;
         [SerializeField] private TMP_Text    _goldText;
         [SerializeField] private GameObject[] _starObjects; // 3 stars
         [SerializeField] private Button      _retryButton;
@@ -49,6 +50,11 @@ namespace Game.InGame.View
                 _turnsText.text = string.Format(Game.Services.LocalizationService.Instance.Get("popup.result.turns"), turnsUsed, totalTurns);
             if (_rankText != null)
                 _rankText.text = "";
+            if (_newBestText != null)
+            {
+                _newBestText.text = "";
+                _newBestText.gameObject.SetActive(false);
+            }
 
             bool showGold = !fail && goldEarned > 0;
             if (_goldRow != null) _goldRow.SetActive(showGold);
@@ -62,10 +68,18 @@ namespace Game.InGame.View
 
         public void SetServerRank(int? stageRank, bool isNewBest)
         {
-            if (_rankText == null) return;
-            _rankText.text = stageRank.HasValue
-                ? string.Format(Game.Services.LocalizationService.Instance.Get("popup.result.rank"), stageRank.Value) + (isNewBest ? Game.Services.LocalizationService.Instance.Get("popup.result.new_best") : "")
-                : "";
+            if (_rankText != null)
+            {
+                _rankText.text = stageRank.HasValue
+                    ? string.Format(Game.Services.LocalizationService.Instance.Get("popup.result.rank"), stageRank.Value)
+                    : "";
+            }
+
+            if (_newBestText != null)
+            {
+                _newBestText.text = Game.Services.LocalizationService.Instance.Get("popup.result.new_best").Trim();
+                _newBestText.gameObject.SetActive(stageRank.HasValue && isNewBest);
+            }
         }
 
         private IEnumerator PlayStarSequence(int filledCount)

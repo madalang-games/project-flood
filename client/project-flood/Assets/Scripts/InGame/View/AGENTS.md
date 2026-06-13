@@ -52,8 +52,9 @@
 | `BoardView._burstCount` | SerializeField | code-generated burst dots per removed cell |
 | `BoardView._rotateDuration` | SerializeField | 180-degree visual board rotation duration |
 | `BoardView._rotateScalePulse` | SerializeField | subtle board scale pulse during rotation |
-| `BoardView.Build(board,colorIds)` | method | initial setup -> PositionBoardCenter -> computes cell positions, instantiates grid, aligns background, calls Refresh |
-| `BoardView.PositionBoardCenter()` | method | shifts board Y so it centers in the area between HUD (top) and ItemTray (bottom) |
+| `BoardView.Build(board,colorIds)` | method | initial setup -> SetTheme -> PositionBoardCenter -> computes cell positions, instantiates grid, aligns background, calls Refresh |
+| `BoardView.PositionBoardCenter()` | method | shifts board X/Y so it centers precisely within the safe area's available space between HUD (top) and ItemTray (bottom) |
+| `BoardView.ComputeCellSize(boardWidth,boardHeight,paddingFactor)` | method | computes local cell size constrained by safe area width and height (HUD/ItemTray reserved), scaled by transform localScale, and theme padding factor |
 | `BoardView.GetReservedHeightWorld(rt,pxToWorld)` | method | static; converts RectTransform height (accounting for canvas scaleFactor) to world units |
 | `BoardView.Refresh(board)` | method | syncs all CellViews + socket visibility to current board state |
 | `BoardView.PlayTapFeedback(row,col)` | coroutine | selected cell scale punch + color flash |
@@ -82,12 +83,16 @@
 | `CellView.PlayProtectorHit(duration)` | coroutine | protector hit shake and flash |
 | `CellView.PlayDrop(from,to,delay,duration)` | coroutine | gravity fall with overshoot easing and landing squash |
 | `CellView._protectorOverlay` | SerializeField | SpriteRenderer for strength-1 or strength-2 shield |
-| `CellView._coreIndicator` | SerializeField | GameObject shown when is_core=true |
+| `CellView._coreOverlay` | SerializeField | SpriteRenderer shown when is_core=true; positioned at top-left quarter of cell |
+| `CellView._coreSprite` | SerializeField | Fallback sprite if DynamicResourceService cannot load "cell_core" |
 | `InGameSceneBackgroundView.Bind(bgThemeId)` | method | resolves Night palette, builds 1×16 gradient SR at sortOrder -100, builds sparkle SRs at -99 |
 | `BoardBackground.Build(width,height,cellSize,cellPositions)` | method | generates dynamic panel + socket sprites using BoardView's exact cell positions |
 | `BoardBackground.Refresh(width,height,showSocket,showHole)` | method | enables sockets and stores Void map for transparent panel cutouts |
 | `BoardBackground.Update()` | method | refreshes neon pixel-art panel texture, Void-adjacent rim, and socket tint at low FPS |
+| `BoardBackground.PaddingFactor` | property | getter for the active theme's padding factor used in cell size calculations |
 | `DevRotateButton._controller` | SerializeField | InGameController ref; auto-finds via FindObjectOfType if null |
+| `ResultOverlayView._newBestText` | SerializeField | TMP_Text for showing new best record message |
+| `ResultOverlayView.SetServerRank(stageRank, isNewBest)` | method | sets rank text and activates new best text |
 
 ## Rules
 - View classes are read-only consumers; no game logic
