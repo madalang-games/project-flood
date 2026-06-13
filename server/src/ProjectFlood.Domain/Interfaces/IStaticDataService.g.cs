@@ -16,6 +16,8 @@ public partial interface IStaticDataService
     IReadOnlyList<ColorPaletteData> GetAllColorPalettes();
     DynamicResourceData? GetDynamicResource(string resource_key);
     IReadOnlyList<DynamicResourceData> GetAllDynamicResources();
+    CurrencyData? GetCurrency(int currency_id);
+    IReadOnlyList<CurrencyData> GetAllCurrencys();
     ItemData? GetItem(int item_id);
     IReadOnlyList<ItemData> GetAllItems();
     RewardGroupData? GetRewardGroup(int reward_group_id);
